@@ -113,48 +113,36 @@ public class UI {
         // At the end of said methods, the font will be reverted to the default set here.
         g2.setFont(fontArimo);
 
-        // Explore state.
-        if (gp.getGameState() == GameState.EXPLORE) {
-            // Nothing here.
-        }
-
-        // Dialogue state.
-        if (gp.getGameState() == GameState.DIALOGUE) {
-            drawDialogueScreen();
-        }
-
-        // Party menu state.
-        if (gp.getGameState() == GameState.PARTY_MENU) {
-            drawCoreMenuScreen();
-            drawMenuSectionName("Party");
-            drawPartyMenuScreen();
-        }
-
-        // Inventory menu state.
-        if (gp.getGameState() == GameState.INVENTORY_MENU) {
-            drawCoreMenuScreen();
-            drawMenuSectionName("Inventory");
-            drawInventoryMenuScreen();
-        }
-
-        // Settings menu state.
-        if (gp.getGameState() == GameState.SETTINGS_MENU) {
-            drawCoreMenuScreen();
-            drawMenuSectionName("Settings");
-            drawSettingsMenuScreen();
-        }
-
-        // Transition state.
-        if (gp.getGameState() == GameState.TRANSITION) {
-            drawTransitionScreen();
-        }
-
-        // Sub-menu state.
-        if (gp.getGameState() == GameState.SUB_MENU) {
-            drawSubMenuScreen();
-            if (gp.getDialogueR().getCurrentConv() != null) {                                                           // Keep dialogue screen up if the sub-menu is being drawn while dialogue is also being displayed.
+        switch (gp.getGameState()) {
+            case EXPLORE:
+                // Nothing here.
+                break;
+            case DIALOGUE:
                 drawDialogueScreen();
-            }
+                break;
+            case PARTY_MENU:
+                drawCoreMenuScreen();
+                drawMenuSectionName("Party");
+                drawPartyMenuScreen();
+                break;
+            case INVENTORY_MENU:
+                drawCoreMenuScreen();
+                drawMenuSectionName("Inventory");
+                drawInventoryMenuScreen();
+                break;
+            case SETTINGS_MENU:
+                drawCoreMenuScreen();
+                drawMenuSectionName("Settings");
+                drawSettingsMenuScreen();
+                break;
+            case TRANSITION:
+                drawTransitionScreen();
+                break;
+            case SUB_MENU:
+                drawSubMenuScreen();
+                if (gp.getDialogueR().getCurrentConv() != null) {                                                       // Keep dialogue screen up if the sub-menu is being drawn while dialogue is also being displayed.
+                    drawDialogueScreen();
+                }
         }
 
         // DEBUG.

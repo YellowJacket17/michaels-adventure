@@ -64,26 +64,30 @@ public class MenuIconManager {
     public void draw(Graphics2D g2, int iconId, int screenX, int screenY) {
 
         MenuIcon menuIcon = icons.get(iconId);
-        BufferedImage image;
 
-        if (menuIcon.isSelected()) {
+        if (menuIcon != null) {
 
-            image = menuIcon.getActive();
-        } else {
+            BufferedImage image;
 
-            image = menuIcon.getInactive();
-        }
+            if (menuIcon.isSelected()) {
 
-        if (image != null) {
+                image = menuIcon.getActive();
+            } else {
 
-            g2.drawImage(image, screenX, screenY, null);
-        } else if (!drawErrors.contains(iconId)) {
+                image = menuIcon.getInactive();
+            }
 
-            UtilityTool.logError("Failed to draw icon"
-                    + " with ID "
-                    + iconId
-                    + ": images may not have been properly loaded upon icon initialization.");
-            drawErrors.add(iconId);
+            if (image != null) {
+
+                g2.drawImage(image, screenX, screenY, null);
+            } else if (!drawErrors.contains(iconId)) {
+
+                UtilityTool.logError("Failed to draw icon"
+                        + " with ID "
+                        + iconId
+                        + ": images may not have been properly loaded upon icon initialization.");
+                drawErrors.add(iconId);
+            }
         }
     }
 

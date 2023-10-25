@@ -60,25 +60,29 @@ public class EntityIconManager {
     public void draw(Graphics2D g2, int entityId, int screenX, int screenY) {
 
         EntityIcon entityIcon = entityIcons.get(entityId);
-        BufferedImage image;
 
-        if (entityIcon.isSelected()) {
+        if (entityIcon != null) {
 
-            image = selectEntityImage(entityIcon);
-        } else {
+            BufferedImage image;
 
-            image = entityIcon.getDown1();
-        }
+            if (entityIcon.isSelected()) {
 
-        if (image != null) {
+                image = selectEntityImage(entityIcon);
+            } else {
 
-            g2.drawImage(image, screenX, screenY, null);
-        } else if (!drawErrors.contains(entityId)) {
+                image = entityIcon.getDown1();
+            }
 
-            UtilityTool.logError("Failed to draw entity icon with entity ID "
-                    + entityId
-                    + ": the entity icon may not have been loaded properly or may not exist.");
-            drawErrors.add(entityId);
+            if (image != null) {
+
+                g2.drawImage(image, screenX, screenY, null);
+            } else if (!drawErrors.contains(entityId)) {
+
+                UtilityTool.logError("Failed to draw entity icon with entity ID "
+                        + entityId
+                        + ": the entity icon may not have been loaded properly or may not exist.");
+                drawErrors.add(entityId);
+            }
         }
     }
 
