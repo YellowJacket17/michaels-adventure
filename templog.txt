@@ -1,0 +1,8 @@
+10/24/2023 19:52:54:571  INFO     Application started.
+10/24/2023 19:52:56:162  INFO     Starting game thread.
+10/24/2023 19:53:02:447  ERROR    Failed to open sound effect channel.
+10/24/2023 19:53:02:459  WARNING  Attempted to play sound effect, but there is currently no file staged to play.
+10/24/2023 19:53:13:113  ERROR    Failed to open sound effect channel.
+10/24/2023 19:53:13:113  WARNING  Attempted to play sound effect, but there is currently no file staged to play.
+10/24/2023 19:53:22:882  ERROR    Failed to open sound effect channel.
+10/24/2023 19:53:22:882  WARNING  Attempted to play sound effect, but there is currently no file staged to play.

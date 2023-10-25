@@ -1,0 +1,9 @@
+{
+    "0": {
+        "dayNightCycle": true
+    },    
+
+    "1": {
+        "dayNightCycle": false
+    }
+}

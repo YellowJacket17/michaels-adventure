@@ -1,0 +1,181 @@
+{
+    "1": {
+        "type": "object",
+        "class": "Obj_Controller",
+        "map": 1,
+        "defaultAction": "static",
+        "position": {
+            "defaultCol": 23,
+            "defaultRow": 17
+        }
+    },    
+
+    "2": {
+        "type": "object",
+        "class": "Obj_Key",
+        "map": 1,
+        "defaultAction": "static",
+        "position": {
+            "defaultCol": 4,
+            "defaultRow": 43
+        }
+    },
+    
+    "3": {
+        "type": "object",
+        "class": "Obj_Chest",
+        "map": 1,
+        "defaultAction": "static",
+        "position": {
+            "defaultCol": 22,
+            "defaultRow": 25
+        }
+    },
+    
+    "4": {
+        "type": "character",
+        "class": "Npc_Test1",
+        "collision": true,
+        "hidden": false,
+        "map": 1,
+        "defaultAction": "randomSteps",
+        "attributes": {
+            "name": "Test NPC 1",
+            "speed": 2,
+            "maxLife": 1,
+            "life": 1,
+            "maxSkillPoints": 20,
+            "skillPoints": 20,
+            "baseAttack": 1,
+            "baseDefense": 1,
+            "baseMagic": 1,
+            "baseAgility": 1,
+            "exp": 0,
+            "level": 1,
+            "nextLevelExp": 1
+        },
+        "position": {
+            "defaultCol": 24,
+            "defaultRow": 25
+        },
+        "attacks": {
+            "slot1": 1
+        }
+    },
+
+    "5": {
+        "type": "character",
+        "class": "Npc_Test2",
+        "collision": true,
+        "map": 0,
+        "defaultAction": "randomSteps",
+        "attributes": {
+            "name": "Test NPC 2",
+            "speed": 2,
+            "maxLife": 25,
+            "life": 12,
+            "maxSkillPoints": 12,
+            "skillPoints": 15,
+            "baseAttack": 1,
+            "baseDefense": 1,
+            "baseMagic": 1,
+            "baseAgility": 4,
+            "exp": 0,
+            "level": 3,
+            "nextLevelExp": 1
+        },
+        "position": {
+            "defaultCol": 3,
+            "defaultRow": 8
+        },
+        "attacks": {
+            "slot1": 1
+        }
+    },
+
+    "6": {
+        "type": "character",
+        "class": "Npc_Test1",
+        "collision": true,
+        "map": 0,
+        "defaultAction": "randomSteps",
+        "attributes": {
+            "name": "Test NPC 3",
+            "speed": 2,
+            "maxLife": 17,
+            "life": 1,
+            "maxSkillPoints": 3,
+            "skillPoints": 14,
+            "baseAttack": 1,
+            "baseDefense": 1,
+            "baseMagic": 1,
+            "baseAgility": 3,
+            "exp": 0,
+            "level": 1,
+            "nextLevelExp": 1
+        },
+        "position": {
+            "defaultCol": 14,
+            "defaultRow": 1
+        },
+        "attacks": {
+            "slot1": 1
+        }
+    },
+
+    "7": {
+        "type": "character",
+        "class": "Npc_Test1",
+        "collision": true,
+        "map": 0,
+        "defaultAction": "randomTurns",
+        "attributes": {
+            "name": "Test NPC 4",
+            "speed": 2,
+            "maxLife": 1,
+            "life": 1,
+            "maxSkillPoints": 2,
+            "skillPoints": 2,
+            "baseAttack": 1,
+            "baseDefense": 1,
+            "baseMagic": 1,
+            "baseAgility": 1,
+            "level": 1
+        },
+        "position": {
+            "defaultCol": 13,
+            "defaultRow": 1
+        },
+        "attacks": {
+            "slot1": 1
+        }
+    },
+
+    "8": {
+        "type": "character",
+        "class": "Npc_Test1",
+        "collision": true,
+        "map": 1,
+        "defaultAction": "randomTurns",
+        "attributes": {
+            "name": "Test NPC 5",
+            "speed": 2,
+            "maxLife": 1,
+            "life": 1,
+            "maxSkillPoints": 2,
+            "skillPoints": 2,
+            "baseAttack": 1,
+            "baseDefense": 1,
+            "baseMagic": 1,
+            "baseAgility": 5,
+            "level": 1
+        },
+        "position": {
+            "defaultCol": 8,
+            "defaultRow": 6
+        },
+        "attacks": {
+            "slot1": 1
+        }
+    }
+}

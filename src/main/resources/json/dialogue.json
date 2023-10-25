@@ -1,0 +1,104 @@
+{
+    "0": {
+        "convName": "Test1",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speakerName": "Michael",
+                "text": "Hi there!"
+            },
+            "1": {
+                "speakerName": "Test NPC 1",
+                "text": "Hello! What are you doing here?"
+            },
+            "2": {
+                "speakerName": "Michael",
+                "text": "I'm testing different components of the game world. What are you up to?"
+            },
+            "3": {
+                "speakerName": "Test NPC 1",
+                "text": "Oh, nothing much. I'm just a test NPC, but maybe one day I'll become something more! At least, that's what the creator told me. It's so great to be alive, wouldn't you agree?"
+            },
+            "4": {
+                "speakerName": "Michael",
+                "text": "Ah, well, good luck with that..."
+            },
+            "5": {
+                "speakerName": "",
+                "text": "............"
+            },
+            "6": {
+                "speakerName": "",
+                "text": "........................"
+            },
+            "7": {
+                "speakerName": "",
+                "text": "Silence ensues..."
+            }
+        }   
+    },    
+
+    "1": {
+        "convName": "Test2",
+        "map": 0,
+        "dialogue": {
+            "0": {
+                "speakerName": "Test NPC 2",
+                "text": "My, my, what a mysterious place this is..."
+            },
+            "1": {
+                "speakerName": "Test NPC 2",
+                "text": "Mind if we look around with you for a bit?"
+            }
+        }
+    },
+    
+    "2": {
+        "convName": "Test3",
+        "map": 0,
+        "dialogue": {
+            "0": {
+                "speakerName": "Test NPC 2",
+                "text": "Alright, that's enough for now."
+            },
+            "1": {
+                "speakerName": "Michael",
+                "text": "Who are you again...?"
+            }
+        }
+    },
+
+    "3": {
+        "convName": "Test4",
+        "map": 1,
+        "dialogue": {
+            "0": {
+                "speakerName": "Test NPC 2",
+                "text": "Would you mind taking us back to where you found us?"
+            },
+            "1": {
+                "speakerName": "Michael",
+                "text": "So whiny..."
+            }
+        }
+    },
+
+    "4": {
+        "map": 1,
+        "dialogue": {
+            "0": {
+                "speakerName": "Test NPC 5",
+                "text": "AH! You bumped into me!"
+            },
+            "1": {
+                "speakerName": "Michael",
+                "text": "Wha..."
+            },
+            "2": {
+                "speakerName": "Test NPC 5",
+                "text": "You've ruined my day. Prepare to be pulverized, punk!"
+            }
+        }   
+    }
+}
