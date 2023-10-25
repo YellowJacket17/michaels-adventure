@@ -42,8 +42,8 @@
 All `.wav` files are ommitted from the remote repository due to file size.
 These files belong in the `src/main/resources/sound/` directory.
 The application will run with them missing, but some warnings and errors will be printed to console.
-In the `tracks` directory, the application expects files named `testTrack2.wav`, `testTrack3.wav`, and `testTrack4.wav`.
-In the `effects` directory, the application expects a file named `testEffect1.wav`.
+In the `src/main/resources/sound/tracks/` directory, the application expects files named `testTrack2.wav`, `testTrack3.wav`, and `testTrack4.wav`.
+In the `src/main/resources/sound/effects/` directory, the application expects a file named `testEffect1.wav`.
 
 ## Development Plan
 I'm currently reworking the rendering to use OpenGL via LWJGL (Lightweight Java Game Library).
