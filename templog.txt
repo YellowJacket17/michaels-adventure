@@ -1,2 +1,2 @@
-10/25/2023 10:24:26:953  INFO     Application started.
-10/25/2023 10:24:28:293  INFO     Starting game thread.
+11/12/2023 13:58:32:673  INFO     Application started.
+11/12/2023 13:58:35:621  INFO     Starting game loop.

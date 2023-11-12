@@ -54,12 +54,8 @@ public class CutsceneManager {
     /**
      * Draws a cutscene according to which is currently set in the `sceneNum` field.
      * If `sceneNum` is set to zero, nothing will happen.
-     *
-     * @param g2 Graphics2D instance
      */
-    public void draw(Graphics2D g2) {
-
-        this.g2 = g2;
+    public void draw() {
 
         if (gp.getGameState() == GameState.CUTSCENE) {
 

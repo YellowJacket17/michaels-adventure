@@ -1,26 +1,20 @@
 package submenu;
 
 import core.GamePanel;
+import org.joml.Vector2f;
+import render.Renderer;
+import render.drawable.Drawable;
+import utility.AssetPool;
 import utility.UtilityTool;
-import utility.exceptions.AssetLoadException;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
 
 /**
  * This class defines the sub-menu selection arrow, which appears when the sub-menu appears with a list of options for
  * the player to select.
  */
-public class SelectionArrow {
+public class SelectionArrow extends Drawable {
 
     // FIELDS
     GamePanel gp;
-    /**
-     * Loaded arrow sprite.
-     */
-    private BufferedImage image;
 
     /**
      * Boolean tracking whether a draw error has occurred. If true, this prevents a draw error from repeatedly being
@@ -36,62 +30,34 @@ public class SelectionArrow {
      * @param gp GamePanel instance
      */
     public SelectionArrow(GamePanel gp) {
+        super();
         this.gp = gp;
-        getImage();
+        this.sprite = AssetPool.getSpritesheet(6).getSprite(0);
+        this.transform.scale.x = this.sprite.getNativeWidth();
+        this.transform.scale.y = this.sprite.getNativeHeight();
     }
 
 
-    // METHODS
+    // METHOD
     /**
-     * Draws the selection arrow.
+     * Adds the selection arrow to the render pipeline.
      *
-     * @param g2 Graphics2D instance
-     * @param screenX x-coordinate of the selection arrow (left side)
-     * @param screenY y-coordinate of the selection arrow (top side)
+     * @param renderer Renderer instance
+     * @param screenX screen x-coordinate of the selection arrow (leftmost, normalized between 0 and 1)
+     * @param screenY screen y-coordinate of the selection arrow (topmost, normalized between 0 and 1)
      */
-    public void draw(Graphics2D g2, int screenX, int screenY) {
+    public void render(Renderer renderer, float screenX, float screenY) {
 
-        if (image != null) {
+        if (sprite != null) {
 
-            g2.drawImage(image, screenX, screenY, null);
+            Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
+            this.transform.position.x = worldCoords.x;
+            this.transform.position.y = worldCoords.y;
+            renderer.addDrawable(this);
         } else if (!drawError) {
 
-            UtilityTool.logError("Failed to draw selection arrow: image may not have been properly loaded upon initialization.");
+            UtilityTool.logError("Failed to add selection arrow to the render pipeline: sprite may not have been properly loaded upon initialization.");
             drawError = true;
         }
-    }
-
-
-    /**
-     * Stages sprite to load from resources directory.
-     */
-    private void getImage() {
-
-        image = setupImage("/miscellaneous/selection_arrow.png");
-    }
-
-
-    /**
-     * Loads and scales the selection arrow sprite.
-     * Recommended file format is PNG.
-     *
-     * @param filePath file path of sprite from resources directory
-     * @return loaded sprite
-     * @throws AssetLoadException if an error occurs while loading the selection arrow sprite
-     */
-    private BufferedImage setupImage(String filePath) {
-
-        BufferedImage image;
-
-        try (InputStream is = getClass().getResourceAsStream(filePath)) {
-
-            image = ImageIO.read(is);
-            image = UtilityTool.scaleImage(image, 6 * gp.getScale(), 10 * gp.getScale());                               // 6 is the native width in pixels of the selection arrow sprite, 10 is the native height.
-
-        } catch (Exception e) {
-
-            throw new AssetLoadException("Could not load selection arrow sprite from " + filePath);
-        }
-        return image;
     }
 }

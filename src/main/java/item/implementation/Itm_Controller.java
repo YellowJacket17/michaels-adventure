@@ -3,6 +3,7 @@ package item.implementation;
 import core.GamePanel;
 import entity.EntityBase;
 import item.ItemBase;
+import utility.AssetPool;
 
 /**
  * This class defines an item (Controller).
@@ -20,7 +21,7 @@ public class Itm_Controller extends ItemBase {
         super(gp, itmId, false);
         name = itmName;
         description = itmDescription;
-        image = setupImage("controller.png");
+        sprite = AssetPool.getSpritesheet(4).getSprite(1);
     }
 
 

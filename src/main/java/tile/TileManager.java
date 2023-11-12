@@ -1,14 +1,16 @@
 package tile;
 
 import core.GamePanel;
+import org.joml.Vector2f;
+import render.Renderer;
+import render.Sprite;
+import render.drawable.Drawable;
+import render.drawable.Transform;
+import utility.AssetPool;
 import utility.UtilityTool;
 import utility.exceptions.AssetLoadException;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
@@ -27,6 +29,8 @@ public class TileManager {
     // FIELDS
     private final GamePanel gp;
 
+    private Drawable[] drawables = new Drawable[0];
+
     /**
      * The index of the default tile that will load on a map if no data exists for a point in said map file.
      */
@@ -39,10 +43,11 @@ public class TileManager {
     private Tile[] tiles = new Tile[0];
 
     /**
-     * Set to store tile draw errors. If a tile draw error occurs, the index associated with the tile will be added to
-     * this set. This prevents a draw error from that tile type being printed to the console again.
+     * Set to store tile render errors. If a tile render error occurs, the index associated with the tile will be added
+     * to this set.
+     * This prevents a render error from that tile type being printed to the console again.
      */
-    private final Set<Integer> drawErrors = new HashSet<>();
+    private final Set<Integer> renderErrors = new HashSet<>();
 
 
     // CONSTRUCTOR
@@ -59,89 +64,62 @@ public class TileManager {
 
     // METHODS
     /**
-     * Draws tiles for the loaded map.
+     * Add tiles of the loaded map to the render pipeline.
      *
-     * @param g2 Graphics2D instance
+     * @param renderer Renderer instance
      */
-    public void draw(Graphics2D g2) {
+    public void render(Renderer renderer) {
+
+        // TODO : Have a static array of tiles loaded for a map once upon map load.
 
         int worldCol = 0;
         int worldRow = 0;
 
-        while ((worldCol < gp.getMaxWorldCol()) && (worldRow < gp.getMaxWorldRow())) {                                  // Draw each tile from left to right for each row, starting with the top row and working downwards.
+        while ((worldCol < gp.getMaxWorldCol()) && (worldRow < gp.getMaxWorldRow())) {                                  // Render each tile from left to right for each row, starting with the top row and working downwards.
 
             int tileNum;
-
             try {
-
-                tileNum = gp.getLoadedMap().getMapTileNum()[worldCol][worldRow];                                        // Determine which tile type to draw from the loaded map data, determined by which map is currently being displayed.
-
+                tileNum = gp.getLoadedMap().getMapTileNum()[worldCol][worldRow];                                        // Determine which tile type to render from the loaded map data, determined by which map is currently being displayed.
             } catch (NullPointerException e) {
-
                 tileNum = defaultTile;                                                                                  // If no map is loaded, just use the default tile.
             }
-            int worldX = worldCol * gp.getTileSize();
-            int worldY = worldRow * gp.getTileSize();
-            int screenX = worldX - gp.getPlayer().getWorldX() + gp.getPlayer().getPlayerScreenX();                      // Determine where on the screen to draw tile (x)
-            int screenY = worldY - gp.getPlayer().getWorldY() + gp.getPlayer().getPlayerScreenY();                      // ^^^
 
-            int centerScreenX = gp.getPlayer().getCenterScreenX();
-            int centerScreenY = gp.getPlayer().getCenterScreenY();
-            int cameraOffsetX = gp.getPlayer().getCameraOffsetX();
-            int cameraOffsetY = gp.getPlayer().getCameraOffsetY();
-
-            // Improve rendering efficiency; only draw tiles visible on the screen.
-            if (worldX + gp.getTileSize() > gp.getPlayer().getWorldX() - centerScreenX - cameraOffsetX &&                               // Left side of screen; in words: if ((world x position of tile plus an additional tile's length) > (left bound of the visible screen area))
-                    worldX - gp.getTileSize() < gp.getPlayer().getWorldX() + (gp.getScreenWidth() - centerScreenX) - cameraOffsetX &&   // Right side of screen.
-                    worldY + gp.getTileSize() > gp.getPlayer().getWorldY() - centerScreenY - cameraOffsetY &&                           // Top side of screen.
-                    worldY - gp.getTileSize() < gp.getPlayer().getWorldY() + (gp.getScreenHeight() - centerScreenY) - cameraOffsetY) {  // Bottom side of screen.
-
-                int image = 0;                                                                                          // Initialize which image from the tile will be drawn.
-
-                if (tiles[tileNum].getImages().size() != 1) {                                                           // If this statement is false, the tile only has one image attached to it, hence it cannot be animated.
-
-                    switch (tiles[tileNum].getAnimationGroup()) {
-                        case 0:                                                                                         // Animation group 0: water1 animation.
-                            image = gp.getAnimationM().getImage(0);
-                            break;
-                    }
-                }
-
-                if ((tiles[tileNum].getImages().get(image) != null) && (image < tiles[tileNum].getImages().size())) {
-
-                    g2.drawImage(tiles[tileNum].getImages().get(image), screenX, screenY, null);
-                } else if (!drawErrors.contains(tileNum)) {
-
-                    UtilityTool.logError("Failed to draw tile at index "
-                            + tileNum
-                            + ": the map may contain a tile that does not exist or a tile may have been assigned to the incorrect animation group.");
-                    drawErrors.add(tileNum);
+            int spriteNum = 0;
+            if (tiles[tileNum].getSprites().size() != 1) {                                                              // If this statement is false, the tile only has one sprite attached to it, hence it cannot be animated.
+                switch (tiles[tileNum].getAnimationGroup()) {
+                    case 0:                                                                                             // Animation group 0: water1 animation.
+                        spriteNum = gp.getAnimationM().getSprite(0);
+                        break;
                 }
             }
-            worldCol++;                                                                                                 // Iterate so that we can draw the next tile.
 
+            if ((tiles[tileNum].getSprites().get(spriteNum) != null) && (spriteNum < tiles[tileNum].getSprites().size())) {
+
+                int worldX = worldCol * gp.getNativeTileSize();
+                int worldY = worldRow * gp.getNativeTileSize();
+
+                Sprite sprite = tiles[tileNum].getSprites().get(spriteNum);
+                Drawable drawable = new Drawable(
+                        new Transform(
+                                new Vector2f(worldX, worldY),
+                                new Vector2f(gp.getNativeTileSize(), gp.getNativeTileSize())),                          // Sprite size must match native tile size.
+                        sprite);
+                renderer.addDrawable(drawable);
+
+            } else if (!renderErrors.contains(tileNum)) {
+                    UtilityTool.logError("Failed to add tile at index "
+                            + tileNum
+                            + " to the render pipeline: the map may contain a tile that does not exist or a tile may"
+                            + " have been assigned to the incorrect animation group.");
+                    renderErrors.add(tileNum);
+            }
+
+            worldCol++;                                                                                                 // Iterate so that we can render the next tile.
             if (worldCol == gp.getMaxWorldCol()) {
                 worldCol = 0;
                 worldRow++;
             }
         }
-
-        // DEBUG.
-        // Draw path found by A* pathfinding algorithm.
-//        if (gp.isDebugVisible() == true) {
-//
-//            g2.setColor(new Color(255, 0, 0, 70));
-//
-//            for (int i = 0; i < gp.getPathF().getPathList().size(); i++) {
-//
-//                int worldX = gp.getPathF().getPathList().get(i).getCol() * gp.getTileSize();
-//                int worldY = gp.getPathF().getPathList().get(i).getRow() * gp.getTileSize();
-//                int screenX = worldX - gp.getPlayer().getWorldX() + gp.getPlayer().getScreenX();                        // Determine where on the screen to draw tile (x).
-//                int screenY = worldY - gp.getPlayer().getWorldY() + gp.getPlayer().getScreenY();                        // Determine where on the screen to draw tile (y).
-//
-//                g2.fillRect(screenX, screenY, gp.getTileSize(), gp.getTileSize());
-//            }
-//        }
     }
 
 
@@ -221,95 +199,77 @@ public class TileManager {
      */
     private void getTileImage() {
 
-        setup(0, "000_default.png", true);
+        setup(0, AssetPool.getSpritesheet(0).getSprite(0), true);                                                       // Default.
 
-        setup(1, "001_grass1.png", false);
+        setup(1, AssetPool.getSpritesheet(0).getSprite(1), false);                                                      // Grass.
 
-        setup(2, "002_water1.png", true);
+        setup(2, AssetPool.getSpritesheet(0).getSprite(2), true);                                                       // Non-animated water.
 
-        setup(3, "003_water2-1.png", true, 0);
+        setup(3, AssetPool.getSpritesheet(0).getSprite(3), true, 0);                                                    // Animated water (1).
 
-            addImage(3, "003_water2-2.png");
+            addSprite(3, AssetPool.getSpritesheet(0).getSprite(4));                                                     // Animated water (2).
 
-            addImage(3, "003_water2-3.png");
+            addSprite(3, AssetPool.getSpritesheet(0).getSprite(5));                                                     // Animated water (3).
 
-            addImage(3, "003_water2-4.png");
+            addSprite(3, AssetPool.getSpritesheet(0).getSprite(6));                                                     // Animated water (4).
 
-        setup(4, "004_rock1.png", true);
+        setup(4, AssetPool.getSpritesheet(0).getSprite(7), true);                                                       // Rock.
 
-        setup(5, "005_portal.png", false);
+        setup(5, AssetPool.getSpritesheet(0).getSprite(8), false);                                                      // Portal.
 
-        setup(6, "006_dirt1.png", false);
+        setup(6, AssetPool.getSpritesheet(0).getSprite(9), false);                                                      // Dirt.
     }
 
 
     /**
      * Instantiates a new tile with specified parameters.
-     * Note that the index that the tile occupies in the tile array matches the tile number of the tile to be drawn
+     * Note that the index that the tile occupies in the tile array matches the tile number of the tile to be rendered
      * in the map text files.
      * Essentially, the index of the tile in the tile array is its ID.
      *
      * @param index index that the tile will occupy in the array of tiles
-     * @param fileName file name of tile sprite, located in resources/tiles directory
+     * @param sprite tile sprite
      * @param collision parameter for whether the tile will have collision (true) or not (false)
      */
-    private void setup(int index, String fileName, boolean collision) {
+    private void setup(int index, Sprite sprite, boolean collision) {
 
         expandTileArray();
         tiles[index] = new Tile();
         tiles[index].setCollision(collision);
-        addImage(index, fileName);
+        addSprite(index, sprite);
     }
 
 
     /**
      * Instantiates a new tile with specified parameters.
-     * Note that the index that the tile occupies in the tile array matches the tile number of the tile to be drawn
+     * Note that the index that the tile occupies in the tile array matches the tile number of the tile to be rendered
      * in the map text files.
      * Essentially, the index of the tile in the tile array is its ID.
      *
      * @param index index that the tile will occupy in the array of tiles (`tiles` array).
-     * @param fileName file name of tile sprite, located in resources/tiles directory
+     * @param sprite tile sprite
      * @param collision parameter for whether the tile will have collision (true) or not (false)
      * @param group parameter for which animation group the tile belongs to
      */
-    private void setup(int index, String fileName, boolean collision, int group) {
+    private void setup(int index, Sprite sprite, boolean collision, int group) {
 
         expandTileArray();
         tiles[index] = new Tile();
         tiles[index].setCollision(collision);
         tiles[index].setAnimationGroup(group);
-        addImage(index, fileName);
+        addSprite(index, sprite);
     }
 
 
     /**
-     * Adds a sprite to a tile that's already been instantiated by loading and scaling the sprite.
-     * Recommended file format is PNG.
+     * Adds a sprite to a tile that's already been instantiated.
      *
      * @param index index that the tile occupies in the array of tiles (`tiles` array).
-     * @param fileName file name of tile sprite, located in resources/tiles directory
-     * @throws AssetLoadException if an error occurs while loading a tile sprite
+     * @param sprite tile sprite
      */
-    private void addImage(int index, String fileName) {
+    private void addSprite(int index, Sprite sprite) {
 
-        String completeFilePath = "/tiles/" + fileName;
-
-        try (InputStream is = getClass().getResourceAsStream(completeFilePath)) {
-
-            BufferedImage image = ImageIO.read(is);
-            tiles[index].addImage(UtilityTool.scaleImage(image, gp.getTileSize(), gp.getTileSize()));
-
-        } catch (IOException | IllegalArgumentException e) {
-
-            throw new AssetLoadException("Could not load tile sprite from " + completeFilePath);
-
-        } catch (NullPointerException e) {
-
-            UtilityTool.logError("Attempted to add an image to a tile instance at index "
-                    + index
-                    + " that does not exist.");
-        }
+        tiles[index].addSprite(sprite);
     }
 
 

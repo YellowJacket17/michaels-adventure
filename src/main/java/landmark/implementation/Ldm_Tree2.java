@@ -2,6 +2,7 @@ package landmark.implementation;
 
 import core.GamePanel;
 import landmark.LandmarkBase;
+import utility.AssetPool;
 
 /**
  * This class defines a landmark (Tree2).
@@ -17,7 +18,7 @@ public class Ldm_Tree2 extends LandmarkBase {
     public Ldm_Tree2(GamePanel gp) {
         super(gp, ldmId, 3, 2);
         name = ldmName;
-        getImage();
+        setupSprite();
     }
 
 
@@ -40,10 +41,14 @@ public class Ldm_Tree2 extends LandmarkBase {
 
 
     /**
-     * Stages landmark sprites to load from resources directory.
+     * Sets loaded landmark sprites.
      */
-    public void getImage() {
+    private void setupSprite() {
 
-        images.add(setupImage("002_tree2.png"));
+        sprites.add(AssetPool.getSpritesheet(3).getSprite(0));
+
+        sprite = sprites.get(0);
+        transform.scale.x = sprite.getNativeWidth();
+        transform.scale.y = sprite.getNativeHeight();
     }
 }

@@ -71,7 +71,7 @@ public class EnvironmentManager {
      */
     public void setup() {
 
-        lighting = new Lighting(gp, 275 * gp.getScale());                                                               // NOTE: `circleSize` should not be greater than the `screenWidth` or `screenHeight` in GamePanel.
+        lighting = new Lighting(gp, 275);                                                                               // NOTE: `circleSize` should not be greater than the `screenWidth` or `screenHeight` in GamePanel.
         lightManager = new LightManager(gp);
     }
 

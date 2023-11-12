@@ -15,7 +15,7 @@ public class Anm_water1 extends AnimationBase {
 
     // METHOD
     @Override
-    public int getImage() {
+    public int getSprite() {
 
         int control1 = 7;
         int control2 = 12;

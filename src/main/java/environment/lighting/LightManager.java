@@ -1,10 +1,8 @@
 package environment.lighting;
 
 import core.GamePanel;
-import utility.UtilityTool;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import static java.lang.Float.compare;
@@ -52,8 +50,8 @@ public class LightManager {
      */
     public LightManager(GamePanel gp) {
         this.gp = gp;
-        nodeSize = originalNodeSize * gp.getScale();
-        nodesPerTile = gp.getTileSize() / nodeSize;
+        nodeSize = originalNodeSize;
+        nodesPerTile = gp.getNativeTileSize() / nodeSize;
         instantiateNodes();
     }
 
@@ -182,8 +180,8 @@ public class LightManager {
 
             int worldX = worldSubCol * nodeSize;
             int worldY = worldSubRow * nodeSize;
-            int screenX = worldX - gp.getPlayer().getWorldX() + gp.getPlayer().getPlayerScreenX();                      // Determine where on the screen to draw node (x).
-            int screenY = worldY - gp.getPlayer().getWorldY() + gp.getPlayer().getPlayerScreenY();                      // ^^^
+//            int screenX = worldX - gp.getPlayer().getWorldX() + gp.getPlayer().getPlayerScreenX();                      // Determine where on the screen to draw node (x).
+//            int screenY = worldY - gp.getPlayer().getWorldY() + gp.getPlayer().getPlayerScreenY();                      // ^^^  // TODO : Uncomment this and line above.
 
             int centerScreenX = gp.getPlayer().getCenterScreenX();
             int centerScreenY = gp.getPlayer().getCenterScreenY();
@@ -192,9 +190,9 @@ public class LightManager {
 
             // Improve rendering efficiency; only draw nodes visible on the screen.
             if (worldX + nodeSize > gp.getPlayer().getWorldX() - centerScreenX - cameraOffsetX &&                              // Left side of screen; in words: if ((world x position of node plus an additional node's length) > (left bound of the visible screen area))
-                    worldX - nodeSize < gp.getPlayer().getWorldX() + (gp.getScreenWidth() - centerScreenX) - cameraOffsetX &&  // Right side of screen.
+                    worldX - nodeSize < gp.getPlayer().getWorldX() + (gp.getNativeScreenWidth() - centerScreenX) - cameraOffsetX &&  // Right side of screen.
                     worldY + nodeSize > gp.getPlayer().getWorldY() - centerScreenY - cameraOffsetY &&                          // Top side of screen.
-                    worldY - nodeSize < gp.getPlayer().getWorldY() + (gp.getScreenHeight() - centerScreenY) - cameraOffsetY) { // Bottom side of screen.
+                    worldY - nodeSize < gp.getPlayer().getWorldY() + (gp.getNativeScreenHeight() - centerScreenY) - cameraOffsetY) { // Bottom side of screen.
 
 //                BufferedImage image = new BufferedImage(nodeSize, nodeSize, BufferedImage.TYPE_INT_ARGB);
 //                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, nodes[worldSubCol][worldSubRow].getAlpha()));
@@ -204,8 +202,8 @@ public class LightManager {
                     g2.setColor(new Color(0, 0, 0, 1.0f));
                 }
 
-                g2.fillRect(screenX, screenY, nodeSize, nodeSize);
-                g2.drawRect(screenX, screenY, nodeSize, nodeSize);
+//                g2.fillRect(screenX, screenY, nodeSize, nodeSize);
+//                g2.drawRect(screenX, screenY, nodeSize, nodeSize);  // TODO : Replace with Renderer!
 //                g2.drawImage(image, screenX, screenY, null);
 
             }

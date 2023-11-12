@@ -44,5 +44,5 @@ public abstract class AnimationBase {
      *
      * @return index of the next sprite to be drawn
      */
-    public abstract int getImage();
+    public abstract int getSprite();
 }

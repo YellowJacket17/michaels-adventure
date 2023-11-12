@@ -1,19 +1,17 @@
 package landmark;
 
 import core.GamePanel;
+import render.Renderer;
+import render.Sprite;
+import render.drawable.Drawable;
 import utility.UtilityTool;
-import utility.exceptions.AssetLoadException;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
  * This abstract class defines base logic for a landmark (trees, buildings, etc.).
  */
-public abstract class LandmarkBase {
+public abstract class LandmarkBase extends Drawable {
 
     /*
      * A landmark represents something on the map that is part of the map's environment that takes up more than one tile
@@ -30,6 +28,16 @@ public abstract class LandmarkBase {
      *
      * `worldX` is the x-position in the world that the leftmost tile(s) of the landmark occupies/occupy.
      * `worldY` is the y-position in the world that the bottommost tile(s) of the landmark occupies/occupy.
+     *
+     * Note that there's an adjustment to the `worldY` coordinate when rendering a landmark.
+     * Since a landmark's `worldY` represents the bottom-left tile it occupies, we need to effectively move the landmark
+     * sprite "up" slightly (in the negative y-direction) when rendering since rendering is done in respect to the
+     * top-left coordinate of a sprite.
+     * In other words, if a landmark is taller than a tile, the y-position needs to adjusted when rendering.
+     * If this adjustment were to not happen, then the top-left corner of a landmark's sprite would be in the same
+     * position as the top-left corner of the bottom-left tile it's meant to occupy.
+     * This would cause the entire landmark sprite to render "lower" on the map (in the position y-direction) than it
+     * should.
      *
      * The collision array (`collision`) sets which tiles that a landmark encompasses should have collision with an entity.
      * The first dimension of this array represents rows.
@@ -68,7 +76,7 @@ public abstract class LandmarkBase {
      * List of landmark sprites.
      * Multiple sprites in the list can be used for animation.
      */
-    protected final ArrayList<BufferedImage> images = new ArrayList<>();
+    protected final ArrayList<Sprite> sprites = new ArrayList<>();
 
     /**
      * Number of tiles this landmark occupies.
@@ -81,10 +89,10 @@ public abstract class LandmarkBase {
     protected boolean[][] collision;
 
     /**
-     * Boolean to track whether a draw error has occurred.
-     * This prevents a draw error from this landmark being printed to the console again.
+     * Boolean to track whether a render error has occurred.
+     * This prevents a render error from this landmark being printed to the console again.
      */
-    protected boolean drawError = false;
+    protected boolean renderError = false;
 
 
     // CONSTRUCTOR
@@ -97,6 +105,7 @@ public abstract class LandmarkBase {
      * @param numTilesCol number of tiles this landmark occupies vertically
      */
     public LandmarkBase(GamePanel gp, int landmarkId, int numTilesRow, int numTilesCol) {
+        super();
         this.gp = gp;
         this.landmarkId = landmarkId;
         this.numTilesRow = numTilesRow;
@@ -108,68 +117,39 @@ public abstract class LandmarkBase {
 
     // METHODS
     /**
-     * Draws landmarks for the loaded map.
+     * Adds this landmark to the render pipeline.
      *
-     * @param g2 Graphics2D instance
+     * @param renderer Renderer instance
      */
-    public void draw(Graphics2D g2) {
+    public void render(Renderer renderer) {
 
         // TODO : Add logic to retrieve other images in a landmark for animation.
 
-        int image = 0;                                                                                                  // Select which image from the landmark will be drawn.
-        int centerScreenX = gp.getPlayer().getCenterScreenX();
-        int centerScreenY = gp.getPlayer().getCenterScreenY();
-        int cameraOffsetX = gp.getPlayer().getCameraOffsetX();
-        int cameraOffsetY = gp.getPlayer().getCameraOffsetY();
+        int spriteNum = 0;                                                                                              // Select which image from the landmark will be drawn.
 
-        // Improve rendering efficiency by only drawing landmarks visible on the screen.
-        if (worldX + (numTilesCol * gp.getTileSize()) > gp.getPlayer().getWorldX() - centerScreenX - cameraOffsetX &&                               // Left side of screen.
-                worldX - gp.getTileSize() < gp.getPlayer().getWorldX() + (gp.getScreenWidth() - centerScreenX) - cameraOffsetX &&                   // Right side of screen.
-                worldY + gp.getTileSize() > gp.getPlayer().getWorldY() - centerScreenY - cameraOffsetY &&                                           // Top side of screen.
-                worldY - (numTilesRow * gp.getTileSize()) < gp.getPlayer().getWorldY() + (gp.getScreenHeight() - centerScreenY) - cameraOffsetY) {  // Bottom side of screen.
+        if ((sprites.get(spriteNum) != null) && (spriteNum < sprites.size())) {
 
-            if ((images.get(image) != null) && (image < images.size())) {
+            sprite = sprites.get(spriteNum);
+            int worldYAdjustment = 0;                                                                                   // `worldY` adjustment so that the sprite is rendered correctly.
 
-                int adjustedWorldY = worldY - images.get(image).getHeight() + gp.getTileSize();                         // Since `worldY` on the landmark represents the bottom-left tile of the landmark, we need to adjust to the top-left tile since to coordinates that the drawing function requires are those of the top-left of the image.
-                int screenX = worldX - gp.getPlayer().getWorldX() + gp.getPlayer().getPlayerScreenX();                  // Determine where on the screen to draw landmark (x).
-                int screenY = adjustedWorldY - gp.getPlayer().getWorldY() + gp.getPlayer().getPlayerScreenY();          // Determine where on the screen to draw landmark (y).
-                g2.drawImage(images.get(image), screenX, screenY, null);
-            } else if (!drawError) {
+            if (sprite.getNativeHeight() > gp.getNativeTileSize()) {
 
-                UtilityTool.logError("Failed to draw landmark "
-                        + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
-                        + "with ID "
-                        + landmarkId
-                        + ": images may not have been properly loaded upon landmark initialization.");
-                drawError = true;
+                worldYAdjustment = -sprite.getNativeHeight() + gp.getNativeTileSize();
             }
+            transform.position.x = worldX;
+            transform.position.y = worldY + worldYAdjustment;
+            transform.scale.x = sprite.getNativeWidth();
+            transform.scale.y = sprite.getNativeHeight();
+            renderer.addDrawable(this);
+        } else if (!renderError) {
+
+            UtilityTool.logError("Failed to add landmark "
+                    + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
+                    + "with ID "
+                    + landmarkId
+                    + " to the render pipeline: sprites may not have been properly loaded upon landmark initialization.");
+            renderError = true;
         }
-    }
-
-
-    /**
-     * Loads and scales a landmark sprite.
-     * Recommended file type is PNG.
-     *
-     * @param fileName file name of sprite, located in resources/landmarks directory
-     * @return loaded sprite
-     * @throws AssetLoadException if an error occurs while loading a landmark sprite
-     */
-    protected BufferedImage setupImage(String fileName) {
-
-        BufferedImage image;
-        String completeFilePath = "/landmarks/" + fileName;
-
-        try (InputStream is = getClass().getResourceAsStream(completeFilePath)) {
-
-            image = ImageIO.read(is);
-            image = UtilityTool.scaleImage(image, image.getWidth() * gp.getScale(), image.getHeight() * gp.getScale());
-
-        } catch (Exception e) {
-
-            throw new AssetLoadException("Could not load landmark sprite from " + completeFilePath);
-        }
-        return image;
     }
 
 
@@ -197,15 +177,15 @@ public abstract class LandmarkBase {
     }
 
     public int getCol() {
-        return worldX / gp.getTileSize();
+        return worldX / gp.getNativeTileSize();
     }
 
     public int getRow() {
-        return worldY / gp.getTileSize();
+        return worldY / gp.getNativeTileSize();
     }
 
-    public ArrayList<BufferedImage> getImages() {
-        return images;
+    public ArrayList<Sprite> getSprites() {
+        return sprites;
     }
 
     public int getNumTilesCol() {
@@ -235,10 +215,10 @@ public abstract class LandmarkBase {
     }
 
     public void setCol(int col) {
-        worldX = col * gp.getTileSize();
+        worldX = col * gp.getNativeTileSize();
     }
 
     public void setRow(int row) {
-        worldY = row * gp.getTileSize();
+        worldY = row * gp.getNativeTileSize();
     }
 }

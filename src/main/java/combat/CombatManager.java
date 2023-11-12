@@ -72,7 +72,7 @@ public class CombatManager {
             //  For an opposing entity, decision will be made automatically by the program in a separate method.
             String message = buildRootMenuPrompt(gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName());
             addQueuedActionBack(new Act_ReadMessage(gp, message, false));
-            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions, SubMenuHandler.widthCombat1));
+            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions));
             runNextQueuedAction();
         }
     }
@@ -365,7 +365,7 @@ public class CombatManager {
                 for (AttackBase attack : gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getAttacks()) {
                     attackOptions.add(attack.getName());
                 }
-                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.FIGHT, attackOptions, SubMenuHandler.widthCombat1));
+                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.FIGHT, attackOptions));
                 break;
             case 3:
                 break;
@@ -472,8 +472,8 @@ public class CombatManager {
         generateTurnOrder();
 
         // Set camera to center on the combat field.
-        gp.getCameraS().setCameraSnap((fieldCenterCol * gp.getTileSize()) + (gp.getTileSize() / 2) ,
-                fieldCenterRow * gp.getTileSize());
+        gp.getCameraS().setCameraSnap((fieldCenterCol * gp.getNativeTileSize()) + (gp.getNativeTileSize() / 2) ,
+                fieldCenterRow * gp.getNativeTileSize());
     }
 
 

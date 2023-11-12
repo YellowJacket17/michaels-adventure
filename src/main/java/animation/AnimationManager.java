@@ -38,11 +38,11 @@ public class AnimationManager {
      * @param group animation group to be checked
      * @return index of the next tile sprite to be drawn
      */
-    public int getImage(int group) {
+    public int getSprite(int group) {
 
         switch (group) {
             case 0:
-                return anm_water1.getImage();
+                return anm_water1.getSprite();
             default:
                 return 0;
         }

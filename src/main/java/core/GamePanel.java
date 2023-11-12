@@ -9,6 +9,8 @@ import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
 import interaction.support.SubMenuSupport;
 import interaction.support.WarpSupport;
+import render.Renderer;
+import render.Spritesheet;
 import submenu.SelectionArrow;
 import entity.EntityBase;
 import entity.implementation.player.Player;
@@ -22,58 +24,46 @@ import landmark.LandmarkManager;
 import map.Map;
 import submenu.SubMenuHandler;
 import tile.TileManager;
+import utility.AssetPool;
 import utility.JsonParser;
 import utility.UtilityTool;
 import utility.LimitedLinkedHashMap;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Primary class for the game that houses the main game loop and essential configurations.
+ * Core class for the game that houses essential functions and configurations.
  */
-public class GamePanel extends JPanel implements Runnable {
+public class GamePanel {
 
     // SCREEN SETTINGS
     /**
-     * Tile size in pixels (32x32).
-     * A tile is taken to be a square (equal width and height).
-     * IT IS STRONGLY RECOMMENDED TO NOT CHANGE, WILL BREAK GAME!
+     * Native size of rendered tiles.
+     * Tiles are the same width and height.
      */
-    private final int originalTileSize = 32;
+    private final int nativeTileSize = 32;
 
     /**
-    * Scale of the rendered window compared to native size.
-     */
-    private final int scale = 1;
-
-    /**
-     * Actual tile size on the rendered window (i.e., game screen).
-     */
-    private final int tileSize = originalTileSize * scale;
-
-    /**
-     * Tiles per column on game screen.
+     * Tiles per column in the screen space.
      */
     private final int maxScreenCol = 24;
 
     /**
-     * Tiles per row on game screen.
+     * Tiles per row in the screen space.
      */
     private final int maxScreenRow = 14;
 
     /**
-     * Screen width as determined by tile size and number of columns.
+     * Native screen width as determined by the native tile size and number of columns.
      */
-    private final int screenWidth = tileSize * maxScreenCol;
+    private final int nativeScreenWidth = nativeTileSize * maxScreenCol;
 
     /**
-     * Screen height as determined by tile size and number of rows.
+     * Native screen height as determined by the native tile size and number of rows.
      */
-    private final int screenHeight = tileSize * maxScreenRow;
+    private final int nativeScreenHeight = nativeTileSize * maxScreenRow;
 
 
      // WORLD SETTINGS
@@ -93,34 +83,17 @@ public class GamePanel extends JPanel implements Runnable {
     private Map loadedMap;
 
 
-    // FRAME RATE
-    /**
-     * Target frame rate for the game; GAME SPEED IS TIED TO FRAME RATE (PROGRAMMED AT 60)!
-     */
-    private final int FPS = 60;
-
-    /**
-     * Variable to track the actual number of frames drawn per second as they're drawn.
-     */
-    private int drawCount;
-
-    /**
-     * Variable to track the actual frame rate (updated every second).
-     */
-    private int fpsTracker;
-
-
     // SYSTEM
-    private Thread gameThread;
-    private boolean running = false;
+    private final int FPS = 60; // TODO : TEMPORARY FIELD!
+    private Camera camera;
+    private final Renderer renderer = new Renderer(this);
     private final JsonParser jsonP = new JsonParser(this);
-    private final KeyHandler keyH = new KeyHandler();
     private final SubMenuHandler subMenuH = new SubMenuHandler(this);
     private final CollisionInspector collisionI = new CollisionInspector(this);
     private final DialogueReader dialogueR = new DialogueReader(this);
-    private final TileManager tileM = new TileManager(this);
+    private TileManager tileM;
     private final LandmarkManager landmarkM = new LandmarkManager(this);
-    private final MenuIconManager iconM = new MenuIconManager(this);
+    private MenuIconManager iconM;
     private final EntityIconManager entityIconM = new EntityIconManager(this);
     private final EnvironmentManager environmentM = new EnvironmentManager(this);
     private final CutsceneManager cutsceneM = new CutsceneManager(this);
@@ -139,7 +112,7 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * Player entity.
      */
-    private final Player player = new Player(this, keyH);
+    private Player player;
 
     /**
      * Map to store objects loaded into the game; entity ID is the key, entity is the value.
@@ -193,14 +166,14 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * Arrow that appears when the player is required to progress a piece of dialogue.
      */
-    private final DialogueArrow dialogueA = new DialogueArrow(this);
+    private DialogueArrow dialogueA;
 
 
     // SUB-MENU
     /**
      * Arrow that appears when the player is required to make a sub-menu selection.
      */
-    private final SelectionArrow selectionA = new SelectionArrow(this);
+    private SelectionArrow selectionA;
 
 
     // GAME STATE
@@ -242,20 +215,25 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * Constructs a GamePanel instance.
      */
-    public GamePanel() {
-        this.setPreferredSize(new Dimension(screenWidth, screenHeight));
-        this.setBackground(Color.black);
-        this.setDoubleBuffered(true);                                                                                   // Enabling this can improve the game's rendering performance.
-        this.addKeyListener(keyH);
-        this.setFocusable(true);                                                                                        // With this, GamePanel can be "focused" to receive key input.
-    }
+    public GamePanel() {}
 
 
     // METHODS
     /**
-     * Runs setup processes for the game (to be called before the main game loop starts).
+     * Initializes the game.
      */
-    public void setupGame() {
+    public void init() {
+
+        // Load resources.
+        loadResources();
+
+        // Initialize classes.
+        camera = new Camera(nativeScreenWidth, nativeScreenHeight);
+        tileM = new TileManager(this);
+        iconM = new MenuIconManager(this);
+        dialogueA = new DialogueArrow(this);
+        selectionA = new SelectionArrow(this);
+        player = new Player(this);
 
         // Fade into the game.
         gameState = GameState.TRANSITION;
@@ -272,163 +250,127 @@ public class GamePanel extends JPanel implements Runnable {
 
 
     /**
-     * Starts (i.e., instantiates) the main game thread.
-     */
-    public void startGameThread() {
-
-        gameThread = new Thread(this);
-        gameThread.start();
-    }
-
-
-    /**
-     * Starts the main game loop, which is the core of the game.
-     */
-    @Override
-    public void run() {
-
-        // Initializations for frame rate.
-        double drawInterval = 1000000000 / FPS;                                                                         // 1 second (i.e., 1 billion nanoseconds) divided by our FPS; this tells the program how frequently to redraw the screen.
-        double delta = 0;
-        long lastTime = System.nanoTime();
-        long currentTime;
-
-        // Initialization for FPS display counter.
-        long timer = 0;
-
-        // Set main game loop to a running state.
-        running = true;
-
-        // Main game loop.
-        while (running) {
-
-            currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
-            timer += (currentTime - lastTime);
-            lastTime = currentTime;
-
-            if (delta >= 1) {                                                                                           // Determine if enough time has passed to redraw the screen.
-
-                // 1. UPDATE: Update information such as character positions.
-                update();                                                                                               // Call `update()` method.
-
-                // 2. DRAW: Draw the screen with the updated information.
-                repaint();                                                                                              // Call `paintComponent()` method.
-
-                // 3. DECREMENT: Decrement time passed until the next redraw.
-                delta--;                                                                                                // Reset `delta`.
-            }
-
-            if (timer >= 1000000000) {                                                                                  // Every 1 second, the number of times the screen was actually redrawn will be recorded to compare to the target FPS.
-                fpsTracker = drawCount;                                                                                 // Update to frame rate tracker to how many frames were drawn over the last second.
-                drawCount = 0;                                                                                          // Reset the draw count.
-                timer = 0;                                                                                              // Reset the timer.
-            }
-        }
-    }
-
-
-    /**
-     * Draws the next frame of the game on the game screen.
+     * Progresses the state of the entire game by one frame.
      *
-     * @param g Graphics instance
+     * @param dt time since the last rendered frame (frame pacing)
      */
-    @Override
-    public void paintComponent(Graphics g) {                                                                            // Graphics is a class that has many functions to draw objects on the screen (imagine it as a pencil or paint brush).
+    public void update(double dt) {
 
-        try {
+        // Camera.
+        cameraS.update();
 
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D)g;                                                                              // The Graphics2D class extends the Graphics class to provide more sophisticated control over geometry, coordinate transformations, color management, and text layout.
+        // Dialogue.
+        dialogueR.update();
 
-            // Tile.
-            tileM.draw(g2);                                                                                             // Draw tile sprite as defined in the TileManager class.
+        // Animation.
+        animationM.update();                                                                                            // Run all animation logic to determine which images in animated assets should be drawn this frame.
 
-            // Entity and landmark.
-            for (EntityBase entity : obj.values()) {                                                                    // Add all objects in the current map to the list of entities.
+        // Player input.
+        player.updatePlayerInput();                                                                                     // Check for player input.
 
-                if (entity != null) {
+        // Player.
+        player.update();                                                                                                // Update the player's position if an action is in progress.
 
-                    entityList.add(entity);
-                }
+        // Entities.
+        updateEntities();
+
+        // Environment.
+        environmentM.update();
+    }
+
+
+    /**
+     * Sends necessary items to the render pipeline and renders them.
+     *
+     * @param dt time since the last rendered frame (frame pacing)
+     */
+    public void render(double dt) {
+
+        // NOTE:
+        // Objects are added to the render pipeline in the following order to control their layering.
+
+        // Tile.
+        tileM.render(renderer);                                                                                         // Draw tile sprite as defined in the TileManager class.
+
+        // Entity and landmark.
+        for (EntityBase entity : obj.values()) {                                                                        // Add all objects in the current map to the list of entities.
+
+            if (entity != null) {
+
+                entityList.add(entity);
             }
-
-            for (EntityBase entity : npc.values()) {                                                                    // Add all NPCs in the current map to the list of entities.
-
-                if (entity != null) {
-
-                    entityList.add(entity);
-                }
-            }
-
-            if (partyVisible) {
-
-                Set<Integer> keySet = party.keySet();
-                Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
-
-                for (int i = (keySet.size() - 1); i >= 0; i--) {                                                        // Add all party members in the current map to the list of entities; iterates backwards.
-
-                    if (party.get(keyArray[i]) != null) {
-
-                        entityList.add(party.get(keyArray[i]));
-                    }
-                }
-            }
-
-            entityList.add(player);                                                                                     // Add player to the list of all entities.
-
-            ArrayList<LandmarkBase> landmarkList;
-
-            if (loadedMap != null) {
-
-                landmarkList = loadedMap.getMapLandmarks();                                                             // Get the list of landmarks on the loaded map.
-            } else {
-
-                landmarkList = new ArrayList<>();                                                                       // Fail-safe to have empty landmark array if no map is loaded.
-            }
-
-            for (int row = 0; row < maxWorldRow; row++) {                                                               // Draw the entities and landmarks row-by-row, starting at the top.
-
-                for (LandmarkBase landmark : landmarkList) {                                                            // Draw all landmarks in the current row.
-
-                    if ((landmark.getRow() >= row)
-                            && (landmark.getRow() < (row + 1))) {
-
-                        landmark.draw(g2);
-                    }
-                }
-
-                for (EntityBase entity : entityList) {                                                                  // Draw all entities in the current row.
-
-                    if ((entity.getWorldY() >= (row * tileSize))
-                            && (entity.getWorldY() < ((row + 1) * tileSize))) {
-
-                        entity.draw(g2);
-                    }
-                }
-            }
-
-            // Environment.
-            environmentM.draw(g2);                                                                                      // NOTE: Drawing environmental effects is a somewhat intensive process computationally.
-
-            // Cutscene.
-            cutsceneM.draw(g2);
-
-            // UI.
-            ui.draw(g2);                                                                                                // Draw UI after everything else so that it appears on the top layer.
-
-            // Cleanup.
-            entityList.clear();                                                                                         // Reset the list of all entities by emptying it.
-            g2.dispose();                                                                                               // Dispose of this graphics context and release any system resources that it is using.
-            drawCount++;                                                                                                // Add 1 to the variable tracking how many times we've redrawn the screen in the past 1 second.
-
-        } catch (Exception e) {
-
-            running = false;
-            UtilityTool.logError("An unhandled exception has occurred.");
-            UtilityTool.logStackTrace(e);
-            UtilityTool.writeCrashLog();
         }
+
+        for (EntityBase entity : npc.values()) {                                                                        // Add all NPCs in the current map to the list of entities.
+
+            if (entity != null) {
+
+                entityList.add(entity);
+            }
+        }
+
+        if (partyVisible) {
+
+            Set<Integer> keySet = party.keySet();
+            Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
+
+            for (int i = (keySet.size() - 1); i >= 0; i--) {                                                            // Add all party members in the current map to the list of entities; iterates backwards.
+
+                if (party.get(keyArray[i]) != null) {
+
+                    entityList.add(party.get(keyArray[i]));
+                }
+            }
+        }
+
+        entityList.add(player);                                                                                         // Add player to the list of all entities.
+
+        ArrayList<LandmarkBase> landmarkList;
+
+        if (loadedMap != null) {
+
+            landmarkList = loadedMap.getMapLandmarks();                                                                 // Get the list of landmarks on the loaded map.
+        } else {
+
+            landmarkList = new ArrayList<>();                                                                           // Fail-safe to have empty landmark array if no map is loaded.
+        }
+
+        for (int row = 0; row < maxWorldRow; row++) {                                                                   // Draw the entities and landmarks row-by-row, starting at the top.
+
+            for (LandmarkBase landmark : landmarkList) {                                                                // Draw all landmarks in the current row.
+
+                if ((landmark.getRow() >= row)
+                        && (landmark.getRow() < (row + 1))) {
+
+                    landmark.render(renderer);
+                }
+            }
+
+            for (EntityBase entity : entityList) {                                                                      // Draw all entities in the current row.
+
+                if ((entity.getWorldY() >= (row * nativeTileSize))
+                        && (entity.getWorldY() < ((row + 1) * nativeTileSize))) {
+
+                    entity.render(renderer);
+                }
+            }
+        }
+
+        // Environment.
+//            environmentM.draw(g2);                                                                                      // NOTE: Drawing environmental effects is a somewhat intensive process computationally.
+
+        // Cutscene.
+        cutsceneM.draw();
+
+        // UI.
+        ui.render(renderer, dt);                                                                                        // Render UI after everything else so that it appears on the top layer.
+
+        // Cleanup.
+        entityList.clear();                                                                                             // Reset the list of all entities by emptying it.
+
+        // Flush the render pipeline to draw the frame.
+        renderer.render();
+
     }
 
 
@@ -800,44 +742,6 @@ public class GamePanel extends JPanel implements Runnable {
 
 
     /**
-     * Progresses the state of the entire game by one frame.
-     */
-    private void update() {
-
-        try {
-
-            // Camera.
-            cameraS.update();
-
-            // Dialogue.
-            dialogueR.update();
-
-            // Animation.
-            animationM.update();                                                                                        // Run all animation logic to determine which images in animated assets should be drawn this frame.
-
-            // Player input.
-            player.updatePlayerInput();                                                                                 // Check for player input.
-
-            // Player.
-            player.update();                                                                                            // Update the player's position if an action is in progress.
-
-            // Entities.
-            updateEntities();
-
-            // Environment.
-            environmentM.update();
-
-        } catch (Exception e) {
-
-            running = false;
-            UtilityTool.logError("An unhandled exception has occurred.");
-            UtilityTool.logStackTrace(e);
-            UtilityTool.writeCrashLog();
-        }
-    }
-
-
-    /**
      * Updates the state of all entities by one frame.
      */
     private void updateEntities() {
@@ -940,21 +844,63 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
 
+    /**
+     * Loads and stores resources like shaders and spritesheets into memory.
+     */
+    private void loadResources() {
+
+        // Shaders.
+        AssetPool.getShader("/shaders/default.glsl");
+        AssetPool.getShader("/shaders/rounded.glsl");
+        AssetPool.getShader("/shaders/font.glsl");
+
+        // Tiles spritesheet.
+        String filePath = "/spritesheets/tiles.png";
+        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 10, 32, 32, 1));
+
+        // Characters spritesheet.
+        filePath = "/spritesheets/characters.png";
+        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 36, 32, 48, 0));
+
+        // Objects spritesheet.
+        filePath = "/spritesheets/objects.png";
+        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 3, 32, 32, 0));
+
+        // Landmarks spritesheet.
+        filePath = "/spritesheets/landmarks.png";
+        int[] widths = new int[] {62, 32};
+        int[] heights = new int[] {90, 70};
+        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 2, widths, heights, 1));
+
+        // Items spritesheet.
+        filePath = "/spritesheets/items.png";
+        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 2, 32, 32, 0));
+
+        // Icons spritesheet.
+        filePath = "/spritesheets/icons.png";
+        widths = new int[] {153, 153, 40, 36, 36, 28, 28, 28, 28, 28, 28};
+        heights = new int[] {56, 56, 40, 36, 36, 28, 28, 28, 28, 28, 28};
+        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 11, widths, heights, 0));
+
+        // Miscellaneous spritesheet.
+        filePath = "/spritesheets/miscellaneous.png";
+        widths = new int[] {6, 10};
+        heights = new int[] {10, 6};
+        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 2, widths, heights, 0));
+    }
+
+
     // GETTERS
-    public int getScale() {
-        return scale;
+    public int getNativeTileSize() {
+        return nativeTileSize;
     }
 
-    public int getTileSize() {
-        return tileSize;
+    public int getNativeScreenWidth() {
+        return nativeScreenWidth;
     }
 
-    public int getScreenWidth() {
-        return screenWidth;
-    }
-
-    public int getScreenHeight() {
-        return screenHeight;
+    public int getNativeScreenHeight() {
+        return nativeScreenHeight;
     }
 
     public int getMaxWorldCol() {
@@ -973,8 +919,8 @@ public class GamePanel extends JPanel implements Runnable {
         return FPS;
     }
 
-    public int getFpsTracker() {
-        return fpsTracker;
+    public Camera getCamera() {
+        return camera;
     }
 
     public SubMenuHandler getSubMenuH() {
@@ -1047,10 +993,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     public Player getPlayer() {
         return player;
-    }
-
-    public int getOriginalTileSize() {
-        return originalTileSize;
     }
 
     public LimitedLinkedHashMap<Integer, EntityBase> getObj() {

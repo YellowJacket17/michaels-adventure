@@ -3,6 +3,7 @@ package item.implementation;
 import core.GamePanel;
 import entity.EntityBase;
 import item.ItemBase;
+import utility.AssetPool;
 
 /**
  * This class defines an item (Key).
@@ -20,7 +21,7 @@ public class Itm_Key extends ItemBase {
         super(gp, itmId, true);
         name = itmName;
         description = itmDescription;
-        image = setupImage("key.png");
+        sprite = AssetPool.getSpritesheet(4).getSprite(0);
     }
 
 

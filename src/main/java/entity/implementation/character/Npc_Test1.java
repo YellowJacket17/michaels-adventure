@@ -3,6 +3,7 @@ package entity.implementation.character;
 import entity.EntityBase;
 import entity.EntityType;
 import core.GamePanel;
+import utility.AssetPool;
 
 /**
  * This class defines a character entity (Test1).
@@ -12,30 +13,34 @@ public class Npc_Test1 extends EntityBase {
     // CONSTRUCTOR
     public Npc_Test1(GamePanel gp, int entityId) {
         super(gp, entityId, EntityType.CHARACTER);
-        getImage();
+        setupSprite();
     }
 
 
     // METHOD
     /**
-     * Stages entity sprites to load from resources directory.
+     * Sets loaded entity sprites.
      */
-    private void getImage() {
+    private void setupSprite() {
 
-        up1 = setupImage("/characters/test_npc_1/up1.png");
-        up2 = setupImage("/characters/test_npc_1/up2.png");
-        up3 = setupImage("/characters/test_npc_1/up3.png");
+        down1 = AssetPool.getSpritesheet(1).getSprite(12);
+        down2 = AssetPool.getSpritesheet(1).getSprite(13);
+        down3 = AssetPool.getSpritesheet(1).getSprite(14);
 
-        down1 = setupImage("/characters/test_npc_1/down1.png");
-        down2 = setupImage("/characters/test_npc_1/down2.png");
-        down3 = setupImage("/characters/test_npc_1/down3.png");
+        up1 = AssetPool.getSpritesheet(1).getSprite(15);
+        up2 = AssetPool.getSpritesheet(1).getSprite(16);
+        up3 = AssetPool.getSpritesheet(1).getSprite(17);
 
-        left1 = setupImage("/characters/test_npc_1/left1.png");
-        left2 = setupImage("/characters/test_npc_1/left2.png");
-        left3 = setupImage("/characters/test_npc_1/left3.png");
+        left1 = AssetPool.getSpritesheet(1).getSprite(18);
+        left2 = AssetPool.getSpritesheet(1).getSprite(19);
+        left3 = AssetPool.getSpritesheet(1).getSprite(20);
 
-        right1 = setupImage("/characters/test_npc_1/right1.png");
-        right2 = setupImage("/characters/test_npc_1/right2.png");
-        right3 = setupImage("/characters/test_npc_1/right3.png");
+        right1 = AssetPool.getSpritesheet(1).getSprite(21);
+        right2 = AssetPool.getSpritesheet(1).getSprite(22);
+        right3 = AssetPool.getSpritesheet(1).getSprite(23);
+
+        sprite = down1;
+        transform.scale.x = sprite.getNativeWidth();
+        transform.scale.y = sprite.getNativeHeight();
     }
 }

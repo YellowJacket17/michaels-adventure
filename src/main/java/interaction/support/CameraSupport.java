@@ -104,7 +104,7 @@ public class CameraSupport {
 
         if ((!cameraScrolling) && (speed > 0) && (speed <= 20)) {
 
-            setCameraScroll((gp.getPlayer().getWorldX() + (gp.getTileSize() / 2)), gp.getPlayer().getWorldY(), speed);
+            setCameraScroll((gp.getPlayer().getWorldX() + (gp.getNativeTileSize() / 2)), gp.getPlayer().getWorldY(), speed);
         } else if ((speed < 1) || (speed > 20)) {
 
             throw new IllegalArgumentException("Attempted to set a camera scroll speed outside of bounds 1 - 20 (both inclusive)");
@@ -127,7 +127,7 @@ public class CameraSupport {
 
         if (!cameraScrolling) {
 
-            gp.getPlayer().setCameraOffsetX(gp.getPlayer().getWorldX() - worldX + (gp.getTileSize() / 2));
+            gp.getPlayer().setCameraOffsetX(gp.getPlayer().getWorldX() - worldX + (gp.getNativeTileSize() / 2));
             gp.getPlayer().setCameraOffsetY(gp.getPlayer().getWorldY() - worldY);
         }
     }
@@ -162,7 +162,7 @@ public class CameraSupport {
 
             // Store the target camera offset from the center.
             // I.e., the offset that'll achieve the desired `worldX` and `worldY`.
-            targetOffsetX = gp.getPlayer().getWorldX() - worldX + (gp.getTileSize() / 2);
+            targetOffsetX = gp.getPlayer().getWorldX() - worldX + (gp.getNativeTileSize() / 2);
             targetOffsetY = gp.getPlayer().getWorldY() - worldY;
 
             // Calculate the difference between the target and current camera offsets.

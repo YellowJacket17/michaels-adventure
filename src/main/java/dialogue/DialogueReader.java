@@ -470,7 +470,7 @@ public class DialogueReader {
                 }
             }
 
-            if ((dialoguePrintTemp + " " + nextWord).length() > (int)(3.4 * (gp.getScreenWidth() / gp.getTileSize()))) {
+            if ((dialoguePrintTemp + " " + nextWord).length() > (int)(3.4 * (gp.getNativeScreenWidth() / gp.getNativeTileSize()))) {
 
                 printLine++;                                                                                            // Start printing character on the next line of the dialogue window.
                 dialoguePrintTotal += ' ';                                                                              // Add a space to the total dialogue printed to compensate for skipping over the space when printing the next character.
@@ -494,6 +494,7 @@ public class DialogueReader {
     public Conversation getCurrentConv() {
         return currentConv;
     }
+
     public boolean isReadingConversation() {
         return readingConversation;
     }

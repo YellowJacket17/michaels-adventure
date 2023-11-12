@@ -3,22 +3,26 @@ package entity.implementation.player;
 import combat.implementation.attack.Atk_Punch;
 import combat.implementation.attack.Atk_Tackle;
 import core.GameState;
+import core.KeyListener;
 import entity.EntityBase;
 import entity.EntityDirection;
 import entity.EntityType;
 import core.GamePanel;
-import core.KeyHandler;
 import interaction.InteractionType;
 import item.implementation.Itm_Controller;
 import item.implementation.Itm_Key;
 import item.ItemBase;
+import org.joml.Vector2f;
+import render.Renderer;
 import submenu.SubMenuHandler;
+import utility.AssetPool;
 import utility.LimitedArrayList;
+import utility.UtilityTool;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * This class defines the player entity that the player controls.
@@ -27,27 +31,16 @@ import java.util.List;
 public class Player extends EntityBase {
 
     // FIELDS
-    private final KeyHandler keyH;
-
     /**
-     * Indicates where the center of the screen is.
+     * Indicates where the center of the screen (i.e., camera) is.
      */
-    private final int centerScreenX, centerScreenY;
-
-    /**
-     * Indicates where the player is drawn on the screen.
-     */
-    private int playerScreenX, playerScreenY;
+    private int centerScreenX;
+    private int centerScreenY;
 
     /**
      * Indicates the offset of the camera from where the player is drawn.
      */
     private int cameraOffsetX, cameraOffsetY;
-
-    /**
-     * Rectangle around this entity to represent collision.
-     */
-    private Rectangle solidArea;
 
     /**
      * Number of frames that the player has to change direction while retaining momentum upon leaving a state of motion.
@@ -110,19 +103,14 @@ public class Player extends EntityBase {
 
 
     // CONSTRUCTOR
-    public Player(GamePanel gp, KeyHandler keyH) {
+    public Player(GamePanel gp) {
         super(gp, 0, EntityType.CHARACTER);
-
-        this.keyH = keyH;
-
-        centerScreenX = (gp.getScreenWidth() / 2) - (gp.getTileSize() / 2);                                             // Draw player at the center of the screen (x); the minus half a tile offset puts the center of the player sprite at the center of the screen.
-        centerScreenY = (gp.getScreenHeight() / 2);                                                                     // Draw the player at the center of the screen (y).
-
-        setCamera();
-
-        setCollisionRectangle();
+        setupCamera();
         setDefaultValues();                                                                                             // Set default player values when a player instance is created.
-        getImage();                                                                                                     // Load player sprites when a player instance is created.
+        setupSprite();                                                                                                  // Load player sprites when a player instance is created.
+
+        // TODO : Set this somewhere else.
+
     }
 
 
@@ -140,7 +128,7 @@ public class Player extends EntityBase {
             moveCountdown--;                                                                                            // Decrease move frame countdown by one each time a new frame is drawn.
         }
 
-        if ((menuActioned) && (!keyH.isSpacePressed())) {
+        if ((menuActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_SPACE))) {
             menuActioned = false;                                                                                       // Enable the ability of the player to open/close the menu (party, inventory, settings) by pressing the Space key.
         }
 
@@ -213,26 +201,39 @@ public class Player extends EntityBase {
 
     /**
      * Draws the player entity.
+     *
+     * @param renderer Renderer instance
      */
-    public void draw(Graphics2D g2) {
+    public void render(Renderer renderer) {
 
-        BufferedImage image = retrieveSprite();                                                                         // Retrieve the sprite to be drawn.
+        if (!hidden) {
 
-        int height = image.getHeight();                                                                                 // Height of the sprite.
-        int adjustment = 0;                                                                                             // Amount in the y-direction that the sprite needs to be adjusted when drawn.
+            sprite = retrieveSprite();                                                                                  // Retrieve the sprite to be rendered.
 
-        if (height > gp.getTileSize()) {
+            if (sprite != null) {
 
-            adjustment = height - gp.getTileSize();
+                int worldYAdjustment = 0;                                                                               // Amount in the y-direction that the player sprite needs to be adjusted when rendered.
+
+                if (sprite.getNativeHeight() > gp.getNativeTileSize()) {
+
+                    worldYAdjustment = -sprite.getNativeHeight() + gp.getNativeTileSize();
+                }
+                transform.position.x = worldX;
+                transform.position.y = worldY + worldYAdjustment;                                                       // Y-coordinate of entities of type CHARACTER is modified slightly since they can be taller than a single tile; adjusted so the bottom of the sprite lines up with the bottom of the tile the entity is occupying when rendered.
+                transform.scale.x = gp.getNativeTileSize();                                                             // Entities must be as wide as the native tile size.
+                transform.scale.y = sprite.getNativeHeight();
+                renderer.addDrawable(this);
+                gp.getCamera().adjustPosition(new Vector2f(worldX - centerScreenX - cameraOffsetX, worldY - centerScreenY - cameraOffsetY));
+            } else if (!renderError) {
+
+                UtilityTool.logError("Failed to add entity "
+                        + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
+                        + "with ID "
+                        + entityId
+                        + " to the render pipeline: sprites may not have been properly loaded upon entity initialization.");
+                renderError = true;
+            }
         }
-        g2.drawImage(image, playerScreenX, playerScreenY - adjustment, null);                                           // Note that the coordinates are for the top-left corner of the image; the y-coordinate is adjusted so that the bottom of the player sprite lines up with the bottom of the tile that the player is occupying.
-
-        // DEBUG.
-//        if (gp.isDebugVisible() == true) {                                                                              // Draw collision box for debugging.
-//
-//            g2.setColor(Color.red);
-//            g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
-//        }
     }
 
 
@@ -342,7 +343,7 @@ public class Player extends EntityBase {
                 switch (directionCurrent) {
                     case UP:
                         if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move (i.e., change tiles) if it's in the same direction as the last movement OR if the player is still within the frame buffer from the last state of motion.
-                            worldY -= speed * gp.getScale();                                                            // Speed will scale with the window size.
+                            worldY -= speed;
                             if (moveCountdown > 0) {
                                 directionLast = directionCurrent;
                                 moveCountdown = 0;                                                                      // Reset frame buffer.
@@ -351,7 +352,7 @@ public class Player extends EntityBase {
                         break;
                     case DOWN:
                         if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player is still within the frame buffer from the last state of motion.
-                            worldY += speed * gp.getScale();                                                            // Speed will scale with the window size.
+                            worldY += speed;
                             if (moveCountdown > 0) {
                                 directionLast = directionCurrent;
                                 moveCountdown = 0;                                                                      // Reset frame buffer.
@@ -360,7 +361,7 @@ public class Player extends EntityBase {
                         break;
                     case LEFT:
                         if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player is still within the frame buffer from the last state of motion.
-                            worldX -= speed * gp.getScale();                                                            // Speed will scale with the window size.
+                            worldX -= speed;
                             if (moveCountdown > 0) {
                                 directionLast = directionCurrent;
                                 moveCountdown = 0;                                                                      // Reset frame buffer.
@@ -369,7 +370,7 @@ public class Player extends EntityBase {
                         break;
                     case RIGHT:
                         if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player is still within the frame buffer from the last state of motion.
-                            worldX += speed * gp.getScale();                                                            // Speed will scale with the window size.
+                            worldX += speed;
                             if (moveCountdown > 0) {
                                 directionLast = directionCurrent;
                                 moveCountdown = 0;                                                                      // Reset frame buffer.
@@ -379,7 +380,7 @@ public class Player extends EntityBase {
                 }
             }
 
-            if (pixelCounter <= gp.getTileSize() / 2) {                                                                 // Walking animation; player will have a foot forward for half of the pixels traversed.
+            if (pixelCounter <= gp.getNativeTileSize() / 2) {                                                           // Walking animation; player will have a foot forward for half of the pixels traversed.
 
                 if (spriteNumLast == 2) {
 
@@ -395,13 +396,13 @@ public class Player extends EntityBase {
 
             if (turning) {
 
-                pixelCounter += gp.getTileSize() / 8;                                                                   // If the player is turning from a static position, the pixel counter will increase faster to make the act of turning seem faster to the player; simulates "moving" a tile's length at a faster speed (8 frames).
+                pixelCounter += gp.getNativeTileSize() / 8;                                                             // If the player is turning from a static position, the pixel counter will increase faster to make the act of turning seem faster to the player; simulates "moving" a tile's length at a faster speed (8 frames).
             } else {
 
-                pixelCounter += speed * gp.getScale();                                                                  // Add to the number of pixels the player has moved while in the current state of motion.
+                pixelCounter += speed;                                                                                  // Add to the number of pixels the player has moved while in the current state of motion.
             }
 
-            if (pixelCounter >= gp.getTileSize()) {                                                                     // Check if the player character has moved a number of pixels equal to a tile size in the current state of motion.
+            if (pixelCounter >= gp.getNativeTileSize()) {                                                               // Check if the player character has moved a number of pixels equal to a tile size in the current state of motion.
 
                 moving = false;                                                                                         // If we've moved a tile's length, the player character exits a state of motion and can again be controlled.
                 pixelCounter = 0;                                                                                       // Reset the pixel counter.
@@ -438,55 +439,42 @@ public class Player extends EntityBase {
 
 
     /**
-     * Stages player entity sprites to load from resources directory.
+     * Sets loaded entity sprites.
      */
-    private void getImage() {
+    private void setupSprite() {
 
-        up1 = setupImage("/characters/michael/up1.png");
-        up2 = setupImage("/characters/michael/up2.png");
-        up3 = setupImage("/characters/michael/up3.png");
+        down1 = AssetPool.getSpritesheet(1).getSprite(24);
+        down2 = AssetPool.getSpritesheet(1).getSprite(25);
+        down3 = AssetPool.getSpritesheet(1).getSprite(26);
 
-//        down1 = setupImage("/characters/test_player/down1.png");
-//        down2 = setupImage("/characters/test_player/down2.png");
-//        down3 = setupImage("/characters/test_player/down3.png");
+        up1 = AssetPool.getSpritesheet(1).getSprite(27);
+        up2 = AssetPool.getSpritesheet(1).getSprite(28);
+        up3 = AssetPool.getSpritesheet(1).getSprite(29);
 
-        down1 = setupImage("/characters/michael/down1.png");
-        down2 = setupImage("/characters/michael/down2.png");
-        down3 = setupImage("/characters/michael/down3.png");
+        left1 = AssetPool.getSpritesheet(1).getSprite(30);
+        left2 = AssetPool.getSpritesheet(1).getSprite(31);
+        left3 = AssetPool.getSpritesheet(1).getSprite(32);
 
-        left1 = setupImage("/characters/michael/left1.png");
-        left2 = setupImage("/characters/michael/left2.png");
-        left3 = setupImage("/characters/michael/left3.png");
+        right1 = AssetPool.getSpritesheet(1).getSprite(33);
+        right2 = AssetPool.getSpritesheet(1).getSprite(34);
+        right3 = AssetPool.getSpritesheet(1).getSprite(35);
 
-        right1 = setupImage("/characters/michael/right1.png");
-        right2 = setupImage("/characters/michael/right2.png");
-        right3 = setupImage("/characters/michael/right3.png");
+        sprite = down1;
+        transform.scale.x = sprite.getNativeWidth();
+        transform.scale.y = sprite.getNativeHeight();
     }
 
 
     /**
      * Initializes the camera position with respect to the player entity.
      */
-    private void setCamera() {
+    private void setupCamera() {
+
+        centerScreenX = (gp.getNativeScreenWidth() / 2) - (gp.getNativeTileSize() / 2);                                 // Draw player at the center of the screen (x); the minus half a tile offset puts the center of the player sprite at the center of the screen.
+        centerScreenY = (gp.getNativeScreenHeight() / 2);                                                               // Draw the player at the center of the screen (y).
 
         cameraOffsetX = 0;
         cameraOffsetY = 0;
-
-        playerScreenX = centerScreenX + cameraOffsetX;
-        playerScreenY = centerScreenY + cameraOffsetY;
-    }
-
-
-    /**
-     * Initializes the debug box representing collision drawn around the player entity.
-     */
-    private void setCollisionRectangle() {
-
-        solidArea = new Rectangle();                                                                                    // Set the area of the collision rectangle in the character; arguments are `(x, y, width, height)`; x and y coordinates are top left of rectangle and y+ is down.
-        solidArea.x = 1 * gp.getScale();                                                                                // Top right corner of rectangle (local coordinate system).
-        solidArea.y = 1 * gp.getScale();                                                                                // Top right corner of rectangle (local coordinate system).
-        solidArea.width = gp.getTileSize() - (2 * gp.getScale());                                                       // The collision box is the size of the entire tile minus 1 pixel on each side (pixel subtraction scales with `gp.getScale()`).
-        solidArea.height = gp.getTileSize() - (2 * gp.getScale());                                                      // The collision box is the size of the entire tile minus 1 pixel on each side (pixel subtraction scales with `gp.getScale()`).
     }
 
 
@@ -544,7 +532,7 @@ public class Player extends EntityBase {
      */
     private void updateExploreInput() {
 
-        if ((keyH.isSpacePressed()) && (!menuActioned) && (!moving)) {
+        if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned) && (!moving)) {
 
             gp.setGameState(GameState.PARTY_MENU);
             menuActioned = true;                                                                                        // Disable the ability of the player to close the menu (party, inventory, settings) by pressing the Space key.
@@ -553,38 +541,38 @@ public class Player extends EntityBase {
 
             boolean interaction = false;                                                                                // Initialize a variable to determine if an object or npc is being interacted with or not.
 
-            if ((keyH.isEnterPressed()) && (interactionCountdown <= 0)) {
+            if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER)) && (interactionCountdown <= 0)) {
 
                 interaction = checkClickInteraction();                                                                  // Check if any interactions triggered by a click (i.e., hitting the Enter key or other manual selection) have been hit.
             }
 
             if (!interaction) {                                                                                         // If nothing is being interacted with, continue with logic to check if player will move.
 
-                if ((keyH.iswPressed()) || (keyH.issPressed()) ||
-                        (keyH.isaPressed()) || (keyH.isdPressed())) {
+                if ((KeyListener.isKeyPressed(GLFW_KEY_W)) || (KeyListener.isKeyPressed(GLFW_KEY_S)) ||
+                        (KeyListener.isKeyPressed(GLFW_KEY_A)) || (KeyListener.isKeyPressed(GLFW_KEY_D))) {
 
-                    if (keyH.iswPressed()) {
+                    if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
                         directionCurrent = EntityDirection.UP;
                         directionCandidate = EntityDirection.UP;
                         worldXEnd = worldX;
-                        worldYEnd = worldY - gp.getTileSize();
+                        worldYEnd = worldY - gp.getNativeTileSize();
 
-                    } else if (keyH.issPressed()) {
+                    } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
                         directionCurrent = EntityDirection.DOWN;
                         directionCandidate = EntityDirection.DOWN;
                         worldXEnd = worldX;
-                        worldYEnd = worldY + gp.getTileSize();
+                        worldYEnd = worldY + gp.getNativeTileSize();
 
-                    } else if (keyH.isaPressed()) {
+                    } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
                         directionCurrent = EntityDirection.LEFT;
                         directionCandidate = EntityDirection.LEFT;
-                        worldXEnd = worldX - gp.getTileSize();
+                        worldXEnd = worldX - gp.getNativeTileSize();
                         worldYEnd = worldY;
 
-                    } else if (keyH.isdPressed()) {
+                    } else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
                         directionCurrent = EntityDirection.RIGHT;
                         directionCandidate = EntityDirection.RIGHT;
-                        worldXEnd = worldX + gp.getTileSize();
+                        worldXEnd = worldX + gp.getNativeTileSize();
                         worldYEnd = worldY;
                     }
                     moving = true;                                                                                      // When a direction key is pressed, the player character enters a state of motion.
@@ -614,7 +602,7 @@ public class Player extends EntityBase {
      */
     private void updateDialogueInput() {
 
-        if ((keyH.isEnterPressed())
+        if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER))
                 && (gp.getDialogueR().getCurrentConv() != null)
                 && (!gp.getDialogueR().isReadingDialogue())
                 && (interactionCountdown <= 0)) {
@@ -625,7 +613,7 @@ public class Player extends EntityBase {
                 if (gp.getDialogueR().getCurrentConv().getConvId() == -3) {
 
                     gp.getCombatM().progressCombat();                                                                   // The conversation was an interactive combat message and has finished; check what logic to run next in combat.
-                    interactionCountdown = 10;                                                                     // Player must wait 10 frames before interacting with another action, for example (prevents instantly progressing next action that appears).
+                    interactionCountdown = 10;                                                                          // Player must wait 10 frames before interacting with another action, for example (prevents instantly progressing next action that appears).
                 } else {
 
                     gp.getInteractionM().handlePostConversation(gp.getDialogueR().getCurrentConv().getConvId());        // Check to see if any events will be triggered once the conversation has finished.
@@ -646,27 +634,27 @@ public class Player extends EntityBase {
 
         if (interactionCountdown <= 0) {
 
-            if ((keyH.isSpacePressed()) && (!menuActioned)) {
+            if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
                 gp.setGameState(GameState.EXPLORE);
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
-            else if (keyH.isTwoPressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_2)) {
                 gp.setGameState(GameState.INVENTORY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.isThreePressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_3)) {
                 gp.setGameState(GameState.SETTINGS_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.iswPressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
                 gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() - 1);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.issPressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
                 gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() + 1);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
@@ -682,37 +670,37 @@ public class Player extends EntityBase {
 
         if (interactionCountdown <= 0) {
 
-            if ((keyH.isSpacePressed()) && (!menuActioned)) {
+            if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
                 gp.setGameState(GameState.EXPLORE);
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
-            if (keyH.isOnePressed()) {
+            if (KeyListener.isKeyPressed(GLFW_KEY_1)) {
                 gp.setGameState(GameState.PARTY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.isThreePressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_3)) {
                 gp.setGameState(GameState.SETTINGS_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.iswPressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
                 gp.getUi().setItemRowSelected(gp.getUi().getItemRowSelected() - 1);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.isaPressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
                 gp.getUi().setItemColSelected(gp.getUi().getItemColSelected() - 1);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.issPressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
                 gp.getUi().setItemRowSelected(gp.getUi().getItemRowSelected() + 1);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.isdPressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
                 gp.getUi().setItemColSelected(gp.getUi().getItemColSelected() + 1);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
@@ -728,17 +716,17 @@ public class Player extends EntityBase {
 
         if (interactionCountdown <= 0) {
 
-            if ((keyH.isSpacePressed()) && (!menuActioned)) {
+            if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
                 gp.setGameState(GameState.EXPLORE);
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
-            else if (keyH.isOnePressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_1)) {
                 gp.setGameState(GameState.PARTY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.isTwoPressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_2)) {
                 gp.setGameState(GameState.INVENTORY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
@@ -754,17 +742,17 @@ public class Player extends EntityBase {
 
         if (interactionCountdown <= 0) {
 
-            if (keyH.iswPressed()) {
+            if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
                 gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() - 1);                             // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.issPressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
                 gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() + 1);                             // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (keyH.isEnterPressed()) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
                 gp.getInteractionM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected());
                 interactionCountdown = 10;
             }
@@ -779,11 +767,11 @@ public class Player extends EntityBase {
      */
     private void updateDebugInput() {
 
-        if ((debugActioned) && (!keyH.isqPressed())) {
+        if ((debugActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_Q))) {
             debugActioned = false;                                                                                      // Enable the ability of the player to enable the debug mode by pressing the Q key.
         }
 
-        if ((keyH.isqPressed()) && (!debugActioned)) {
+        if ((KeyListener.isKeyPressed(GLFW_KEY_Q)) && (!debugActioned)) {
 
             if ((gp.isDebugActive())
                     && (gp.getGameState() == GameState.EXPLORE)
@@ -791,7 +779,7 @@ public class Player extends EntityBase {
 
                 List<String> options = List.of("Yes", "No");                                                            // Immutable list.
                 String prompt = "Reset camera back to player?";
-                gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 0, SubMenuHandler.widthYesNo);
+                gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 0);
             }
 
             gp.setDebugActive(!gp.isDebugActive());
@@ -800,19 +788,19 @@ public class Player extends EntityBase {
 
         else if (gp.isDebugActive()) {
 
-            if (keyH.isUpArrowPressed()) {
+            if (KeyListener.isKeyPressed(GLFW_KEY_UP)) {
                 gp.getPlayer().setCameraOffsetY(gp.getPlayer().getCameraOffsetY() + 4);
             }
 
-            if (keyH.isDownArrowPressed()) {
+            if (KeyListener.isKeyPressed(GLFW_KEY_DOWN)) {
                 gp.getPlayer().setCameraOffsetY(gp.getPlayer().getCameraOffsetY() - 4);
             }
 
-            if (keyH.isLeftArrowPressed()) {
+            if (KeyListener.isKeyPressed(GLFW_KEY_LEFT)) {
                 gp.getPlayer().setCameraOffsetX(gp.getPlayer().getCameraOffsetX() + 4);
             }
 
-            if (keyH.isRightArrowPressed()) {
+            if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT)) {
                 gp.getPlayer().setCameraOffsetX(gp.getPlayer().getCameraOffsetX() - 4);
             }
         }
@@ -929,14 +917,6 @@ public class Player extends EntityBase {
         return centerScreenY;
     }
 
-    public int getPlayerScreenX() {
-        return playerScreenX;
-    }
-
-    public int getPlayerScreenY() {
-        return playerScreenY;
-    }
-
     public int getCameraOffsetX() {
         return cameraOffsetX;
     }
@@ -953,12 +933,10 @@ public class Player extends EntityBase {
     // SETTERS
     public void setCameraOffsetX(int cameraOffsetX) {
         this.cameraOffsetX = cameraOffsetX;
-        playerScreenX = centerScreenX + cameraOffsetX;
     }
 
     public void setCameraOffsetY(int cameraOffsetY) {
         this.cameraOffsetY = cameraOffsetY;
-        playerScreenY = centerScreenY + cameraOffsetY;
     }
 
     public void setInteractionCountdown(int interactionCountdown) {

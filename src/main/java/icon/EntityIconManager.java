@@ -2,10 +2,10 @@ package icon;
 
 import entity.EntityBase;
 import core.GamePanel;
+import render.Renderer;
+import render.Sprite;
 import utility.UtilityTool;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,30 +52,32 @@ public class EntityIconManager {
     /**
      * Draws an entity icon by entity ID.
      *
-     * @param g2 Graphics2D instance
+     * @param renderer Renderer instance
      * @param entityId ID of the entity for whom the entity icon will be drawn
      * @param screenX x-coordinate (leftmost side of the image) where the entity icon will be drawn
      * @param screenY y-coordinate (topmost side of the image) where the entity icon will be drawn
      */
-    public void draw(Graphics2D g2, int entityId, int screenX, int screenY) {
+    public void draw(Renderer renderer, int entityId, int screenX, int screenY) {
 
         EntityIcon entityIcon = entityIcons.get(entityId);
 
         if (entityIcon != null) {
 
-            BufferedImage image;
+            Sprite sprite;
 
             if (entityIcon.isSelected()) {
 
-                image = selectEntityImage(entityIcon);
+                sprite = selectEntitySprite(entityIcon);
             } else {
 
-                image = entityIcon.getDown1();
+                sprite = entityIcon.getDown1();
             }
 
-            if (image != null) {
+            if (sprite != null) {
 
-                g2.drawImage(image, screenX, screenY, null);
+                entityIcon.transform.position.x = screenX;
+                entityIcon.transform.position.y = screenY;
+                renderer.addDrawable(entityIcon);
             } else if (!drawErrors.contains(entityId)) {
 
                 UtilityTool.logError("Failed to draw entity icon with entity ID "
@@ -119,19 +121,19 @@ public class EntityIconManager {
 
             EntityIcon entityIcon = new EntityIcon(entityId);
 
-            BufferedImage down1 = entity.getDown1();
+            Sprite down1 = entity.getDown1();
             if (down1 != null ) {
                 entityIcon.setDown1(down1);
             }
 
-            BufferedImage down2 = entity.getDown2();
+            Sprite down2 = entity.getDown2();
             if (down2 != null) {
                 entityIcon.setDown2(down2);
             } else {
                 entityIcon.setDown2(down1);
             }
 
-            BufferedImage down3 = entity.getDown3();
+            Sprite down3 = entity.getDown3();
             if (down3 != null) {
                 entityIcon.setDown3(down3);
             } else {
@@ -186,20 +188,20 @@ public class EntityIconManager {
      *
      * @param entityIcon entity icon being checked
      */
-    private BufferedImage selectEntityImage(EntityIcon entityIcon) {
+    private Sprite selectEntitySprite(EntityIcon entityIcon) {
 
         int animationCounter = entityIcon.getAnimationCounter();
-        BufferedImage image;
+        Sprite sprite;
 
         if (animationCounter <= 12) {
 
-            image = entityIcon.getDown2();
+            sprite = entityIcon.getDown2();
         } else if ((animationCounter > 24) && (animationCounter <= 36)) {
 
-            image = entityIcon.getDown3();
+            sprite = entityIcon.getDown3();
         } else {
 
-            image = entityIcon.getDown1();
+            sprite = entityIcon.getDown1();
         }
         animationCounter++;
 
@@ -210,6 +212,6 @@ public class EntityIconManager {
 
             entityIcon.setAnimationCounter(animationCounter);
         }
-        return image;
+        return sprite;
     }
 }

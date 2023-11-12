@@ -2,18 +2,15 @@ package item;
 
 import core.GamePanel;
 import entity.EntityBase;
+import render.Renderer;
+import render.Sprite;
+import render.drawable.Drawable;
 import utility.UtilityTool;
-import utility.exceptions.AssetLoadException;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
 
 /**
  * This abstract class defines base logic for an item that can be stored in the player's inventory.
  */
-public abstract class ItemBase {
+public abstract class ItemBase extends Drawable {
 
     /*
      * An item represents something that the player can hold in their inventory.
@@ -41,11 +38,6 @@ public abstract class ItemBase {
      * Item description.
      */
     protected String description;
-
-    /**
-     * Item sprite.
-     */
-    protected BufferedImage image;
 
     /**
      * Variable setting the maximum number of items that can be in a stack if this item is stackable.
@@ -78,6 +70,7 @@ public abstract class ItemBase {
      * @param stackable whether this item is stackable in the player's inventory or not
      */
     public ItemBase(GamePanel gp, int itemId, boolean stackable) {
+        super();
         this.gp = gp;
         this.itemId = itemId;
         this.stackable = stackable;
@@ -87,15 +80,17 @@ public abstract class ItemBase {
     /**
      * Draws an item.
      *
-     * @param g2 Graphics2D instance
+     * @param renderer Renderer instance
      * @param screenX x-coordinate (left side) where the item sprite will be drawn
      * @param screenY y-coordinate (top side) where the item sprite will be drawn
      */
-    public void draw(Graphics2D g2, int screenX, int screenY) {
+    public void draw(Renderer renderer, int screenX, int screenY) {
 
-        if (image != null) {
+        if (sprite != null) {
 
-            g2.drawImage(image, screenX, screenY, null);
+            this.transform.position.x = screenX;
+            this.transform.position.y = screenY;
+            renderer.addDrawable(this);
         } else if (!drawError) {
 
             UtilityTool.logError("Failed to draw item "
@@ -117,32 +112,6 @@ public abstract class ItemBase {
     public abstract boolean use(EntityBase user);
 
 
-    /**
-     * Loads and scales an item sprite.
-     * Recommended file type is PNG.
-     *
-     * @param fileName file name of sprite, located in resources/items directory
-     * @return loaded sprite
-     * @throws AssetLoadException if an error occurs while loading an item sprite
-     */
-    protected BufferedImage setupImage(String fileName) {
-
-        BufferedImage image;
-        String completeFilePath = "/items/" + fileName;
-
-        try (InputStream is = getClass().getResourceAsStream(completeFilePath)) {
-
-            image = ImageIO.read(is);
-            image = UtilityTool.scaleImage(image, image.getWidth() * gp.getScale(), image.getHeight() * gp.getScale());
-
-        } catch (Exception e) {
-
-            throw new AssetLoadException("Could not load item sprite from " + completeFilePath);
-        }
-        return image;
-    }
-
-
     // GETTERS
     public int getItemId() {
         return itemId;
@@ -156,8 +125,8 @@ public abstract class ItemBase {
         return description;
     }
 
-    public BufferedImage getImage() {
-        return image;
+    public Sprite getSprite() {
+        return sprite;
     }
 
     public int getMaxStackAmount() {

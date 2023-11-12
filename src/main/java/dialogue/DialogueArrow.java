@@ -1,27 +1,20 @@
 package dialogue;
 
 import core.GamePanel;
+import org.joml.Vector2f;
+import render.Renderer;
+import render.drawable.Drawable;
+import utility.AssetPool;
 import utility.UtilityTool;
-import utility.exceptions.AssetLoadException;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
 
 /**
  * This class defines the dialogue progression arrow, which appears when a piece of dialogue has more text to be read
  * that did not all fit on the screen all at once.
  */
-public class DialogueArrow {
+public class DialogueArrow extends Drawable {
 
     // FIELDS
     GamePanel gp;
-
-    /**
-     * Loaded arrow sprite.
-     */
-    private BufferedImage image;
 
     /**
      * Controls the number of frames between the animation of the arrow moving up and down.
@@ -47,20 +40,23 @@ public class DialogueArrow {
      * @param gp GamePanel instance
      */
     public DialogueArrow(GamePanel gp) {
+        super();
         this.gp = gp;
-        getImage();
+        this.sprite = AssetPool.getSpritesheet(6).getSprite(1);
+        this.transform.scale.x = this.sprite.getNativeWidth();
+        this.transform.scale.y = this.sprite.getNativeHeight();
     }
 
 
     // METHODS
     /**
-     * Draws the dialogue arrow.
+     * Adds the dialogue arrow to the render pipeline.
      *
-     * @param g2 Graphics2D instance
-     * @param screenX x-coordinate of the dialogue arrow (left side)
-     * @param screenY y-coordinate of the dialogue arrow (top side)
+     * @param renderer Renderer instance
+     * @param screenX screen x-coordinate of the dialogue arrow (leftmost, normalized between 0 and 1)
+     * @param screenY screen y-coordinate of the dialogue arrow (topmost, normalized between 0 and 1)
      */
-    public void draw(Graphics2D g2, int screenX, int screenY) {
+    public void render(Renderer renderer, float screenX, float screenY) {
 
         if (rest == 0) {
 
@@ -73,15 +69,18 @@ public class DialogueArrow {
 
         if (!isUpPosition) {
 
-            screenY += 3 * gp.getScale();                                                                               // Set the dialogue arrow to its "down" position.
+            screenY += 0.01;                                                                                            // Set the dialogue arrow to its "down" position.
         }
 
-        if (image != null) {
+        if (sprite != null) {
 
-            g2.drawImage(image, screenX, screenY, null);
+            Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
+            this.transform.position.x = worldCoords.x;
+            this.transform.position.y = worldCoords.y;
+            renderer.addDrawable(this);
         } else if (!drawError) {
 
-            UtilityTool.logError("Failed to draw dialogue arrow: image may not have been properly loaded upon initialization.");
+            UtilityTool.logError("Failed to add dialogue arrow to the render pipeline: sprite may not have been properly loaded upon initialization.");
             drawError = true;
         }
     }
@@ -94,39 +93,5 @@ public class DialogueArrow {
 
         isUpPosition = false;
         rest = 0;
-    }
-
-
-    /**
-     * Stages sprite to load from resources directory.
-     */
-    private void getImage() {
-
-        image = setupImage("/miscellaneous/dialogue_arrow.png");
-    }
-
-
-    /**
-     * Loads and scales the dialogue arrow sprite.
-     * Recommended file type is PNG.
-     *
-     * @param filePath file path of sprite from resources directory
-     * @return loaded sprite
-     * @throws AssetLoadException if an error occurs while loading the dialogue arrow sprite
-     */
-    private BufferedImage setupImage(String filePath) {
-
-        BufferedImage image;
-
-        try (InputStream is = getClass().getResourceAsStream(filePath)) {
-
-            image = ImageIO.read(is);
-            image = UtilityTool.scaleImage(image, 10 * gp.getScale(), 6 * gp.getScale());                               // 10 is the native width in pixels of the dialogue arrow sprite; 6 is the native height.
-
-        } catch (Exception e) {
-
-            throw new AssetLoadException("Could not load dialogue arrow sprite from " + filePath);
-        }
-        return image;
     }
 }

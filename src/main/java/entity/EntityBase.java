@@ -2,21 +2,19 @@ package entity;
 
 import combat.AttackBase;
 import core.GamePanel;
+import render.Renderer;
+import render.Sprite;
+import render.drawable.Drawable;
 import utility.LimitedArrayList;
 import utility.UtilityTool;
-import utility.exceptions.AssetLoadException;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.util.Objects;
 import java.util.Random;
 
 /**
  * This abstract class defines base logic for the player, character, and object classes.
  */
-public abstract class EntityBase {
+public abstract class EntityBase extends Drawable {
 
     /*
      * An entity can be one of two types:
@@ -40,6 +38,19 @@ public abstract class EntityBase {
      *
      * When creating new character classes that extend this class, model them after the classes in the `npc` package.
      * When creating new object classes that extend this class, model them after the classes in the `object` package.
+     *
+     * Note that there's an adjustment to the `worldY` coordinate when rendering an entity of type CHARACTER.
+     * Since an entity's `worldY` represents the bottom-left tile it occupies, we need to effectively move the entity
+     * sprite "up" slightly (in the negative y-direction) when rendering since rendering is done in respect to the
+     * top-left coordinate of a sprite.
+     * In other words, if a character is taller than a tile, the y-position needs to adjusted when rendering.
+     * If this adjustment were to not happen, then the top-left corner of a character's sprite would be in the same
+     * position as the top-left corner of the bottom-left tile it's meant to occupy.
+     * This would cause the entire character sprite to render "lower" on the map (in the position y-direction) than it
+     * should.
+     * This is not an issue for entities of type OBJECT since their heights are forced to be the same as the native tile
+     * size.
+     *
      *
      * Please note the following:
      *    - Entities are solid/have collision by default unless changed during or after instantiation.
@@ -83,13 +94,13 @@ public abstract class EntityBase {
     /**
      * Entity sprite.
      */
-    protected BufferedImage up1, up2, up3, down1, down2, down3, left1, left2, left3, right1, right2, right3;
+    protected Sprite down1, down2, down3, up1, up2, up3, left1, left2, left3, right1, right2, right3;
 
     /**
-     * Boolean tracking whether a draw error has occurred.
-     * If true, this prevents a draw error from repeatedly being printed to the console.
+     * Boolean tracking whether a render error has occurred.
+     * If true, this prevents a render error from repeatedly being printed to the console.
      */
-    protected boolean drawError = false;
+    protected boolean renderError = false;
 
 
     // STATE
@@ -120,7 +131,7 @@ public abstract class EntityBase {
 
     /**
      * Current direction that this entity is facing.
-     * Among other things, this determines which directional sprite to draw.
+     * Among other things, this determines which directional sprite to render.
      */
     protected EntityDirection directionCurrent;
 
@@ -142,13 +153,13 @@ public abstract class EntityBase {
     protected EntityDirection directionCandidate;
 
     /**
-     * Current sprite number to draw for a given direction.
+     * Current sprite number to render for a given direction.
      * This is primarily used for walking animation.
      */
     protected int spriteNumCurrent = 1;
 
     /**
-     * Last sprite number drawn for a given direction.
+     * Last sprite number rendered for a given direction.
      * This is primarily used for walking animation.
      */
     protected int spriteNumLast = 2;
@@ -171,7 +182,7 @@ public abstract class EntityBase {
     protected boolean colliding = false;
 
     /**
-     * Boolean to set whether this entity is drawn on screen or not.
+     * Boolean to set whether this entity is rendered on screen or not.
      */
     protected boolean hidden = false;
 
@@ -355,6 +366,7 @@ public abstract class EntityBase {
      * @param type type of entity (CHARACTER or OBJECT)
      */
     public EntityBase(GamePanel gp, int entityId, EntityType type) {
+        super();
         this.gp = gp;
         this.type = type;
         this.entityId = entityId;
@@ -387,56 +399,47 @@ public abstract class EntityBase {
 
 
     /**
-     * Draws this entity.
+     * Adds this entity to the render pipeline.
      *
-     * @param g2 Graphics2D instance
+     * @param renderer Renderer instance
      */
-    public void draw(Graphics2D g2) {
+    public void render(Renderer renderer) {
 
         if (!hidden) {
 
-            int centerScreenX = gp.getPlayer().getCenterScreenX();
-            int centerScreenY = gp.getPlayer().getCenterScreenY();
-            int cameraOffsetX = gp.getPlayer().getCameraOffsetX();
-            int cameraOffsetY = gp.getPlayer().getCameraOffsetY();
+            sprite = retrieveSprite();                                                                                  // Retrieve the sprite to be rendered.
 
-            // Improve rendering efficiency; only draw entities visible on the screen.
-            if (worldX + gp.getTileSize() > gp.getPlayer().getWorldX() - centerScreenX - cameraOffsetX &&                               // Left side of the screen.
-                    worldX - gp.getTileSize() < gp.getPlayer().getWorldX() + (gp.getScreenWidth() - centerScreenX) - cameraOffsetX &&   // Right side of the screen.
-                    worldY + gp.getTileSize() > gp.getPlayer().getWorldY() - centerScreenY - cameraOffsetY &&                           // Top side of the screen.
-                    worldY - gp.getTileSize() < gp.getPlayer().getWorldY() + (gp.getScreenHeight() - centerScreenY) - cameraOffsetY) {  // Bottom side of the screen.
+            if (sprite != null) {
 
-                BufferedImage image = retrieveSprite();                                                                 // Retrieve the sprite to be drawn.
+                if (type.equals(EntityType.CHARACTER)) {
 
-                if (image != null) {
+                    int worldYAdjustment = 0;                                                                           // Amount in the y-direction that the character sprite needs to be adjusted when rendered.
 
-                    int screenX = worldX - gp.getPlayer().getWorldX() + gp.getPlayer().getPlayerScreenX();              // Determine where on the screen to draw entity.
-                    int screenY = worldY - gp.getPlayer().getWorldY() + gp.getPlayer().getPlayerScreenY();              // ^^^
+                    if (sprite.getNativeHeight() > gp.getNativeTileSize()) {
 
-                    if (type.equals(EntityType.CHARACTER)) {
-
-                        int height = image.getHeight();                                                                 // Height of the loaded character sprite.
-                        int adjustment = 0;                                                                             // Amount in the y-direction that the character sprite needs to be adjusted when drawn.
-
-                        if (height > gp.getTileSize()) {
-
-                            adjustment = height - gp.getTileSize();
-                        }
-
-                        g2.drawImage(image, screenX, screenY - adjustment, null);                                       // y-coordinate of entities of type CHARACTER is modified slightly since they can be taller than a single tile; adjusted so the bottom of the sprite lines up with the bottom of the tile the entity is occupying.
-                    } else {
-
-                        g2.drawImage(image, screenX, screenY, null);                                                    // Entities of type OBJECT will be drawn to only fill one tile space, regardless of actual size.
+                        worldYAdjustment = -sprite.getNativeHeight() + gp.getNativeTileSize();
                     }
-                } else if (!drawError) {
+                    transform.position.x = worldX;
+                    transform.position.y = worldY + worldYAdjustment;                                                   // Y-coordinate of entities of type CHARACTER is modified slightly since they can be taller than a single tile; adjusted so the bottom of the sprite lines up with the bottom of the tile the entity is occupying when rendered.
+                    transform.scale.x = gp.getNativeTileSize();                                                         // Entities must be as wide as the native tile size.
+                    transform.scale.y = sprite.getNativeHeight();
+                    renderer.addDrawable(this);
+                } else {
 
-                    UtilityTool.logError("Failed to draw entity "
-                            + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
-                            + "with ID "
-                            + entityId
-                            + ": images may not have been properly loaded upon entity initialization.");
-                    drawError = true;
+                    transform.position.x = worldX;
+                    transform.position.y = worldY;                                                                      // Entities of type OBJECT will be rendered to only fill one tile space, regardless of actual size.
+                    transform.scale.x = sprite.getNativeWidth();                                                        // Entities must be as wide as the native tile size.
+                    transform.scale.y = sprite.getNativeHeight();                                                       // Entities of type OBJECT must be as tall as the native tile size.
+                    renderer.addDrawable(this);
                 }
+            } else if (!renderError) {
+
+                UtilityTool.logError("Failed to add entity "
+                        + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
+                        + "with ID "
+                        + entityId
+                        + " to the render pipeline: sprites may not have been properly loaded upon entity initialization.");
+                renderError = true;
             }
         }
     }
@@ -472,27 +475,27 @@ public abstract class EntityBase {
                     directionCandidate = EntityDirection.UP;
                     directionLast = EntityDirection.UP;
                     worldXEnd = worldX;
-                    worldYEnd = worldY - gp.getTileSize();
+                    worldYEnd = worldY - gp.getNativeTileSize();
                     break;
                 case DOWN:
                     directionCurrent = EntityDirection.DOWN;
                     directionCandidate = EntityDirection.DOWN;
                     directionLast = EntityDirection.DOWN;
                     worldXEnd = worldX;
-                    worldYEnd = worldY + gp.getTileSize();
+                    worldYEnd = worldY + gp.getNativeTileSize();
                     break;
                 case LEFT:
                     directionCurrent = EntityDirection.LEFT;
                     directionCandidate = EntityDirection.LEFT;
                     directionLast = EntityDirection.LEFT;
-                    worldXEnd = worldX - gp.getTileSize();
+                    worldXEnd = worldX - gp.getNativeTileSize();
                     worldYEnd = worldY;
                     break;
                 case RIGHT:
                     directionCurrent = EntityDirection.RIGHT;
                     directionCandidate = EntityDirection.RIGHT;
                     directionLast = EntityDirection.RIGHT;
-                    worldXEnd = worldX + gp.getTileSize();
+                    worldXEnd = worldX + gp.getNativeTileSize();
                     worldYEnd = worldY;
                     break;
             }
@@ -556,92 +559,61 @@ public abstract class EntityBase {
 
 
     /**
-     * Loads and scales an entity sprite.
-     * Recommended file type is PNG.
-     *
-     * @param filePath file path of sprite from resources directory
-     * @return loaded sprite
-     * @throws AssetLoadException if an error occurs while loading an entity sprite
-     */
-    protected BufferedImage setupImage(String filePath) {
-
-        BufferedImage image;
-
-        try (InputStream is = getClass().getResourceAsStream(filePath)) {
-
-            image = ImageIO.read(is);
-
-            if (type.equals(EntityType.CHARACTER)) {
-                image = UtilityTool.scaleImage(image, gp.getTileSize(), image.getHeight() * gp.getScale());             // Entities of type CHARACTER are scaled to be the width of a tile, but they maintain their original height.
-
-            } else {
-                image = UtilityTool.scaleImage(image, gp.getTileSize(), gp.getTileSize());                              // Entities of type OBJECT are scaled to be the size of a tile (both width and height).
-            }
-
-        } catch (Exception e) {
-
-            throw new AssetLoadException("Could not load entity sprite from " + filePath);
-        }
-        return image;
-    }
-
-
-    /**
      * Retrieves the sprite that matches this entity's current direction and sprite number.
      *
      * @return sprite
      */
-    protected BufferedImage retrieveSprite() {
+    protected Sprite retrieveSprite() {
 
-        BufferedImage image = null;
+        Sprite sprite = null;
 
         switch (directionCurrent) {
             case UP:
                 if (spriteNumCurrent == 1) {
-                    image = up1;
+                    sprite = up1;
                 }
                 if (spriteNumCurrent == 2) {
-                    image = up2;
+                    sprite = up2;
                 }
                 if (spriteNumCurrent == 3) {
-                    image = up3;
+                    sprite = up3;
                 }
                 break;
             case DOWN:
                 if (spriteNumCurrent == 1) {
-                    image = down1;
+                    sprite = down1;
                 }
                 if (spriteNumCurrent == 2) {
-                    image = down2;
+                    sprite = down2;
                 }
                 if (spriteNumCurrent == 3) {
-                    image = down3;
+                    sprite = down3;
                 }
                 break;
             case LEFT:
                 if (spriteNumCurrent == 1) {
-                    image = left1;
+                    sprite = left1;
                 }
                 if (spriteNumCurrent == 2) {
-                    image = left2;
+                    sprite = left2;
                 }
                 if (spriteNumCurrent == 3) {
-                    image = left3;
+                    sprite = left3;
                 }
                 break;
             case RIGHT:
                 if (spriteNumCurrent == 1) {
-                    image = right1;
+                    sprite = right1;
                 }
                 if (spriteNumCurrent == 2) {
-                    image = right2;
+                    sprite = right2;
                 }
                 if (spriteNumCurrent == 3) {
-                    image = right3;
+                    sprite = right3;
                 }
                 break;
         }
-        return image;
+        return sprite;
     }
 
 
@@ -698,7 +670,7 @@ public abstract class EntityBase {
                 updateWorldPosition();
             }
 
-            if (pixelCounter <= gp.getTileSize() / 2) {                                                                 // Walking animation; player will have a foot forward for half of the pixels traversed.
+            if (pixelCounter <= gp.getNativeTileSize() / 2) {                                                           // Walking animation; player will have a foot forward for half of the pixels traversed.
 
                 if (spriteNumLast == 2) {
 
@@ -712,9 +684,9 @@ public abstract class EntityBase {
                 spriteNumCurrent = 1;
             }
 
-            pixelCounter += speed * gp.getScale();                                                                      // Add to the number of pixels (i.e., world units) the entity has moved while in the current state of motion.
+            pixelCounter += speed;                                                                                      // Add to the number of pixels (i.e., world units) the entity has moved while in the current state of motion.
 
-            if (pixelCounter >= gp.getTileSize()) {                                                                     // Check if the entity has moved a number of pixels equal to a tile size in the current state of motion.
+            if (pixelCounter >= gp.getNativeTileSize()) {                                                               // Check if the entity has moved a number of pixels equal to a tile size in the current state of motion.
 
                 moving = false;                                                                                         // If we've moved a tile's length, the entity exits a state of motion.
                 pixelCounter = 0;                                                                                       // Reset the pixel counter.
@@ -742,16 +714,16 @@ public abstract class EntityBase {
 
         switch (directionCurrent) {                                                                                     // Entity will change position in the appropriate direction.
             case UP:
-                worldY -= speed * gp.getScale();                                                                        // Speed will scale with the window size.
+                worldY -= speed;                                                                                        // Speed will scale with the window size.
                 break;
             case DOWN:
-                worldY += speed * gp.getScale();                                                                        // Speed will scale with the window size.
+                worldY += speed;                                                                                        // Speed will scale with the window size.
                 break;
             case LEFT:
-                worldX -= speed * gp.getScale();                                                                        // Speed will scale with the window size.
+                worldX -= speed;                                                                                        // Speed will scale with the window size.
                 break;
             case RIGHT:
-                worldX += speed * gp.getScale();                                                                        // Speed will scale with the window size.
+                worldX += speed;                                                                                        // Speed will scale with the window size.
                 break;
         }
     }
@@ -783,15 +755,15 @@ public abstract class EntityBase {
      */
     protected void searchPath(int goalCol, int goalRow) {
 
-        int startCol = (worldX / gp.getTileSize());                                                                     // The  column that the entity starts in.
-        int startRow = (worldY / gp.getTileSize());                                                                     // The row that the entity starts in.
+        int startCol = (worldX / gp.getNativeTileSize());                                                               // The  column that the entity starts in.
+        int startRow = (worldY / gp.getNativeTileSize());                                                               // The row that the entity starts in.
 
         gp.getPathF().setNodes(startCol, startRow, goalCol, goalRow);                                                   // Pass in the necessary data to the A* pathfinding algorithm to search for a valid path.
 
         if (gp.getPathF().search(this)) {                                                                               // If this statement is true, a path has been found.
 
-            int nextWorldX = gp.getPathF().getPathList().get(0).getCol() * gp.getTileSize();
-            int nextWorldY = gp.getPathF().getPathList().get(0).getRow() * gp.getTileSize();
+            int nextWorldX = gp.getPathF().getPathList().get(0).getCol() * gp.getNativeTileSize();
+            int nextWorldY = gp.getPathF().getPathList().get(0).getRow() * gp.getNativeTileSize();
 
             if ((worldY > nextWorldY) && (worldX == nextWorldX)) {                                                      // Check if the entity can move up.
                 autoStep(EntityDirection.UP);
@@ -880,7 +852,7 @@ public abstract class EntityBase {
 
         if (rest > 0) {
 
-            rest--;                                                                                                     // Decrease rest time by one frame each time a new frame is drawn.
+            rest--;                                                                                                     // Decrease rest time by one frame each time a new frame is rendered.
         }
         boolean movingFlag = moving;                                                                                    // Set a flag to see if the entity entered this method in a state of motion.
 
@@ -974,18 +946,18 @@ public abstract class EntityBase {
                 switch (directionCandidate) {
                     case UP:
                         worldXEnd = worldX;
-                        worldYEnd = worldY - gp.getTileSize();
+                        worldYEnd = worldY - gp.getNativeTileSize();
                         break;
                     case DOWN:
                         worldXEnd = worldX;
-                        worldYEnd = worldY + gp.getTileSize();
+                        worldYEnd = worldY + gp.getNativeTileSize();
                         break;
                     case LEFT:
-                        worldXEnd = worldX - gp.getTileSize();
+                        worldXEnd = worldX - gp.getNativeTileSize();
                         worldYEnd = worldY;
                         break;
                     case RIGHT:
-                        worldXEnd = worldX + gp.getTileSize();
+                        worldXEnd = worldX + gp.getNativeTileSize();
                         worldYEnd = worldY;
                         break;
                 }
@@ -1089,51 +1061,51 @@ public abstract class EntityBase {
         return collision;
     }
 
-    public BufferedImage getUp1() {
+    public Sprite getUp1() {
         return up1;
     }
 
-    public BufferedImage getUp2() {
+    public Sprite getUp2() {
         return up2;
     }
 
-    public BufferedImage getUp3() {
+    public Sprite getUp3() {
         return up3;
     }
 
-    public BufferedImage getDown1() {
+    public Sprite getDown1() {
         return down1;
     }
 
-    public BufferedImage getDown2() {
+    public Sprite getDown2() {
         return down2;
     }
 
-    public BufferedImage getDown3() {
+    public Sprite getDown3() {
         return down3;
     }
 
-    public BufferedImage getLeft1() {
+    public Sprite getLeft1() {
         return left1;
     }
 
-    public BufferedImage getLeft2() {
+    public Sprite getLeft2() {
         return left2;
     }
 
-    public BufferedImage getLeft3() {
+    public Sprite getLeft3() {
         return left3;
     }
 
-    public BufferedImage getRight1() {
+    public Sprite getRight1() {
         return right1;
     }
 
-    public BufferedImage getRight2() {
+    public Sprite getRight2() {
         return right2;
     }
 
-    public BufferedImage getRight3() {
+    public Sprite getRight3() {
         return right3;
     }
 
@@ -1170,35 +1142,35 @@ public abstract class EntityBase {
     }
 
     public int getCol() {
-        return worldX / gp.getTileSize();
+        return worldX / gp.getNativeTileSize();
     }
 
     public int getRow() {
-        return worldY / gp.getTileSize();
+        return worldY / gp.getNativeTileSize();
     }
 
     public int getColStart() {
-        return worldXStart / gp.getTileSize();
+        return worldXStart / gp.getNativeTileSize();
     }
 
     public int getRowStart() {
-        return worldYStart / gp.getTileSize();
+        return worldYStart / gp.getNativeTileSize();
     }
 
     public int getColEnd() {
-        return worldXEnd / gp.getTileSize();
+        return worldXEnd / gp.getNativeTileSize();
     }
 
     public int getRowEnd() {
-        return worldYEnd / gp.getTileSize();
+        return worldYEnd / gp.getNativeTileSize();
     }
 
     public int getColLast() {
-        return worldXLast / gp.getTileSize();
+        return worldXLast / gp.getNativeTileSize();
     }
 
     public int getRowLast() {
-        return worldYLast / gp.getTileSize();
+        return worldYLast / gp.getNativeTileSize();
     }
 
     public EntityDirection getDirectionCurrent() {
@@ -1362,33 +1334,33 @@ public abstract class EntityBase {
     }
 
     public void setCol(int col) {
-        worldX = col * gp.getTileSize();
-        worldXStart = col * gp.getTileSize();
-        worldXEnd = col * gp.getTileSize();
-        worldXLast = col * gp.getTileSize();
+        worldX = col * gp.getNativeTileSize();
+        worldXStart = col * gp.getNativeTileSize();
+        worldXEnd = col * gp.getNativeTileSize();
+        worldXLast = col * gp.getNativeTileSize();
     }
 
     public void setRow(int row) {
-        worldY = row * gp.getTileSize();
-        worldYStart = row * gp.getTileSize();
-        worldYEnd = row * gp.getTileSize();
-        worldYLast = row * gp.getTileSize();
+        worldY = row * gp.getNativeTileSize();
+        worldYStart = row * gp.getNativeTileSize();
+        worldYEnd = row * gp.getNativeTileSize();
+        worldYLast = row * gp.getNativeTileSize();
     }
 
     public void setColEnd(int col) {
-        worldXEnd = col * gp.getTileSize();
+        worldXEnd = col * gp.getNativeTileSize();
     }
 
     public void setRowEnd(int row) {
-        worldYEnd = row * gp.getTileSize();
+        worldYEnd = row * gp.getNativeTileSize();
     }
 
     public void setColLast(int col) {
-        worldXLast = col * gp.getTileSize();
+        worldXLast = col * gp.getNativeTileSize();
     }
 
     public void setRowLast(int row) {
-        worldYLast = row * gp.getTileSize();
+        worldYLast = row * gp.getNativeTileSize();
     }
 
     public void setDirectionCurrent(EntityDirection directionCurrent) {
@@ -1449,7 +1421,7 @@ public abstract class EntityBase {
     }
 
     public void setSpeed(int speed) {
-        if ((gp.getTileSize() % speed == 0) && (speed > 0)) {
+        if ((gp.getNativeTileSize() % speed == 0) && (speed > 0)) {
             this.speed = speed;
         }
     }

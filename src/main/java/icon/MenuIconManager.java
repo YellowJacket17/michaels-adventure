@@ -1,13 +1,11 @@
 package icon;
 
 import core.GamePanel;
+import render.Renderer;
+import render.Sprite;
+import utility.AssetPool;
 import utility.UtilityTool;
-import utility.exceptions.AssetLoadException;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +20,6 @@ public class MenuIconManager {
      *
      * This class loads and stores menu icons.
      * Icons are loaded in their native aspect ratios.
-     * The only alterations made to the raw loaded images are the `scale` set by the GamePanel class.
      */
 
     // FIELDS
@@ -56,30 +53,32 @@ public class MenuIconManager {
     /**
      * Draws a menu icon by ID.
      *
-     * @param g2 Graphics2D instance
+     * @param renderer Renderer instance
      * @param iconId ID of the icon to be drawn
      * @param screenX x-coordinate (leftmost side of the image) where the icon will be drawn
      * @param screenY y-coordinate (topmost side of the image) where the icon will be drawn
      */
-    public void draw(Graphics2D g2, int iconId, int screenX, int screenY) {
+    public void draw(Renderer renderer, int iconId, int screenX, int screenY) {
 
         MenuIcon menuIcon = icons.get(iconId);
 
         if (menuIcon != null) {
 
-            BufferedImage image;
+            Sprite sprite;
 
             if (menuIcon.isSelected()) {
 
-                image = menuIcon.getActive();
+                sprite = menuIcon.getActive();
             } else {
 
-                image = menuIcon.getInactive();
+                sprite = menuIcon.getInactive();
             }
 
-            if (image != null) {
+            if (sprite != null) {
 
-                g2.drawImage(image, screenX, screenY, null);
+                menuIcon.transform.position.x = screenX;
+                menuIcon.transform.position.x = screenY;
+                renderer.addDrawable(menuIcon);
             } else if (!drawErrors.contains(iconId)) {
 
                 UtilityTool.logError("Failed to draw icon"
@@ -125,83 +124,61 @@ public class MenuIconManager {
         // Party menu icon - Icon ID 0.
         menuIcon = new MenuIcon(0);
         menuIcon.setName("Party menu");
-        menuIcon.setActive(setupImage("/icons/party_active.png"));
-        menuIcon.setInactive(setupImage("/icons/party_inactive.png"));
+        menuIcon.setActive(AssetPool.getSpritesheet(5).getSprite(5));
+        menuIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(6));
         icons.put(menuIcon.getIconId(), menuIcon);
 
         // Inventory menu icon - Icon ID 1.
         menuIcon = new MenuIcon(1);
         menuIcon.setName("Inventory menu");
-        menuIcon.setActive(setupImage("/icons/inventory_active.png"));
-        menuIcon.setInactive(setupImage("/icons/inventory_inactive.png"));
+        menuIcon.setActive(AssetPool.getSpritesheet(5).getSprite(7));
+        menuIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(8));
         icons.put(menuIcon.getIconId(), menuIcon);
 
         // Settings menu icon - Icon ID 2.
         menuIcon = new MenuIcon(2);
         menuIcon.setName("Settings menu");
-        menuIcon.setActive(setupImage("/icons/settings_active.png"));
-        menuIcon.setInactive(setupImage("/icons/settings_inactive.png"));
+        menuIcon.setActive(AssetPool.getSpritesheet(5).getSprite(9));
+        menuIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(10));
         icons.put(menuIcon.getIconId(), menuIcon);
 
         // Character summary icon 1 - Icon ID 3.
         menuIcon = new MenuIcon(3);
         menuIcon.setName("Character summary 1");
-        menuIcon.setActive(setupImage("/icons/summary_active.png"));
-        menuIcon.setInactive(setupImage("/icons/summary_inactive.png"));
+        menuIcon.setActive(AssetPool.getSpritesheet(5).getSprite(0));
+        menuIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(1));
         icons.put(menuIcon.getIconId(), menuIcon);
 
         // Character summary icon 2 - Icon ID 4.
         menuIcon = new MenuIcon(4);
         menuIcon.setName("Character summary 2");
-        menuIcon.setActive(setupImage("/icons/summary_active.png"));
-        menuIcon.setInactive(setupImage("/icons/summary_inactive.png"));
+        menuIcon.setActive(AssetPool.getSpritesheet(5).getSprite(0));
+        menuIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(1));
         icons.put(menuIcon.getIconId(), menuIcon);
 
         // Character summary icon 3 - Icon ID 5.
         menuIcon = new MenuIcon(5);
         menuIcon.setName("Character summary 3");
-        menuIcon.setActive(setupImage("/icons/summary_active.png"));
-        menuIcon.setInactive(setupImage("/icons/summary_inactive.png"));
+        menuIcon.setActive(AssetPool.getSpritesheet(5).getSprite(0));
+        menuIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(1));
         icons.put(menuIcon.getIconId(), menuIcon);
 
         // Item menu backdrop - Icon ID 6.
         menuIcon = new MenuIcon(6);
         menuIcon.setName("Item menu stackable backdrop");
-        menuIcon.setInactive(setupImage("/icons/item_backdrop_stackable.png"));
+        menuIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(3));
         icons.put(menuIcon.getIconId(), menuIcon);
 
         // Item menu backdrop - Icon ID 7.
         menuIcon = new MenuIcon(7);
         menuIcon.setName("Item menu non-stackable backdrop");
-        menuIcon.setInactive(setupImage("/icons/item_backdrop_non-stackable.png"));
+        menuIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(4));
         icons.put(menuIcon.getIconId(), menuIcon);
 
         // Item menu selector - Icon ID 8.
         menuIcon = new MenuIcon(8);
         menuIcon.setName("Item menu selector");
-        menuIcon.setInactive(setupImage("/icons/item_selector.png"));
+        menuIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(2));
         icons.put(menuIcon.getIconId(), menuIcon);
-    }
-
-
-    /**
-     * Loads and scales an icon sprite.
-     * Recommended file type is PNG.
-     *
-     * @param filePath file path of sprite from resources directory
-     * @return loaded sprite
-     * @throws AssetLoadException if an error occurs while loading an icon sprite
-     */
-    private BufferedImage setupImage(String filePath) {
-
-        try (InputStream is = getClass().getResourceAsStream(filePath)) {
-
-            BufferedImage image = ImageIO.read(is);
-            return UtilityTool.scaleImage(image, image.getWidth() * gp.getScale(), image.getHeight() * gp.getScale());
-
-        } catch (Exception e) {
-
-            throw new AssetLoadException("Could not load icon sprite from " + filePath);
-        }
     }
 }

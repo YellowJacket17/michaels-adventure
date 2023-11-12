@@ -1,11 +1,12 @@
 package icon;
 
-import java.awt.image.BufferedImage;
+import render.Sprite;
+import render.drawable.Drawable;
 
 /**
  * This class defines icons created for entities.
  */
-public class EntityIcon {
+public class EntityIcon extends Drawable {
 
     // FIELDS
     /**
@@ -16,7 +17,7 @@ public class EntityIcon {
     /**
      * Icon sprite.
      */
-    private BufferedImage down1, down2, down3;
+    private Sprite down1, down2, down3;
 
     /**
      * Boolean tracking whether the current icon is in a selected state or not.
@@ -37,6 +38,7 @@ public class EntityIcon {
      * @param entityId ID of the entity to create an icon of.
      */
     public EntityIcon(int entityId) {
+        super();
         this.entityId = entityId;
     }
 
@@ -46,15 +48,15 @@ public class EntityIcon {
         return entityId;
     }
 
-    public BufferedImage getDown1() {
+    public Sprite getDown1() {
         return down1;
     }
 
-    public BufferedImage getDown2() {
+    public Sprite getDown2() {
         return down2;
     }
 
-    public BufferedImage getDown3() {
+    public Sprite getDown3() {
         return down3;
     }
 
@@ -68,15 +70,15 @@ public class EntityIcon {
 
 
     // SETTERS
-    public void setDown1(BufferedImage down1) {
+    public void setDown1(Sprite down1) {
         this.down1 = down1;
     }
 
-    public void setDown2(BufferedImage down2) {
+    public void setDown2(Sprite down2) {
         this.down2 = down2;
     }
 
-    public void setDown3(BufferedImage down3) {
+    public void setDown3(Sprite down3) {
         this.down3 = down3;
     }
 

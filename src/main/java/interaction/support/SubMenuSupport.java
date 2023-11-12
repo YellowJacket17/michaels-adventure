@@ -22,11 +22,18 @@ public class SubMenuSupport {
     private final List<String> tempOptions = new ArrayList<>();
 
     /**
-     * Stored sub-menu data.
+     * Stored sub-menu ID.
      * This is used for a sub-menu to be displayed after a corresponding dialogue prompt has been read.
      * The default value is zero.
      */
-    private int tempSubMenuId, tempSubMenuWidth, tempSubMenuScreenX, tempSubMenuScreenY;
+    private int tempSubMenuId;
+
+    /**
+     * Stored sub-menu screen position (top-left), normalized between 0 and 1.
+     * This is used for a sub-menu to be displayed after a corresponding dialogue prompt has been read.
+     * The default value is zero.
+     */
+    private float tempSubMenuScreenX, tempSubMenuScreenY;
 
 
     // CONSTRUCTOR
@@ -48,7 +55,7 @@ public class SubMenuSupport {
 
         // NOTE: This method is called as part of logic triggered by `displaySubMenuPrompt()` in InteractionManager.
 
-        displaySubMenuBasic(tempOptions, tempSubMenuId, tempSubMenuWidth, tempSubMenuScreenX, tempSubMenuScreenY);      // Display the sub-menu now that the prompt has been read.
+        displaySubMenuBasic(tempOptions, tempSubMenuId, tempSubMenuScreenX, tempSubMenuScreenY);// Display the sub-menu now that the prompt has been read.
         reset();                                                                                                        // Reset variables that stored values for the sub-menu back to their default values.
     }
 
@@ -59,14 +66,13 @@ public class SubMenuSupport {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuWidth width of the window (minimum value of 0)
-     * @param subMenuScreenX x-coordinate of the left side of the window
-     * @param subMenuScreenY y-coordinate on the top side of the window
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
      */
-    public void displaySubMenuBasic(List<String> options, int subMenuId, int subMenuWidth, int subMenuScreenX, int subMenuScreenY) {
+    public void displaySubMenuBasic(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY) {
 
         gp.setGameState(GameState.SUB_MENU);
-        gp.getSubMenuH().generateSubMenu(options, subMenuId, subMenuWidth, subMenuScreenX, subMenuScreenY);
+        gp.getSubMenuH().generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY);
     }
 
 
@@ -76,15 +82,14 @@ public class SubMenuSupport {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuWidth width of the window (minimum value of 0)
      */
-    public void displaySubMenuBasic(List<String> options, int subMenuId, int subMenuWidth) {
+    public void displaySubMenuBasic(List<String> options, int subMenuId) {
 
-        int subMenuScreenX = (gp.getScreenWidth() / gp.getScale()) - subMenuWidth - 30;
-        int subMenuScreenY = (gp.getScreenHeight() / gp.getScale()) - 100 - (22 * options.size()) - 6;
+        float subMenuScreenX = 0.01f; // TODO : Adjust!
+        float subMenuScreenY = 0.01f; // TODO : Adjust!
 
         gp.setGameState(GameState.SUB_MENU);
-        gp.getSubMenuH().generateSubMenu(options, subMenuId, subMenuWidth, subMenuScreenX, subMenuScreenY);
+        gp.getSubMenuH().generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY);
     }
 
 
@@ -95,17 +100,15 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuWidth width of the window (minimum value of 0)
-     * @param subMenuScreenX x-coordinate of the left side of the window
-     * @param subMenuScreenY y-coordinate on the top side of the window
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
      */
-    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuWidth, int subMenuScreenX, int subMenuScreenY) {
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuScreenX, int subMenuScreenY) {
 
         for (String item : options) {
             tempOptions.add(item);
         }
         tempSubMenuId = subMenuId;
-        tempSubMenuWidth = subMenuWidth;
         tempSubMenuScreenX = subMenuScreenX;
         tempSubMenuScreenY = subMenuScreenY;
 
@@ -121,17 +124,15 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuWidth width of the window (minimum value of 0)
      */
-    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuWidth) {
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId) {
 
         for (String item : options) {
             tempOptions.add(item);
         }
         tempSubMenuId = subMenuId;
-        tempSubMenuWidth = subMenuWidth;
-        tempSubMenuScreenX = (gp.getScreenWidth() / gp.getScale()) - subMenuWidth - 30;
-        tempSubMenuScreenY = (gp.getScreenHeight() / gp.getScale()) - 100 - (22 * options.size()) - 6;
+        tempSubMenuScreenX = 0.01f; // TODO : Adjust!
+        tempSubMenuScreenY = 0.01f; // TODO : Adjust!
 
         gp.setGameState(GameState.DIALOGUE);
         gp.getDialogueR().initiateSubMenuMessage(prompt);
@@ -148,6 +149,5 @@ public class SubMenuSupport {
         tempSubMenuId = 0;
         tempSubMenuScreenX = 0;
         tempSubMenuScreenY = 0;
-        tempSubMenuWidth = 0;
     }
 }

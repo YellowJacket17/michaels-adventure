@@ -63,12 +63,12 @@ public class Lighting {
     public Lighting(GamePanel gp, int circleSize) {
 
         // Create a buffered image.
-        darknessFilter = new BufferedImage(gp.getScreenWidth(), gp.getScreenHeight(), BufferedImage.TYPE_INT_ARGB);
+        darknessFilter = new BufferedImage(gp.getNativeScreenWidth(), gp.getNativeScreenHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = (Graphics2D)darknessFilter.getGraphics();                                                       // Everything this `g2` draws will be recorded on this `darknessFilter`.
 
         // Calculate the center of the light circle (x and y).
-        int centerX = gp.getPlayer().getCenterScreenX() + (gp.getTileSize() / 2);
-        int centerY = gp.getPlayer().getCenterScreenY() + (gp.getTileSize() / 4);
+        int centerX = gp.getPlayer().getCenterScreenX() + (gp.getNativeTileSize() / 2);
+        int centerY = gp.getPlayer().getCenterScreenY() + (gp.getNativeTileSize() / 4);
 
         // Create a gradation effect within the light circle.
         Color[] color = new Color[12];                                                                                  // The number determines the number of divided levels of the gradation.
@@ -107,7 +107,7 @@ public class Lighting {
         g2.setPaint(gPaint);
 
         // Draw the rectangle.
-        g2.fillRect(0, 0, gp.getScreenWidth(), gp.getScreenHeight());
+        g2.fillRect(0, 0, gp.getNativeScreenWidth(), gp.getNativeScreenHeight());
 
         g2.dispose();
     }

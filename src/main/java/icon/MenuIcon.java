@@ -1,11 +1,12 @@
 package icon;
 
-import java.awt.image.BufferedImage;
+import render.Sprite;
+import render.drawable.Drawable;
 
 /**
  * This class defines menu icons created for the game.
  */
-public class MenuIcon {
+public class MenuIcon extends Drawable {
 
     // FIELDS
     /**
@@ -22,7 +23,7 @@ public class MenuIcon {
     /**
      * Icon spite.
      */
-    private BufferedImage active, inactive;
+    private Sprite active, inactive;
 
     /**
      * Boolean tracking whether the current icon is in a selected state or not. When in a selected state, this icon will
@@ -38,6 +39,7 @@ public class MenuIcon {
      * @param iconId unique icon ID
      */
     public MenuIcon(int iconId) {
+        super();
         this.iconId = iconId;
     }
 
@@ -51,11 +53,11 @@ public class MenuIcon {
         return name;
     }
 
-    public BufferedImage getActive() {
+    public Sprite getActive() {
         return active;
     }
 
-    public BufferedImage getInactive() {
+    public Sprite getInactive() {
         return inactive;
     }
 
@@ -69,11 +71,11 @@ public class MenuIcon {
         this.name = name;
     }
 
-    public void setActive(BufferedImage active) {
+    public void setActive(Sprite active) {
         this.active = active;
     }
 
-    public void setInactive(BufferedImage inactive) {
+    public void setInactive(Sprite inactive) {
         this.inactive = inactive;
     }
 

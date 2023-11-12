@@ -1,7 +1,6 @@
 package submenu;
 
 import core.GamePanel;
-import utility.UtilityTool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,35 +28,17 @@ public class SubMenuHandler {
     private int subMenuId = -1;
 
     /**
-     * Width of the sub-menu currently being displayed.
+     * Sub-menu's screen position, normalized between 0 and 1.
+     * This is the coordinate of the top-left corner of the sub-menu window currently being displayed.
      * The default value is zero.
      */
-    private int subMenuWidth;
-
-    /**
-     * Sub-menu's screen position.
-     * This is the coordinate for of the top-left corner of the sub-menu window currently being displayed.
-     * The default value is zero.
-     */
-    private int subMenuScreenX, subMenuScreenY;
+    private float subMenuScreenX, subMenuScreenY;
 
     /**
      * Variable to store the selected index of the sub-menu currently being displayed.
      * The default value is zero.
      */
     private int indexSelected;
-
-
-    // STATIC FIELDS
-    /**
-     * Standard width for a sub-menu window that only contains the options "Yes" and "No".
-     */
-    public static final int widthYesNo = 60;
-
-    /**
-     * Standard width for a sub-menu window that contains root combat options.
-     */
-    public static final int widthCombat1 = 100;
 
 
     // CONSTRUCTOR
@@ -76,16 +57,15 @@ public class SubMenuHandler {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuWidth width of the window (minimum value of 0)
-     * @param subMenuScreenX x-coordinate of the left side of the window
-     * @param subMenuScreenY y-coordinate on the top side of the window
-     * @throws IllegalArgumentException if either an illegal number of options or an illegal width is passed as argument
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
      */
-    public void generateSubMenu(List<String> options, int subMenuId, int subMenuWidth, int subMenuScreenX, int subMenuScreenY) {
+    public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY) {
 
         indexSelected = 0;                                                                                              // Ensures the default selected option is set to index zero.
 
-        if ((options.size() >= 1) && (options.size() < 8) && (subMenuWidth >= 0)) {
+        if ((options.size() >= 1) && (options.size() < 8)) {
 
             for (String item : options) {
                 this.options.add(item);
@@ -93,7 +73,6 @@ public class SubMenuHandler {
             this.subMenuId = subMenuId;
             this.subMenuScreenX = subMenuScreenX;
             this.subMenuScreenY = subMenuScreenY;
-            this.subMenuWidth = subMenuWidth;
         } else {
 
             if ((options.size() < 1) || (options.size() >= 8)) {
@@ -101,9 +80,6 @@ public class SubMenuHandler {
                 throw new IllegalArgumentException("Attempted to set a sub-menu with a number of options ("
                         + options.size()
                         + ") outside of bounds 1 - 8 (both inclusive)");
-            } else if (subMenuWidth < 0) {
-
-                throw new IllegalArgumentException("Attempted to set a sub-menu width less than zero");
             }
             gp.getInteractionM().handlePostSubMenu(subMenuId, indexSelected);
         }
@@ -117,7 +93,6 @@ public class SubMenuHandler {
     public void reset() {
 
         subMenuId = -1;
-        subMenuWidth = 0;
         subMenuScreenX = 0;
         subMenuScreenY = 0;
         indexSelected = 0;
@@ -130,16 +105,12 @@ public class SubMenuHandler {
         return subMenuId;
     }
 
-    public int getSubMenuScreenX() {
+    public float getSubMenuScreenX() {
         return subMenuScreenX;
     }
 
-    public int getSubMenuScreenY() {
+    public float getSubMenuScreenY() {
         return subMenuScreenY;
-    }
-
-    public int getSubMenuWidth() {
-        return subMenuWidth;
     }
 
     public int getIndexSelected() {

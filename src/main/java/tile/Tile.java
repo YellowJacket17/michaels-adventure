@@ -1,6 +1,7 @@
 package tile;
 
-import java.awt.image.BufferedImage;
+import render.Sprite;
+
 import java.util.ArrayList;
 
 /**
@@ -12,7 +13,7 @@ public class Tile {
     /**
      * List of tile sprites. Multiple sprites in the list can be used for animation.
      */
-    private final ArrayList<BufferedImage> images = new ArrayList<>();
+    private final ArrayList<Sprite> sprites = new ArrayList<>();
 
     /**
      * Boolean setting whether this tile has collision (i.e., is solid) or not.
@@ -36,8 +37,8 @@ public class Tile {
 
 
     // GETTERS
-    public ArrayList<BufferedImage> getImages() {
-        return images;
+    public ArrayList<Sprite> getSprites() {
+        return sprites;
     }
 
     public boolean hasCollision() {
@@ -50,8 +51,8 @@ public class Tile {
 
 
     // SETTERS
-    public void addImage(BufferedImage image) {
-        this.images.add(image);
+    public void addSprite(Sprite sprite) {
+        this.sprites.add(sprite);
     }
 
     public void setCollision(boolean collision) {

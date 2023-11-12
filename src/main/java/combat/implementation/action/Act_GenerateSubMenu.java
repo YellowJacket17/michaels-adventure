@@ -16,31 +16,28 @@ public class Act_GenerateSubMenu extends ActionBase {
     // FIELDS
     private final SubMenuType type;
     private final List<String> options = new ArrayList<>();
-    private final int subMenuWidth;
-    private final int subMenuScreenX;
-    private final int subMenuScreenY;
+    private final float subMenuScreenX;
+    private final float subMenuScreenY;
 
 
     // CONSTRUCTORS
-    public Act_GenerateSubMenu(GamePanel gp, SubMenuType type, List<String> options, int subMenuWidth) {
+    public Act_GenerateSubMenu(GamePanel gp, SubMenuType type, List<String> options) {
         super(gp);
         this.type = type;
         for (String item : options) {
             this.options.add(item);
         }
-        this.subMenuWidth = subMenuWidth;
-        this.subMenuScreenX = (gp.getScreenWidth() / gp.getScale()) - subMenuWidth - 30;
-        this.subMenuScreenY = (gp.getScreenHeight() / gp.getScale()) - 100 - (22 * options.size()) - 6;
+        this.subMenuScreenX = 0.01f; // TODO : Adjust!
+        this.subMenuScreenY = 0.01f; // TODO : Adjust!
     }
 
 
-     public Act_GenerateSubMenu(GamePanel gp, SubMenuType type, List<String> options, int subMenuWidth, int subMenuScreenX, int subMenuScreenY) {
+     public Act_GenerateSubMenu(GamePanel gp, SubMenuType type, List<String> options, float subMenuScreenX, float subMenuScreenY) {
         super(gp);
         this.type = type;
         for (String item : options) {
             this.options.add(item);
         }
-        this.subMenuWidth = subMenuWidth;
         this.subMenuScreenX = subMenuScreenX;
         this.subMenuScreenY = subMenuScreenY;
     }
@@ -64,6 +61,6 @@ public class Act_GenerateSubMenu extends ActionBase {
     private void displaySubMenu() {
 
         gp.setGameState(GameState.SUB_MENU);
-        gp.getSubMenuH().generateSubMenu(options, 1, subMenuWidth, subMenuScreenX, subMenuScreenY);
+        gp.getSubMenuH().generateSubMenu(options, 1, subMenuScreenX, subMenuScreenY);
     }
 }
