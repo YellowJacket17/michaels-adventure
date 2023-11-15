@@ -1,6 +1,6 @@
 package interaction;
 
-import core.GameState;
+import miscellaneous.GameState;
 import entity.EntityBase;
 import core.GamePanel;
 import entity.EntityDirection;

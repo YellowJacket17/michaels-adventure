@@ -112,6 +112,7 @@ public class Int_Map001 extends InteractionMapBase {
         if ((type == InteractionType.STEP) && (col == 22) && (row == 28)) {
 
             gp.getCutsceneM().triggerCutscene(1);
+//            gp.getCameraS().setCameraScroll(0, 0, 10);
             return true;
         }
 

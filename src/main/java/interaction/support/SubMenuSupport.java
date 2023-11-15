@@ -1,7 +1,7 @@
 package interaction.support;
 
 import core.GamePanel;
-import core.GameState;
+import miscellaneous.GameState;
 
 import java.util.ArrayList;
 import java.util.List;

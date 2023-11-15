@@ -1,5 +1,6 @@
 package core;
 
+import entity.EntityBase;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector2f;
@@ -40,7 +41,7 @@ public class Camera {
      * The normalized coordinates are what are actually drawn on screen.
      */
 
-    // FIELDS
+    // BASIC FIELDS
     /**
      * Projection matrix.
      * The projection matrix determines how large the screen space is.
@@ -233,5 +234,15 @@ public class Camera {
     public float worldHeightToScreenHeight(float height) {
 
         return height / screenHeight;
+    }
+
+
+    // GETTERS
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
     }
 }

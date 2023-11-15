@@ -1,7 +1,7 @@
 package cutscene;
 
 import core.GamePanel;
-import core.GameState;
+import miscellaneous.GameState;
 
 /**
  * This abstract class defines base logic for a cutscene.

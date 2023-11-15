@@ -2,7 +2,7 @@ package combat.implementation.action;
 
 import combat.ActionBase;
 import core.GamePanel;
-import core.GameState;
+import miscellaneous.GameState;
 
 /**
  * This class defines an action (read a message).

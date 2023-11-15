@@ -67,8 +67,8 @@ public class Lighting {
         Graphics2D g2 = (Graphics2D)darknessFilter.getGraphics();                                                       // Everything this `g2` draws will be recorded on this `darknessFilter`.
 
         // Calculate the center of the light circle (x and y).
-        int centerX = gp.getPlayer().getCenterScreenX() + (gp.getNativeTileSize() / 2);
-        int centerY = gp.getPlayer().getCenterScreenY() + (gp.getNativeTileSize() / 4);
+//        int centerX = gp.getPlayer().getCenterScreenX() + (gp.getNativeTileSize() / 2);
+//        int centerY = gp.getPlayer().getCenterScreenY() + (gp.getNativeTileSize() / 4);
 
         // Create a gradation effect within the light circle.
         Color[] color = new Color[12];                                                                                  // The number determines the number of divided levels of the gradation.
@@ -101,10 +101,10 @@ public class Lighting {
         fraction[11] = 1f;                                                                                              // Distance from center of light circle of the outermost color (1 means the edge).
 
         // Create a gradation paint setting for the light circle.
-        RadialGradientPaint gPaint = new RadialGradientPaint(centerX, centerY, (circleSize / 2), fraction, color);      // Will create circular gradation paint data, which we can use as a paint setting for Graphics2D.
+//        RadialGradientPaint gPaint = new RadialGradientPaint(centerX, centerY, (circleSize / 2), fraction, color);      // Will create circular gradation paint data, which we can use as a paint setting for Graphics2D.
 
         // Set the gradation data on `g2`.
-        g2.setPaint(gPaint);
+//        g2.setPaint(gPaint);
 
         // Draw the rectangle.
         g2.fillRect(0, 0, gp.getNativeScreenWidth(), gp.getNativeScreenHeight());

@@ -1,8 +1,8 @@
 package interaction.support;
 
 import core.GamePanel;
-import core.GameState;
-import core.TransitionType;
+import miscellaneous.GameState;
+import miscellaneous.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
 import interaction.WarpTransitionType;

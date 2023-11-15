@@ -170,50 +170,50 @@ public class LightManager {
 
     public void draw(Graphics2D g2) {
 
-//        BufferedImage lightingCanvas = new BufferedImage(gp.getScreenWidth(), gp.getScreenHeight(), BufferedImage.TYPE_INT_ARGB);
-//        Graphics2D g2LightingCanvas = (Graphics2D)lightingCanvas.getGraphics();
-
-        int worldSubCol = 0;
-        int worldSubRow = 0;
-
-        while ((worldSubCol < (gp.getMaxWorldCol() * nodesPerTile)) && (worldSubRow < (gp.getMaxWorldRow() * nodesPerTile))) {         // Draw each node from left to right for each sub-row, starting with the top row and working downwards.
-
-            int worldX = worldSubCol * nodeSize;
-            int worldY = worldSubRow * nodeSize;
-//            int screenX = worldX - gp.getPlayer().getWorldX() + gp.getPlayer().getPlayerScreenX();                      // Determine where on the screen to draw node (x).
-//            int screenY = worldY - gp.getPlayer().getWorldY() + gp.getPlayer().getPlayerScreenY();                      // ^^^  // TODO : Uncomment this and line above.
-
-            int centerScreenX = gp.getPlayer().getCenterScreenX();
-            int centerScreenY = gp.getPlayer().getCenterScreenY();
-            int cameraOffsetX = gp.getPlayer().getCameraOffsetX();
-            int cameraOffsetY = gp.getPlayer().getCameraOffsetY();
-
-            // Improve rendering efficiency; only draw nodes visible on the screen.
-            if (worldX + nodeSize > gp.getPlayer().getWorldX() - centerScreenX - cameraOffsetX &&                              // Left side of screen; in words: if ((world x position of node plus an additional node's length) > (left bound of the visible screen area))
-                    worldX - nodeSize < gp.getPlayer().getWorldX() + (gp.getNativeScreenWidth() - centerScreenX) - cameraOffsetX &&  // Right side of screen.
-                    worldY + nodeSize > gp.getPlayer().getWorldY() - centerScreenY - cameraOffsetY &&                          // Top side of screen.
-                    worldY - nodeSize < gp.getPlayer().getWorldY() + (gp.getNativeScreenHeight() - centerScreenY) - cameraOffsetY) { // Bottom side of screen.
-
-//                BufferedImage image = new BufferedImage(nodeSize, nodeSize, BufferedImage.TYPE_INT_ARGB);
-//                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, nodes[worldSubCol][worldSubRow].getAlpha()));
-                if (compare(nodes[worldSubCol][worldSubRow].getAlpha(), 0.0f) == 0) {
-                    g2.setColor(new Color(0, 0, 0, 0.0f));
-                } else {
-                    g2.setColor(new Color(0, 0, 0, 1.0f));
-                }
-
-//                g2.fillRect(screenX, screenY, nodeSize, nodeSize);
-//                g2.drawRect(screenX, screenY, nodeSize, nodeSize);  // TODO : Replace with Renderer!
-//                g2.drawImage(image, screenX, screenY, null);
-
-            }
-            worldSubCol++;                                                                                              // Iterate so that we can draw the next tile.
-
-            if (worldSubCol == (gp.getMaxWorldCol() * nodesPerTile)) {
-                worldSubCol = 0;
-                worldSubRow++;
-            }
-        }
+////        BufferedImage lightingCanvas = new BufferedImage(gp.getScreenWidth(), gp.getScreenHeight(), BufferedImage.TYPE_INT_ARGB);
+////        Graphics2D g2LightingCanvas = (Graphics2D)lightingCanvas.getGraphics();
+//
+//        int worldSubCol = 0;
+//        int worldSubRow = 0;
+//
+//        while ((worldSubCol < (gp.getMaxWorldCol() * nodesPerTile)) && (worldSubRow < (gp.getMaxWorldRow() * nodesPerTile))) {         // Draw each node from left to right for each sub-row, starting with the top row and working downwards.
+//
+//            int worldX = worldSubCol * nodeSize;
+//            int worldY = worldSubRow * nodeSize;
+////            int screenX = worldX - gp.getPlayer().getWorldX() + gp.getPlayer().getPlayerScreenX();                      // Determine where on the screen to draw node (x).
+////            int screenY = worldY - gp.getPlayer().getWorldY() + gp.getPlayer().getPlayerScreenY();                      // ^^^  // TODO : Uncomment this and line above.
+//
+//            int centerScreenX = gp.getPlayer().getCenterScreenX();
+//            int centerScreenY = gp.getPlayer().getCenterScreenY();
+//            int cameraOffsetX = gp.getPlayer().getCameraOffsetX();
+//            int cameraOffsetY = gp.getPlayer().getCameraOffsetY();
+//
+//            // Improve rendering efficiency; only draw nodes visible on the screen.
+//            if (worldX + nodeSize > gp.getPlayer().getWorldX() - centerScreenX - cameraOffsetX &&                              // Left side of screen; in words: if ((world x position of node plus an additional node's length) > (left bound of the visible screen area))
+//                    worldX - nodeSize < gp.getPlayer().getWorldX() + (gp.getNativeScreenWidth() - centerScreenX) - cameraOffsetX &&  // Right side of screen.
+//                    worldY + nodeSize > gp.getPlayer().getWorldY() - centerScreenY - cameraOffsetY &&                          // Top side of screen.
+//                    worldY - nodeSize < gp.getPlayer().getWorldY() + (gp.getNativeScreenHeight() - centerScreenY) - cameraOffsetY) { // Bottom side of screen.
+//
+////                BufferedImage image = new BufferedImage(nodeSize, nodeSize, BufferedImage.TYPE_INT_ARGB);
+////                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, nodes[worldSubCol][worldSubRow].getAlpha()));
+//                if (compare(nodes[worldSubCol][worldSubRow].getAlpha(), 0.0f) == 0) {
+//                    g2.setColor(new Color(0, 0, 0, 0.0f));
+//                } else {
+//                    g2.setColor(new Color(0, 0, 0, 1.0f));
+//                }
+//
+////                g2.fillRect(screenX, screenY, nodeSize, nodeSize);
+////                g2.drawRect(screenX, screenY, nodeSize, nodeSize);  // TODO : Replace with Renderer!
+////                g2.drawImage(image, screenX, screenY, null);
+//
+//            }
+//            worldSubCol++;                                                                                              // Iterate so that we can draw the next tile.
+//
+//            if (worldSubCol == (gp.getMaxWorldCol() * nodesPerTile)) {
+//                worldSubCol = 0;
+//                worldSubRow++;
+//            }
+//        }
     }
 
 

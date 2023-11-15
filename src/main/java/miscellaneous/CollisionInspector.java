@@ -1,5 +1,6 @@
-package core;
+package miscellaneous;
 
+import core.GamePanel;
 import entity.EntityBase;
 import landmark.LandmarkBase;
 import utility.UtilityTool;

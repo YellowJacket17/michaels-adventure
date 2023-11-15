@@ -1,7 +1,7 @@
 package dialogue;
 
 import core.GamePanel;
-import core.GameState;
+import miscellaneous.GameState;
 import utility.exceptions.ConversationNotFoundException;
 
 /**

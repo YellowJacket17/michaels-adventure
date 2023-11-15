@@ -1,7 +1,7 @@
 package cutscene;
 
 import core.GamePanel;
-import core.GameState;
+import miscellaneous.GameState;
 import cutscene.implementation.Cts_Test1;
 import utility.UtilityTool;
 

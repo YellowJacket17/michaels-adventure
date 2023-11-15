@@ -4,14 +4,15 @@ import render.Sprite;
 import render.drawable.Drawable;
 
 /**
- * This class defines menu icons created for the game.
+ * This class defines GUI icons created for the game.
+ * These elements are primarily used in menus.
  */
-public class MenuIcon extends Drawable {
+public class GuiIcon extends Drawable {
 
     // FIELDS
     /**
      * Unique icon ID.
-     * To be clear, this ID is unique for each MenuIcon instance across the entire game.
+     * To be clear, this ID is unique for each GuiIcon instance across the entire game.
      */
     private final int iconId;
 
@@ -34,11 +35,11 @@ public class MenuIcon extends Drawable {
 
     // CONSTRUCTOR
     /**
-     * Constructs a MenuIcon instance.
+     * Constructs a GuiIcon instance.
      *
      * @param iconId unique icon ID
      */
-    public MenuIcon(int iconId) {
+    public GuiIcon(int iconId) {
         super();
         this.iconId = iconId;
     }

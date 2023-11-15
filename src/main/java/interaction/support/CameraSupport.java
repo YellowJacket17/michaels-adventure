@@ -1,71 +1,82 @@
 package interaction.support;
 
 import core.GamePanel;
+import entity.EntityBase;
+import org.joml.Vector2f;
 
 /**
  * This class contains methods to facilitate camera movement.
  */
 public class CameraSupport {
 
-    // FIELDS
+    // BASIC FIELD
     private final GamePanel gp;
 
+
+    // CAMERA TRACK FIELDS
     /**
-     * Boolean indicating whether the camera is currently scrolling or not.
+     * Entity being tracked/followed by the camera.
+     * When updated, the camera will position itself to focus on this entity at its center.
+     */
+    private EntityBase trackedEntity;
+
+    /**
+     * Boolean indicating whether to override (i.e., stop) tracking the tracked entity (true) or not (false).
+     */
+    private boolean overrideEntityTracking = false;
+
+
+    // CAMERA SCROLL FIELDS
+    /**
+     * Boolean indicating whether a camera scroll effect is current in effect (true) or not (false).
      */
     private boolean cameraScrolling = false;
 
     /**
-     * Variable to store the starting camera offset from the center during a scroll effect.
+     * Variable to store the starting camera world position (center of camera) of a camera scroll effect.
      */
-    private int startingOffsetX, startingOffsetY;
+    private float startingWorldX, startingWorldY;
 
     /**
-     * Variable to store the target camera offset from the center during a scroll effect.
-     * In other words, this is the offset that'll achieve the desired camera world position.
+     * Variable to store the target camera world position (center of camera) of a camera scroll effect.
      */
-    private int targetOffsetX, targetOffsetY;
+    private float targetWorldX, targetWorldY;
 
     /**
-     * Variable to store the difference between the target and starting camera offsets.
+     * Variable to store the difference between the target and starting camera world position (center of camera).
      */
-    private int differenceOffsetX, differenceOffsetY;
-
-    /**
-     * Boolean to indicate which of the two target camera offsets (x or y) is greater.
-     * If true, then the target offset in the x direction is greater.
-     */
-    private boolean differenceOffsetXGreater = false;
+    private float differenceWorldX, differenceWorldY;
 
     /**
      * Variable to track the progress of a scrolling effect.
+     * In other words the current center of the camera is stored.
      */
-    private double completedOffsetX, completedOffsetY;
+    private float currentWorldX, currentWorldY;
+
+    private float leftoverWorldX, leftoverWorldY;
 
     /**
-     * Variable to set the total number of frames that a scroll effect will take place for.
-     * In other words, how many frames the scroll effect will last for.
+     * Variable to store the calculated number of frames that a camera scroll effect will take to complete.
      */
     private int totalFrames;
 
     /**
-     * Variable to count the number of frames that have passed so far during a scroll effect.
+     * Variable to count the number of frames that have passed so far during a camera scroll effect.
      */
     private int frameCount;
 
     /**
-     * Variable to store the calculated scroll speed in a direction.
+     * Variable to store the calculated camera scroll speed.
      */
-    private double speedX, speedY;
-
-    /**
-     * Variable to track the last whole number recorded for the smaller camera offset differences (x or y) from the
-     * starting to the target.
-     */
-    private int lastWholeNumber;
+    private float speedX, speedY;
 
 
     // CONSTRUCTOR
+    /**
+     * Constructs a CameraSupport instance.
+     *
+     * @param gp GamePanel instance
+     */
     public CameraSupport(GamePanel gp) {
         this.gp = gp;
     }
@@ -74,37 +85,81 @@ public class CameraSupport {
     // METHODS
     /**
      * Updates the state of any active camera effects by one frame.
+     * This includes entity tracking; if the tracked entity is null, this effect will do nothing.
      */
     public void update() {
 
-        updateCameraScroll();
-    }
+        if (cameraScrolling) {
 
+            updateCameraScroll();
+        } else if ((trackedEntity != null) && (!overrideEntityTracking)) {
 
-    /**
-     * Snaps the camera back to center on the player.
-     */
-    public void resetCameraSnap() {
-
-        if (!cameraScrolling) {
-
-            gp.getPlayer().setCameraOffsetX(0);
-            gp.getPlayer().setCameraOffsetY(0);
+            float centerScreenX = (gp.getCamera().getScreenWidth() / 2) - (gp.getNativeTileSize() / 2);
+            float centerScreenY = gp.getCamera().getScreenHeight() / 2;
+            gp.getCamera().adjustPosition(
+                    new Vector2f(trackedEntity.getWorldX() - centerScreenX,
+                    trackedEntity.getWorldY() - centerScreenY
+                    )
+            );
         }
     }
 
 
     /**
-     * Scrolls the camera back to center on the player.
+     * Sets the camera to center on and track an entity.
+     * Each time the camera is updated, this will override any manual change made to the camera's position (position
+     * matrix) unless the tracked entity is null or tracking is overridden.
+     *
+     * @param entity entity to track
+     */
+    public void setTrackedEntity(EntityBase entity) {
+
+        this.trackedEntity = entity;
+    }
+
+
+    /**
+     * Snaps the camera back to center on the tracked entity.
+     * If the tracked entity is null or a camera scroll effect is in effect, then nothing will happen.
+     * Any override on the tracked entity will be removed.
+     */
+    public void resetCameraSnap() {
+
+        if ((!cameraScrolling) && (trackedEntity != null)) {
+
+            float centerScreenX = ((float)gp.getCamera().getScreenWidth() / 2) - ((float)gp.getNativeTileSize() / 2);
+            float centerScreenY = (float)gp.getCamera().getScreenHeight() / 2;
+            gp.getCamera().adjustPosition(
+                    new Vector2f(
+                            (float)trackedEntity.getWorldX() - centerScreenX,
+                            (float)trackedEntity.getWorldY() - centerScreenY
+                    )
+            );
+            overrideEntityTracking = false;
+        }
+    }
+
+
+    /**
+     * Scrolls the camera back to center on the tracked entity.
+     * If the tracked entity is null or a camera scroll effect is in effect, then nothing will happen.
+     * Any override on the tracked entity will be removed.
      *
      * @param speed speed at which to scroll the camera; minimum allowed is 1, maximum is 20
      * @throws IllegalArgumentException if an illegal speed is passed as argument
      */
-    public void resetCameraScroll(int speed) {
+    public void resetCameraScroll(float speed) {
 
-        if ((!cameraScrolling) && (speed > 0) && (speed <= 20)) {
+        if ((!cameraScrolling) && (trackedEntity != null) && (speed > 0) && (speed <= 20)) {
 
-            setCameraScroll((gp.getPlayer().getWorldX() + (gp.getNativeTileSize() / 2)), gp.getPlayer().getWorldY(), speed);
+            float centerScreenX = ((float)gp.getCamera().getScreenWidth() / 2) - ((float)gp.getNativeTileSize() / 2);
+            float centerScreenY = (float)gp.getCamera().getScreenHeight() / 2;
+            setCameraScroll(
+                    (float)trackedEntity.getWorldX() - centerScreenX,
+                    (float)trackedEntity.getWorldY() - centerScreenY,
+                    speed
+            );
+            overrideEntityTracking = false;
         } else if ((speed < 1) || (speed > 20)) {
 
             throw new IllegalArgumentException("Attempted to set a camera scroll speed outside of bounds 1 - 20 (both inclusive)");
@@ -114,155 +169,81 @@ public class CameraSupport {
 
     /**
      * Snaps the camera to center on a specified world position.
+     * An override on a tracked entity will be put into place.
      *
-     * @param worldX world position to snap the camera to (x)
-     * @param worldY world position to snap the camera to (y)
+     * @param worldX world position (center of camera) to snap the camera to (x)
+     * @param worldY world position (center of camera) to snap the camera to (y)
      */
-    public void setCameraSnap(int worldX, int worldY) {
-
-        // NOTE!
-        // The plus half a tile offset for X adjusts for the fact that `centerCameraX` in the Player class has minus
-        // this same offset.
-        // Cancelling it out here places the desired world X position exactly at the center of the screen.
+    public void setCameraSnap(float worldX, float worldY) {
 
         if (!cameraScrolling) {
 
-            gp.getPlayer().setCameraOffsetX(gp.getPlayer().getWorldX() - worldX + (gp.getNativeTileSize() / 2));
-            gp.getPlayer().setCameraOffsetY(gp.getPlayer().getWorldY() - worldY);
+            gp.getCamera().adjustPosition(
+                    new Vector2f(
+                            worldX - ((float)gp.getCamera().getScreenWidth() / 2),
+                            worldY - ((float)gp.getCamera().getScreenHeight() / 2)
+                    )
+            );
+            overrideEntityTracking = true;
         }
     }
 
 
     /**
      * Scrolls the camera to center on a specified world position.
+     * If a camera scroll effect is already in effect, then nothing will happen.
+     * An override on a tracked entity will be put into place.
      *
-     * @param worldX world position to scroll the camera to (x)
-     * @param worldY world position to scroll the camera to (y)
+     * @param worldX world position (center of camera) to scroll the camera to (x)
+     * @param worldY world position (center of camera) to scroll the camera to (y)
      * @param speed speed at which to scroll the camera; minimum allowed is 1, maximum is 20
      * @throws IllegalArgumentException if an illegal speed is passed as argument
      */
-    public void setCameraScroll(int worldX, int worldY, int speed) {
-
-        // NOTE!
-        // Offset that moves camera up or left is positive.
-        // Offset that moves camera down or right is negative.
-        // This is flipped from how the X and Y directions are defined in this application.
-
-        // This method prepares the camera scroll effect.
-        // The actual camera scroll effect will be updated in the method `updateCameraScroll()`.
+    public void setCameraScroll(float worldX, float worldY, float speed) {
 
         if ((!cameraScrolling) && (speed > 0) && (speed <= 20)) {
 
-            // Begin the camera scrolling process.
             cameraScrolling = true;
 
-            // Store the current camera offset from the center.
-            startingOffsetX = gp.getPlayer().getCameraOffsetX();
-            startingOffsetY = gp.getPlayer().getCameraOffsetY();
+            startingWorldX = gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2);
+            startingWorldY = gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2);
 
-            // Store the target camera offset from the center.
-            // I.e., the offset that'll achieve the desired `worldX` and `worldY`.
-            targetOffsetX = gp.getPlayer().getWorldX() - worldX + (gp.getNativeTileSize() / 2);
-            targetOffsetY = gp.getPlayer().getWorldY() - worldY;
+            targetWorldX = worldX;
+            targetWorldY = worldY;
 
-            // Calculate the difference between the target and current camera offsets.
-            // Note that this is NOT the absolute value of the difference.
-            differenceOffsetX = targetOffsetX - startingOffsetX;
-            differenceOffsetY = targetOffsetY - startingOffsetY;
+            differenceWorldX = targetWorldX - startingWorldX;
+            differenceWorldY = targetWorldY - startingWorldY;
 
-            if (Math.abs(differenceOffsetX) > Math.abs(differenceOffsetY)) {
+            if (differenceWorldX > differenceWorldY) {
 
-                // Offset difference in the X direction is greater than that in the Y direction.
-                differenceOffsetXGreater = true;
+                if (targetWorldX < startingWorldX) {
 
-                // Since the offset difference in the X direction is greater, `speedX` simply equals the passed
-                // value for `speed`.
-                // Note that `speedX` will always be a whole number in this case.
-                if (differenceOffsetX > 0) {
-
-                    // Positive value since we want to move the offset left.
-                    speedX = speed;
-                } else {
-
-                    // Negative value since we want to move the offset right.
                     speedX = -speed;
-                }
-
-                if ((differenceOffsetX % speedX) == 0) {
-
-                    // The offset difference in the X direction is perfectly divisible by `speedX`.
-                    totalFrames = Math.abs(differenceOffsetX / (int) speedX);
                 } else {
 
-                    // The offset difference in the X direction is NOT perfectly divisible by `speedX`.
-                    // This means on the last frame, we'll have a remainder not equal to `speedX`.
-                    // To adjust for this, we'll add one extra frame.
-                    // On this last frame, we'll make up whatever the remainder is.
-                    totalFrames = Math.abs((differenceOffsetX / (int) speedX) + 1);
+                    speedX = speed;
                 }
-
-                // Calculate `speedY`.
-                // `speedY` will be added to the Y offset for each frame of `totalFrames` that we go through.
-                // `speedY` will be a value that, when multiplied by `totalFrames` (which was determined by `speedX`
-                // and the difference in the X direction) will equal the difference in the Y direction.
-                // Note that this will likely be a decimal
-                speedY = (double) differenceOffsetY / (double) totalFrames;
+                totalFrames = Math.abs((int)Math.ceil(differenceWorldX / speedX));
+                leftoverWorldX = differenceWorldX % speedX;
+                speedY = differenceWorldY / totalFrames;
             } else {
 
-                // Offset difference in the Y direction is greater than (or equal to) that in the X direction.
-                differenceOffsetXGreater = false;
+                if (targetWorldY < startingWorldY) {
 
-                // Since the offset difference in the Y direction is greater, `speedY` simply equals the passed
-                // value for `speed`.
-                // Note that `speedY` will always be a whole number in this case.
-                if (differenceOffsetY > 0) {
-
-                    // Positive value since we want to move the offset up.
-                    speedY = speed;
-                } else {
-
-                    // Positive value since we want to move the offset down.
                     speedY = -speed;
-                }
-
-                if ((differenceOffsetY % speedY) == 0) {
-
-                    // The offset difference in the Y direction is perfectly divisible by `speedY`.
-                    totalFrames = Math.abs(differenceOffsetY / (int) speedY);
                 } else {
 
-                    // The offset difference in the Y direction is NOT perfectly divisible by `speedY`.
-                    // This means on the last frame, we'll have a remainder not equal to `speedY`.
-                    // To adjust for this, we'll add one extra frame.
-                    // On this last frame, we'll make up whatever the remainder is.
-                    totalFrames = Math.abs((differenceOffsetY / (int) speedY) + 1);
+                    speedY = speed;
                 }
-
-                // Calculate `speedX`.
-                // `speedX` will be added to the Y offset for each frame of `totalFrames` that we go through.
-                // `speedX` will be a value that, when multiplied by `totalFrames` (which was determined by `speedY`
-                // and the difference in the Y direction) will equal the difference in the X direction.
-                // Note that this will likely be a decimal
-                speedX = (double) differenceOffsetX / (double) totalFrames;
+                totalFrames = Math.abs((int)Math.ceil(differenceWorldY / speedY));
+                leftoverWorldY = differenceWorldY % speedY;
+                speedX = differenceWorldX / totalFrames;
             }
 
-            // Declare variables to track the progress as we scroll.
-            completedOffsetX = startingOffsetX;
-            completedOffsetY = startingOffsetY;
+            currentWorldX = startingWorldX;
+            currentWorldY = startingWorldY;
 
-            // Initialize `lastWholeNumber` to the beginning (i.e., current) offset of the direction with the
-            // smaller difference.
-            // Remember that `lastWholeNumber` tracks the last whole number recorded for the smaller offset difference.
-            // The speed for the smaller offset may be a decimal.
-            // `lastWholeNumber` will be used to actually track when we should set a new offset in the smaller direction
-            // as we scroll.
-            if (differenceOffsetXGreater) {
-
-                lastWholeNumber = startingOffsetY;
-            } else {
-
-                lastWholeNumber = startingOffsetX;
-            }
+            overrideEntityTracking = true;
         } else if ((speed < 1) || (speed > 20)) {
 
             throw new IllegalArgumentException("Attempted to set a camera scroll speed outside of bounds 1 - 20 (both inclusive)");
@@ -271,7 +252,7 @@ public class CameraSupport {
 
 
     /**
-     * Updates the camera scroll effect by one frame if one is in effect.
+     * Updates the camera scroll effect by one frame if in effect.
      */
     private void updateCameraScroll() {
 
@@ -279,128 +260,61 @@ public class CameraSupport {
 
             if (frameCount == (totalFrames - 1)) {
 
-                // On the last frame, force to the target offset for X and Y to finish this scroll.
-                gp.getPlayer().setCameraOffsetX(targetOffsetX);
-                gp.getPlayer().setCameraOffsetY(targetOffsetY);
-
-                // Reset variables use for the camera scrolling effect.
+                float cameraWorldX = targetWorldX - ((float)gp.getCamera().getScreenWidth() / 2);
+                float cameraWorldY = targetWorldY - ((float)gp.getCamera().getScreenHeight() / 2);
+                gp.getCamera().adjustPosition(new Vector2f(cameraWorldX, cameraWorldY));
                 reset();
             } else {
 
-                if (differenceOffsetXGreater) {
-
-                    // Scroll the X offset an amount according to `speedX`.
-                    completedOffsetX += speedX;
-
-                    // Set the new offset in the X direction to make it take effect on-screen.
-                    // Note that since `speedX` is guaranteed to be a whole number, we can directly set it.
-                    gp.getPlayer().setCameraOffsetX((int) completedOffsetX);
-
-                    // Scroll the Y offset an amount according to `speedY`.
-                    completedOffsetY += speedY;
-
-                    // Check to see if `completedOffsetY` has iterated at least one whole number.
-                    // If so, we'll set the last whole number it passed as the new offset in the Y direction.
-                    if (Math.abs(completedOffsetY - lastWholeNumber) >= 1) {
-
-                        // Declare a variable that will be used to track whether `lastWholeNumber` is positive or negative.
-                        // Essentially, at some point in the logic below we take the absolute value of `lastWholeNumber`,
-                        // but will eventually return it to its original sign.
-                        // To return it to its original sign, we'll multiply by either 1 or -1 according to what
-                        // `negativeControl` marked the sign as.
-                        int negativeControl;
-
-                        // Always round down in the direction we're coming from (ignore negative sign for
-                        // negative offsets).
-                        negativeControl = 1;
-
-                        if (completedOffsetY < 0) {
-
-                            negativeControl = -1;
-                        }
-
-                        if (Math.abs(completedOffsetY) > Math.abs(lastWholeNumber)) {
-
-                            lastWholeNumber = (int) (negativeControl * Math.floor(Math.abs(completedOffsetY)));
-                        } else {
-
-                            lastWholeNumber = (int) (negativeControl * Math.ceil(Math.abs(completedOffsetY)));
-                        }
-
-                        gp.getPlayer().setCameraOffsetY(lastWholeNumber);
-                    }
-
-                } else {
-
-                    // Scroll the Y offset an amount according to `speedY`.
-                    completedOffsetY += speedY;
-
-                    // Set the new offset in the Y direction to make it take effect on-screen.
-                    // Note that since `speedY` is guaranteed to be a whole number, we can directly set it.
-                    gp.getPlayer().setCameraOffsetY((int) completedOffsetY);
-
-                    // Scroll the X offset an amount according to `speedX`.
-                    completedOffsetX += speedX;
-
-                    // Check to see if `completedOffsetX` has iterated at least one whole number.
-                    // If so, we'll set the last whole number it passed as the new offset in the X direction.
-                    if (Math.abs(completedOffsetX - lastWholeNumber) >= 1) {
-
-                        // Declare a variable that will be used to track whether `lastWholeNumber` is positive or negative.
-                        // Essentially, at some point in the logic below we take the absolute value of `lastWholeNumber`,
-                        // but will eventually return it to its original sign.
-                        // To return it to its original sign, we'll multiply by either 1 or -1 according to what
-                        // `negativeControl` marked the sign as.
-                        int negativeControl;
-
-                        // Always round down in the direction we're coming from (ignore negative sign for
-                        // negative offsets).
-                        negativeControl = 1;
-
-                        if (completedOffsetX < 0) {
-
-                            negativeControl = -1;
-                        }
-
-                        if (Math.abs(completedOffsetX) > Math.abs(lastWholeNumber)) {
-
-                            lastWholeNumber = (int) (negativeControl * Math.floor(Math.abs(completedOffsetX)));
-                        } else {
-
-                            lastWholeNumber = (int) (negativeControl * Math.ceil(Math.abs(completedOffsetX)));
-                        }
-
-                        gp.getPlayer().setCameraOffsetX(lastWholeNumber);
-                    }
-
-                    // Iterate the frame count.
-                    frameCount++;
-                }
+                currentWorldX += speedX;
+                currentWorldY += speedY;
+                float cameraWorldX = currentWorldX - ((float)gp.getCamera().getScreenWidth() / 2);
+                float cameraWorldY = currentWorldY - ((float)gp.getCamera().getScreenHeight() / 2);
+                gp.getCamera().adjustPosition(new Vector2f(cameraWorldX, cameraWorldY));
+                frameCount++;
             }
         }
     }
 
 
     /**
-     * Resets WarpSupport back to its default state.
+     * Resets CameraSupport back to its default state.
      * Intended to be called to clean up after a camera scroll effect has finished.
      */
     private void reset() {
 
         cameraScrolling = false;
-        startingOffsetX = 0;
-        startingOffsetY = 0;
-        targetOffsetX = 0;
-        targetOffsetY = 0;
-        differenceOffsetX = 0;
-        differenceOffsetY = 0;
-        differenceOffsetXGreater = false;
-        completedOffsetX = 0;
-        completedOffsetY = 0;
+        startingWorldX = 0;
+        startingWorldY = 0;
+        targetWorldX = 0;
+        targetWorldY = 0;
+        differenceWorldX = 0;
+        differenceWorldY = 0;
+        currentWorldX = 0;
+        currentWorldY = 0;
         totalFrames = 0;
         frameCount = 0;
         speedX = 0;
         speedY = 0;
-        lastWholeNumber = 0;
+    }
+
+
+    // GETTERS
+    public EntityBase getTrackedEntity() {
+        return trackedEntity;
+    }
+
+    public boolean isOverrideEntityTracking() {
+        return overrideEntityTracking;
+    }
+
+    public boolean isCameraScrolling() {
+        return cameraScrolling;
+    }
+
+
+    // SETTERS
+    public void setOverrideEntityTracking(boolean overrideEntityTracking) {
+        this.overrideEntityTracking = overrideEntityTracking;
     }
 }

@@ -9,6 +9,10 @@ import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
 import interaction.support.SubMenuSupport;
 import interaction.support.WarpSupport;
+import miscellaneous.CollisionInspector;
+import miscellaneous.GameState;
+import miscellaneous.TransitionType;
+import miscellaneous.Ui;
 import render.Renderer;
 import render.Spritesheet;
 import submenu.SelectionArrow;
@@ -17,7 +21,7 @@ import entity.implementation.player.Player;
 import environment.EnvironmentManager;
 import interaction.support.CameraSupport;
 import icon.EntityIconManager;
-import icon.MenuIconManager;
+import icon.GuiIconManager;
 import interaction.InteractionManager;
 import landmark.LandmarkBase;
 import landmark.LandmarkManager;
@@ -93,7 +97,7 @@ public class GamePanel {
     private final DialogueReader dialogueR = new DialogueReader(this);
     private TileManager tileM;
     private final LandmarkManager landmarkM = new LandmarkManager(this);
-    private MenuIconManager iconM;
+    private GuiIconManager iconM;
     private final EntityIconManager entityIconM = new EntityIconManager(this);
     private final EnvironmentManager environmentM = new EnvironmentManager(this);
     private final CutsceneManager cutsceneM = new CutsceneManager(this);
@@ -105,7 +109,7 @@ public class GamePanel {
     private final SubMenuSupport subMenuS = new SubMenuSupport(this);
     private final PathFinder pathF = new PathFinder(this);
     private final Sound audio = new Sound();
-    private final UI ui = new UI(this);
+    private final Ui ui = new Ui(this);
 
 
     // ENTITY (PLAYER, NPC, OBJECT)
@@ -230,7 +234,7 @@ public class GamePanel {
         // Initialize classes.
         camera = new Camera(nativeScreenWidth, nativeScreenHeight);
         tileM = new TileManager(this);
-        iconM = new MenuIconManager(this);
+        iconM = new GuiIconManager(this);
         dialogueA = new DialogueArrow(this);
         selectionA = new SelectionArrow(this);
         player = new Player(this);
@@ -242,6 +246,9 @@ public class GamePanel {
 
         // Load map along with associated entities and dialogue.
         loadMap(1);
+
+        // Set camera to track player entity.
+        cameraS.setTrackedEntity(player);
 
         // Other setup.
         environmentM.setup();                                                                                           // Set environment effects; note that the setup for lighting is somewhat computationally intensive and may lag behind subsequent processes.
@@ -255,9 +262,6 @@ public class GamePanel {
      * @param dt time since the last rendered frame (frame pacing)
      */
     public void update(double dt) {
-
-        // Camera.
-        cameraS.update();
 
         // Dialogue.
         dialogueR.update();
@@ -276,6 +280,9 @@ public class GamePanel {
 
         // Environment.
         environmentM.update();
+
+        // Camera.
+        cameraS.update();
     }
 
 
@@ -943,7 +950,7 @@ public class GamePanel {
         return landmarkM;
     }
 
-    public MenuIconManager getIconM() {
+    public GuiIconManager getIconM() {
         return iconM;
     }
 
@@ -987,7 +994,7 @@ public class GamePanel {
         return pathF;
     }
 
-    public UI getUi() {
+    public Ui getUi() {
         return ui;
     }
 

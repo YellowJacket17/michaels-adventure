@@ -2,11 +2,10 @@ package combat;
 
 import combat.implementation.action.*;
 import core.GamePanel;
-import core.GameState;
-import core.TransitionType;
+import miscellaneous.GameState;
+import miscellaneous.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
-import submenu.SubMenuHandler;
 import utility.UtilityTool;
 
 import java.util.*;
@@ -400,6 +399,9 @@ public class CombatManager {
      */
     private void handleBasicEnterCombatTransitionLoading() {
 
+        // Override camera tracking (we'd like to manually position it for combat).
+        gp.getCameraS().setOverrideEntityTracking(true);
+
         // Set the player entity as combating and store its pre-combat world position.
         setCombating(gp.getPlayer());
 
@@ -482,7 +484,7 @@ public class CombatManager {
      */
     private void handleBasicExitCombatTransitionLoading() {
 
-        // Reset camera to player.
+        // Reset camera.
         gp.getCameraS().resetCameraSnap();
 
         // Reset all non-party member combating entities back to pre-combat positions.

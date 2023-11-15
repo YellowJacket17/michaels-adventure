@@ -69,7 +69,7 @@ public class DialogueArrow extends Drawable {
 
         if (!isUpPosition) {
 
-            screenY += 0.01;                                                                                            // Set the dialogue arrow to its "down" position.
+            screenY += 0.005;                                                                                           // Set the dialogue arrow to its "down" position.
         }
 
         if (sprite != null) {

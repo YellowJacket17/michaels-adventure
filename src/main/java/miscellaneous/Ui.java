@@ -1,5 +1,6 @@
-package core;
+package miscellaneous;
 
+import core.GamePanel;
 import entity.EntityBase;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -13,7 +14,7 @@ import java.util.Set;
 /**
  * This class handles the drawing of all on-screen user interface (UI) elements.
  */
-public class UI {
+public class Ui {
 
     // FIELDS
     private final GamePanel gp;
@@ -22,7 +23,7 @@ public class UI {
     /**
      * Counter to control the fade to/from effect of a transition screen.
      */
-    private int frameCounter;
+    private int transitionFrameCounter;
 
     /**
      * Constant that sets the size of the gap between the screen edges at the top and bottom of the central menu window.
@@ -73,11 +74,11 @@ public class UI {
 
     // CONSTRUCTOR
     /**
-     * Constructs a UI instance.
+     * Constructs a Ui instance.
      *
      * @param gp GamePanel instance
      */
-    public UI(GamePanel gp) {
+    public Ui(GamePanel gp) {
         this.gp = gp;
         coreMenuEdge = gp.getNativeTileSize();
         occupiedItemSlots = new boolean[maxNumItemRow][maxNumItemCol];
@@ -202,7 +203,7 @@ public class UI {
         // Dialogue progress arrow, if applicable.
         if ((gp.getDialogueR().isDialoguePaused())
                 || (!gp.getDialogueR().isReadingDialogue() && (gp.getDialogueR().isAlwaysShowArrow()))) {
-            Vector2f arrowScreenCoords = new Vector2f(mainWindowScreenCoords.x + mainWindowScreenWidth - 0.02f, mainWindowScreenCoords.y + mainWindowScreenHeight - 0.04f);
+            Vector2f arrowScreenCoords = new Vector2f(mainWindowScreenCoords.x + mainWindowScreenWidth - 0.02f, mainWindowScreenCoords.y + mainWindowScreenHeight - 0.03f);
             gp.getDialogueA().render(renderer, arrowScreenCoords.x, arrowScreenCoords.y);
         }
 
@@ -596,46 +597,37 @@ public class UI {
      */
     private void renderTransitionScreen() {
 
-        Vector2f worldCoords;
-        float worldWidth;
-        float worldHeight;
+        Vector2f worldCoords = new Vector2f(0, 0);
+        float worldWidth = gp.getMaxWorldCol() * gp.getNativeTileSize();                                                // Overlaid black rectangle will span entire width of world.
+        float worldHeight = gp.getMaxWorldRow() * gp.getNativeTileSize();                                               // Overlaid black rectangle will span entire height of world.
 
         switch (gp.getActiveTransitionPhase()) {
             case 1:                                                                                                     // Phase 1: Fade screen to black.
-                frameCounter++;
-                worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(0, 0));
-                worldWidth = gp.getCamera().screenWidthToWorldWidth(1);                                                 // Span entire width of screen.
-                worldHeight = gp.getCamera().screenHeightToWorldHeight(1);                                              // Span entire height of screen.
-                renderer.addRectangle(new Vector4f(0, 0, 0, frameCounter * 10),
-                        new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)));
-                if (frameCounter == 25) {
-                    frameCounter = 0;                                                                                   // Reset `frameCounter` to prepare it for the second phase.
+                transitionFrameCounter++;
+                renderer.addRectangle(new Vector4f(0, 0, 0, transitionFrameCounter * 10),
+                        new Transform(new Vector2f(0, 0), new Vector2f(worldWidth, worldHeight)));
+                if (transitionFrameCounter == 25) {
+                    transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to prepare it for the second phase.
                     gp.setActiveTransitionPhase(2);                                                                     // Proceed to the next (second) phase of the transition.
                     gp.handleTransitionLoading();                                                                       // Now that the screen's faded to black, perform any necessary loading in the background.
                 }
                 break;
             case 2:                                                                                                     // Phase 2: Wait on black screen.
-                frameCounter++;
-                worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(0, 0));
-                worldWidth = gp.getCamera().screenWidthToWorldWidth(1);
-                worldHeight = gp.getCamera().screenHeightToWorldHeight(1);
+                transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, 255),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)));
-                if (frameCounter == 30) {                                                                               // At 60 FPS, this will amount to waiting on the black screen for 0.5 seconds.
-                    frameCounter = 0;                                                                                   // Reset `frameCounter` to prepare it for the final (third) phase.
+                if (transitionFrameCounter == 30) {                                                                     // At 60 FPS, this will amount to waiting on the black screen for 0.5 seconds.
+                    transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to prepare it for the final (third) phase.
                     gp.setActiveTransitionPhase(3);                                                                     // Proceed to the final (third) phase of the transition.
                 }
                 break;
             case 3:                                                                                                     // Phase 3: Fade from black.
-                frameCounter++;
-                worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(0, 0));
-                worldWidth = gp.getCamera().screenWidthToWorldWidth(1);
-                worldHeight = gp.getCamera().screenHeightToWorldHeight(1);
-                renderer.addRectangle(new Vector4f(0, 0, 0, (250 - (frameCounter * 10))),
+                transitionFrameCounter++;
+                renderer.addRectangle(new Vector4f(0, 0, 0, (250 - (transitionFrameCounter * 10))),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)));
-                if (frameCounter == 25) {
-                    frameCounter = 0;                                                                                   // Reset `frameCounter` to its default value since the transition is complete.
-                    gp.concludeTransition();                                                                             // Reset the transition type to neutral and the transition phase to the beginning.
+                if (transitionFrameCounter == 25) {
+                    transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to its default value since the transition is complete.
+                    gp.concludeTransition();                                                                            // Reset the transition type to neutral and the transition phase to the beginning.
                 }
                 break;
         }
@@ -772,25 +764,25 @@ public class UI {
         String row = "Player Row: " + gp.getPlayer().getRow();
         renderStringShadow(row, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
 
-        // Camera center (x).
-        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.25f));
-        String centerX = "Camera Center X: " + (gp.getPlayer().getWorldX() + (gp.getNativeTileSize() / 2) - gp.getPlayer().getCameraOffsetX());
-        renderStringShadow(centerX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
-
-        // Camera center (y).
-        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.31f));
-        String centerY = "Camera Center Y: " + (gp.getPlayer().getWorldY() - gp.getPlayer().getCameraOffsetY());
-        renderStringShadow(centerY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
-
-        // Camera offset (x).
-        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.37f));
-        String offsetX = "Camera Offset X: " + gp.getPlayer().getCameraOffsetX();
-        renderStringShadow(offsetX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
-
-        // Camera offset (y).
-        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.43f));
-        String offsetY = "Camera Offset Y: " + gp.getPlayer().getCameraOffsetY();
-        renderStringShadow(offsetY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+//        // Camera center (x).
+//        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.25f));
+//        String centerX = "Camera Center X: " + (gp.getPlayer().getWorldX() + (gp.getNativeTileSize() / 2) - gp.getPlayer().getCameraOffsetX());
+//        renderStringShadow(centerX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+//
+//        // Camera center (y).
+//        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.31f));
+//        String centerY = "Camera Center Y: " + (gp.getPlayer().getWorldY() - gp.getPlayer().getCameraOffsetY());
+//        renderStringShadow(centerY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+//
+//        // Camera offset (x).
+//        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.37f));
+//        String offsetX = "Camera Offset X: " + gp.getPlayer().getCameraOffsetX();
+//        renderStringShadow(offsetX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+//
+//        // Camera offset (y).
+//        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.43f));
+//        String offsetY = "Camera Offset Y: " + gp.getPlayer().getCameraOffsetY();
+//        renderStringShadow(offsetY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
     }
 
 

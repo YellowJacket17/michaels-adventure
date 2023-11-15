@@ -2,7 +2,7 @@ package entity.implementation.player;
 
 import combat.implementation.attack.Atk_Punch;
 import combat.implementation.attack.Atk_Tackle;
-import core.GameState;
+import miscellaneous.GameState;
 import core.KeyListener;
 import entity.EntityBase;
 import entity.EntityDirection;
@@ -14,7 +14,6 @@ import item.implementation.Itm_Key;
 import item.ItemBase;
 import org.joml.Vector2f;
 import render.Renderer;
-import submenu.SubMenuHandler;
 import utility.AssetPool;
 import utility.LimitedArrayList;
 import utility.UtilityTool;
@@ -31,17 +30,6 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Player extends EntityBase {
 
     // FIELDS
-    /**
-     * Indicates where the center of the screen (i.e., camera) is.
-     */
-    private int centerScreenX;
-    private int centerScreenY;
-
-    /**
-     * Indicates the offset of the camera from where the player is drawn.
-     */
-    private int cameraOffsetX, cameraOffsetY;
-
     /**
      * Number of frames that the player has to change direction while retaining momentum upon leaving a state of motion.
      * This lets the player entity instantly being walking in a new direction if they're already moving, versus stopping
@@ -105,12 +93,8 @@ public class Player extends EntityBase {
     // CONSTRUCTOR
     public Player(GamePanel gp) {
         super(gp, 0, EntityType.CHARACTER);
-        setupCamera();
         setDefaultValues();                                                                                             // Set default player values when a player instance is created.
         setupSprite();                                                                                                  // Load player sprites when a player instance is created.
-
-        // TODO : Set this somewhere else.
-
     }
 
 
@@ -200,7 +184,7 @@ public class Player extends EntityBase {
 
 
     /**
-     * Draws the player entity.
+     * Adds the player entity to the render pipeline.
      *
      * @param renderer Renderer instance
      */
@@ -223,7 +207,6 @@ public class Player extends EntityBase {
                 transform.scale.x = gp.getNativeTileSize();                                                             // Entities must be as wide as the native tile size.
                 transform.scale.y = sprite.getNativeHeight();
                 renderer.addDrawable(this);
-                gp.getCamera().adjustPosition(new Vector2f(worldX - centerScreenX - cameraOffsetX, worldY - centerScreenY - cameraOffsetY));
             } else if (!renderError) {
 
                 UtilityTool.logError("Failed to add entity "
@@ -462,19 +445,6 @@ public class Player extends EntityBase {
         sprite = down1;
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
-    }
-
-
-    /**
-     * Initializes the camera position with respect to the player entity.
-     */
-    private void setupCamera() {
-
-        centerScreenX = (gp.getNativeScreenWidth() / 2) - (gp.getNativeTileSize() / 2);                                 // Draw player at the center of the screen (x); the minus half a tile offset puts the center of the player sprite at the center of the screen.
-        centerScreenY = (gp.getNativeScreenHeight() / 2);                                                               // Draw the player at the center of the screen (y).
-
-        cameraOffsetX = 0;
-        cameraOffsetY = 0;
     }
 
 
@@ -775,7 +745,7 @@ public class Player extends EntityBase {
 
             if ((gp.isDebugActive())
                     && (gp.getGameState() == GameState.EXPLORE)
-                    && ((gp.getPlayer().getCameraOffsetX() != 0) || (gp.getPlayer().getCameraOffsetY() != 0))) {
+                    && (gp.getCameraS().isOverrideEntityTracking())) {
 
                 List<String> options = List.of("Yes", "No");                                                            // Immutable list.
                 String prompt = "Reset camera back to player?";
@@ -789,19 +759,51 @@ public class Player extends EntityBase {
         else if (gp.isDebugActive()) {
 
             if (KeyListener.isKeyPressed(GLFW_KEY_UP)) {
-                gp.getPlayer().setCameraOffsetY(gp.getPlayer().getCameraOffsetY() + 4);
+                if (!gp.getCameraS().isOverrideEntityTracking()) {
+                    gp.getCameraS().setOverrideEntityTracking(true);
+                }
+                gp.getCamera().adjustPosition(
+                        new Vector2f(
+                                gp.getCamera().getPositionMatrix().x,
+                                gp.getCamera().getPositionMatrix().y - 4
+                        )
+                );
             }
 
             if (KeyListener.isKeyPressed(GLFW_KEY_DOWN)) {
-                gp.getPlayer().setCameraOffsetY(gp.getPlayer().getCameraOffsetY() - 4);
+                if (!gp.getCameraS().isOverrideEntityTracking()) {
+                    gp.getCameraS().setOverrideEntityTracking(true);
+                }
+                gp.getCamera().adjustPosition(
+                        new Vector2f(
+                                gp.getCamera().getPositionMatrix().x,
+                                gp.getCamera().getPositionMatrix().y + 4
+                        )
+                );
             }
 
             if (KeyListener.isKeyPressed(GLFW_KEY_LEFT)) {
-                gp.getPlayer().setCameraOffsetX(gp.getPlayer().getCameraOffsetX() + 4);
+                if (!gp.getCameraS().isOverrideEntityTracking()) {
+                    gp.getCameraS().setOverrideEntityTracking(true);
+                }
+                gp.getCamera().adjustPosition(
+                        new Vector2f(
+                                gp.getCamera().getPositionMatrix().x - 4,
+                                gp.getCamera().getPositionMatrix().y
+                        )
+                );
             }
 
             if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT)) {
-                gp.getPlayer().setCameraOffsetX(gp.getPlayer().getCameraOffsetX() - 4);
+                if (!gp.getCameraS().isOverrideEntityTracking()) {
+                    gp.getCameraS().setOverrideEntityTracking(true);
+                }
+                gp.getCamera().adjustPosition(
+                        new Vector2f(
+                                gp.getCamera().getPositionMatrix().x + 4,
+                                gp.getCamera().getPositionMatrix().y
+                        )
+                );
             }
         }
     }
@@ -908,37 +910,13 @@ public class Player extends EntityBase {
     }
 
 
-    // GETTERS
-    public int getCenterScreenX() {
-        return centerScreenX;
-    }
-
-    public int getCenterScreenY() {
-        return centerScreenY;
-    }
-
-    public int getCameraOffsetX() {
-        return cameraOffsetX;
-    }
-
-    public int getCameraOffsetY() {
-        return cameraOffsetY;
-    }
-
+    // GETTER
     public ArrayList<ItemBase> getInventory() {
         return inventory;
     }
 
 
-    // SETTERS
-    public void setCameraOffsetX(int cameraOffsetX) {
-        this.cameraOffsetX = cameraOffsetX;
-    }
-
-    public void setCameraOffsetY(int cameraOffsetY) {
-        this.cameraOffsetY = cameraOffsetY;
-    }
-
+    // SETTER
     public void setInteractionCountdown(int interactionCountdown) {
         this.interactionCountdown = interactionCountdown;
     }

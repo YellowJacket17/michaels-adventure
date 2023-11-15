@@ -5,6 +5,7 @@ import render.drawable.Drawable;
 
 /**
  * This class defines icons created for entities.
+ * These elements are primarily used in menus.
  */
 public class EntityIcon extends Drawable {
 

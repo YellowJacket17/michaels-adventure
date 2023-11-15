@@ -1,4 +1,4 @@
-package core;
+package miscellaneous;
 
 /**
  * This enum defines possible game states, with each largely affecting what player inputs do and what is drawn.

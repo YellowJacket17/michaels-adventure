@@ -1,4 +1,4 @@
-package core;
+package miscellaneous;
 
 /**
  * This enum defines transition types to be used when fading the screen to black for loading.
