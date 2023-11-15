@@ -602,32 +602,31 @@ public class Ui {
         float worldHeight = gp.getMaxWorldRow() * gp.getNativeTileSize();                                               // Overlaid black rectangle will span entire height of world.
 
         switch (gp.getActiveTransitionPhase()) {
-            case 1:                                                                                                     // Phase 1: Fade screen to black.
+            case FADING_TO:                                                                                             // Phase 1: Fade screen to black.
                 transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, transitionFrameCounter * 10),
                         new Transform(new Vector2f(0, 0), new Vector2f(worldWidth, worldHeight)));
                 if (transitionFrameCounter == 25) {
                     transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to prepare it for the second phase.
-                    gp.setActiveTransitionPhase(2);                                                                     // Proceed to the next (second) phase of the transition.
-                    gp.handleTransitionLoading();                                                                       // Now that the screen's faded to black, perform any necessary loading in the background.
+                    gp.setActiveTransitionPhase(TransitionPhase.LOADING);                                               // Proceed to the next (second) phase of the transition.
                 }
                 break;
-            case 2:                                                                                                     // Phase 2: Wait on black screen.
+            case LOADING:                                                                                               // Phase 2: Wait on black screen.
                 transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, 255),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)));
                 if (transitionFrameCounter == 30) {                                                                     // At 60 FPS, this will amount to waiting on the black screen for 0.5 seconds.
                     transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to prepare it for the final (third) phase.
-                    gp.setActiveTransitionPhase(3);                                                                     // Proceed to the final (third) phase of the transition.
+                    gp.setActiveTransitionPhase(TransitionPhase.FADING_FROM);                                           // Proceed to the final (third) phase of the transition.
                 }
                 break;
-            case 3:                                                                                                     // Phase 3: Fade from black.
+            case FADING_FROM:                                                                                           // Phase 3: Fade from black.
                 transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, (250 - (transitionFrameCounter * 10))),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)));
                 if (transitionFrameCounter == 25) {
                     transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to its default value since the transition is complete.
-                    gp.concludeTransition();                                                                            // Reset the transition type to neutral and the transition phase to the beginning.
+                    gp.setActiveTransitionPhase(TransitionPhase.CLEANUP);
                 }
                 break;
         }

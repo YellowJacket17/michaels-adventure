@@ -3,6 +3,7 @@ package combat;
 import combat.implementation.action.*;
 import core.GamePanel;
 import miscellaneous.GameState;
+import miscellaneous.TransitionPhase;
 import miscellaneous.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
@@ -143,7 +144,7 @@ public class CombatManager {
             gp.setCombatActive(true);                                                                                   // Set combat mode as active.
             gp.setGameState(GameState.TRANSITION);                                                                      // Set the game to a transition state.
             gp.setActiveTransitionType(TransitionType.ENTER_COMBAT);                                                    // Set the overarching transition type as enter combat (different from EnterCombatTransitionType).
-            gp.setActiveTransitionPhase(1);                                                                             // Set the first phase of the transition (fade out to black); this will actually trigger the transition (fade-to-black effect) when the game state is in a transition state.
+            gp.setActiveTransitionPhase(TransitionPhase.FADING_TO);                                                     // Set the first phase of the transition (fade out to black); this will actually trigger the transition (fade-to-black effect) when the game state is in a transition state.
             activeEnterCombatTransitionType = type;                                                                     // Set the current enter combat transition type being used.
 
             // Set the center tile (column/row) of the combat field.
@@ -184,7 +185,7 @@ public class CombatManager {
 
         gp.setGameState(GameState.TRANSITION);                                                                          // Set the game to a transition state.
         gp.setActiveTransitionType(TransitionType.EXIT_COMBAT);                                                         // Set the overarching transition type as enter combat (different from ExitCombatTransitionType).
-        gp.setActiveTransitionPhase(1);                                                                                 // Set the first phase of the transition (fade out to black); this will actually trigger the transition (fade-to-black effect) when the game state is in a transition state.
+        gp.setActiveTransitionPhase(TransitionPhase.FADING_TO);                                                         // Set the first phase of the transition (fade out to black); this will actually trigger the transition (fade-to-black effect) when the game state is in a transition state.
         activeExitCombatTransitionType = type;                                                                          // Set the current exit combat transition type being used.
     }
 

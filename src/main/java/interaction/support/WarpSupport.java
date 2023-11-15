@@ -2,6 +2,7 @@ package interaction.support;
 
 import core.GamePanel;
 import miscellaneous.GameState;
+import miscellaneous.TransitionPhase;
 import miscellaneous.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
@@ -123,7 +124,7 @@ public class WarpSupport {
 
         gp.setGameState(GameState.TRANSITION);                                                                          // Set the game to a transition state.
         gp.setActiveTransitionType(TransitionType.WARP);                                                                // Set the overarching transition type as warp (different from WarpTransitionType).
-        gp.setActiveTransitionPhase(1);                                                                                 // Set the first phase of the transition (fade out to black); this will actually trigger the transition (fade-to-black effect) when the game state is in a transition state.
+        gp.setActiveTransitionPhase(TransitionPhase.FADING_TO);                                                         // Set the first phase of the transition (fade out to black); this will actually trigger the transition (fade-to-black effect) when the game state is in a transition state.
         activeWarpTransitionType = type;                                                                                // Set the warp current transition type being used.
 
         stagedMapId = mapId;                                                                                            // Store the requested map.

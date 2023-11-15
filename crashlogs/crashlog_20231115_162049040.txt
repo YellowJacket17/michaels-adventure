@@ -1,0 +1,10 @@
+11/15/2023 16:20:46:112  INFO     Application started.
+11/15/2023 16:20:49:023  INFO     Starting game loop.
+11/15/2023 16:20:49:038  ERROR    An unhandled exception has occurred.
+java.lang.NullPointerException: Cannot invoke "interaction.WarpTransitionType.ordinal()" because "this.activeWarpTransitionType" is null
+	at interaction.support.WarpSupport.handleWarpTransitionLoading(WarpSupport.java:160)
+	at core.GamePanel.handleTransitionLoading(GamePanel.java:783)
+	at core.GamePanel.updateTransition(GamePanel.java:762)
+	at core.GamePanel.update(GamePanel.java:273)
+	at core.Window.run(Window.java:179)
+	at core.App.main(App.java:21)

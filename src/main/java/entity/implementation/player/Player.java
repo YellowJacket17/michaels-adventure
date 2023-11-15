@@ -229,12 +229,12 @@ public class Player extends EntityBase {
     public void updateWarpTransitionStepPortal() {
 
         switch (gp.getActiveTransitionPhase()) {
-            case 1:                                                                                                     // Phase 1: Set the player to a walking sprite.
+            case FADING_TO:                                                                                             // Phase 1: Set the player to a walking sprite.
                 moving = false;                                                                                         // Cancel the player movement that triggered this transition event.
                 setWalkingSprite();
                 updateWorldPosition();                                                                                  // Update the world position of the player by one unit of its speed in the current direction.
                 break;
-            case 2:                                                                                                     // Phase 2: Set the player to an idle sprite.
+            case LOADING:                                                                                               // Phase 2: Set the player to an idle sprite.
                 setIdleSprite();
                 directionCurrent = directionCandidate;                                                                  // Set the direction the player will be facing when loaded into the new map.
                 directionLast = directionCandidate;

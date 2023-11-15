@@ -9,10 +9,7 @@ import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
 import interaction.support.SubMenuSupport;
 import interaction.support.WarpSupport;
-import miscellaneous.CollisionInspector;
-import miscellaneous.GameState;
-import miscellaneous.TransitionType;
-import miscellaneous.Ui;
+import miscellaneous.*;
 import render.Renderer;
 import render.Spritesheet;
 import submenu.SelectionArrow;
@@ -209,10 +206,14 @@ public class GamePanel {
     private TransitionType activeTransitionType;
 
     /**
-     * Variable to store phase of the current transition being performed
-     * (0 = default state, 1 = fading to black, 2 = loading while black, 3 = fading from black).
+     * Variable to store phase of the current transition being performed.
      */
-    private int activeTransitionPhase;
+    private TransitionPhase activeTransitionPhase;
+
+    /**
+     * Boolean to flag whether a new transition phase was just entered.
+     */
+    private boolean transitionPhaseChanged = false;
 
 
     // CONSTRUCTOR
@@ -239,19 +240,20 @@ public class GamePanel {
         selectionA = new SelectionArrow(this);
         player = new Player(this);
 
-        // Fade into the game.
-        gameState = GameState.TRANSITION;
-        activeTransitionType = TransitionType.WARP;
-        activeTransitionPhase = 2;
-
         // Load map along with associated entities and dialogue.
         loadMap(1);
 
         // Set camera to track player entity.
         cameraS.setTrackedEntity(player);
 
+        // Force fade into the game.
+        gameState = GameState.TRANSITION;
+        activeTransitionType = TransitionType.WARP;
+        activeTransitionPhase = TransitionPhase.LOADING;
+        transitionPhaseChanged = false;
+
         // Other setup.
-        environmentM.setup();                                                                                           // Set environment effects; note that the setup for lighting is somewhat computationally intensive and may lag behind subsequent processes.
+        environmentM.setup();
         playMusic(0);
     }
 
@@ -262,6 +264,9 @@ public class GamePanel {
      * @param dt time since the last rendered frame (frame pacing)
      */
     public void update(double dt) {
+
+        // Transition.
+        updateTransition();
 
         // Dialogue.
         dialogueR.update();
@@ -294,7 +299,7 @@ public class GamePanel {
     public void render(double dt) {
 
         // NOTE:
-        // Objects are added to the render pipeline in the following order to control their layering.
+        // Objects are added to the render pipeline in the following order to control layering.
 
         // Tile.
         tileM.render(renderer);                                                                                         // Draw tile sprite as defined in the TileManager class.
@@ -364,7 +369,7 @@ public class GamePanel {
         }
 
         // Environment.
-//            environmentM.draw(g2);                                                                                      // NOTE: Drawing environmental effects is a somewhat intensive process computationally.
+//            environmentM.draw(g2);
 
         // Cutscene.
         cutsceneM.draw();
@@ -546,48 +551,6 @@ public class GamePanel {
 
         // Load dialogue associated with new map.
         jsonP.loadDialogueJson(mapId);
-    }
-
-
-    /**
-     * Performs any loading that needs to be done once the screen is black during a transition of any type.
-     */
-    public void handleTransitionLoading() {
-
-        switch (activeTransitionType) {
-            case WARP:
-                warpS.handleWarpTransitionLoading();
-                break;
-            case ENTER_COMBAT:
-                combatM.handleEnterCombatTransitionLoading();
-                break;
-            case EXIT_COMBAT:
-                combatM.handleExitCombatTransitionLoading();
-                break;
-        }
-    }
-
-
-    /**
-     * Closes out a transition of any type that has completed all of its phases (i.e., tidies up any variables).
-     */
-    public void concludeTransition() {
-
-        switch (activeTransitionType) {
-            case WARP:
-                warpS.concludeWarpTransition();
-                break;
-            case ENTER_COMBAT:
-                combatM.concludeEnterCombatTransition();
-                break;
-            case EXIT_COMBAT:
-                combatM.concludeExitCombatTransition();
-                break;
-        }
-
-        // Reset transition variables.
-        activeTransitionType = null;
-        activeTransitionPhase = 0;
     }
 
 
@@ -779,6 +742,73 @@ public class GamePanel {
                 entity.update();
             }
         }
+    }
+
+
+    /**
+     * Updates a transition (i.e., performs any loading or other logic that needs to be run immediately after a new
+     * transition phase is entered).
+     */
+    private void updateTransition() {
+
+        if ((activeTransitionType != null) && (transitionPhaseChanged)) {
+
+            switch (activeTransitionPhase) {
+                case LOADING:
+                    handleTransitionLoading();
+                    break;
+                case CLEANUP:
+                    concludeTransition();
+                    break;
+            }
+        }
+
+        if (transitionPhaseChanged) {
+
+            transitionPhaseChanged = false;
+        }
+    }
+
+
+    /**
+     * Performs any loading that needs to be done once the screen is black during a transition of any type.
+     */
+    private void handleTransitionLoading() {
+
+        switch (activeTransitionType) {
+            case WARP:
+                warpS.handleWarpTransitionLoading();
+                break;
+            case ENTER_COMBAT:
+                combatM.handleEnterCombatTransitionLoading();
+                break;
+            case EXIT_COMBAT:
+                combatM.handleExitCombatTransitionLoading();
+                break;
+        }
+    }
+
+
+    /**
+     * Closes out a transition of any type that has completed all of its phases (i.e., tidies up any variables).
+     */
+    private void concludeTransition() {
+
+        switch (activeTransitionType) {
+            case WARP:
+                warpS.concludeWarpTransition();
+                break;
+            case ENTER_COMBAT:
+                combatM.concludeEnterCombatTransition();
+                break;
+            case EXIT_COMBAT:
+                combatM.concludeExitCombatTransition();
+                break;
+        }
+
+        // Reset transition variables.
+        activeTransitionType = null;
+        activeTransitionPhase = TransitionPhase.DEFAULT;
     }
 
 
@@ -1062,7 +1092,7 @@ public class GamePanel {
         return activeTransitionType;
     }
 
-    public int getActiveTransitionPhase() {
+    public TransitionPhase getActiveTransitionPhase() {
         return activeTransitionPhase;
     }
 
@@ -1089,11 +1119,8 @@ public class GamePanel {
         this.activeTransitionType = activeTransitionType;
     }
 
-    public void setActiveTransitionPhase(int activeTransitionPhase) {
-        if ((activeTransitionPhase >= 0) && (activeTransitionPhase <= 3)) {
-            this.activeTransitionPhase = activeTransitionPhase;
-        } else {
-            throw new IllegalArgumentException("Attempted to set a transition phase outside of allowed range");
-        }
+    public void setActiveTransitionPhase(TransitionPhase activeTransitionPhase) {
+        this.activeTransitionPhase = activeTransitionPhase;
+        transitionPhaseChanged = true;
     }
 }
