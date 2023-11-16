@@ -1,16 +1,16 @@
-package interaction.implementation.submenu;
+package event.implementation.submenu;
 
 import core.GamePanel;
-import interaction.InteractionSubMenuBase;
+import event.EventSubMenuBase;
 
 /**
- * This class implements interaction logic for sub-menu with ID 1.
+ * This class implements post-selection event logic for sub-menu with ID 1.
  * Note that a sub-menu ID of 1 is used for combat sub-menus.
  */
-public class Int_SubMenu001 extends InteractionSubMenuBase {
+public class Evt_SubMenu001 extends EventSubMenuBase {
 
     // CONSTRUCTOR
-    public Int_SubMenu001(GamePanel gp) {
+    public Evt_SubMenu001(GamePanel gp) {
         super(gp);
     }
 

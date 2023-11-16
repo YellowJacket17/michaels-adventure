@@ -8,7 +8,6 @@ import render.drawable.Drawable;
 import utility.LimitedArrayList;
 import utility.UtilityTool;
 
-import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -403,7 +402,7 @@ public abstract class EntityBase extends Drawable {
      *
      * @param renderer Renderer instance
      */
-    public void render(Renderer renderer) {
+    public void addToRenderPipeline(Renderer renderer) {
 
         if (!hidden) {
 
@@ -653,7 +652,7 @@ public abstract class EntityBase extends Drawable {
      */
     protected void setRest(int seconds) {
 
-        rest = seconds * gp.getFPS();
+        rest = seconds * 60;  // TODO : Change this to not hard-code the FPS as 60.
     }
 
 
@@ -1547,13 +1546,7 @@ public abstract class EntityBase extends Drawable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        EntityBase entity = (EntityBase) o;
-        return entityId == entity.entityId;
-    }
-
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(entityId);
+        EntityBase oEntity = (EntityBase)o;
+        return entityId == oEntity.entityId;
     }
 }

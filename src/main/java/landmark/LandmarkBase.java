@@ -121,7 +121,7 @@ public abstract class LandmarkBase extends Drawable {
      *
      * @param renderer Renderer instance
      */
-    public void render(Renderer renderer) {
+    public void addToRenderPipeline(Renderer renderer) {
 
         // TODO : Add logic to retrieve other images in a landmark for animation.
 

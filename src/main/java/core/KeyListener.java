@@ -1,5 +1,9 @@
 package core;
 
+import utility.UtilityTool;
+
+import java.util.HashSet;
+
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
@@ -19,8 +23,18 @@ public class KeyListener {
      */
     private final boolean[] keyPressed = new boolean[350];
 
+    /**
+     * Set to store unrecognized key errors.
+     * If an unrecognized key is detected, the code associated with the key will be added to this set.
+     * This prevents a key error from that key being printed to the console again.
+     */
+    private static HashSet<Integer> keyErrors = new HashSet<>();
+
 
     // CONSTRUCTOR
+    /**
+     * Constructs a KeyListener instance.
+     */
     public KeyListener() {}
 
 
@@ -63,8 +77,12 @@ public class KeyListener {
 
         } catch (ArrayIndexOutOfBoundsException e) {
 
-            // TODO : Log warning here.
-            System.out.println("Unrecognized key code " + key + ".");
+            if (!keyErrors.contains(key)) {
+                UtilityTool.logWarning("Unrecognized key with code "
+                        + key
+                        + " was detected.");
+                keyErrors.add(key);
+            }
         }
     }
 

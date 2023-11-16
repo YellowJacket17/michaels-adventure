@@ -4,6 +4,7 @@ import core.GamePanel;
 import org.joml.Vector3f;
 import render.Shader;
 import utility.AssetPool;
+import utility.UtilityTool;
 
 import java.util.Arrays;
 
@@ -24,45 +25,49 @@ public class FontBatch {
     /**
      * Defines two position floats in the vertex array for each vertex.
      */
-    private final int positionSize = 2;
+    private static final int POSITION_SIZE = 2;
 
     /**
      * Defines four color floats in the vertex array for each vertex.
      */
-    private final int colorSize = 3;
+    private static final int COLOR_SIZE = 3;
 
     /**
      * Defines two texture coordinate floats in the vertex array for each vertex.
      * Note that a texture is not necessarily needed with texture coordinates.
      * Texture coordinates describe points within the quad.
      */
-    private final int textureCoordsSize = 2;
+    private static final int TEXTURE_COORDS_SIZE = 2;
 
     /**
      * Defines the offset (in bytes) of the start of the position floats in the vertex array for each vertex.
      * Here, the position starts at the beginning of a vertex definition, so it has zero offset.
      */
-    private final int positionOffset = 0;
+    private static final int POSITION_OFFSET = 0;
 
     /**
      * Defines the offset (in bytes) of the start of the color floats in the vertex array for each vertex.
      * Here, the color starts after the position in a vertex definition, so it has an offset determined by the position.
      */
-    private final int colorOffset = positionOffset + positionSize * Float.BYTES;
+    private static final int COLOR_OFFSET = POSITION_OFFSET + POSITION_SIZE * Float.BYTES;
 
     /**
      * Defines the offset (in bytes) of the start of the texture coordinate floats in the vertex array for each vertex.
      * Here, the texture coordinates start after the color in a vertex definition, so it has an offset determined by the
      * color.
      */
-    private final int textureCoordsOffset = colorOffset + colorSize * Float.BYTES;
+    private static final int TEXTURE_COORDS_OFFSET = COLOR_OFFSET + COLOR_SIZE * Float.BYTES;
 
+    /**
+     * Total number of floats in each vertex of the vertex array.
+     */
+    private static final int VERTEX_SIZE = 7;
 
     /**
      * Maximum number of vertices that can be added to this batch.
      * As an aside, 100 vertices equals 25 quads.
      */
-    private final int maxBatchSize = 100;
+    private static final int MAX_BATCH_SIZE = 100;
 
     /**
      * Actual number of vertices added to this batch (vertex array) thus far.
@@ -70,17 +75,12 @@ public class FontBatch {
     private int numVertices;
 
     /**
-     * Total number of floats in each vertex of the vertex array.
-     */
-    private final int vertexSize = 7;
-
-    /**
      * Vertex array.
      * Note that this allows us to store a number of quads equal to the maximum batch size divided by four, since each
      * quad contains four vertices.
      * Each character to render requires a quad.
      */
-    private final float[] vertices = new float[maxBatchSize * vertexSize];
+    private final float[] vertices = new float[MAX_BATCH_SIZE * VERTEX_SIZE];
 
     /**
      * Base indices for generating a quad.
@@ -152,7 +152,7 @@ public class FontBatch {
 
             if (charInfo.getWidth() == 0) {
 
-                // TODO : Log error here.
+                UtilityTool.logError("Attempted to render a character (" + c + ") with zero width.");
             }
             addCharacter(x, y, scale, charInfo, color);                                                                 // Add character to batch.                                                    // Adds character to batch.
             x += charInfo.getWidth() * scale;                                                                           // Prepare for next character in string.
@@ -171,7 +171,7 @@ public class FontBatch {
      */
     private void addCharacter(float x, float y, float scale, CharInfo charInfo, Vector3f color) {
 
-        if (numVertices >= maxBatchSize) {
+        if (numVertices >= MAX_BATCH_SIZE) {
 
             flush();                                                                                                    // Flush batch (i.e., render then clear) to start fresh.
         }
@@ -282,18 +282,18 @@ public class FontBatch {
         // Allocate space for vertices.
         vboId = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBufferData(GL_ARRAY_BUFFER, vertexSize * maxBatchSize * Float.BYTES, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, VERTEX_SIZE * MAX_BATCH_SIZE * Float.BYTES, GL_DYNAMIC_DRAW);
 
         // Generate and bind element buffer object.
         generateEbo();
 
         // Enable buffer attribute pointers.
-        int stride = vertexSize * Float.BYTES;                                                                          // Size of the vertex array in bytes.
-        glVertexAttribPointer(0, positionSize, GL_FLOAT, false, stride, positionOffset);
+        int stride = VERTEX_SIZE * Float.BYTES;                                                                          // Size of the vertex array in bytes.
+        glVertexAttribPointer(0, POSITION_SIZE, GL_FLOAT, false, stride, POSITION_OFFSET);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, stride, colorOffset);
+        glVertexAttribPointer(1, COLOR_SIZE, GL_FLOAT, false, stride, COLOR_OFFSET);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(2, textureCoordsSize, GL_FLOAT, false, stride, textureCoordsOffset);
+        glVertexAttribPointer(2, TEXTURE_COORDS_SIZE, GL_FLOAT, false, stride, TEXTURE_COORDS_OFFSET);
         glEnableVertexAttribArray(2);
     }
 
@@ -303,7 +303,7 @@ public class FontBatch {
      */
     private void generateEbo() {
 
-        int elementSize = maxBatchSize * 3;                                                                                // Multiply by three since there are three indices per triangle.
+        int elementSize = MAX_BATCH_SIZE * 3;                                                                                // Multiply by three since there are three indices per triangle.
         int[] elementBuffer = new int[elementSize];
 
         for (int i = 0; i < elementSize; i++) {

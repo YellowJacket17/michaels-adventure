@@ -1,4 +1,4 @@
-package interaction.support;
+package event.support;
 
 import core.GamePanel;
 import miscellaneous.GameState;
@@ -6,7 +6,7 @@ import miscellaneous.TransitionPhase;
 import miscellaneous.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
-import interaction.WarpTransitionType;
+import event.WarpTransitionType;
 import utility.LimitedLinkedHashMap;
 
 /**

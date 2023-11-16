@@ -1,16 +1,16 @@
-package interaction.implementation.submenu;
+package event.implementation.submenu;
 
 import core.GamePanel;
-import interaction.InteractionSubMenuBase;
+import event.EventSubMenuBase;
 
 /**
- * This class implements interaction logic for sub-menu with ID 0.
+ * This class implements post-selection event logic for sub-menu with ID 0.
  * Note that a sub-menu ID of 0 is used for resetting the camera when exiting debug mode.
  */
-public class Int_SubMenu000 extends InteractionSubMenuBase {
+public class Evt_SubMenu000 extends EventSubMenuBase {
 
     // CONSTRUCTOR
-    public Int_SubMenu000(GamePanel gp) {
+    public Evt_SubMenu000(GamePanel gp) {
         super(gp);
     }
 

@@ -1,6 +1,7 @@
 package render.font;
 
 import org.lwjgl.BufferUtils;
+import utility.exceptions.AssetLoadException;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -46,14 +47,14 @@ public class CFont {
      * This amount is trimmed off the top of the characters.
      * It can be used to avoid excess whitespace on top of characters.
      */
-    private final int heightAdjustment = 50;
+    private static final int HEIGHT_ADJUSTMENT = 50;
 
     /**
      * Spacing adjustment for space between all characters drawn onto the generated parent font image.
      * This amount is added to the spacing between each character in this image.
      * Increased spacing helps to prevent bleed-over from neighboring characters when rendering a target character.
      */
-    private final int spacingAdjustment = 10;
+    private static final int SPACING_ADJUSTMENT = 10;
 
 
     // CONSTRUCTOR
@@ -104,7 +105,7 @@ public class CFont {
 
         // Initialize fake image dimensions.
         int estimatedWidth = (int)Math.sqrt(font.getNumGlyphs()) * font.getSize()
-                + ((int)Math.sqrt(font.getNumGlyphs()) * spacingAdjustment);
+                + ((int)Math.sqrt(font.getNumGlyphs()) * SPACING_ADJUSTMENT);
         int width = 0;                                                                                                  // Width of rendered image containing all characters.
         int height = fontMetrics.getHeight();                                                                           // Height of rendered image containing all characters.
         int x = 0;
@@ -114,10 +115,10 @@ public class CFont {
         for (int i = 0; i < font.getNumGlyphs(); i++) {
             if (font.canDisplay(i)) {
                 CharInfo charInfo = new CharInfo(x, y,
-                        fontMetrics.charWidth(i), fontMetrics.getHeight() - heightAdjustment, fontMetrics.getDescent());
+                        fontMetrics.charWidth(i), fontMetrics.getHeight() - HEIGHT_ADJUSTMENT, fontMetrics.getDescent());
                 charMap.put(i, charInfo);
                 width = Math.max(x + fontMetrics.charWidth(i), width);                                                  // Take whichever width is bigger.
-                x += charInfo.getWidth() + spacingAdjustment;
+                x += charInfo.getWidth() + SPACING_ADJUSTMENT;
                 if (x > estimatedWidth) {
                     x = 0;
                     y += fontMetrics.getHeight();
@@ -208,10 +209,8 @@ public class CFont {
 
         } catch (Exception e) {
 
-            e.printStackTrace();
-            // TODO : Throw specific exception here.
+            throw new AssetLoadException("Failed to register font from " + filePath);
         }
-        return null;
     }
 
 

@@ -1,6 +1,7 @@
 package icon;
 
 import core.GamePanel;
+import org.joml.Vector2f;
 import render.Renderer;
 import render.Sprite;
 import utility.AssetPool;
@@ -8,7 +9,6 @@ import utility.UtilityTool;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This class instantiates GUI icons, stores them, and handles related operations.
@@ -31,10 +31,11 @@ public class GuiIconManager {
     private final HashMap<Integer, GuiIcon> icons = new HashMap<>();
 
     /**
-     * Set to store icon draw errors. If an icon draw error occurs, the ID associated with the icon will be added to
-     * this set. This prevents a draw error from that icon being printed to the console again.
+     * Set to store icon render errors.
+     * If an icon render error occurs, the ID associated with the icon will be added to this set.
+     * This prevents a render error from that icon being printed to the console again.
      */
-    private final Set<Integer> drawErrors = new HashSet<>();
+    private final HashSet<Integer> renderErrors = new HashSet<>();
 
 
     // CONSTRUCTOR
@@ -51,14 +52,14 @@ public class GuiIconManager {
 
     // METHODS
     /**
-     * Draws a GUI icon by ID.
+     * Adds a GUI icon to the render pipeline.
      *
      * @param renderer Renderer instance
-     * @param iconId ID of the icon to be drawn
-     * @param screenX x-coordinate (leftmost side of the image) where the icon will be drawn
-     * @param screenY y-coordinate (topmost side of the image) where the icon will be drawn
+     * @param iconId ID of the icon to be rendered
+     * @param screenX screen x-coordinate of the icon (leftmost, normalized between 0 and 1)
+     * @param screenY screen y-coordinate of the icon (topmost, normalized between 0 and 1)
      */
-    public void draw(Renderer renderer, int iconId, int screenX, int screenY) {
+    public void addToRenderPipeline(Renderer renderer, int iconId, float screenX, float screenY) {
 
         GuiIcon guiIcon = icons.get(iconId);
 
@@ -76,16 +77,19 @@ public class GuiIconManager {
 
             if (sprite != null) {
 
-                guiIcon.transform.position.x = screenX;
-                guiIcon.transform.position.x = screenY;
+                Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
+                guiIcon.transform.position.x = worldCoords.x;
+                guiIcon.transform.position.y = worldCoords.y;
+                guiIcon.transform.scale.x = sprite.getNativeWidth();
+                guiIcon.transform.scale.y = sprite.getNativeHeight();
                 renderer.addDrawable(guiIcon);
-            } else if (!drawErrors.contains(iconId)) {
+            } else if (!renderErrors.contains(iconId)) {
 
-                UtilityTool.logError("Failed to draw icon"
+                UtilityTool.logError("Failed to add GUI icon"
                         + " with ID "
                         + iconId
-                        + ": images may not have been properly loaded upon icon initialization.");
-                drawErrors.add(iconId);
+                        + " to the render pipeline: sprites may not have been properly loaded upon icon initialization.");
+                renderErrors.add(iconId);
             }
         }
     }
@@ -107,7 +111,7 @@ public class GuiIconManager {
                     + iconId
                     + " that does not exist.");
 
-            guiIcon = new GuiIcon(-1);                                                                                // Return a placeholder icon to prevent the program from hitting an unhandled exception.
+            guiIcon = new GuiIcon(-1);                                                                                  // Return a placeholder icon to prevent the program from hitting an unhandled exception.
         }
         return guiIcon;
     }

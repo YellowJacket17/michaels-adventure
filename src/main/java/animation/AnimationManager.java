@@ -8,6 +8,9 @@ import animation.implementation.tile.Anm_water1;
 public class AnimationManager {
 
     // ANIMATION FIELDS
+    /**
+     * "water1" animation group.
+     */
     private final Anm_water1 anm_water1;
 
 
@@ -22,7 +25,7 @@ public class AnimationManager {
 
     // METHODS
     /**
-     * Updates all tile animations by one frame.
+     * Updates all tile and landmark animations by one frame.
      */
     public void update() {
 

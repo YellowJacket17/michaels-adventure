@@ -1,16 +1,16 @@
-package interaction.implementation.conversation;
+package event.implementation.conversation;
 
 import core.GamePanel;
 import entity.EntityBase;
-import interaction.InteractionConvBase;
+import event.EventConvBase;
 
 /**
  * This class implements post-conversation logic for conversation with ID 1.
  */
-public class Int_Conv001 extends InteractionConvBase {
+public class Evt_Conv001 extends EventConvBase {
 
     // CONSTRUCTOR
-    public Int_Conv001(GamePanel gp) {
+    public Evt_Conv001(GamePanel gp) {
         super(gp);
     }
 

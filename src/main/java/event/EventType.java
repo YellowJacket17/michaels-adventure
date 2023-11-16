@@ -1,9 +1,9 @@
-package interaction;
+package event;
 
 /**
  * This enum defines the type of interaction to trigger tile events.
  */
-public enum InteractionType {
+public enum EventType {
     CLICK,
     STEP
 }

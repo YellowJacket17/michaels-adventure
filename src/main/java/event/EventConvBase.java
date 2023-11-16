@@ -1,11 +1,11 @@
-package interaction;
+package event;
 
 import core.GamePanel;
 
 /**
- * This abstract class defines base logic for post-conversation interactions.
+ * This abstract class defines base logic for post-conversation events.
  */
-public abstract class InteractionConvBase {
+public abstract class EventConvBase {
 
     // FIELD
     protected final GamePanel gp;
@@ -13,11 +13,11 @@ public abstract class InteractionConvBase {
 
     // CONSTRUCTOR
     /**
-     * Constructs an InteractionConvBase instance.
+     * Constructs an EventConvBase instance.
      *
      * @param gp GamePanel instance
      */
-    public InteractionConvBase(GamePanel gp) {
+    public EventConvBase(GamePanel gp) {
         this.gp = gp;
     }
 

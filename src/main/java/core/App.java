@@ -20,7 +20,7 @@ public class App {
             UtilityTool.logInfo("Starting game loop.");
             window.run();
 
-        } catch (Exception e) {                                                                                         // Will not catch exceptions inside the `run()` method of GamePanel (game thread).
+        } catch (Exception e) {
 
             UtilityTool.logError("An unhandled exception has occurred.");
             UtilityTool.logStackTrace(e);

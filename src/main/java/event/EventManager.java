@@ -1,65 +1,65 @@
-package interaction;
+package event;
 
 import miscellaneous.GameState;
 import entity.EntityBase;
 import core.GamePanel;
 import entity.EntityDirection;
-import interaction.implementation.conversation.Int_Conv001;
-import interaction.implementation.conversation.Int_Conv002;
-import interaction.implementation.conversation.Int_Conv004;
-import interaction.implementation.map.Int_Map000;
-import interaction.implementation.map.Int_Map001;
-import interaction.implementation.submenu.Int_SubMenu000;
-import interaction.implementation.submenu.Int_SubMenu001;
+import event.implementation.conversation.Evt_Conv001;
+import event.implementation.conversation.Evt_Conv002;
+import event.implementation.conversation.Evt_Conv004;
+import event.implementation.map.Evt_Map000;
+import event.implementation.map.Evt_Map001;
+import event.implementation.submenu.Evt_SubMenu000;
+import event.implementation.submenu.Evt_SubMenu001;
 import item.ItemBase;
 import utility.UtilityTool;
 
 import java.util.List;
 
 /**
- * This class is used to control events triggered by the player interacting with the world.
+ * This class is used to control events triggered by player interaction with the world.
  * Methods facilitating these interactions exist here as well (talk to NPC, follow path, pickup item, etc.).
  */
-public class InteractionManager {
+public class EventManager {
 
     // BASE FIELD
     private final GamePanel gp;
 
 
     // MAP INTERACTION FIELDS
-    private final Int_Map000 int_map000;
-    private final Int_Map001 int_map001;
+    private final Evt_Map000 evt_map000;
+    private final Evt_Map001 evt_map001;
 
 
     // CONVERSATION INTERACTION FIELDS
-    private final Int_Conv001 int_conv001;
-    private final Int_Conv002 int_conv002;
-    private final Int_Conv004 int_conv004;
+    private final Evt_Conv001 evt_conv001;
+    private final Evt_Conv002 evt_conv002;
+    private final Evt_Conv004 evt_conv004;
 
 
     // SUB-MENU INTERACTION FIELDS
-    private final Int_SubMenu000 int_subMenu000;
-    private final Int_SubMenu001 int_subMenu001;
+    private final Evt_SubMenu000 evt_subMenu000;
+    private final Evt_SubMenu001 evt_subMenu001;
 
 
     // CONSTRUCTOR
     /**
-     * Constructs an InteractionManager instance
+     * Constructs an EventManager instance
      *
      * @param gp GamePanel instance
      */
-    public InteractionManager(GamePanel gp) {
+    public EventManager(GamePanel gp) {
         this.gp = gp;
 
-        int_map000 = new Int_Map000(gp);
-        int_map001 = new Int_Map001(gp);
+        evt_map000 = new Evt_Map000(gp);
+        evt_map001 = new Evt_Map001(gp);
 
-        int_conv001 = new Int_Conv001(gp);
-        int_conv002 = new Int_Conv002(gp);
-        int_conv004 = new Int_Conv004(gp);
+        evt_conv001 = new Evt_Conv001(gp);
+        evt_conv002 = new Evt_Conv002(gp);
+        evt_conv004 = new Evt_Conv004(gp);
 
-        int_subMenu000 = new Int_SubMenu000(gp);
-        int_subMenu001 = new Int_SubMenu001(gp);
+        evt_subMenu000 = new Evt_SubMenu000(gp);
+        evt_subMenu001 = new Evt_SubMenu001(gp);
     }
 
 
@@ -67,10 +67,10 @@ public class InteractionManager {
     /**
      * Handles what to do if the player interacts with an object entity.
      *
-     * @param type whether an interaction is triggered by a click or step
-     * @return whether an object interaction was triggered (true) or not (false)
+     * @param type whether an event is triggered by a click or step
+     * @return whether an object event was triggered (true) or not (false)
      */
-    public boolean handleObjectInteraction(InteractionType type) {
+    public boolean handleObjectInteraction(EventType type) {
 
         int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getObj());                                     // If there's collision with an object (i.e., object in front of player entity), retrieve the entity ID of the object.
 
@@ -82,9 +82,9 @@ public class InteractionManager {
 
                 switch (gp.getLoadedMap().getMapId()) {                                                                 // Switch which map to check for interaction events on depending on the current loaded map.
                     case 0:
-                        return int_map000.objInteraction(type, target);
+                        return evt_map000.objInteraction(type, target);
                     case 1:
-                        return int_map001.objInteraction(type, target);
+                        return evt_map001.objInteraction(type, target);
                 }
             }
         }
@@ -95,10 +95,10 @@ public class InteractionManager {
     /**
      * Handles what to do if the player interacts with an NPC character entity.
      *
-     * @param type whether an interaction is triggered by a click or step
-     * @return whether an NPC interaction was triggered (true) or not (false)
+     * @param type whether an event is triggered by a click or step
+     * @return whether an NPC event was triggered (true) or not (false)
      */
-    public boolean handleNpcInteraction(InteractionType type) {
+    public boolean handleNpcInteraction(EventType type) {
 
         int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getNpc());                                     // If there's collision with an NPC (i.e., NPC in front of player), retrieve the entity ID of the NPC.
 
@@ -110,9 +110,9 @@ public class InteractionManager {
 
                 switch (gp.getLoadedMap().getMapId()) {                                                                 // Switch which map to check for interaction events on depending on the current loaded map.
                     case 0:
-                        return int_map000.npcInteraction(type, target);
+                        return evt_map000.npcInteraction(type, target);
                     case 1:
-                        return int_map001.npcInteraction(type, target);
+                        return evt_map001.npcInteraction(type, target);
                 }
             }
         }
@@ -123,10 +123,10 @@ public class InteractionManager {
     /**
      * Handles what to do if the player interacts with a party member character entity.
      *
-     * @param type whether an interaction is triggered by a click or step
-     * @return whether a party member interaction was triggered (true) or not (false)
+     * @param type whether an event is triggered by a click or step
+     * @return whether a party member event was triggered (true) or not (false)
      */
-    public boolean handlePartyInteraction(InteractionType type) {
+    public boolean handlePartyInteraction(EventType type) {
 
         if (gp.isPartyVisible()) {                                                                                      // Only interact with party members if they're visible.
 
@@ -140,9 +140,9 @@ public class InteractionManager {
 
                     switch (gp.getLoadedMap().getMapId()) {                                                             // Switch which map to check for interaction events on depending on the current loaded map.
                         case 0:
-                            return int_map000.partyInteraction(type, target);
+                            return evt_map000.partyInteraction(type, target);
                         case 1:
-                            return int_map001.partyInteraction(type, target);
+                            return evt_map001.partyInteraction(type, target);
                     }
                 }
             }
@@ -152,12 +152,12 @@ public class InteractionManager {
 
 
     /**
-     * Handles what to do if the player interacts with a certain tile directly in front (i.e., certain column/row).
+     * Handles what to do if the player interacts with a tile directly in front (i.e., certain column/row).
      *
-     * @param type whether an interaction is triggered by a click or step
-     * @return whether a tile interaction was triggered (true) or not (false)
+     * @param type whether an event is triggered by a click or step
+     * @return whether a tile event was triggered (true) or not (false)
      */
-    public boolean handleTileInteraction(InteractionType type) {
+    public boolean handleTileInteraction(EventType type) {
 
         int playerCol = gp.getPlayer().getCol();                                                                        // Initialize variable with player entity's current tile position.
         int playerRow = gp.getPlayer().getRow();                                                                        // ^^^
@@ -184,7 +184,7 @@ public class InteractionManager {
                 break;
         }
 
-        if ((type == InteractionType.STEP)                                                                              // If interaction type is step.
+        if ((type == EventType.STEP)                                                                              // If interaction type is step.
                 && ((gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getNpc()) != -1)                                 // Ensure tile is not already occupied by an NPC (ignore party members since no collision).
                 || (gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getObj()) != -1))) {                              // Ensure tile is not already occupied by an object.
 
@@ -193,9 +193,9 @@ public class InteractionManager {
 
         switch (gp.getLoadedMap().getMapId()) {                                                                         // Switch which map to check for interaction events on depending on the current loaded map.
                 case 0:
-                    return int_map000.tileInteraction(type, targetCol, targetRow, gp.getPlayer().getDirectionCurrent());
+                    return evt_map000.tileInteraction(type, targetCol, targetRow, gp.getPlayer().getDirectionCurrent());
                 case 1:
-                    return int_map001.tileInteraction(type, targetCol, targetRow, gp.getPlayer().getDirectionCurrent());
+                    return evt_map001.tileInteraction(type, targetCol, targetRow, gp.getPlayer().getDirectionCurrent());
             }
         return false;
     }
@@ -211,13 +211,13 @@ public class InteractionManager {
 
         switch (convId) {
             case 1:
-                int_conv001.run();
+                evt_conv001.run();
                 break;
             case 2:
-                int_conv002.run();
+                evt_conv002.run();
                 break;
             case 4:
-                int_conv004.run();
+                evt_conv004.run();
                 break;
             default:
                 cleanupConversation(1);
@@ -236,10 +236,10 @@ public class InteractionManager {
 
         switch (subMenuId) {
             case 0:
-                int_subMenu000.run(selectedIndex);
+                evt_subMenu000.run(selectedIndex);
                 break;
             case 1:
-                int_subMenu001.run(selectedIndex);
+                evt_subMenu001.run(selectedIndex);
                 break;
             default:
                 cleanupSubmenu(1);

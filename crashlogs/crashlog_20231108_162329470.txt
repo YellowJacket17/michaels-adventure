@@ -1,6 +1,0 @@
-11/08/2023 16:23:26:036  INFO     Application started.
-11/08/2023 16:23:29:466  INFO     Starting game loop.
-11/08/2023 16:23:29:468  ERROR    An unhandled exception has occurred.
-java.lang.NullPointerException: Cannot invoke "render.Framebuffer.bind()" because "this.framebuffer" is null
-	at core.Window.run(Window.java:186)
-	at core.App.main(App.java:21)

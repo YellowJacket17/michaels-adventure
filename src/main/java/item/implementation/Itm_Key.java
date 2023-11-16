@@ -22,6 +22,8 @@ public class Itm_Key extends ItemBase {
         name = itmName;
         description = itmDescription;
         sprite = AssetPool.getSpritesheet(4).getSprite(0);
+        transform.scale.x = sprite.getNativeWidth();
+        transform.scale.y = sprite.getNativeHeight();
     }
 
 

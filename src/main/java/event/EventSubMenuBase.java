@@ -1,11 +1,11 @@
-package interaction;
+package event;
 
 import core.GamePanel;
 
 /**
- * This abstract class defines base logic for interactions on given sub-menus.
+ * This abstract class defines base logic for events attached to given sub-menus.
  */
-public abstract class InteractionSubMenuBase {
+public abstract class EventSubMenuBase {
 
     // FIELD
     protected final GamePanel gp;
@@ -13,11 +13,11 @@ public abstract class InteractionSubMenuBase {
 
     // CONSTRUCTOR
     /**
-     * Constructs an InteractionSubMenuBase instance.
+     * Constructs an EventSubMenuBase instance.
      *
      * @param gp GamePanel instance
      */
-    public InteractionSubMenuBase(GamePanel gp) {
+    public EventSubMenuBase(GamePanel gp) {
         this.gp = gp;
     }
 

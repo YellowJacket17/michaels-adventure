@@ -2,13 +2,13 @@ package icon;
 
 import entity.EntityBase;
 import core.GamePanel;
+import org.joml.Vector2f;
 import render.Renderer;
 import render.Sprite;
 import utility.UtilityTool;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This class instantiates entity icons, stores them, and handles related operations.
@@ -30,11 +30,11 @@ public class EntityIconManager {
     private final HashMap<Integer, EntityIcon> entityIcons  = new HashMap<>();
 
     /**
-     * Set to store entity icon draw errors.
-     * If an entity icon draw error occurs, the entity ID associated with the entity icon will be added to this set.
-     * This prevents a draw error from that entity icon being printed to the console again.
+     * Set to store icon render errors.
+     * If an icon render error occurs, the ID associated with the icon will be added to this set.
+     * This prevents a render error from that icon being printed to the console again.
      */
-    private final Set<Integer> drawErrors  = new HashSet<>();
+    private final HashSet<Integer> renderErrors = new HashSet<>();
 
 
     // CONSTRUCTOR
@@ -50,14 +50,14 @@ public class EntityIconManager {
 
     // METHODS
     /**
-     * Draws an entity icon by entity ID.
+     * Adds an entity icon to the render pipeline.
      *
      * @param renderer Renderer instance
-     * @param entityId ID of the entity for whom the entity icon will be drawn
-     * @param screenX x-coordinate (leftmost side of the image) where the entity icon will be drawn
-     * @param screenY y-coordinate (topmost side of the image) where the entity icon will be drawn
+     * @param entityId ID of the entity for whom the entity icon will be rendered
+     * @param screenX screen x-coordinate of the icon (leftmost, normalized between 0 and 1)
+     * @param screenY screen y-coordinate of the icon (topmost, normalized between 0 and 1)
      */
-    public void draw(Renderer renderer, int entityId, int screenX, int screenY) {
+    public void addToRenderPipeline(Renderer renderer, int entityId, float screenX, float screenY) {
 
         EntityIcon entityIcon = entityIcons.get(entityId);
 
@@ -75,15 +75,18 @@ public class EntityIconManager {
 
             if (sprite != null) {
 
-                entityIcon.transform.position.x = screenX;
-                entityIcon.transform.position.y = screenY;
+                Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
+                entityIcon.transform.position.x = worldCoords.x;
+                entityIcon.transform.position.y = worldCoords.y;
+                entityIcon.transform.scale.x = sprite.getNativeWidth();
+                entityIcon.transform.scale.y = sprite.getNativeHeight();
                 renderer.addDrawable(entityIcon);
-            } else if (!drawErrors.contains(entityId)) {
+            } else if (!renderErrors.contains(entityId)) {
 
                 UtilityTool.logError("Failed to draw entity icon with entity ID "
                         + entityId
-                        + ": the entity icon may not have been loaded properly or may not exist.");
-                drawErrors.add(entityId);
+                        + " to the render pipeline: the entity icon may not have been loaded properly or may not exist.");
+                renderErrors.add(entityId);
             }
         }
     }
@@ -178,7 +181,7 @@ public class EntityIconManager {
     public void purgeAllEntityIcons() {
 
         entityIcons.clear();
-        drawErrors.clear();                                                                                             // Reset draw errors since the list of entity icons was reset.
+        renderErrors.clear();                                                                                             // Reset draw errors since the list of entity icons was reset.
     }
 
 

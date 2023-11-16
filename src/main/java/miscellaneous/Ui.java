@@ -87,21 +87,16 @@ public class Ui {
 
     // METHODS
     /**
-     * Draws the UI.
+     * Adds all UI elements to the render pipeline.
      *
      * @param renderer Renderer instance
      * @param dt time since the last rendered frame (frame pacing)
      */
-    public void render(Renderer renderer, double dt) {
+    public void addToRenderPipeline(Renderer renderer, double dt) {
 
         if (this.renderer != renderer) {
             this.renderer = renderer;                                                                                   // Makes it easier to access current renderer across entire class.
         }
-
-        // Here, the default font to be used for all text drawn is set.
-        // If any text needs to use a different font, it will set it manually in one of the methods called below.
-        // At the end of said methods, the font will be reverted to the default set here.
-//        g2.setFont(fontArimo);
 
         switch (gp.getGameState()) {
             case EXPLORE:
@@ -197,14 +192,14 @@ public class Ui {
 
             // Render dialogue entity name.
             Vector2f subTextWorldCoords = gp.getCamera().screenCoordsToWorldCoords(subTextScreenCoords);
-            renderString(gp.getDialogueR().getDialogueEntityName(), subTextWorldCoords.x, subTextWorldCoords.y, new Vector3f(121, 149, 255), fontScale);
+            renderString(gp.getDialogueR().getDialogueEntityName(), subTextWorldCoords.x, subTextWorldCoords.y, fontScale, new Vector3f(121, 149, 255));
         }
 
         // Dialogue progress arrow, if applicable.
         if ((gp.getDialogueR().isDialoguePaused())
                 || (!gp.getDialogueR().isReadingDialogue() && (gp.getDialogueR().isAlwaysShowArrow()))) {
             Vector2f arrowScreenCoords = new Vector2f(mainWindowScreenCoords.x + mainWindowScreenWidth - 0.02f, mainWindowScreenCoords.y + mainWindowScreenHeight - 0.03f);
-            gp.getDialogueA().render(renderer, arrowScreenCoords.x, arrowScreenCoords.y);
+            gp.getDialogueA().addToRenderPipeline(renderer, arrowScreenCoords.x, arrowScreenCoords.y);
         }
 
         // Set position of main dialogue text (lines 1 and 2) and render it.
@@ -212,10 +207,10 @@ public class Ui {
         float mainTextScreenSpacing = (mainWindowScreenHeight - (2 * characterScreenHeight)) / 3;
         Vector2f mainTextScreenCoords = new Vector2f(mainTextScreenLeftPadding, mainWindowScreenCoords.y + mainTextScreenSpacing);
         Vector2f mainTextWorldCoords = gp.getCamera().screenCoordsToWorldCoords(mainTextScreenCoords);
-        renderString(gp.getDialogueR().getDialoguePrint1(), mainTextWorldCoords.x, mainTextWorldCoords.y, new Vector3f(255, 255, 255), fontScale);
+        renderString(gp.getDialogueR().getDialoguePrint1(), mainTextWorldCoords.x, mainTextWorldCoords.y, fontScale, new Vector3f(255, 255, 255));
         mainTextScreenCoords.y += characterScreenHeight + mainTextScreenSpacing;
         mainTextWorldCoords = gp.getCamera().screenCoordsToWorldCoords(mainTextScreenCoords);
-        renderString(gp.getDialogueR().getDialoguePrint2(), mainTextWorldCoords.x, mainTextWorldCoords.y, new Vector3f(255, 255, 255), fontScale);
+        renderString(gp.getDialogueR().getDialoguePrint2(), mainTextWorldCoords.x, mainTextWorldCoords.y, fontScale, new Vector3f(255, 255, 255));
     }
 
 
@@ -291,7 +286,7 @@ public class Ui {
         int y_label = coreMenuEdge + 29;                                                                                // Set position of text (top, y).
 
         // Draw the menu label.
-        renderString(name, x_label, y_label, sectionNameColor, 20F);
+        renderString(name, x_label, y_label, 20F, sectionNameColor);
     }
 
 
@@ -683,11 +678,11 @@ public class Ui {
         // Render text for each option and selection arrow next to selected option.
         for (int i = 0; i < gp.getSubMenuH().getOptions().size(); i++) {
             optionsWorldCoords = gp.getCamera().screenCoordsToWorldCoords(optionsScreenCoords);
-            renderString(gp.getSubMenuH().getOptions().get(i), optionsWorldCoords.x, optionsWorldCoords.y, new Vector3f(255, 255, 255), fontScale);
+            renderString(gp.getSubMenuH().getOptions().get(i), optionsWorldCoords.x, optionsWorldCoords.y, fontScale, new Vector3f(255, 255, 255));
             if (i == gp.getSubMenuH().getIndexSelected()) {
                 float selectionArrowScreenHeight = gp.getCamera().worldHeightToScreenHeight(gp.getSelectionA().getNativeSpriteHeight());
                 float selectionArrowScreenY = optionsScreenCoords.y + (optionsCharacterScreenHeight / 2) - (selectionArrowScreenHeight / 2);
-                gp.getSelectionA().render(renderer, optionsScreenCoords.x - 0.02f, selectionArrowScreenY);
+                gp.getSelectionA().addToRenderPipeline(renderer, optionsScreenCoords.x - 0.02f, selectionArrowScreenY);
             }
             optionsScreenCoords.y += optionsCharacterScreenHeight + optionsScreenSpacing;
         }
@@ -763,25 +758,15 @@ public class Ui {
         String row = "Player Row: " + gp.getPlayer().getRow();
         renderStringShadow(row, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
 
-//        // Camera center (x).
-//        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.25f));
-//        String centerX = "Camera Center X: " + (gp.getPlayer().getWorldX() + (gp.getNativeTileSize() / 2) - gp.getPlayer().getCameraOffsetX());
-//        renderStringShadow(centerX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
-//
-//        // Camera center (y).
-//        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.31f));
-//        String centerY = "Camera Center Y: " + (gp.getPlayer().getWorldY() - gp.getPlayer().getCameraOffsetY());
-//        renderStringShadow(centerY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
-//
-//        // Camera offset (x).
-//        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.37f));
-//        String offsetX = "Camera Offset X: " + gp.getPlayer().getCameraOffsetX();
-//        renderStringShadow(offsetX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
-//
-//        // Camera offset (y).
-//        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.43f));
-//        String offsetY = "Camera Offset Y: " + gp.getPlayer().getCameraOffsetY();
-//        renderStringShadow(offsetY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+        // Camera center (x).
+        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.25f));
+        String centerX = "Camera Center X: " + (gp.getCamera().getPositionMatrix().x / 2) + (gp.getCamera().getScreenWidth() / 2);
+        renderStringShadow(centerX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+
+        // Camera center (y).
+        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.31f));
+        String centerY = "Camera Center Y: " + (gp.getCamera().getPositionMatrix().y / 2) + (gp.getCamera().getScreenHeight() / 2);
+        renderStringShadow(centerY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
     }
 
 
@@ -794,7 +779,7 @@ public class Ui {
      * @param color text color (r, g, b)
      * @param size size at which to draw the text
      */
-    private void renderString(String text, float x, float y, Vector3f color, float size) {
+    private void renderString(String text, float x, float y, float size, Vector3f color) {
 
         if (text != null) {
 
@@ -816,8 +801,8 @@ public class Ui {
 
         float shadowTextX = x + 1;
         float shadowTextY = y + 1;
-        renderString(text, shadowTextX, shadowTextY, new Vector3f(0, 0, 0), size);
-        renderString(text, x, y, color, size);
+        renderString(text, shadowTextX, shadowTextY, size, new Vector3f(0, 0, 0));
+        renderString(text, x, y, size, color);
     }
 
 
@@ -878,7 +863,7 @@ public class Ui {
                 renderStringShadow(line, screenX, screenY, color, size);                                                  // Draw the line of text with a drop shadow.
             } else {
 
-                renderString(line, screenX, screenY, color, size);                                                        // Draw the line of text without a drop shadow.
+                renderString(line, screenX, screenY, size, color);                                                      // Draw the line of text without a drop shadow.
             }
 
             if (wordsIndex != words.length) {

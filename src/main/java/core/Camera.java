@@ -101,7 +101,7 @@ public class Camera {
     public void adjustProjection() {
 
         projectionMatrix.identity();                                                                                    // Sets the projection matrix to equal the identity matrix.
-        projectionMatrix.ortho(0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 0.0f, 100.0f);                      // Screen coordinate (0, 0) is defined at the top-left.
+        projectionMatrix.ortho(0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 0.0f, 100.0f);                      // Screen coordinate (0, 0) is defined at the top-left; note that this flips everything rendered on screen in the y-direction.
     }
 
 
@@ -111,7 +111,7 @@ public class Camera {
      */
     public void adjustView() {
 
-        Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);                                                         // Camera pointing in -1 of the z direction.
+        Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);                                                         // Camera pointing in -1 of the z-direction.
         Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
         viewMatrix.identity();                                                                                          // Modifies the view matrix directly
         viewMatrix.lookAt(new Vector3f(positionMatrix.x, positionMatrix.y, 20.0f),

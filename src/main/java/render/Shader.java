@@ -2,6 +2,8 @@ package render;
 
 import org.joml.*;
 import org.lwjgl.BufferUtils;
+import utility.UtilityTool;
+import utility.exceptions.AssetLoadException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -257,9 +259,7 @@ public class Shader {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
-            // TODO : Throw more specific exception.
-            throw new RuntimeException("Failed to open file for shader from " + filePath);
+            throw new AssetLoadException(e.getMessage());
         }
     }
 
@@ -278,9 +278,11 @@ public class Shader {
         int success = glGetShaderi(vertexId, GL_COMPILE_STATUS);
         if (success == GL_FALSE) {                                                                                      // Check for compilation errors.
             int length = glGetShaderi(vertexId, GL_INFO_LOG_LENGTH);
-            System.out.println(glGetShaderInfoLog(vertexId, length));
-            // TODO : Throw more specific exception.
-            throw new RuntimeException("Failed to compile vertex shader from " + filePath);
+            String[] errors = glGetShaderInfoLog(vertexId, length).split("\\r?\\n|\\r");
+            for (String error : errors) {
+                UtilityTool.logError(error);
+            }
+            throw new AssetLoadException("Failed to compile vertex shader from " + filePath);
         }
 
         // Compile fragment shaders.
@@ -290,9 +292,11 @@ public class Shader {
         success = glGetShaderi(fragmentId, GL_COMPILE_STATUS);
         if (success == GL_FALSE) {                                                                                      // Check for compilation errors.
             int length = glGetShaderi(fragmentId, GL_INFO_LOG_LENGTH);
-            System.out.println(glGetShaderInfoLog(fragmentId, length));
-            // TODO : Throw more specific exception.
-            throw new RuntimeException("Failed to compile fragment shader from " + filePath);
+            String[] errors = glGetShaderInfoLog(fragmentId, length).split("\\r?\\n|\\r");
+            for (String error : errors) {
+                UtilityTool.logError(error);
+            }
+            throw new AssetLoadException("Failed to compile fragment shader from " + filePath);
         }
 
         // Link shaders.
@@ -303,9 +307,11 @@ public class Shader {
         success = glGetProgrami(shaderProgramId, GL_LINK_STATUS);
         if (success == GL_FALSE) {
             int length = glGetProgrami(shaderProgramId, GL_INFO_LOG_LENGTH);
-            System.out.println(glGetProgramInfoLog(shaderProgramId, length));
-            // TODO : Throw more specific exception.
-            throw new RuntimeException("Failed to link shaders from " + filePath);
+            String[] errors = glGetProgramInfoLog(shaderProgramId, length).split("\\r?\\n|\\r");
+            for (String error : errors) {
+                UtilityTool.logError(error);
+            }
+            throw new AssetLoadException("Failed to link shaders from " + filePath);
         }
     }
 
@@ -332,8 +338,7 @@ public class Shader {
 
         } catch (Exception e) {
 
-            // TODO : Throw more specific exception.
-            throw new RuntimeException("Failed to load shader from " + filePath);
+            throw new AssetLoadException("Failed to load shader from " + filePath);
         }
         return resultStringBuilder.toString();
     }

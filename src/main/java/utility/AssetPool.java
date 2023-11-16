@@ -3,6 +3,7 @@ package utility;
 import render.Shader;
 import render.Spritesheet;
 import render.Texture;
+import utility.exceptions.AssetLoadException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,17 +18,17 @@ public class AssetPool {
     /**
      * Map to store all shaders loaded into the game.
      */
-    private static HashMap<String, Shader> shaders = new HashMap<>();
+    private static final HashMap<String, Shader> SHADERS = new HashMap<>();
 
     /**
      * Map to store all textures loaded into the game.
      */
-    private static HashMap<String, Texture> textures = new HashMap<>();
+    private static final HashMap<String, Texture> TEXTURES = new HashMap<>();
 
     /**
      * Map to store all spritesheets loaded into the game.
      */
-    private static ArrayList<Spritesheet> spritesheets = new ArrayList<>();
+    private static final ArrayList<Spritesheet> SPRITESHEETS = new ArrayList<>();
 
 
     // METHODS
@@ -40,13 +41,13 @@ public class AssetPool {
      */
     public static Shader getShader(String resourceName) {
 
-        if (shaders.containsKey(resourceName)) {
+        if (SHADERS.containsKey(resourceName)) {
 
-            return shaders.get(resourceName);
+            return SHADERS.get(resourceName);
         } else {
 
             Shader shader = new Shader(resourceName);
-            shaders.put(resourceName, shader);
+            SHADERS.put(resourceName, shader);
             return shader;
         }
     }
@@ -61,13 +62,13 @@ public class AssetPool {
      */
     public static Texture getTexture(String resourceName) {
 
-        if (textures.containsKey(resourceName)) {
+        if (TEXTURES.containsKey(resourceName)) {
 
-            return textures.get(resourceName);
+            return TEXTURES.get(resourceName);
         } else {
 
             Texture texture = new Texture(resourceName);
-            textures.put(resourceName, texture);
+            TEXTURES.put(resourceName, texture);
             return texture;
         }
     }
@@ -83,7 +84,7 @@ public class AssetPool {
 
         boolean repeat = false;
 
-        for (Spritesheet loaded : spritesheets) {
+        for (Spritesheet loaded : SPRITESHEETS) {
 
             if (loaded.equals(spritesheet)) {
 
@@ -94,7 +95,7 @@ public class AssetPool {
 
         if (!repeat) {
 
-            spritesheets.add(spritesheet);
+            SPRITESHEETS.add(spritesheet);
         }
     }
 
@@ -112,12 +113,11 @@ public class AssetPool {
 
         try {
 
-            return spritesheets.get(spritesheet);
+            return SPRITESHEETS.get(spritesheet);
 
         } catch (IndexOutOfBoundsException e) {
 
-            // TODO : Replace this more specific exception.
-            throw new RuntimeException("Attempted to access an unloaded spritesheet");
+            throw new AssetLoadException("Attempted to access an unloaded spritesheet");
         }
     }
 }

@@ -46,7 +46,7 @@ public class CharInfo {
      * This amount is added to the original width right before converting to texture coordinates.
      * Increased width helps prevent any of the character from getting clipped on the rightmost side.
      */
-    private final int widthAdjustment = 3;
+    private static final int WIDTH_ADJUSTMENT = 3;
 
 
     // CONSTRUCTOR
@@ -78,7 +78,7 @@ public class CharInfo {
     public void calculateTextureCoordinates(int fontWidth, int fontHeight) {
 
         float x0 = (float)sourceX / (float)fontWidth;                                                                   // Convert `sourceX` to a 0-1 range.
-        float x1 = (float)(sourceX + width + widthAdjustment) / (float)fontWidth;                                       // Convert `sourceX + width + widthAdjustment` to a 0-1 range.
+        float x1 = (float)(sourceX + width + WIDTH_ADJUSTMENT) / (float)fontWidth;                                      // Convert `sourceX + width + widthAdjustment` to a 0-1 range.
         float y0 = (float)(sourceY - height) / (float)fontHeight;                                                       // Convert `sourceY - height` to a 0-1 range.
         float y1 = ((float)sourceY / (float)fontHeight) + ((float)descent / (float)fontHeight);                         // Convert `sourceY + descent` to a 0-1 range.
 

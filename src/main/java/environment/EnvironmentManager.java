@@ -2,6 +2,7 @@ package environment;
 
 import core.GamePanel;
 import environment.lighting.LightManager;
+import render.Renderer;
 
 import java.awt.*;
 
@@ -46,11 +47,11 @@ public class EnvironmentManager {
 
 
     /**
-     * Draws environmental effects.
+     * Adds all environmental effects to the render pipeline.
      *
-     * @param g2 Graphics2D instance
+     * @param renderer Renderer instance
      */
-    public void draw(Graphics2D g2) {
+    public void addToRenderPipeline(Renderer renderer) {
 
 //        if ((gp.getLoadedMap() != null)
 //                && (lighting != null)

@@ -7,8 +7,8 @@ import cutscene.CutsceneManager;
 import dialogue.Conversation;
 import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
-import interaction.support.SubMenuSupport;
-import interaction.support.WarpSupport;
+import event.support.SubMenuSupport;
+import event.support.WarpSupport;
 import miscellaneous.*;
 import render.Renderer;
 import render.Spritesheet;
@@ -16,10 +16,10 @@ import submenu.SelectionArrow;
 import entity.EntityBase;
 import entity.implementation.player.Player;
 import environment.EnvironmentManager;
-import interaction.support.CameraSupport;
+import event.support.CameraSupport;
 import icon.EntityIconManager;
 import icon.GuiIconManager;
-import interaction.InteractionManager;
+import event.EventManager;
 import landmark.LandmarkBase;
 import landmark.LandmarkManager;
 import map.Map;
@@ -85,10 +85,8 @@ public class GamePanel {
 
 
     // SYSTEM
-    private final int FPS = 60; // TODO : TEMPORARY FIELD!
     private Camera camera;
     private final Renderer renderer = new Renderer(this);
-    private final JsonParser jsonP = new JsonParser(this);
     private final SubMenuHandler subMenuH = new SubMenuHandler(this);
     private final CollisionInspector collisionI = new CollisionInspector(this);
     private final DialogueReader dialogueR = new DialogueReader(this);
@@ -100,7 +98,7 @@ public class GamePanel {
     private final CutsceneManager cutsceneM = new CutsceneManager(this);
     private final AnimationManager animationM = new AnimationManager();
     private final CombatManager combatM = new CombatManager(this);
-    private final InteractionManager interactionM = new InteractionManager(this);
+    private final EventManager interactionM = new EventManager(this);
     private final CameraSupport cameraS = new CameraSupport(this);
     private final WarpSupport warpS = new WarpSupport(this);
     private final SubMenuSupport subMenuS = new SubMenuSupport(this);
@@ -137,7 +135,7 @@ public class GamePanel {
     private final LimitedLinkedHashMap<Integer, EntityBase> standby = new LimitedLinkedHashMap<>(50);
 
     /**
-     * List to temporarily store all loaded entities (player, NPCs, objects, party members) when drawing.
+     * List to temporarily store all loaded entities (player, NPCs, objects, party members) when layering for rendering.
      */
     private final ArrayList<EntityBase> entityList = new ArrayList<>();
 
@@ -271,6 +269,9 @@ public class GamePanel {
         // Dialogue.
         dialogueR.update();
 
+        // Cutscene.
+        cutsceneM.update();
+
         // Animation.
         animationM.update();                                                                                            // Run all animation logic to determine which images in animated assets should be drawn this frame.
 
@@ -302,7 +303,7 @@ public class GamePanel {
         // Objects are added to the render pipeline in the following order to control layering.
 
         // Tile.
-        tileM.render(renderer);                                                                                         // Draw tile sprite as defined in the TileManager class.
+        tileM.addToRenderPipeline(renderer);                                                                            // Render tile sprites as defined in the TileManager class.
 
         // Entity and landmark.
         for (EntityBase entity : obj.values()) {                                                                        // Add all objects in the current map to the list of entities.
@@ -347,35 +348,32 @@ public class GamePanel {
             landmarkList = new ArrayList<>();                                                                           // Fail-safe to have empty landmark array if no map is loaded.
         }
 
-        for (int row = 0; row < maxWorldRow; row++) {                                                                   // Draw the entities and landmarks row-by-row, starting at the top.
+        for (int row = 0; row < maxWorldRow; row++) {                                                                   // Render the entities and landmarks row-by-row, starting at the top.
 
-            for (LandmarkBase landmark : landmarkList) {                                                                // Draw all landmarks in the current row.
+            for (LandmarkBase landmark : landmarkList) {                                                                // Render all landmarks in the current row.
 
                 if ((landmark.getRow() >= row)
                         && (landmark.getRow() < (row + 1))) {
 
-                    landmark.render(renderer);
+                    landmark.addToRenderPipeline(renderer);
                 }
             }
 
-            for (EntityBase entity : entityList) {                                                                      // Draw all entities in the current row.
+            for (EntityBase entity : entityList) {                                                                      // Render all entities in the current row.
 
                 if ((entity.getWorldY() >= (row * nativeTileSize))
                         && (entity.getWorldY() < ((row + 1) * nativeTileSize))) {
 
-                    entity.render(renderer);
+                    entity.addToRenderPipeline(renderer);
                 }
             }
         }
 
         // Environment.
-//            environmentM.draw(g2);
-
-        // Cutscene.
-        cutsceneM.draw();
+//            environmentM.addToRenderPipeline(renderer);
 
         // UI.
-        ui.render(renderer, dt);                                                                                        // Render UI after everything else so that it appears on the top layer.
+        ui.addToRenderPipeline(renderer, dt);                                                                           // Render UI after everything else so that it appears on the top layer.
 
         // Cleanup.
         entityList.clear();                                                                                             // Reset the list of all entities by emptying it.
@@ -533,7 +531,7 @@ public class GamePanel {
     public void loadMap(int mapId) {
 
         // Set new map.
-        loadedMap = jsonP.loadMapJson(mapId);
+        loadedMap = JsonParser.loadMapJson(this, mapId);
 
         // Clear conversing and combating entity lists.
         clearConversingEntities();
@@ -544,13 +542,13 @@ public class GamePanel {
         obj.clear();
 
         // Load entities on new map.
-        jsonP.loadEntitiesJson(mapId);
+        JsonParser.loadEntitiesJson(this, mapId);
 
         // Purge `conv` array.
         conv.clear();
 
         // Load dialogue associated with new map.
-        jsonP.loadDialogueJson(mapId);
+        JsonParser.loadDialogueJson(this, mapId);
     }
 
 
@@ -952,10 +950,6 @@ public class GamePanel {
         return loadedMap;
     }
 
-    public int getFPS() {
-        return FPS;
-    }
-
     public Camera getCamera() {
         return camera;
     }
@@ -1004,7 +998,7 @@ public class GamePanel {
         return combatM;
     }
 
-    public InteractionManager getInteractionM() {
+    public EventManager getInteractionM() {
         return interactionM;
     }
 

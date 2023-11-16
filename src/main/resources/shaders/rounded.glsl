@@ -46,6 +46,8 @@ void main() {
     // (0, 1)    (1, 1)
     //
     // Note that (1, 1) is the bottom-right since the positive y-direction is defined as downwards in this application.
+    // This was defined in the Camera class with the projection matrix.
+    // Normally, (0, 0) would be the bottom-left and (1, 1) would be the top-right.
     //
     // Essentially, the method to round corners is the following steps:
     // 1) Calculate the center of the four circles that form the rounded corners.

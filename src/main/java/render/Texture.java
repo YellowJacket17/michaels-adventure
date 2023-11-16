@@ -2,6 +2,7 @@ package render;
 
 import org.lwjgl.BufferUtils;
 import utility.UtilityTool;
+import utility.exceptions.AssetLoadException;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -122,15 +123,13 @@ public class Texture {
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bufferWidth.get(0), bufferHeight.get(0),                        // Upload image to GPU.
                         0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
             } else {
-                // TODO : Throw more specific exception.
-                throw new RuntimeException("Unexpected number of channels (" + bufferChannels.get(0)
+                throw new AssetLoadException("Unexpected number of channels (" + bufferChannels.get(0)
                         + ") in image for texture loaded from " + filePath);
             }
             nativeWidth = bufferWidth.get(0);
             nativeHeight = bufferHeight.get(0);
         } else {
-            // TODO : Throw more specific exception.
-            throw new RuntimeException("Failed to load texture from " + filePath);
+            throw new AssetLoadException("Failed to load texture from " + filePath);
         }
 
         // Free memory.

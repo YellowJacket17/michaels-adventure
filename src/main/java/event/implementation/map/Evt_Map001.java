@@ -1,32 +1,32 @@
-package interaction.implementation.map;
+package event.implementation.map;
 
 import combat.EnterCombatTransitionType;
 import core.GamePanel;
 import entity.EntityBase;
 import entity.EntityDirection;
-import interaction.*;
+import event.*;
 import item.implementation.Itm_Controller;
 import item.implementation.Itm_Key;
 import item.ItemBase;
 
 /**
- * This class implements interaction logic for map with ID 1.
+ * This class implements event logic for map with ID 1.
  */
-public class Int_Map001 extends InteractionMapBase {
+public class Evt_Map001 extends EventMapBase {
 
     // CONSTRUCTOR
-    public Int_Map001(GamePanel gp) {
+    public Evt_Map001(GamePanel gp) {
         super(gp);
     }
 
 
     // METHODS
     @Override
-    public boolean objInteraction(InteractionType type, EntityBase target) {
+    public boolean objInteraction(EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
             case 1:
-                if (type == InteractionType.CLICK) {
+                if (type == EventType.CLICK) {
                     ItemBase item = new Itm_Controller(gp);
                     boolean added = gp.getInteractionM().pickupItem(item);
                     if (added) {
@@ -36,7 +36,7 @@ public class Int_Map001 extends InteractionMapBase {
                 }
                 break;
             case 2:
-                if (type == InteractionType.CLICK) {
+                if (type == EventType.CLICK) {
                     ItemBase item = new Itm_Key(gp);
                     boolean added = gp.getInteractionM().pickupItem(item);
                     if (added) {
@@ -51,17 +51,17 @@ public class Int_Map001 extends InteractionMapBase {
 
 
     @Override
-    public boolean npcInteraction(InteractionType type, EntityBase target) {
+    public boolean npcInteraction(EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
             case 4:
-                if (type == InteractionType.CLICK) {
+                if (type == EventType.CLICK) {
                     gp.getInteractionM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 0);
                     return true;
                 }
                 break;
             case 8:
-                if (type == InteractionType.STEP) {
+                if (type == EventType.STEP) {
                     gp.getInteractionM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 4);
                     return true;
                 }
@@ -72,11 +72,11 @@ public class Int_Map001 extends InteractionMapBase {
 
 
     @Override
-    public boolean partyInteraction(InteractionType type, EntityBase target) {
+    public boolean partyInteraction(EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
             case 5:
-                if ((type == InteractionType.CLICK)
+                if ((type == EventType.CLICK)
                         && (target.isOnEntity())
                         && (target.getOnEntityId() == gp.getPlayer().getEntityId())) {
 
@@ -90,17 +90,17 @@ public class Int_Map001 extends InteractionMapBase {
 
 
     @Override
-    public boolean tileInteraction(InteractionType type, int col, int row, EntityDirection direction) {
+    public boolean tileInteraction(EventType type, int col, int row, EntityDirection direction) {
 
         // Trigger a message.
-        if ((type == InteractionType.CLICK) && (col == 22) && (row == 28)) {
+        if ((type == EventType.CLICK) && (col == 22) && (row == 28)) {
 
             gp.getInteractionM().displayMessage("Looks like something will happen if this tile is stepped on...");
             return true;
         }
 
         // Warp to map 0.
-        if ((type == InteractionType.STEP) && (col == 25) && (row == 25)) {
+        if ((type == EventType.STEP) && (col == 25) && (row == 25)) {
 
             gp.getWarpS().initiateWarp(0, 1, 1, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, 1);
 
@@ -109,7 +109,7 @@ public class Int_Map001 extends InteractionMapBase {
         }
 
         // Trigger a cutscene.
-        if ((type == InteractionType.STEP) && (col == 22) && (row == 28)) {
+        if ((type == EventType.STEP) && (col == 22) && (row == 28)) {
 
             gp.getCutsceneM().triggerCutscene(1);
 //            gp.getCameraS().setCameraScroll(0, 0, 10);
@@ -117,7 +117,7 @@ public class Int_Map001 extends InteractionMapBase {
         }
 
         // Trigger combat.
-        if ((type == InteractionType.STEP) && (col == 25) && (row == 28)) {
+        if ((type == EventType.STEP) && (col == 25) && (row == 28)) {
 
             gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, 2, gp.getEntityById(4), gp.getEntityById(8));
             return true;

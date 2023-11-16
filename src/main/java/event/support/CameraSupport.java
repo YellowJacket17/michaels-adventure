@@ -1,4 +1,4 @@
-package interaction.support;
+package event.support;
 
 import core.GamePanel;
 import entity.EntityBase;

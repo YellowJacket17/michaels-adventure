@@ -1,10 +1,7 @@
 package utility;
 
-import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
@@ -21,22 +18,22 @@ public class UtilityTool {
     /**
      * Output stream (console).
      */
-    private static final OutputStream out = new BufferedOutputStream(System.out);
+    private static final OutputStream OUT = new BufferedOutputStream(System.out);
 
     /**
      * Date format (log contents).
      */
-    private static final SimpleDateFormat logContentsDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss:SSS");
+    private static final SimpleDateFormat LOG_CONTENTS_DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss:SSS");
 
     /**
      * Date format (file name).
      */
-    private static final SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmssSSS");
+    private static final SimpleDateFormat FILE_NAME_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmssSSS");
 
     /**
      * Temporary log file location and name.
      */
-    private static final String tempLogFilePath = "./templog.txt";
+    private static final String TEMP_LOG_FILE_PATH = "./templog.txt";
 
     /**
      * Boolean indicating whether the temporary log file has been successfully initialized.
@@ -45,26 +42,6 @@ public class UtilityTool {
 
 
     // METHODS
-    /**
-     * Scales an image.
-     *
-     * @param original original image to be scaled
-     * @param width width the image will be scaled to
-     * @param height height the image will be scaled to
-     * @return scaled image
-     */
-    public static BufferedImage scaleImage(BufferedImage original, int width, int height) {
-
-        BufferedImage scaledImage = new BufferedImage(width, height, original.getType());
-        Graphics2D g2 = scaledImage.createGraphics();
-        g2.drawImage(original, 0, 0, width, height, null);
-
-        g2.dispose();
-
-        return scaledImage;
-    }
-
-
     /**
      * Pauses code execution for a specified period of time.
      *
@@ -85,10 +62,10 @@ public class UtilityTool {
     public static void logInfo(String message) {
 
         Date date = new Date();
-        String formattedDate = logContentsDateFormat.format(date);
+        String formattedDate = LOG_CONTENTS_DATE_FORMAT.format(date);
         try {
-            out.write((formattedDate + "  \u001B[34m" + "INFO\u001B[0m     " + message + "\n").getBytes());
-            out.flush();
+            OUT.write((formattedDate + "  \u001B[34m" + "INFO\u001B[0m     " + message + "\n").getBytes());
+            OUT.flush();
         } catch (IOException e) {
             System.out.println(formattedDate + "  \u001B[34m" + "INFO\u001B[0m     " + message);
         }
@@ -110,15 +87,15 @@ public class UtilityTool {
     public static void logError(String message) {
 
         Date date = new Date();
-        String formattedDate = logContentsDateFormat.format(date);
+        String formattedDate = LOG_CONTENTS_DATE_FORMAT.format(date);
         try {
-            out.write((formattedDate + "  \u001B[31m" + "ERROR\u001B[0m    " + message + "\n").getBytes());
-            out.flush();
+            OUT.write((formattedDate + "  \u001B[31m" + "ERROR\u001B[0m    " + message + "\n").getBytes());
+            OUT.flush();
         } catch (IOException e) {
             System.out.println(formattedDate + "  \u001B[31m" + "ERROR\u001B[0m    " + message);
         }
         if (tempLogInitialized) {
-            try (FileWriter fw = new FileWriter(tempLogFilePath, true);
+            try (FileWriter fw = new FileWriter(TEMP_LOG_FILE_PATH, true);
                  BufferedWriter bw = new BufferedWriter(fw);
                  PrintWriter outFile = new PrintWriter(bw)) {
                 outFile.write(formattedDate + "  " + "ERROR    " + message + "\n");
@@ -135,15 +112,15 @@ public class UtilityTool {
     public static void logWarning(String message) {
 
         Date date = new Date();
-        String formattedDate = logContentsDateFormat.format(date);
+        String formattedDate = LOG_CONTENTS_DATE_FORMAT.format(date);
         try {
-            out.write((formattedDate + "  \u001B[93m" + "WARNING\u001B[0m  " + message + "\n").getBytes());
-            out.flush();
+            OUT.write((formattedDate + "  \u001B[93m" + "WARNING\u001B[0m  " + message + "\n").getBytes());
+            OUT.flush();
         } catch (IOException e) {
             System.out.println(formattedDate + "  \u001B[93m" + "WARNING\u001B[0m  " + message);
         }
         if (tempLogInitialized) {
-            try (FileWriter fw = new FileWriter(tempLogFilePath, true);
+            try (FileWriter fw = new FileWriter(TEMP_LOG_FILE_PATH, true);
                  BufferedWriter bw = new BufferedWriter(fw);
                  PrintWriter outFile = new PrintWriter(bw)) {
                 outFile.write(formattedDate + "  " + "WARNING  " + message + "\n");
@@ -160,15 +137,15 @@ public class UtilityTool {
     public static void logFilePath(String filePath) {
 
         Date date = new Date();
-        String formattedDate = logContentsDateFormat.format(date);
+        String formattedDate = LOG_CONTENTS_DATE_FORMAT.format(date);
         try {
-            out.write((formattedDate + "  \u001B[0m" + "         >> " + filePath + "\u001B[0m\n").getBytes());
-            out.flush();
+            OUT.write((formattedDate + "  \u001B[0m" + "         >> " + filePath + "\u001B[0m\n").getBytes());
+            OUT.flush();
         } catch (IOException e) {
             System.out.println(formattedDate + "  \u001B[0m" + "         >> " + filePath + "\u001B[0m");
         }
         if (tempLogInitialized) {
-            try (FileWriter fw = new FileWriter(tempLogFilePath, true);
+            try (FileWriter fw = new FileWriter(TEMP_LOG_FILE_PATH, true);
                  BufferedWriter bw = new BufferedWriter(fw);
                  PrintWriter outFile = new PrintWriter(bw)) {
                 outFile.write(formattedDate + "  " + "         >> " + filePath + "\n");
@@ -184,7 +161,7 @@ public class UtilityTool {
     public static void logStackTrace(Exception exception) {
 
         exception.printStackTrace();
-        try(FileWriter fw = new FileWriter(tempLogFilePath, true);
+        try(FileWriter fw = new FileWriter(TEMP_LOG_FILE_PATH, true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw)) {
             exception.printStackTrace(out);
@@ -197,7 +174,7 @@ public class UtilityTool {
      */
     public static void initializeTempLog() {
 
-        try (PrintWriter pw = new PrintWriter(tempLogFilePath)) {
+        try (PrintWriter pw = new PrintWriter(TEMP_LOG_FILE_PATH)) {
             tempLogInitialized = true;
         } catch (FileNotFoundException ex) {}
     }
@@ -210,9 +187,9 @@ public class UtilityTool {
 
         if (tempLogInitialized) {
             Date date = new Date();
-            String formattedDate = fileNameDateFormat.format(date);
+            String formattedDate = FILE_NAME_DATE_FORMAT.format(date);
             String filePath = "./crashlogs/crashlog_" + formattedDate + ".txt";
-            try (BufferedReader reader = new BufferedReader(new FileReader(tempLogFilePath));
+            try (BufferedReader reader = new BufferedReader(new FileReader(TEMP_LOG_FILE_PATH));
                  PrintWriter pw = new PrintWriter(filePath)) {
                 for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                     pw.write(line + "\n");

@@ -25,34 +25,20 @@ import utility.exceptions.JsonParseException;
  */
 public class JsonParser {
 
-    // FIELD
-    private final GamePanel gp;
-
-
-    // CONSTRUCTOR
-    /**
-     * Constructs a JsonParser instance.
-     *
-     * @param gp GamePanel instance
-     */
-    public JsonParser(GamePanel gp) {
-        this.gp = gp;
-    }
-
-
     // METHODS
     /**
      * Loads and instantiates a specified map from JSON data.
      *
+     * @param gp GamePanel instance to load into
      * @param mapId ID of map to be loaded
      * @return loaded map data
      * @throws JsonParseException if an error occurs while loading map from JSON
      */
-    public Map loadMapJson(int mapId) {
+    public static Map loadMapJson(GamePanel gp, int mapId) {
 
         JSONParser parser = new JSONParser();
 
-        try (InputStream is = getClass().getResourceAsStream("/json/maps.json")) {
+        try (InputStream is = JsonParser.class.getResourceAsStream("/json/maps.json")) {
 
             String contents = readFromInputStream(is);
 
@@ -77,14 +63,15 @@ public class JsonParser {
     /**
      * Loads and instantiates entities from JSON data for a specified map.
      *
+     * @param gp GamePanel instance to load into
      * @param mapId ID of map where entities are being loaded
      * @throws JsonParseException if an error occurs while loading entities from JSON
      */
-    public void loadEntitiesJson(int mapId) {
+    public static void loadEntitiesJson(GamePanel gp, int mapId) {
 
         JSONParser parser = new JSONParser();
 
-        try (InputStream is = getClass().getResourceAsStream("/json/entities.json")) {
+        try (InputStream is = JsonParser.class.getResourceAsStream("/json/entities.json")) {
 
             String contents = readFromInputStream(is);
 
@@ -305,7 +292,7 @@ public class JsonParser {
                     JSONObject attacksJson = (JSONObject)entityJson.get("attacks");
                     try {
                         int attackId = (int)((long)attacksJson.get("slot1"));
-                        AttackBase attack = instantiateAttack(attackId);
+                        AttackBase attack = instantiateAttack(gp, attackId);
                         if (attack != null) {
                             entity.getAttacks().add(attack);
                         }
@@ -314,7 +301,7 @@ public class JsonParser {
                     }
                     try {
                         int attackId = (int)((long)attacksJson.get("slot2"));
-                        AttackBase attack = instantiateAttack(attackId);
+                        AttackBase attack = instantiateAttack(gp, attackId);
                         if (attack != null) {
                             entity.getAttacks().add(attack);
                         }
@@ -323,7 +310,7 @@ public class JsonParser {
                     }
                     try {
                         int attackId = (int)((long)attacksJson.get("slot3"));
-                        AttackBase attack = instantiateAttack(attackId);
+                        AttackBase attack = instantiateAttack(gp, attackId);
                         if (attack != null) {
                             entity.getAttacks().add(attack);
                         }
@@ -332,7 +319,7 @@ public class JsonParser {
                     }
                     try {
                         int attackId = (int)((long)attacksJson.get("slot4"));
-                        AttackBase attack = instantiateAttack(attackId);
+                        AttackBase attack = instantiateAttack(gp, attackId);
                         if (attack != null) {
                             entity.getAttacks().add(attack);
                         }
@@ -378,14 +365,15 @@ public class JsonParser {
     /**
      * Loads and instantiates conversations with dialogue from JSON data for a specified map.
      *
+     * @param gp GamePanel instance to load into
      * @param mapId ID of map where dialogue is being loaded
      * @throws JsonParseException if an error occurs while loading dialogue from JSON
      */
-    public void loadDialogueJson(int mapId) {
+    public static void loadDialogueJson(GamePanel gp, int mapId) {
 
         JSONParser parser = new JSONParser();
 
-        try (InputStream is = getClass().getResourceAsStream("/json/dialogue.json")) {
+        try (InputStream is = JsonParser.class.getResourceAsStream("/json/dialogue.json")) {
 
             String contents = readFromInputStream(is);
 
@@ -453,7 +441,7 @@ public class JsonParser {
      * @return file contents
      * @throws IOException
      */
-    private String readFromInputStream(InputStream inputStream) throws IOException {
+    private static String readFromInputStream(InputStream inputStream) throws IOException {
 
         StringBuilder resultStringBuilder = new StringBuilder();
 
@@ -473,10 +461,11 @@ public class JsonParser {
     /**
      * Instantiates an appropriate attack subclass based on the inputted attack ID.
      *
+     * @param gp GamePanel instance to load into
      * @param attackId ID of attack to be instantiated
      * @return attack
      */
-    private AttackBase instantiateAttack(int attackId) {
+    private static AttackBase instantiateAttack(GamePanel gp, int attackId) {
 
         AttackBase attack = null;
 

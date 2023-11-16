@@ -55,10 +55,10 @@ public abstract class ItemBase extends Drawable {
     protected final boolean stackable;                                                                                  // Whether an item is stackable in the inventory or not; not initialized here since it's final and a constructor argument.
 
     /**
-     * Boolean to track whether a draw error has occurred.
-     * This prevents a draw error from this item being printed to the console again.
+     * Boolean to track whether a render error has occurred.
+     * This prevents a render error from this item being printed to the console again.
      */
-    protected boolean drawError = false;                                                                                // If a draw error occurs, this will be marked as true; this prevents a draw error from being printed to the console again.
+    protected boolean renderError = false;                                                                                // If a draw error occurs, this will be marked as true; this prevents a draw error from being printed to the console again.
 
 
     // CONSTRUCTOR
@@ -78,27 +78,27 @@ public abstract class ItemBase extends Drawable {
 
 
     /**
-     * Draws an item.
+     * Adds an item to the render pipeline.
      *
      * @param renderer Renderer instance
-     * @param screenX x-coordinate (left side) where the item sprite will be drawn
-     * @param screenY y-coordinate (top side) where the item sprite will be drawn
+     * @param screenX screen x-coordinate of the dialogue arrow (leftmost, normalized between 0 and 1)
+     * @param screenY screen y-coordinate of the dialogue arrow (topmost, normalized between 0 and 1)
      */
-    public void draw(Renderer renderer, int screenX, int screenY) {
+    public void addToRenderPipeline(Renderer renderer, float screenX, float screenY) {
 
         if (sprite != null) {
 
             this.transform.position.x = screenX;
             this.transform.position.y = screenY;
             renderer.addDrawable(this);
-        } else if (!drawError) {
+        } else if (!renderError) {
 
-            UtilityTool.logError("Failed to draw item "
+            UtilityTool.logError("Failed to add item "
                     + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
                     + "with ID "
                     + itemId
-                    + ": image may not have been properly loaded upon item initialization.");
-            drawError = true;
+                    + " to the render pipeline: sprite may not have been properly loaded upon item initialization.");
+            renderError = true;
         }
     }
 

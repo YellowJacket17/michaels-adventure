@@ -14,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This class instantiates tiles and handles related operations.
@@ -29,8 +28,6 @@ public class TileManager {
     // FIELDS
     private final GamePanel gp;
 
-    private Drawable[] drawables = new Drawable[0];
-
     /**
      * The index of the default tile that will load on a map if no data exists for a point in said map file.
      */
@@ -43,11 +40,11 @@ public class TileManager {
     private Tile[] tiles = new Tile[0];
 
     /**
-     * Set to store tile render errors. If a tile render error occurs, the index associated with the tile will be added
-     * to this set.
+     * Set to store tile render errors.
+     * If a tile render error occurs, the index associated with the tile will be added to this set.
      * This prevents a render error from that tile type being printed to the console again.
      */
-    private final Set<Integer> renderErrors = new HashSet<>();
+    private final HashSet<Integer> renderErrors = new HashSet<>();
 
 
     // CONSTRUCTOR
@@ -64,13 +61,11 @@ public class TileManager {
 
     // METHODS
     /**
-     * Add tiles of the loaded map to the render pipeline.
+     * Adds all tiles of the loaded map to the render pipeline.
      *
      * @param renderer Renderer instance
      */
-    public void render(Renderer renderer) {
-
-        // TODO : Have a static array of tiles loaded for a map once upon map load.
+    public void addToRenderPipeline(Renderer renderer) {
 
         int worldCol = 0;
         int worldRow = 0;

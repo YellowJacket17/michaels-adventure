@@ -52,10 +52,11 @@ public class CutsceneManager {
 
 
     /**
-     * Draws a cutscene according to which is currently set in the `sceneNum` field.
+     * Updates an active cutscene by one frame.
+     * Note that the active cutscene is set by the `sceneNum` field in this class.
      * If `sceneNum` is set to zero, nothing will happen.
      */
-    public void draw() {
+    public void update() {
 
         if (gp.getGameState() == GameState.CUTSCENE) {
 
