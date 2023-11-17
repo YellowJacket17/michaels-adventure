@@ -220,10 +220,10 @@ public class Ui {
     private void drawCoreMenuScreen() {
 
         // Create the frame.
-        final int frameX = 0;                                                                                           // The position of the right side of the frame (x).
-        final int frameY = coreMenuEdge;                                                                                // The position of the top of the frame (y).
-        final int frameWidth = gp.getNativeScreenWidth();
-        final int frameHeight = gp.getNativeScreenHeight() - (2 * coreMenuEdge);
+        int frameX = 0;                                                                                                 // The position of the right side of the frame (x).
+        int frameY = coreMenuEdge;                                                                                      // The position of the top of the frame (y).
+        int frameWidth = gp.getNativeScreenWidth();
+        int frameHeight = gp.getNativeScreenHeight() - (2 * coreMenuEdge);
 
         // Draw the frame.
         drawCoreMenuWindow(frameX, frameY, frameWidth, frameHeight);
@@ -760,12 +760,12 @@ public class Ui {
 
         // Camera center (x).
         worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.25f));
-        String centerX = "Camera Center X: " + (gp.getCamera().getPositionMatrix().x / 2) + (gp.getCamera().getScreenWidth() / 2);
+        String centerX = "Camera Center X: " + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
         renderStringShadow(centerX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
 
         // Camera center (y).
         worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.31f));
-        String centerY = "Camera Center Y: " + (gp.getCamera().getPositionMatrix().y / 2) + (gp.getCamera().getScreenHeight() / 2);
+        String centerY = "Camera Center Y: " + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
         renderStringShadow(centerY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
     }
 

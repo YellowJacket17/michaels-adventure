@@ -18,6 +18,7 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 /**
  * This class holds a batch of drawables to be sent to the GPU and rendered in a single call.
+ * Sending drawables to the GPU to render as a single batch significantly improves performance.
  */
 public class DrawableBatch {
 

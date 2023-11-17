@@ -4,8 +4,6 @@ import core.GamePanel;
 import environment.lighting.LightManager;
 import render.Renderer;
 
-import java.awt.*;
-
 /**
  * This class manages all environmental filters, such as lighting, rain, fog, etc.
  */
@@ -13,7 +11,6 @@ public class EnvironmentManager {
 
     // FIELDS
     private final GamePanel gp;
-    private Lighting lighting;
     private LightManager lightManager;
 
 
@@ -34,15 +31,10 @@ public class EnvironmentManager {
      */
     public void update() {
 
-//        if ((gp.getLoadedMap().hasDayNightCycle()) && (lighting != null)) {                                             // Check if the current map has a day/night cycle.
-//
-//            lighting.update();
-//        }
+        if (lightManager != null) {
 
-//        if (lightManager != null) {
-//
-//            lightManager.update();
-//        }
+            lightManager.update();
+        }
     }
 
 
@@ -53,17 +45,10 @@ public class EnvironmentManager {
      */
     public void addToRenderPipeline(Renderer renderer) {
 
-//        if ((gp.getLoadedMap() != null)
-//                && (lighting != null)
-//                && (gp.getLoadedMap().hasDayNightCycle())) {
-//
-//            lighting.draw(g2);
-//        }
+        if (lightManager != null) {
 
-//        if (lightManager != null) {
-//
-//            lightManager.draw(g2);
-//        }
+            lightManager.addToRenderPipeline(renderer);
+        }
     }
 
 
@@ -72,13 +57,6 @@ public class EnvironmentManager {
      */
     public void setup() {
 
-        lighting = new Lighting(gp, 275);                                                                               // NOTE: `circleSize` should not be greater than the `screenWidth` or `screenHeight` in GamePanel.
         lightManager = new LightManager(gp);
-    }
-
-
-    // GETTER
-    public Lighting getLighting() {
-        return lighting;
     }
 }

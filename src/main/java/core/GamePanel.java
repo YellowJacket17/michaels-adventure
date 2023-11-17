@@ -44,39 +44,39 @@ public class GamePanel {
      * Native size of rendered tiles.
      * Tiles are the same width and height.
      */
-    private final int nativeTileSize = 32;
+    private static final int NATIVE_TILE_SIZE = 32;
 
     /**
      * Tiles per column in the screen space.
      */
-    private final int maxScreenCol = 24;
+    private static final int MAX_SCREEN_COL = 24;
 
     /**
      * Tiles per row in the screen space.
      */
-    private final int maxScreenRow = 14;
+    private static final int MAX_SCREEN_ROW = 14;
 
     /**
      * Native screen width as determined by the native tile size and number of columns.
      */
-    private final int nativeScreenWidth = nativeTileSize * maxScreenCol;
+    private static final int NATIVE_SCREEN_WIDTH = NATIVE_TILE_SIZE * MAX_SCREEN_COL;
 
     /**
      * Native screen height as determined by the native tile size and number of rows.
      */
-    private final int nativeScreenHeight = nativeTileSize * maxScreenRow;
+    private static final int NATIVE_SCREEN_HEIGHT = NATIVE_TILE_SIZE * MAX_SCREEN_ROW;
 
 
      // WORLD SETTINGS
     /**
      * Maximum number of tiles allowed in a map column.
      */
-    private final int maxWorldCol = 100;
+    private static final int MAX_WORLD_COL = 100;
 
     /**
      *  Maximum number of tiles allowed in a map row.
      */
-    private final int maxWorldRow = 100;
+    private static final int MAX_WORLD_ROW = 100;
 
     /**
      * Current loaded map.
@@ -230,8 +230,8 @@ public class GamePanel {
         // Load resources.
         loadResources();
 
-        // Initialize classes.
-        camera = new Camera(nativeScreenWidth, nativeScreenHeight);
+        // Initialize remaining system classes.
+        camera = new Camera(NATIVE_SCREEN_WIDTH, NATIVE_SCREEN_HEIGHT);
         tileM = new TileManager(this);
         iconM = new GuiIconManager(this);
         dialogueA = new DialogueArrow(this);
@@ -285,7 +285,7 @@ public class GamePanel {
         updateEntities();
 
         // Environment.
-        environmentM.update();
+//        environmentM.update();
 
         // Camera.
         cameraS.update();
@@ -348,7 +348,7 @@ public class GamePanel {
             landmarkList = new ArrayList<>();                                                                           // Fail-safe to have empty landmark array if no map is loaded.
         }
 
-        for (int row = 0; row < maxWorldRow; row++) {                                                                   // Render the entities and landmarks row-by-row, starting at the top.
+        for (int row = 0; row < MAX_WORLD_ROW; row++) {                                                                 // Render the entities and landmarks row-by-row, starting at the top.
 
             for (LandmarkBase landmark : landmarkList) {                                                                // Render all landmarks in the current row.
 
@@ -361,8 +361,8 @@ public class GamePanel {
 
             for (EntityBase entity : entityList) {                                                                      // Render all entities in the current row.
 
-                if ((entity.getWorldY() >= (row * nativeTileSize))
-                        && (entity.getWorldY() < ((row + 1) * nativeTileSize))) {
+                if ((entity.getWorldY() >= (row * NATIVE_TILE_SIZE))
+                        && (entity.getWorldY() < ((row + 1) * NATIVE_TILE_SIZE))) {
 
                     entity.addToRenderPipeline(renderer);
                 }
@@ -370,7 +370,7 @@ public class GamePanel {
         }
 
         // Environment.
-//            environmentM.addToRenderPipeline(renderer);
+//        environmentM.addToRenderPipeline(renderer);
 
         // UI.
         ui.addToRenderPipeline(renderer, dt);                                                                           // Render UI after everything else so that it appears on the top layer.
@@ -927,23 +927,23 @@ public class GamePanel {
 
     // GETTERS
     public int getNativeTileSize() {
-        return nativeTileSize;
+        return NATIVE_TILE_SIZE;
     }
 
     public int getNativeScreenWidth() {
-        return nativeScreenWidth;
+        return NATIVE_SCREEN_WIDTH;
     }
 
     public int getNativeScreenHeight() {
-        return nativeScreenHeight;
+        return NATIVE_SCREEN_HEIGHT;
     }
 
     public int getMaxWorldCol() {
-        return maxWorldCol;
+        return MAX_WORLD_COL;
     }
 
     public int getMaxWorldRow() {
-        return maxWorldRow;
+        return MAX_WORLD_ROW;
     }
 
     public Map getLoadedMap() {
