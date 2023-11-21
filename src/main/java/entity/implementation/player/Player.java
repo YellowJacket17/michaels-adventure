@@ -25,7 +25,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * This class defines the player entity that the player controls.
- * Root camera control is also defined here.
+ * Player inputs are also handled here.
  */
 public class Player extends EntityBase {
 
@@ -319,51 +319,51 @@ public class Player extends EntityBase {
     @Override
     protected void updateAction() {
 
-        if (moving) {                                                                                                   // This will execute if the player character is currently in a state of motion.
+        if (moving) {                                                                                                   // This will execute if the player entity is currently in a state of motion.
 
-            if (!colliding) {                                                                                           // If collision is false, the player can move.
+            if (!colliding) {                                                                                           // If collision is false, the player entity can move.
 
                 switch (directionCurrent) {
                     case UP:
-                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move (i.e., change tiles) if it's in the same direction as the last movement OR if the player is still within the frame buffer from the last state of motion.
+                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move (i.e., change tiles) if it's in the same direction as the last movement OR if the player entity is still within the move countdown from the last state of motion.
                             worldY -= speed;
                             if (moveCountdown > 0) {
                                 directionLast = directionCurrent;
-                                moveCountdown = 0;                                                                      // Reset frame buffer.
+                                moveCountdown = 0;                                                                      // Reset move countdown.
                             }
                         }
                         break;
                     case DOWN:
-                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player is still within the frame buffer from the last state of motion.
+                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player entity is still within the move countdown from the last state of motion.
                             worldY += speed;
                             if (moveCountdown > 0) {
                                 directionLast = directionCurrent;
-                                moveCountdown = 0;                                                                      // Reset frame buffer.
+                                moveCountdown = 0;                                                                      // Reset move countdown.
                             }
                         }
                         break;
                     case LEFT:
-                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player is still within the frame buffer from the last state of motion.
+                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player entity is still within the move countdown from the last state of motion.
                             worldX -= speed;
                             if (moveCountdown > 0) {
                                 directionLast = directionCurrent;
-                                moveCountdown = 0;                                                                      // Reset frame buffer.
+                                moveCountdown = 0;                                                                      // Reset move countdown.
                             }
                         }
                         break;
                     case RIGHT:
-                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player is still within the frame buffer from the last state of motion.
+                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player entity is still within the move countdown from the last state of motion.
                             worldX += speed;
                             if (moveCountdown > 0) {
                                 directionLast = directionCurrent;
-                                moveCountdown = 0;                                                                      // Reset frame buffer.
+                                moveCountdown = 0;                                                                      // Reset move countdown.
                             }
                         }
                         break;
                 }
             }
 
-            if (pixelCounter <= gp.getNativeTileSize() / 2) {                                                           // Walking animation; player will have a foot forward for half of the pixels traversed.
+            if (worldCounter <= gp.getNativeTileSize() / 2) {                                                           // Walking animation; player entity will have a foot forward for half of the pixels traversed.
 
                 if (spriteNumLast == 2) {
 
@@ -379,16 +379,16 @@ public class Player extends EntityBase {
 
             if (turning) {
 
-                pixelCounter += gp.getNativeTileSize() / 8;                                                             // If the player is turning from a static position, the pixel counter will increase faster to make the act of turning seem faster to the player; simulates "moving" a tile's length at a faster speed (8 frames).
+                worldCounter += gp.getNativeTileSize() / 8;                                                             // If the player is turning from a static position, the pixel counter will increase faster to make the act of turning seem faster to the player; simulates "moving" a tile's length at a faster speed (8 frames).
             } else {
 
-                pixelCounter += speed;                                                                                  // Add to the number of pixels the player has moved while in the current state of motion.
+                worldCounter += speed;                                                                                  // Add to the number of pixels the player has moved while in the current state of motion.
             }
 
-            if (pixelCounter >= gp.getNativeTileSize()) {                                                               // Check if the player character has moved a number of pixels equal to a tile size in the current state of motion.
+            if (worldCounter >= gp.getNativeTileSize()) {                                                               // Check if the player character has moved a number of pixels equal to a tile size in the current state of motion.
 
                 moving = false;                                                                                         // If we've moved a tile's length, the player character exits a state of motion and can again be controlled.
-                pixelCounter = 0;                                                                                       // Reset the pixel counter.
+                worldCounter = 0;                                                                                       // Reset the pixel counter.
                 moveCountdown = stagedMoveCountdown;                                                                    // Provide a 2 frame buffer for the player to change direction and keep momentum upon exiting the current state of motion.
 
                 if ((!colliding) && (!turning)) {
@@ -861,21 +861,21 @@ public class Player extends EntityBase {
      */
     private boolean checkClickInteraction() {
 
-        boolean interaction = gp.getInteractionM().handleNpcInteraction(EventType.CLICK);                         // Check in an NPC is being interacted with via a click.
+        boolean interaction = gp.getInteractionM().handleNpcInteraction(EventType.CLICK);                               // Check in an NPC is being interacted with via a click.
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handleObjectInteraction(EventType.CLICK);                          // If an NPC isn't being interacted with, check if an object is being interacted with via a click.
+            interaction = gp.getInteractionM().handleObjectInteraction(EventType.CLICK);                                // If an NPC isn't being interacted with, check if an object is being interacted with via a click.
         }
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handlePartyInteraction(EventType.CLICK);                           // If an object isn't being interacted with, check if a party member is being interacted with via a click.
+            interaction = gp.getInteractionM().handlePartyInteraction(EventType.CLICK);                                 // If an object isn't being interacted with, check if a party member is being interacted with via a click.
         }
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handleTileInteraction(EventType.CLICK);                            // If a party member isn't being interacted with, check to see if a tile is being interacted with via a click.
+            interaction = gp.getInteractionM().handleTileInteraction(EventType.CLICK);                                  // If a party member isn't being interacted with, check to see if a tile is being interacted with via a click.
         }
 
         return interaction;
@@ -889,21 +889,21 @@ public class Player extends EntityBase {
      */
     private boolean checkStepInteraction() {
 
-        boolean interaction = gp.getInteractionM().handleNpcInteraction(EventType.STEP);                          // Check in an NPC is being interacted with via a step.
+        boolean interaction = gp.getInteractionM().handleNpcInteraction(EventType.STEP);                                // Check in an NPC is being interacted with via a step.
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handleObjectInteraction(EventType.STEP);                           // If an NPC isn't being interacted with, check if an object is being interacted with via a step..
+            interaction = gp.getInteractionM().handleObjectInteraction(EventType.STEP);                                 // If an NPC isn't being interacted with, check if an object is being interacted with via a step..
         }
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handleTileInteraction(EventType.STEP);                             // If an object isn't being interacted with, check if a tile is being interacted with via a step.
+            interaction = gp.getInteractionM().handleTileInteraction(EventType.STEP);                                   // If an object isn't being interacted with, check if a tile is being interacted with via a step.
         }
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handlePartyInteraction(EventType.STEP);                            // If a tile isn't being interacted with, check to see if a party member is being interacted with via a step.
+            interaction = gp.getInteractionM().handlePartyInteraction(EventType.STEP);                                  // If a tile isn't being interacted with, check to see if a party member is being interacted with via a step.
         }
 
         return interaction;

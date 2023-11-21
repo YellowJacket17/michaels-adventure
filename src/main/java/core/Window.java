@@ -36,7 +36,7 @@ public class Window {
     /**
      * Maximum permitted frame rate.
      */
-    private final int frameRateCap = 60;
+    private int frameRateCap = 60;
 
     /**
      * Boolean indicating whether the main game loop is running (true) or not (false).

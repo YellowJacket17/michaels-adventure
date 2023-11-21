@@ -80,6 +80,7 @@ public class EntityIconManager {
                 entityIcon.transform.position.y = worldCoords.y;
                 entityIcon.transform.scale.x = sprite.getNativeWidth();
                 entityIcon.transform.scale.y = sprite.getNativeHeight();
+                entityIcon.setSprite(sprite);
                 renderer.addDrawable(entityIcon);
             } else if (!renderErrors.contains(entityId)) {
 

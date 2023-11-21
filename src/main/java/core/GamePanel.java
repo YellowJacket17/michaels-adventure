@@ -880,7 +880,7 @@ public class GamePanel {
 
 
     /**
-     * Loads and stores resources like shaders and spritesheets into memory.
+     * Loads resources like shaders and spritesheets into memory.
      */
     private void loadResources() {
 
@@ -889,35 +889,35 @@ public class GamePanel {
         AssetPool.getShader("/shaders/rounded.glsl");
         AssetPool.getShader("/shaders/font.glsl");
 
-        // Tiles spritesheet.
+        // Tiles spritesheet (spritesheet 0).
         String filePath = "/spritesheets/tiles.png";
         AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 10, 32, 32, 1));
 
-        // Characters spritesheet.
+        // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";
         AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 36, 32, 48, 0));
 
-        // Objects spritesheet.
+        // Objects spritesheet (spritesheet 2).
         filePath = "/spritesheets/objects.png";
         AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 3, 32, 32, 0));
 
-        // Landmarks spritesheet.
+        // Landmarks spritesheet (spritesheet 3).
         filePath = "/spritesheets/landmarks.png";
         int[] widths = new int[] {62, 32};
         int[] heights = new int[] {90, 70};
         AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 2, widths, heights, 1));
 
-        // Items spritesheet.
+        // Items spritesheet (spritesheet 4).
         filePath = "/spritesheets/items.png";
         AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 2, 32, 32, 0));
 
-        // Icons spritesheet.
+        // Icons spritesheet (spritesheet 5).
         filePath = "/spritesheets/icons.png";
-        widths = new int[] {153, 153, 40, 36, 36, 28, 28, 28, 28, 28, 28};
+        widths = new int[] {152, 152, 40, 36, 36, 28, 28, 28, 28, 28, 28};
         heights = new int[] {56, 56, 40, 36, 36, 28, 28, 28, 28, 28, 28};
         AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 11, widths, heights, 0));
 
-        // Miscellaneous spritesheet.
+        // Miscellaneous spritesheet (spritesheet 6).
         filePath = "/spritesheets/miscellaneous.png";
         widths = new int[] {6, 10};
         heights = new int[] {10, 6};

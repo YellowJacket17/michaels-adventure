@@ -217,10 +217,10 @@ public abstract class EntityBase extends Drawable {
 
     // BUFFERS
     /**
-     * Counts the number of pixels (i.e., world units) this entity has moved thus far while in a state of motion.
+     * Counts the number of world units this entity has moved thus far while in a state of motion.
      * In practice, this is used to track whether a tile's length has been traversed yet or not.
      */
-    protected int pixelCounter;
+    protected double worldCounter;
 
     /**
      * Controls the number of frames this entity must wait before moving again after exiting a state of motion.
@@ -453,7 +453,7 @@ public abstract class EntityBase extends Drawable {
         turning = false;
         worldX = worldXStart;
         worldY = worldYStart;
-        pixelCounter = 0;
+        worldCounter = 0;
         directionCurrent = directionLast;
         spriteNumCurrent = 1;
     }
@@ -669,7 +669,7 @@ public abstract class EntityBase extends Drawable {
                 updateWorldPosition();
             }
 
-            if (pixelCounter <= gp.getNativeTileSize() / 2) {                                                           // Walking animation; player will have a foot forward for half of the pixels traversed.
+            if (worldCounter <= gp.getNativeTileSize() / 2) {                                                           // Walking animation; entity will have a foot forward for half of the world units traversed.
 
                 if (spriteNumLast == 2) {
 
@@ -683,12 +683,12 @@ public abstract class EntityBase extends Drawable {
                 spriteNumCurrent = 1;
             }
 
-            pixelCounter += speed;                                                                                      // Add to the number of pixels (i.e., world units) the entity has moved while in the current state of motion.
+            worldCounter += speed;                                                                                      // Add to the number of world units (i.e., world units) the entity has moved while in the current state of motion.
 
-            if (pixelCounter >= gp.getNativeTileSize()) {                                                               // Check if the entity has moved a number of pixels equal to a tile size in the current state of motion.
+            if (worldCounter >= gp.getNativeTileSize()) {                                                               // Check if the entity has moved a number of world units equal to a tile size in the current state of motion.
 
-                moving = false;                                                                                         // If we've moved a tile's length, the entity exits a state of motion.
-                pixelCounter = 0;                                                                                       // Reset the pixel counter.
+                moving = false;                                                                                         // If a tile's length has been traversed, the entity exits a state of motion.
+                worldCounter = 0;                                                                                       // Reset the world unit counter.
                 worldXLast = worldXStart;                                                                               // Store the last position the entity was at (x).
                 worldYLast = worldYStart;                                                                               // Store the last position the entity was at (y).
                 worldXStart = worldXEnd;

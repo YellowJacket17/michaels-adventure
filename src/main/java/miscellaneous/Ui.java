@@ -25,11 +25,6 @@ public class Ui {
      */
     private int transitionFrameCounter;
 
-    /**
-     * Constant that sets the size of the gap between the screen edges at the top and bottom of the central menu window.
-     * The value stored here already accounts for scaling set in GamePanel upon construction.
-     */
-    private final int coreMenuEdge;
 
     /**
      * Variable to store current selected party member in the party menu.
@@ -80,7 +75,6 @@ public class Ui {
      */
     public Ui(GamePanel gp) {
         this.gp = gp;
-        coreMenuEdge = gp.getNativeTileSize();
         occupiedItemSlots = new boolean[maxNumItemRow][maxNumItemCol];
     }
 
@@ -105,11 +99,11 @@ public class Ui {
             case DIALOGUE:
                 renderDialogueScreen();
                 break;
-//            case PARTY_MENU:
-//                drawCoreMenuScreen();
-//                drawMenuSectionName("Party");
-//                drawPartyMenuScreen();
-//                break;
+            case PARTY_MENU:
+                renderInGameMenuMainWindowScreen();
+                drawMenuSectionName("Party");
+                drawPartyMenuScreen();
+                break;
 //            case INVENTORY_MENU:
 //                drawCoreMenuScreen();
 //                drawMenuSectionName("Inventory");
@@ -192,7 +186,7 @@ public class Ui {
 
             // Render dialogue entity name.
             Vector2f subTextWorldCoords = gp.getCamera().screenCoordsToWorldCoords(subTextScreenCoords);
-            renderString(gp.getDialogueR().getDialogueEntityName(), subTextWorldCoords.x, subTextWorldCoords.y, fontScale, new Vector3f(121, 149, 255));
+            renderString(gp.getDialogueR().getDialogueEntityName(), subTextWorldCoords.x, subTextWorldCoords.y, fontScale, new Vector3f(121, 149, 255), "Arimo");
         }
 
         // Dialogue progress arrow, if applicable.
@@ -207,32 +201,42 @@ public class Ui {
         float mainTextScreenSpacing = (mainWindowScreenHeight - (2 * characterScreenHeight)) / 3;
         Vector2f mainTextScreenCoords = new Vector2f(mainTextScreenLeftPadding, mainWindowScreenCoords.y + mainTextScreenSpacing);
         Vector2f mainTextWorldCoords = gp.getCamera().screenCoordsToWorldCoords(mainTextScreenCoords);
-        renderString(gp.getDialogueR().getDialoguePrint1(), mainTextWorldCoords.x, mainTextWorldCoords.y, fontScale, new Vector3f(255, 255, 255));
+        renderString(gp.getDialogueR().getDialoguePrint1(), mainTextWorldCoords.x, mainTextWorldCoords.y, fontScale, new Vector3f(255, 255, 255), "Arimo");
         mainTextScreenCoords.y += characterScreenHeight + mainTextScreenSpacing;
         mainTextWorldCoords = gp.getCamera().screenCoordsToWorldCoords(mainTextScreenCoords);
-        renderString(gp.getDialogueR().getDialoguePrint2(), mainTextWorldCoords.x, mainTextWorldCoords.y, fontScale, new Vector3f(255, 255, 255));
+        renderString(gp.getDialogueR().getDialoguePrint2(), mainTextWorldCoords.x, mainTextWorldCoords.y, fontScale, new Vector3f(255, 255, 255), "Arimo");
     }
 
 
     /**
-     * Draws the core of the menu screen.
+     * Adds components of the main window for the in-game menu to the render pipeline.
      */
-    private void drawCoreMenuScreen() {
+    private void renderInGameMenuMainWindowScreen() {
 
-        // Create the frame.
-        int frameX = 0;                                                                                                 // The position of the right side of the frame (x).
-        int frameY = coreMenuEdge;                                                                                      // The position of the top of the frame (y).
-        int frameWidth = gp.getNativeScreenWidth();
-        int frameHeight = gp.getNativeScreenHeight() - (2 * coreMenuEdge);
+        // Initialize main window position and dimensions.
+        float mainWindowScreenTopBottomPadding = 0.06f;
+        float mainWindowScreenLeftRightPadding = 0.06f;
+        Vector2f mainWindowScreenCoords = new Vector2f(mainWindowScreenLeftRightPadding, mainWindowScreenTopBottomPadding);
+        float mainWindowScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding);
+        float mainWindowScreenHeight = 1 - (2 * mainWindowScreenTopBottomPadding);
 
-        // Draw the frame.
-        drawCoreMenuWindow(frameX, frameY, frameWidth, frameHeight);
+        // Render main window.
+        Vector2f mainWindowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(mainWindowScreenCoords);
+        float mainWindowWorldWidth = gp.getCamera().screenWidthToWorldWidth(mainWindowScreenWidth);
+        float mainWindowWorldHeight = gp.getCamera().screenHeightToWorldHeight(mainWindowScreenHeight);
+        renderer.addRoundRectangle(
+                new Vector4f(0, 0, 0, 220),
+                new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
+                (int)mainWindowWorldHeight / 16);
 
-        // Draw menu icons (party, inventory, and settings).
-        int menuIconScreenY = coreMenuEdge + 9;
+        // Initialize menu icon (party, inventory, and settings) positions and render.
+        Vector2f menuIconScreenCoords = new Vector2f(
+                1 - mainWindowScreenLeftRightPadding - 0.1f,
+                mainWindowScreenTopBottomPadding + 0.1f);
 
         int menuIconScreenX = gp.getNativeScreenWidth() - 120;
 //        gp.getIconM().draw(g2, 0, menuIconScreenX, menuIconScreenY); // TODO : Replace with Renderer!
+        gp.getIconM().addToRenderPipeline(renderer, 0, menuIconScreenCoords.x, menuIconScreenCoords.y);
 
         menuIconScreenX = gp.getNativeScreenWidth() - 80;
 //        gp.getIconM().draw(g2, 1, menuIconScreenX, menuIconScreenY); // TODO : Replace with Renderer!
@@ -283,10 +287,10 @@ public class Ui {
         // Set position and color of the menu label.
         Vector3f sectionNameColor = new Vector3f(121, 149, 255);
         int x_label = 15;                                                                                               // Set position of text (right, x).
-        int y_label = coreMenuEdge + 29;                                                                                // Set position of text (top, y).
+//        int y_label = mainWindowTopBottomPadding + 29;                                                                                // Set position of text (top, y).
 
         // Draw the menu label.
-        renderString(name, x_label, y_label, 20F, sectionNameColor);
+//        renderString(name, x_label, y_label, 20F, sectionNameColor, "Arimo");
     }
 
 
@@ -311,15 +315,15 @@ public class Ui {
         int topIconY = 67;                                                                                              // The y-position of the top icon; used with `verticalSpacing` to get the y-position of lower icons.
 
         // Slot 0 (player entity).
-        int iconY = coreMenuEdge + topIconY;
+//        int iconY = mainWindowTopBottomPadding + topIconY;
 //        gp.getIconM().draw(g2, 3, iconX, iconY); // TODO : Replace with Renderer!
 
         // Slot 1.
-        iconY = coreMenuEdge + (topIconY + verticalSpacing);
+//        iconY = mainWindowTopBottomPadding + (topIconY + verticalSpacing);
 //        gp.getIconM().draw(g2, 4, iconX, iconY); // TODO : Replace with Renderer!
 
         // Slot 2.
-        iconY = coreMenuEdge + (topIconY + (2 * verticalSpacing));
+//        iconY = mainWindowTopBottomPadding + (topIconY + (2 * verticalSpacing));
 //        gp.getIconM().draw(g2, 5, iconX, iconY); // TODO : Replace with Renderer!
 
         // Draw the entity icon and corresponding text for each party member.
@@ -329,10 +333,10 @@ public class Ui {
         int topTextY = 82;                                                                                              // The y-position of the text in the top party member icon; used with `verticalSpacing` to get the y-position of lower icons.
 
         // Slot 0 (player entity).
-        int entityIconY = coreMenuEdge + topEntityIconY;
-        int textY = coreMenuEdge + topTextY;
+//        int entityIconY = mainWindowTopBottomPadding + topEntityIconY;
+//        int textY = mainWindowTopBottomPadding + topTextY;
 //        gp.getEntityIconM().draw(g2, gp.getPlayer().getEntityId(), entityIconX, entityIconY); // TODO : Replace with Renderer!
-        drawPartyMemberIconText(gp.getPlayer(), textX, textY);
+//        drawPartyMemberIconText(gp.getPlayer(), textX, textY);
 
         // Extract keys from party map to prepare for remaining slots.
         Set<Integer> keySet = gp.getParty().keySet();
@@ -340,18 +344,18 @@ public class Ui {
 
         // Slot 1.
         if ((gp.getParty().size() > 0) && (gp.getParty().get(keyArray[0]) != null)) {                                   // Safeguard in case the `party` map is either too small or contains a null entry.
-            entityIconY = coreMenuEdge + (topEntityIconY + verticalSpacing);
-            textY = coreMenuEdge + (topTextY + verticalSpacing);
+//            entityIconY = mainWindowTopBottomPadding + (topEntityIconY + verticalSpacing);
+//            textY = mainWindowTopBottomPadding + (topTextY + verticalSpacing);
 //            gp.getEntityIconM().draw(g2, gp.getParty().get(keyArray[0]).getEntityId(), entityIconX, entityIconY); // TODO : Replace with Renderer!
-            drawPartyMemberIconText(gp.getParty().get(keyArray[0]), textX, textY);
+//            drawPartyMemberIconText(gp.getParty().get(keyArray[0]), textX, textY);
         }
 
         // Slot 2.
         if ((gp.getParty().size() > 1) && (gp.getParty().get(keyArray[1]) != null)) {                                   // Safeguard in case the `party` map is either too small or contains a null entry.
-            entityIconY = coreMenuEdge + (topEntityIconY + (2 * verticalSpacing));
-            textY = coreMenuEdge + (topTextY + (2 * verticalSpacing));
+//            entityIconY = mainWindowTopBottomPadding + (topEntityIconY + (2 * verticalSpacing));
+//            textY = mainWindowTopBottomPadding + (topTextY + (2 * verticalSpacing));
 //            gp.getEntityIconM().draw(g2, gp.getParty().get(keyArray[1]).getEntityId(), entityIconX, entityIconY); // TODO : Replace with Renderer!
-            drawPartyMemberIconText(gp.getParty().get(keyArray[1]), textX, textY);
+//            drawPartyMemberIconText(gp.getParty().get(keyArray[1]), textX, textY);
         }
     }
 
@@ -377,11 +381,11 @@ public class Ui {
         String lifeValue = entity.getLife() + "/" + entity.getMaxLife();
 
         // Draw entity name, level, and life label.
-        renderStringShadow(name, textX, textY, new Vector3f(255, 255, 255), 14F);
+        renderStringShadow(name, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
         textY += 18;
-        renderStringShadow(level, textX, textY, new Vector3f(255, 255, 255), 14F);
+        renderStringShadow(level, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
         textY += 18;
-        renderStringShadow(lifeLabel, textX, textY, new Vector3f(255, 255, 255), 14F);
+        renderStringShadow(lifeLabel, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
 
         // Draw health bar.
         int barX = textX + 22;
@@ -393,7 +397,7 @@ public class Ui {
         // Draw remaining life points text with a shadowed effect.
         textX += barWidth + 13;
         textY -= 6;
-        renderStringShadow(lifeValue, textX, textY, new Vector3f(255, 255, 255), 12F);
+        renderStringShadow(lifeValue, textX, textY, new Vector3f(255, 255, 255), 12F, "Arimo");
 
         // Reset font back to normal.
 //        g2.setFont(fontArimo);  // TODO : Replace with Renderer!
@@ -467,7 +471,7 @@ public class Ui {
         Vector3f nameColor = new Vector3f(121, 149, 255);
         Vector3f quantityColor = new Vector3f(211, 125, 45);
         int textX = (gp.getNativeScreenWidth() / 2) + 10;
-        int textY = coreMenuEdge + 68;
+//        int textY = mainWindowTopBottomPadding + 68;
 
         // Initialize text to draw.
         String name = gp.getPlayer().getInventory().get(inventoryIndexSelected).getName();
@@ -475,11 +479,11 @@ public class Ui {
         String quantity = "Quantity: " + gp.getPlayer().getInventory().get(inventoryIndexSelected).getAmount();
 
         // Draw item name, description, and quantity.
-        renderStringShadow(name, textX, textY, nameColor, 16F);
-        textY += 30;
-        renderStringShadow(quantity, textX, textY, quantityColor, 16F);
-        textY += 30;
-        drawStringBlock(description, textX, textY, 40, 18, new Vector3f(255, 255, 255), 16F, true);
+//        renderStringShadow(name, textX, textY, nameColor, 16F, "Arimo");
+//        textY += 30;
+//        renderStringShadow(quantity, textX, textY, quantityColor, 16F, "Arimo");
+//        textY += 30;
+//        drawStringBlock(description, textX, textY, 40, 18, new Vector3f(255, 255, 255), 16F, true);
     }
 
 
@@ -505,7 +509,7 @@ public class Ui {
             while ((col < maxNumItemCol) && (itemIndex < numItems)) {
 
                 int iconX = leftIconX + (horizontalSpacing * col);
-                int iconY = coreMenuEdge + (topIconY + (verticalSpacing * row));
+//                int iconY = mainWindowTopBottomPadding + (topIconY + (verticalSpacing * row));
 
                 if (gp.getPlayer().getInventory().get(itemIndex).isStackable()) {                                       // Switch which icon backdrop to draw based on whether the item is stackable or not.
 
@@ -535,13 +539,13 @@ public class Ui {
             while ((col < maxNumItemCol) && (itemIndex < numItems)) {
 
                 int imageX = leftImageX + (horizontalSpacing * col);
-                int imageY = coreMenuEdge + (topImageY + (verticalSpacing * row));
+//                int imageY = mainWindowTopBottomPadding + (topImageY + (verticalSpacing * row));
 //                gp.getPlayer().getInventory().get(itemIndex).draw(g2, imageX, imageY); // TODO : Replace with Renderer!
 
                 if ((row == itemRowSelected) && (col == itemColSelected)) {
 
                     int selectorX = imageX - 4;
-                    int selectorY = imageY - 4;
+//                    int selectorY = imageY - 4;
 //                    gp.getIconM().draw(g2, 8, selectorX, selectorY); // TODO : Replace with Renderer!                 // Draw the item selector on the selected item icon.
                 }
                 itemIndex++;                                                                                            // Iterate to the next item.
@@ -566,8 +570,8 @@ public class Ui {
 
                     String quantity = Integer.toString(gp.getPlayer().getInventory().get(itemIndex).getAmount());
                     int quantityX = leftQuantityX + (horizontalSpacing * col);
-                    int quantityY = coreMenuEdge + (topQuantityY + (verticalSpacing * row));
-                    renderStringShadow(quantity, quantityX, quantityY, new Vector3f(255, 255, 255), 14F);
+//                    int quantityY = mainWindowTopBottomPadding + (topQuantityY + (verticalSpacing * row));
+//                    renderStringShadow(quantity, quantityX, quantityY, new Vector3f(255, 255, 255), 14F, "Arimo");
                 }
                 itemIndex++;                                                                                            // Iterate to the next item.
                 col++;                                                                                                  // Iterate to the next column.
@@ -678,7 +682,7 @@ public class Ui {
         // Render text for each option and selection arrow next to selected option.
         for (int i = 0; i < gp.getSubMenuH().getOptions().size(); i++) {
             optionsWorldCoords = gp.getCamera().screenCoordsToWorldCoords(optionsScreenCoords);
-            renderString(gp.getSubMenuH().getOptions().get(i), optionsWorldCoords.x, optionsWorldCoords.y, fontScale, new Vector3f(255, 255, 255));
+            renderString(gp.getSubMenuH().getOptions().get(i), optionsWorldCoords.x, optionsWorldCoords.y, fontScale, new Vector3f(255, 255, 255), "Arimo");
             if (i == gp.getSubMenuH().getIndexSelected()) {
                 float selectionArrowScreenHeight = gp.getCamera().worldHeightToScreenHeight(gp.getSelectionA().getNativeSpriteHeight());
                 float selectionArrowScreenY = optionsScreenCoords.y + (optionsCharacterScreenHeight / 2) - (selectionArrowScreenHeight / 2);
@@ -741,32 +745,32 @@ public class Ui {
         Long freeMemoryBytes = Runtime.getRuntime().freeMemory();
         Long usedMemoryMegabytes = (totalMemoryBytes - freeMemoryBytes) / 1000000;
         String memoryUsage = "JVM Memory Usage: " + usedMemoryMegabytes + " MB";
-        renderStringShadow(memoryUsage, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+        renderStringShadow(memoryUsage, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
 
         // Frame rate.
         worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.07f));
         String fps = "FPS: " + (int)(1.0 / dt);
-        renderStringShadow(fps, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+        renderStringShadow(fps, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
 
         // Player column.
         worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.13f));
         String col = "Player Col: " + gp.getPlayer().getCol();
-        renderStringShadow(col, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+        renderStringShadow(col, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
 
         // Player row.
         worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.19f));
         String row = "Player Row: " + gp.getPlayer().getRow();
-        renderStringShadow(row, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+        renderStringShadow(row, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
 
         // Camera center (x).
         worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.25f));
         String centerX = "Camera Center X: " + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
-        renderStringShadow(centerX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+        renderStringShadow(centerX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
 
         // Camera center (y).
         worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.31f));
         String centerY = "Camera Center Y: " + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
-        renderStringShadow(centerY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size);
+        renderStringShadow(centerY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
     }
 
 
@@ -779,7 +783,7 @@ public class Ui {
      * @param color text color (r, g, b)
      * @param size size at which to draw the text
      */
-    private void renderString(String text, float x, float y, float size, Vector3f color) {
+    private void renderString(String text, float x, float y, float size, Vector3f color, String font) {
 
         if (text != null) {
 
@@ -797,12 +801,12 @@ public class Ui {
      * @param color text color (r, g, b)
      * @param size size at which to draw the text
      */
-    private void renderStringShadow(String text, float x, float y, Vector3f color, float size) {
+    private void renderStringShadow(String text, float x, float y, Vector3f color, float size, String font) {
 
         float shadowTextX = x + 1;
         float shadowTextY = y + 1;
-        renderString(text, shadowTextX, shadowTextY, size, new Vector3f(0, 0, 0));
-        renderString(text, x, y, size, color);
+        renderString(text, shadowTextX, shadowTextY, size, new Vector3f(0, 0, 0), font);
+        renderString(text, x, y, size, color, font);
     }
 
 
@@ -860,10 +864,10 @@ public class Ui {
 
             if (dropShadow) {
 
-                renderStringShadow(line, screenX, screenY, color, size);                                                  // Draw the line of text with a drop shadow.
+                renderStringShadow(line, screenX, screenY, color, size, "Arimo");                                       // Draw the line of text with a drop shadow.
             } else {
 
-                renderString(line, screenX, screenY, size, color);                                                      // Draw the line of text without a drop shadow.
+                renderString(line, screenX, screenY, size, color, "Arimo");                                             // Draw the line of text without a drop shadow.
             }
 
             if (wordsIndex != words.length) {

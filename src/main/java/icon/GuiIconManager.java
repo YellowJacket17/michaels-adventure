@@ -82,6 +82,7 @@ public class GuiIconManager {
                 guiIcon.transform.position.y = worldCoords.y;
                 guiIcon.transform.scale.x = sprite.getNativeWidth();
                 guiIcon.transform.scale.y = sprite.getNativeHeight();
+                guiIcon.setSprite(sprite);
                 renderer.addDrawable(guiIcon);
             } else if (!renderErrors.contains(iconId)) {
 
