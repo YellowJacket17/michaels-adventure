@@ -5,6 +5,7 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import render.Shader;
 import render.Texture;
+import render.ZIndex;
 import utility.AssetPool;
 import utility.LimitedArrayList;
 
@@ -143,6 +144,11 @@ public class DrawableBatch {
      */
     private final Shader shader;
 
+    /**
+     * Layer on which this batch will be rendered.
+     */
+    private ZIndex zIndex = ZIndex.BACK_LAYER;
+
 
     // CONSTRUCTOR
     /**
@@ -194,6 +200,17 @@ public class DrawableBatch {
         if (numDrawables >= MAX_BATCH_SIZE) {
             hasRoom = false;
         }
+    }
+
+
+    /**
+     * Sets the layer on which this batch will be rendered.
+     *
+     * @param zIndex layer on which to render
+     */
+    public void setzIndex(ZIndex zIndex) {
+
+        this.zIndex = zIndex;
     }
 
 
@@ -412,5 +429,9 @@ public class DrawableBatch {
 
     public boolean hasTexture(Texture texture) {
         return textures.contains(texture);
+    }
+
+    public ZIndex getzIndex() {
+        return zIndex;
     }
 }

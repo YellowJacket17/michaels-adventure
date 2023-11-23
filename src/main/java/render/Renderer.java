@@ -66,21 +66,25 @@ public class Renderer {
      */
     public void render() {
 
-        // Batches of drawables.
-        for (DrawableBatch batch : drawableBatches) {
-            if (batch.hasDrawable()) {
-                batch.flush();
+        // Render drawable layers in order.
+        for (ZIndex zIndex : ZIndex.values()) {
+
+            // Batches of drawables.
+            for (DrawableBatch batch : drawableBatches) {
+                if (batch.hasDrawable() && (batch.getzIndex() == zIndex)) {
+                    batch.flush();
+                }
+            }
+
+            // Single drawables.
+            for (DrawableSingle single : drawableSingles) {
+                if (!single.isAvailable() && (single.getzIndex() == zIndex)) {
+                    single.flush();
+                }
             }
         }
 
-        // Single drawables.
-        for (DrawableSingle single : drawableSingles) {
-            if (!single.isAvailable()) {
-                single.flush();
-            }
-        }
-
-        // Text.
+        // Text (always rendered as topmost layer).
         for (String font : stagedText.keySet()) {                                                                       // Loop through each type of font stored in the staged text.
             for (Text text : stagedText.get(font)) {                                                                    // Render all text of the current font.
                 fontBatches.get(font).addString(text.getText(),
@@ -97,12 +101,13 @@ public class Renderer {
      * Adds a drawable to the render pipeline.
      *
      * @param drawable Drawable instance to add
+     * @param zIndex layer on which to render
      */
-    public void addDrawable(Drawable drawable) {
+    public void addDrawable(Drawable drawable, ZIndex zIndex) {
 
         if (drawable != null) {
 
-            addDrawableToBatch(drawable);
+            addDrawableToBatch(drawable, zIndex);
         }
     }
 
@@ -135,11 +140,12 @@ public class Renderer {
      *
      * @param color color of this rectangle (r, g, b, a)
      * @param transform position (top-left coordinate) and scale (width and height) of this rectangle
+     * @param zIndex layer on which to render
      */
-    public void addRectangle(Vector4f color, Transform transform) {
+    public void addRectangle(Vector4f color, Transform transform, ZIndex zIndex) {
 
         Drawable rectangle = new Drawable(transform, color);
-        addDrawableToBatch(rectangle);
+        addDrawableToBatch(rectangle, zIndex);
     }
 
 
@@ -148,12 +154,13 @@ public class Renderer {
      *
      * @param color color of this rectangle (r, g, b, a)
      * @param transform position (top-left coordinate) and scale (width and height) of this rectangle
+     * @param zIndex layer on which to render
      * @param radius arc radius at four corners of this rectangle
      */
-    public void addRoundRectangle(Vector4f color, Transform transform, int radius) {
+    public void addRoundRectangle(Vector4f color, Transform transform, ZIndex zIndex, int radius) {
 
         Drawable rectangle = new Drawable(transform, color);
-        addDrawableToSingle(rectangle, radius);
+        addDrawableToSingle(rectangle, zIndex, radius);
     }
 
 
@@ -173,9 +180,10 @@ public class Renderer {
      * Adds a single drawable to render.
      *
      * @param drawable drawable to add
+     * @param zIndex layer on which to render
      * @param radius arc radius at four corners of quad
      */
-    private void addDrawableToSingle(Drawable drawable, int radius) {
+    private void addDrawableToSingle(Drawable drawable, ZIndex zIndex, int radius) {
 
         boolean added = false;
 
@@ -184,6 +192,7 @@ public class Renderer {
             if (single.isAvailable()) {
 
                 single.setDrawable(drawable);
+                single.setzIndex(zIndex);
                 single.setRadius(radius);
                 added = true;
                 break;
@@ -192,10 +201,11 @@ public class Renderer {
 
         if (!added) {
 
-            DrawableSingle single = new DrawableSingle(gp);
-            single.setDrawable(drawable);
-            single.setRadius(radius);
-            drawableSingles.add(single);
+            DrawableSingle newSingle = new DrawableSingle(gp);
+            newSingle.setzIndex(zIndex);
+            newSingle.setRadius(radius);
+            newSingle.setDrawable(drawable);
+            drawableSingles.add(newSingle);
         }
     }
 
@@ -204,8 +214,9 @@ public class Renderer {
      * Adds a drawable to a batch to render.
      *
      * @param drawable drawable to add
+     * @param zIndex layer on which to render
      */
-    private void addDrawableToBatch(Drawable drawable) {
+    private void addDrawableToBatch(Drawable drawable, ZIndex zIndex) {
 
         boolean added = false;
 
@@ -215,7 +226,8 @@ public class Renderer {
 
                 Texture texture = drawable.getTexture();
 
-                if ((texture == null) || (batch.hasTexture(texture) || batch.hasTextureRoom())) {
+                if (((texture == null) || (batch.hasTexture(texture) || batch.hasTextureRoom()))
+                        && (batch.getzIndex() == zIndex)) {
 
                     batch.addDrawable(drawable);
                     added = true;
@@ -227,8 +239,9 @@ public class Renderer {
         if (!added) {
 
             DrawableBatch newBatch = new DrawableBatch(gp);
-            drawableBatches.add(newBatch);
+            newBatch.setzIndex(zIndex);
             newBatch.addDrawable(drawable);
+            drawableBatches.add(newBatch);
         }
     }
 

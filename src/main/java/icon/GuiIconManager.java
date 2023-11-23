@@ -4,6 +4,7 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import render.Renderer;
 import render.Sprite;
+import render.ZIndex;
 import utility.AssetPool;
 import utility.UtilityTool;
 
@@ -83,7 +84,7 @@ public class GuiIconManager {
                 guiIcon.transform.scale.x = sprite.getNativeWidth();
                 guiIcon.transform.scale.y = sprite.getNativeHeight();
                 guiIcon.setSprite(sprite);
-                renderer.addDrawable(guiIcon);
+                renderer.addDrawable(guiIcon, ZIndex.FRONT_LAYER);
             } else if (!renderErrors.contains(iconId)) {
 
                 UtilityTool.logError("Failed to add GUI icon"

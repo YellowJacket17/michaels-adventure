@@ -6,6 +6,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import render.Renderer;
+import render.ZIndex;
 import render.drawable.Transform;
 
 import java.awt.*;
@@ -153,7 +154,8 @@ public class Ui {
         float mainWindowWorldHeight = gp.getCamera().screenHeightToWorldHeight(mainWindowScreenHeight);
         renderer.addRectangle(
                 new Vector4f(0, 0, 0, 180),
-                new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)));
+                new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
+                ZIndex.CENTER_LAYER);
 
         // Dialogue sub-window and text, if applicable (i.e., area where speaker's name is printed).
         if (gp.getDialogueR().getDialogueEntityName() != null
@@ -179,7 +181,8 @@ public class Ui {
             float subWindowWorldHeight = gp.getCamera().screenHeightToWorldHeight(subWindowScreenHeight);
             renderer.addRectangle(
                     new Vector4f(0, 0, 0, 180),
-                    new Transform(subWindowWorldCoords, new Vector2f(subWindowWorldWidth, subWindowWorldHeight)));
+                    new Transform(subWindowWorldCoords, new Vector2f(subWindowWorldWidth, subWindowWorldHeight)),
+                    ZIndex.CENTER_LAYER);
 
             // Set position of dialogue entity name.
             Vector2f subTextScreenCoords = new Vector2f(subWindowScreenX + subWindowScreenLeftRightPadding, subWindowScreenCoords.y + subWindowScreenTopBottomPadding);
@@ -227,6 +230,7 @@ public class Ui {
         renderer.addRoundRectangle(
                 new Vector4f(0, 0, 0, 220),
                 new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
+                ZIndex.CENTER_LAYER,
                 (int)mainWindowWorldHeight / 16);
 
         // Initialize menu icon (party, inventory, and settings) positions and render.
@@ -604,7 +608,8 @@ public class Ui {
             case FADING_TO:                                                                                             // Phase 1: Fade screen to black.
                 transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, transitionFrameCounter * 10),
-                        new Transform(new Vector2f(0, 0), new Vector2f(worldWidth, worldHeight)));
+                        new Transform(new Vector2f(0, 0), new Vector2f(worldWidth, worldHeight)),
+                        ZIndex.FRONT_LAYER);
                 if (transitionFrameCounter == 25) {
                     transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to prepare it for the second phase.
                     gp.setActiveTransitionPhase(TransitionPhase.LOADING);                                               // Proceed to the next (second) phase of the transition.
@@ -613,7 +618,8 @@ public class Ui {
             case LOADING:                                                                                               // Phase 2: Wait on black screen.
                 transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, 255),
-                        new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)));
+                        new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
+                        ZIndex.FRONT_LAYER);
                 if (transitionFrameCounter == 30) {                                                                     // At 60 FPS, this will amount to waiting on the black screen for 0.5 seconds.
                     transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to prepare it for the final (third) phase.
                     gp.setActiveTransitionPhase(TransitionPhase.FADING_FROM);                                           // Proceed to the final (third) phase of the transition.
@@ -622,7 +628,8 @@ public class Ui {
             case FADING_FROM:                                                                                           // Phase 3: Fade from black.
                 transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, (250 - (transitionFrameCounter * 10))),
-                        new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)));
+                        new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
+                        ZIndex.FRONT_LAYER);
                 if (transitionFrameCounter == 25) {
                     transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to its default value since the transition is complete.
                     gp.setActiveTransitionPhase(TransitionPhase.CLEANUP);
@@ -673,7 +680,8 @@ public class Ui {
         float windowWorldHeight = gp.getCamera().screenHeightToWorldHeight(windowScreenHeight);
         renderer.addRectangle(
                 new Vector4f(0, 0, 0, 180),
-                new Transform(windowWorldCoords, new Vector2f(windowWorldWidth, windowWorldHeight)));
+                new Transform(windowWorldCoords, new Vector2f(windowWorldWidth, windowWorldHeight)),
+                ZIndex.CENTER_LAYER);
 
         // Calculate position of text for first option.
         Vector2f optionsScreenCoords = new Vector2f(windowScreenCoords.x + optionsScreenLeftPadding, windowScreenCoords.y + optionsScreenTopBottomPadding);

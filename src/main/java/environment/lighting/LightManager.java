@@ -4,6 +4,7 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import render.Renderer;
+import render.ZIndex;
 import render.drawable.Transform;
 
 import java.awt.*;
@@ -184,9 +185,9 @@ public class LightManager {
                     && (worldCoords.y <= gp.getCamera().getPositionMatrix().y + gp.getCamera().getScreenHeight())) {
 
                 if (compare(nodes[worldSubCol][worldSubRow].getAlpha(), 0.0f) == 0) {
-                    renderer.addRectangle(new Vector4f(0, 0, 0, 0), transform);
+                    renderer.addRectangle(new Vector4f(0, 0, 0, 0), transform, ZIndex.BACK_LAYER);
                 } else {
-                    renderer.addRectangle(new Vector4f(0, 0, 0, 255), transform);
+                    renderer.addRectangle(new Vector4f(0, 0, 0, 255), transform, ZIndex.BACK_LAYER);
                 }
             }
             worldSubCol++;                                                                                              // Iterate so that we can draw the next tile.

@@ -14,6 +14,7 @@ import item.implementation.Itm_Key;
 import item.ItemBase;
 import org.joml.Vector2f;
 import render.Renderer;
+import render.ZIndex;
 import utility.AssetPool;
 import utility.LimitedArrayList;
 import utility.UtilityTool;
@@ -206,7 +207,7 @@ public class Player extends EntityBase {
                 transform.position.y = worldY + worldYAdjustment;                                                       // Y-coordinate of entities of type CHARACTER is modified slightly since they can be taller than a single tile; adjusted so the bottom of the sprite lines up with the bottom of the tile the entity is occupying when rendered.
                 transform.scale.x = gp.getNativeTileSize();                                                             // Entities must be as wide as the native tile size.
                 transform.scale.y = sprite.getNativeHeight();
-                renderer.addDrawable(this);
+                renderer.addDrawable(this, ZIndex.BACK_LAYER);
             } else if (!renderError) {
 
                 UtilityTool.logError("Failed to add entity "

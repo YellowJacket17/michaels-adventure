@@ -3,6 +3,7 @@ package submenu;
 import core.GamePanel;
 import org.joml.Vector2f;
 import render.Renderer;
+import render.ZIndex;
 import render.drawable.Drawable;
 import utility.AssetPool;
 import utility.UtilityTool;
@@ -53,7 +54,7 @@ public class SelectionArrow extends Drawable {
             Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
             this.transform.position.x = worldCoords.x;
             this.transform.position.y = worldCoords.y;
-            renderer.addDrawable(this);
+            renderer.addDrawable(this, ZIndex.CENTER_LAYER);
         } else if (!drawError) {
 
             UtilityTool.logError("Failed to add selection arrow to the render pipeline: sprite may not have been properly loaded upon initialization.");

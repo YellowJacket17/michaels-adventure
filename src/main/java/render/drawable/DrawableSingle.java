@@ -4,6 +4,7 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import render.Shader;
+import render.ZIndex;
 import utility.AssetPool;
 
 import java.util.Arrays;
@@ -103,7 +104,7 @@ public class DrawableSingle {
     private int vboId;
 
     /**
-     * Slots available to bind textures for sampling during a draw in this batch.
+     * Slots available to bind textures for sampling during a draw in this single.
      * In practice in this class, only two texture slots will ever be used: slot 0 (reserved for empty texture) and
      * slot 1 (used if the drawable has a non-null texture).
      * This array is defined so that this class is compatible with the shader, which supports eight textures.
@@ -114,6 +115,11 @@ public class DrawableSingle {
      * Shader attached to this rectangle.
      */
     private final Shader shader;
+
+    /**
+     * Layer on which this single will be rendered.
+     */
+    private ZIndex zIndex = ZIndex.BACK_LAYER;
 
     /**
      * Radius of rounded corners.
@@ -155,6 +161,17 @@ public class DrawableSingle {
         this.drawable = drawable;
         loadVertexProperties();
         available = false;
+    }
+
+
+    /**
+     * Sets the layer on which this single will be rendered.
+     *
+     * @param zIndex layer on which to render
+     */
+    public void setzIndex(ZIndex zIndex) {
+
+        this.zIndex = zIndex;
     }
 
 
@@ -351,8 +368,16 @@ public class DrawableSingle {
     }
 
 
-    // GETTER
+    // GETTERS
     public boolean isAvailable() {
         return available;
+    }
+
+    public ZIndex getzIndex() {
+        return zIndex;
+    }
+
+    public int getRadius() {
+        return radius;
     }
 }

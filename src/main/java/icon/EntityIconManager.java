@@ -5,6 +5,7 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import render.Renderer;
 import render.Sprite;
+import render.ZIndex;
 import utility.UtilityTool;
 
 import java.util.HashMap;
@@ -81,7 +82,7 @@ public class EntityIconManager {
                 entityIcon.transform.scale.x = sprite.getNativeWidth();
                 entityIcon.transform.scale.y = sprite.getNativeHeight();
                 entityIcon.setSprite(sprite);
-                renderer.addDrawable(entityIcon);
+                renderer.addDrawable(entityIcon, ZIndex.FRONT_LAYER);
             } else if (!renderErrors.contains(entityId)) {
 
                 UtilityTool.logError("Failed to draw entity icon with entity ID "

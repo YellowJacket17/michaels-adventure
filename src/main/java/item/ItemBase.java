@@ -4,6 +4,7 @@ import core.GamePanel;
 import entity.EntityBase;
 import render.Renderer;
 import render.Sprite;
+import render.ZIndex;
 import render.drawable.Drawable;
 import utility.UtilityTool;
 
@@ -90,7 +91,7 @@ public abstract class ItemBase extends Drawable {
 
             this.transform.position.x = screenX;
             this.transform.position.y = screenY;
-            renderer.addDrawable(this);
+            renderer.addDrawable(this, ZIndex.FRONT_LAYER);
         } else if (!renderError) {
 
             UtilityTool.logError("Failed to add item "

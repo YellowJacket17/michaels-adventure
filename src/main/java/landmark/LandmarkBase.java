@@ -3,6 +3,7 @@ package landmark;
 import core.GamePanel;
 import render.Renderer;
 import render.Sprite;
+import render.ZIndex;
 import render.drawable.Drawable;
 import utility.UtilityTool;
 
@@ -140,7 +141,7 @@ public abstract class LandmarkBase extends Drawable {
             transform.position.y = worldY + worldYAdjustment;
             transform.scale.x = sprite.getNativeWidth();
             transform.scale.y = sprite.getNativeHeight();
-            renderer.addDrawable(this);
+            renderer.addDrawable(this, ZIndex.BACK_LAYER);
         } else if (!renderError) {
 
             UtilityTool.logError("Failed to add landmark "

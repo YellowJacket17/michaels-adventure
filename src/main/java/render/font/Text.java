@@ -1,6 +1,7 @@
 package render.font;
 
 import org.joml.Vector3f;
+import render.ZIndex;
 
 /**
  * This class represents a piece of text.

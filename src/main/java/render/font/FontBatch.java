@@ -3,6 +3,7 @@ package render.font;
 import core.GamePanel;
 import org.joml.Vector3f;
 import render.Shader;
+import render.ZIndex;
 import utility.AssetPool;
 import utility.UtilityTool;
 
@@ -115,6 +116,10 @@ public class FontBatch {
     // CONSTRUCTOR
     /**
      * Constructs a FontBatch instance.
+     *
+     * @param gp GamePanel instance
+     * @param zIndex rendering layer
+     *
      */
     public FontBatch(GamePanel gp) {
         this.gp = gp;

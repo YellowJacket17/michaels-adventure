@@ -373,7 +373,7 @@ public class GamePanel {
 //        environmentM.addToRenderPipeline(renderer);
 
         // UI.
-        ui.addToRenderPipeline(renderer, dt);                                                                           // Render UI after everything else so that it appears on the top layer.
+        ui.addToRenderPipeline(renderer, dt);
 
         // Cleanup.
         entityList.clear();                                                                                             // Reset the list of all entities by emptying it.

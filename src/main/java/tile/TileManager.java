@@ -4,6 +4,7 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import render.Renderer;
 import render.Sprite;
+import render.ZIndex;
 import render.drawable.Drawable;
 import render.drawable.Transform;
 import utility.AssetPool;
@@ -13,6 +14,7 @@ import utility.exceptions.AssetLoadException;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashSet;
 
 /**
@@ -40,6 +42,11 @@ public class TileManager {
     private Tile[] tiles = new Tile[0];
 
     /**
+     * Array to store the drawables associated with each possible tile world position.
+     */
+    private final Drawable[][] drawables;
+
+    /**
      * Set to store tile render errors.
      * If a tile render error occurs, the index associated with the tile will be added to this set.
      * This prevents a render error from that tile type being printed to the console again.
@@ -55,7 +62,9 @@ public class TileManager {
      */
     public TileManager(GamePanel gp) {
         this.gp = gp;
+        drawables = new Drawable[gp.getMaxWorldCol()][gp.getMaxWorldRow()];
         getTileImage();                                                                                                 // Load tile sprites upon instantiation.
+        initializeDrawablesArray();
     }
 
 
@@ -90,16 +99,9 @@ public class TileManager {
 
             if ((tiles[tileNum].getSprites().get(spriteNum) != null) && (spriteNum < tiles[tileNum].getSprites().size())) {
 
-                int worldX = worldCol * gp.getNativeTileSize();
-                int worldY = worldRow * gp.getNativeTileSize();
-
                 Sprite sprite = tiles[tileNum].getSprites().get(spriteNum);
-                Drawable drawable = new Drawable(
-                        new Transform(
-                                new Vector2f(worldX, worldY),
-                                new Vector2f(gp.getNativeTileSize(), gp.getNativeTileSize())),                          // Sprite size must match native tile size.
-                        sprite);
-                renderer.addDrawable(drawable);
+                drawables[worldCol][worldRow].setSprite(sprite);
+                renderer.addDrawable(drawables[worldRow][worldCol], ZIndex.BACK_LAYER);
 
             } else if (!renderErrors.contains(tileNum)) {
                     UtilityTool.logError("Failed to add tile at index "
@@ -127,6 +129,7 @@ public class TileManager {
      */
     public int[][] loadMapTileData(int mapId) {
 
+        resetDrawablesArray();
         String parsedMapId;
 
         if ((mapId > -1) && (mapId < 10)) {
@@ -158,7 +161,6 @@ public class TileManager {
 
                         mapTileNum[col][row] = defaultTile;                                                             // Set the value of the current tile being read.
                     }
-                    row++;
                 } else {
 
                     String[] numbers = line.split(" ");                                                                 // The line of text read previously will be split into an array; `split(" ")` will split the string at a space.
@@ -175,9 +177,9 @@ public class TileManager {
                         }
                         col++;                                                                                          // Iterate to next column in the string of text.
                     }
-                    col = 0;                                                                                            // Reset column value for the next line of data to be read.
-                    row++;                                                                                              // Iterate to next row of data from the text file.
                 }
+                col = 0;                                                                                                // Reset column value for the next line of data to be read.
+                row++;                                                                                                  // Iterate to next row of data from the text file.
             }
 
         } catch (Exception e) {
@@ -280,6 +282,59 @@ public class TileManager {
         for (int i = 0; i < originalLength; i++) {                                                                      // Add original tiles back to the new tile array.
 
             tiles[i] = temp[i];
+        }
+    }
+
+
+    /**
+     * Initializes the array of drawables.
+     */
+    private void initializeDrawablesArray() {
+
+        int col = 0;
+        int row = 0;
+
+        while ((col < gp.getMaxWorldCol()) && (row < gp.getMaxWorldRow())) {
+
+            int worldX = col * gp.getNativeTileSize();
+            int worldY = row * gp.getNativeTileSize();
+            Sprite sprite = tiles[defaultTile].getSprites().get(0);                                                     // Initialize with default sprite.
+            Drawable drawable = new Drawable(
+                    new Transform(
+                            new Vector2f(worldX, worldY),
+                            new Vector2f(gp.getNativeTileSize(), gp.getNativeTileSize())),                              // Sprite size must match native tile size.
+                    sprite);
+            drawables[col][row] = drawable;
+
+            col++;
+
+            if (col == gp.getMaxWorldCol()) {
+
+                col = 0;
+                row++;
+            }
+        }
+    }
+
+
+    /**
+     * Resets the array of drawables to all contain the default sprite.
+     */
+    private void resetDrawablesArray() {
+
+        int col = 0;
+        int row = 0;
+
+        while ((col < gp.getMaxWorldCol()) && (row < gp.getMaxWorldRow())) {
+
+            drawables[col][row].setSprite(tiles[defaultTile].getSprites().get(0));
+            col++;
+
+            if (col == gp.getMaxWorldCol()) {
+
+                col = 0;
+                row++;
+            }
         }
     }
 
