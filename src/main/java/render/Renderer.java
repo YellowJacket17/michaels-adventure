@@ -101,7 +101,8 @@ public class Renderer {
      * Adds a drawable to the render pipeline.
      *
      * @param drawable Drawable instance to add
-     * @param zIndex layer on which to render
+     * @param zIndex layer on which to render; drawables on the same layer will be rendered in the order in which they
+     *               were added (bottom to top)
      */
     public void addDrawable(Drawable drawable, ZIndex zIndex) {
 
@@ -140,7 +141,8 @@ public class Renderer {
      *
      * @param color color of this rectangle (r, g, b, a)
      * @param transform position (top-left coordinate) and scale (width and height) of this rectangle
-     * @param zIndex layer on which to render
+     * @param zIndex layer on which to render; drawables on the same layer will be rendered in the order in which they
+     *               were added (bottom to top)
      */
     public void addRectangle(Vector4f color, Transform transform, ZIndex zIndex) {
 
@@ -154,7 +156,8 @@ public class Renderer {
      *
      * @param color color of this rectangle (r, g, b, a)
      * @param transform position (top-left coordinate) and scale (width and height) of this rectangle
-     * @param zIndex layer on which to render
+     * @param zIndex layer on which to render; drawables on the same layer will be rendered in the order in which they
+     *               were added (bottom to top)
      * @param radius arc radius at four corners of this rectangle
      */
     public void addRoundRectangle(Vector4f color, Transform transform, ZIndex zIndex, int radius) {

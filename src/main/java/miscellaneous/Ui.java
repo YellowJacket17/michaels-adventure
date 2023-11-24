@@ -11,6 +11,7 @@ import render.drawable.Transform;
 
 import java.awt.*;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * This class handles the drawing of all on-screen user interface (UI) elements.
@@ -32,6 +33,16 @@ public class Ui {
      * The default value is zero (first slot).
      */
     private int partySlotSelected;
+
+    /**
+     * Top and bottom screen padding of the main window of the in-game menu.
+     */
+    private final float mainWindowScreenTopBottomPadding = 0.06f;
+
+    /**
+     * Left and right screen padding of the main window of the in-game menu.
+     */
+    private final float mainWindowScreenLeftRightPadding = 0.06f;
 
     /**
      * Constant that sets the number of item slot rows that can be displayed at once in the inventory menu.
@@ -102,19 +113,19 @@ public class Ui {
                 break;
             case PARTY_MENU:
                 renderInGameMenuMainWindowScreen();
-                drawMenuSectionName("Party");
-                drawPartyMenuScreen();
+                renderInGameMenuSectionTitle("Party");
+//                drawPartyMenuScreen();
                 break;
-//            case INVENTORY_MENU:
-//                drawCoreMenuScreen();
-//                drawMenuSectionName("Inventory");
+            case INVENTORY_MENU:
+                renderInGameMenuMainWindowScreen();
+                renderInGameMenuSectionTitle("Inventory");
 //                drawInventoryMenuScreen();
-//                break;
-//            case SETTINGS_MENU:
-//                drawCoreMenuScreen();
-//                drawMenuSectionName("Settings");
+                break;
+            case SETTINGS_MENU:
+                renderInGameMenuMainWindowScreen();
+                renderInGameMenuSectionTitle("Settings");
 //                drawSettingsMenuScreen();
-//                break;
+                break;
             case TRANSITION:
                 renderTransitionScreen();
                 break;
@@ -188,8 +199,7 @@ public class Ui {
             Vector2f subTextScreenCoords = new Vector2f(subWindowScreenX + subWindowScreenLeftRightPadding, subWindowScreenCoords.y + subWindowScreenTopBottomPadding);
 
             // Render dialogue entity name.
-            Vector2f subTextWorldCoords = gp.getCamera().screenCoordsToWorldCoords(subTextScreenCoords);
-            renderString(gp.getDialogueR().getDialogueEntityName(), subTextWorldCoords.x, subTextWorldCoords.y, fontScale, new Vector3f(121, 149, 255), "Arimo");
+            renderString(gp.getDialogueR().getDialogueEntityName(), subTextScreenCoords, fontScale, new Vector3f(121, 149, 255), "Arimo");
         }
 
         // Dialogue progress arrow, if applicable.
@@ -203,11 +213,9 @@ public class Ui {
         float mainTextScreenLeftPadding = 0.03f;
         float mainTextScreenSpacing = (mainWindowScreenHeight - (2 * characterScreenHeight)) / 3;
         Vector2f mainTextScreenCoords = new Vector2f(mainTextScreenLeftPadding, mainWindowScreenCoords.y + mainTextScreenSpacing);
-        Vector2f mainTextWorldCoords = gp.getCamera().screenCoordsToWorldCoords(mainTextScreenCoords);
-        renderString(gp.getDialogueR().getDialoguePrint1(), mainTextWorldCoords.x, mainTextWorldCoords.y, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderString(gp.getDialogueR().getDialoguePrint1(), mainTextScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
         mainTextScreenCoords.y += characterScreenHeight + mainTextScreenSpacing;
-        mainTextWorldCoords = gp.getCamera().screenCoordsToWorldCoords(mainTextScreenCoords);
-        renderString(gp.getDialogueR().getDialoguePrint2(), mainTextWorldCoords.x, mainTextWorldCoords.y, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderString(gp.getDialogueR().getDialoguePrint2(), mainTextScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
     }
 
 
@@ -217,8 +225,6 @@ public class Ui {
     private void renderInGameMenuMainWindowScreen() {
 
         // Initialize main window position and dimensions.
-        float mainWindowScreenTopBottomPadding = 0.06f;
-        float mainWindowScreenLeftRightPadding = 0.06f;
         Vector2f mainWindowScreenCoords = new Vector2f(mainWindowScreenLeftRightPadding, mainWindowScreenTopBottomPadding);
         float mainWindowScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding);
         float mainWindowScreenHeight = 1 - (2 * mainWindowScreenTopBottomPadding);
@@ -234,67 +240,27 @@ public class Ui {
                 (int)mainWindowWorldHeight / 16);
 
         // Initialize menu icon (party, inventory, and settings) positions and render.
-        Vector2f menuIconScreenCoords = new Vector2f(
-                1 - mainWindowScreenLeftRightPadding - 0.1f,
+        float menuIconScreenX = 1 - mainWindowScreenLeftRightPadding - 0.1f;
+        float menuIconScreenY = mainWindowScreenTopBottomPadding + 0.1f;
+        gp.getIconM().addToRenderPipeline(renderer, 2, menuIconScreenX, menuIconScreenY);                               // Settings menu icon.
+        menuIconScreenX -= 0.05f;
+        gp.getIconM().addToRenderPipeline(renderer, 1, menuIconScreenX, menuIconScreenY);                               // Inventory menu icon.
+        menuIconScreenX -= 0.05f;
+        gp.getIconM().addToRenderPipeline(renderer, 0, menuIconScreenX, menuIconScreenY);                               // Party menu icon.
+    }
+
+
+    /**
+     * Adds the title of the active in-game menu section to the render pipeline.
+     *
+     * @param title title of active section
+     */
+    private void renderInGameMenuSectionTitle(String title) {
+
+        Vector2f textScreenCoords = new Vector2f(
+                mainWindowScreenLeftRightPadding + 0.1f,
                 mainWindowScreenTopBottomPadding + 0.1f);
-
-        int menuIconScreenX = gp.getNativeScreenWidth() - 120;
-//        gp.getIconM().draw(g2, 0, menuIconScreenX, menuIconScreenY); // TODO : Replace with Renderer!
-        gp.getIconM().addToRenderPipeline(renderer, 0, menuIconScreenCoords.x, menuIconScreenCoords.y);
-
-        menuIconScreenX = gp.getNativeScreenWidth() - 80;
-//        gp.getIconM().draw(g2, 1, menuIconScreenX, menuIconScreenY); // TODO : Replace with Renderer!
-
-        menuIconScreenX = gp.getNativeScreenWidth() - 40;
-//        gp.getIconM().draw(g2, 2, menuIconScreenX, menuIconScreenY); // TODO : Replace with Renderer!
-    }
-
-
-    /**
-     * Draws the core menu window.
-     *
-     * @param screenX x-coordinate of the left side of the window
-     * @param screenY y-coordinate of the top side of the window
-     * @param width width of the window
-     * @param height height of the window
-     */
-    private void drawCoreMenuWindow(int screenX, int screenY, int width, int height) {
-
-        // Draw the interior of the window.
-        Color color = new Color(0, 0, 0, 220);
-//        g2.setColor(color);
-//        g2.fillRoundRect(screenX, screenY, width, height, 0, 0);  // TODO : Replace with Renderer!
-
-        // Set the border of the window.
-        color = new Color(255, 255, 255);
-//        g2.setStroke(new BasicStroke(2));
-//        g2.setColor(color);  // TODO : Replace with Renderer!
-
-        // Draw the top border of the window.
-//        g2.drawRoundRect(screenX, screenY + 5, width, 0, 0, 0);  // TODO : Replace with Renderer!
-
-        // Draw the middle border of the window.
-//        g2.drawRoundRect(screenX, screenY + 41, width, 0, 0, 0);  // TODO : Replace with Renderer!
-
-        // Draw the bottom border of the window.
-//        g2.drawRoundRect(screenX, screenY + height - 5, width, 0, 0, 0);  // TODO : Replace with Renderer!
-    }
-
-
-    /**
-     * Draws the name of the menu section currently active (Party, Inventory, Settings).
-     *
-     * @param name name of the active section
-     */
-    private void drawMenuSectionName(String name) {
-
-        // Set position and color of the menu label.
-        Vector3f sectionNameColor = new Vector3f(121, 149, 255);
-        int x_label = 15;                                                                                               // Set position of text (right, x).
-//        int y_label = mainWindowTopBottomPadding + 29;                                                                                // Set position of text (top, y).
-
-        // Draw the menu label.
-//        renderString(name, x_label, y_label, 20F, sectionNameColor, "Arimo");
+        renderString(title, textScreenCoords, 0.15f, new Vector3f(121, 149, 255), "Arimo");
     }
 
 
@@ -385,11 +351,11 @@ public class Ui {
         String lifeValue = entity.getLife() + "/" + entity.getMaxLife();
 
         // Draw entity name, level, and life label.
-        renderStringShadow(name, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
-        textY += 18;
-        renderStringShadow(level, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
-        textY += 18;
-        renderStringShadow(lifeLabel, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
+//        renderStringShadow(name, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
+//        textY += 18;
+//        renderStringShadow(level, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
+//        textY += 18;
+//        renderStringShadow(lifeLabel, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
 
         // Draw health bar.
         int barX = textX + 22;
@@ -401,7 +367,7 @@ public class Ui {
         // Draw remaining life points text with a shadowed effect.
         textX += barWidth + 13;
         textY -= 6;
-        renderStringShadow(lifeValue, textX, textY, new Vector3f(255, 255, 255), 12F, "Arimo");
+//        renderStringShadow(lifeValue, textX, textY, new Vector3f(255, 255, 255), 12F, "Arimo");
 
         // Reset font back to normal.
 //        g2.setFont(fontArimo);  // TODO : Replace with Renderer!
@@ -689,8 +655,7 @@ public class Ui {
 
         // Render text for each option and selection arrow next to selected option.
         for (int i = 0; i < gp.getSubMenuH().getOptions().size(); i++) {
-            optionsWorldCoords = gp.getCamera().screenCoordsToWorldCoords(optionsScreenCoords);
-            renderString(gp.getSubMenuH().getOptions().get(i), optionsWorldCoords.x, optionsWorldCoords.y, fontScale, new Vector3f(255, 255, 255), "Arimo");
+            renderString(gp.getSubMenuH().getOptions().get(i), optionsScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
             if (i == gp.getSubMenuH().getIndexSelected()) {
                 float selectionArrowScreenHeight = gp.getCamera().worldHeightToScreenHeight(gp.getSelectionA().getNativeSpriteHeight());
                 float selectionArrowScreenY = optionsScreenCoords.y + (optionsCharacterScreenHeight / 2) - (selectionArrowScreenHeight / 2);
@@ -744,41 +709,41 @@ public class Ui {
      */
     private void renderDebug(double dt) {
 
-        float size = 0.18f;
+        float fontScale = 0.18f;
         float screenX = 0.01f;
 
         // Memory usage by Java Runtime.
-        Vector2f worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.01f));
+        Vector2f screenCoords = new Vector2f(screenX, 0.01f);
         Long totalMemoryBytes = Runtime.getRuntime().totalMemory();
         Long freeMemoryBytes = Runtime.getRuntime().freeMemory();
         Long usedMemoryMegabytes = (totalMemoryBytes - freeMemoryBytes) / 1000000;
         String memoryUsage = "JVM Memory Usage: " + usedMemoryMegabytes + " MB";
-        renderStringShadow(memoryUsage, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
+        renderStringShadow(memoryUsage, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Frame rate.
-        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.07f));
+        screenCoords = new Vector2f(screenX, 0.07f);
         String fps = "FPS: " + (int)(1.0 / dt);
-        renderStringShadow(fps, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
+        renderStringShadow(fps, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Player column.
-        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.13f));
+        screenCoords = new Vector2f(screenX, 0.13f);
         String col = "Player Col: " + gp.getPlayer().getCol();
-        renderStringShadow(col, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
+        renderStringShadow(col, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Player row.
-        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.19f));
+        screenCoords = new Vector2f(screenX, 0.19f);
         String row = "Player Row: " + gp.getPlayer().getRow();
-        renderStringShadow(row, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
+        renderStringShadow(row, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Camera center (x).
-        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.25f));
+        screenCoords = new Vector2f(screenX, 0.25f);
         String centerX = "Camera Center X: " + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
-        renderStringShadow(centerX, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
+        renderStringShadow(centerX, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Camera center (y).
-        worldPos = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, 0.31f));
+        screenCoords = new Vector2f(screenX, 0.31f);
         String centerY = "Camera Center Y: " + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
-        renderStringShadow(centerY, worldPos.x, worldPos.y, new Vector3f(255, 255, 255), size, "Arimo");
+        renderStringShadow(centerY, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
     }
 
 
@@ -786,16 +751,16 @@ public class Ui {
      * Adds a string of text to the render pipeline.
      *
      * @param text text to be drawn
-     * @param x x-coordinate of the text (leftmost)
-     * @param y y-coordinate of the text (topmost)
+     * @param screenCoords screen coordinates of the text (leftmost and topmost, normalized between 0 and 1)
      * @param color text color (r, g, b)
      * @param size size at which to draw the text
      */
-    private void renderString(String text, float x, float y, float size, Vector3f color, String font) {
+    private void renderString(String text, Vector2f screenCoords, float size, Vector3f color, String font) {
 
         if (text != null) {
 
-            renderer.addString(text, x, y, size, color, "Arimo");
+            Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
+            renderer.addString(text, worldCoords.x, worldCoords.y, size, color, font);
         }
     }
 
@@ -804,17 +769,15 @@ public class Ui {
      * Adds a string of text with a black drop shadow to the render pipeline.
      *
      * @param text text to be drawn
-     * @param x x-coordinate of the text (leftmost)
-     * @param y y-coordinate of the text (topmost)
+     * @param screenCoords screen coordinates of the text (leftmost and topmost, normalized between 0 and 1)
      * @param color text color (r, g, b)
      * @param size size at which to draw the text
      */
-    private void renderStringShadow(String text, float x, float y, Vector3f color, float size, String font) {
+    private void renderStringShadow(String text, Vector2f screenCoords, Vector3f color, float size, String font) {
 
-        float shadowTextX = x + 1;
-        float shadowTextY = y + 1;
-        renderString(text, shadowTextX, shadowTextY, size, new Vector3f(0, 0, 0), font);
-        renderString(text, x, y, size, color, font);
+        Vector2f shadowScreenCoords = new Vector2f(screenCoords.x + 0.0017f, screenCoords.y + 0.0017f);
+        renderString(text, shadowScreenCoords, size, new Vector3f(0, 0, 0), font);
+        renderString(text, screenCoords, size, color, font);
     }
 
 
@@ -834,55 +797,55 @@ public class Ui {
     private void drawStringBlock(String text, int screenX, int topScreenY, int maxLineLength, int lineSpacing,
                                  Vector3f color, float size, boolean dropShadow) {
 
-        String[] words = text.split(" ");                                                                               // An array of each word in the complete text, split by spaces.
-        int wordsIndex = 0;                                                                                             // Track which index of the words array is currently being checked.
-        int screenY = topScreenY;
-
-        while (wordsIndex < words.length) {                                                                             // Print each line of text.
-
-            boolean limitExceeded = false;                                                                              // Track whether the maximum character length of a line has been exceeded (true) or not (false) yet.
-            String line = "";                                                                                           // Initialize the line of text that's being built.
-
-            while ((!limitExceeded) && (wordsIndex < words.length)) {                                                   // Add words to a line of text until either the maximum character length is exceeded OR there are no more words to print.
-
-                String build;                                                                                           // Create a string that will be a candidate for the next line of text to be printed.
-
-                if (line.equals("")) {
-
-                    build = words[wordsIndex];
-                } else {
-
-                    build = line + " " + words[wordsIndex];
-                }
-
-                if (build.length() > maxLineLength) {
-
-                    limitExceeded = true;                                                                               // Character length of the line has been exceeded.
-
-                    if (words[wordsIndex].length() > maxLineLength) {
-
-                        words[wordsIndex] = "???";                                                                      // If the number of characters in a single word exceeds the maximum number of characters that can be printed in a line of text, skip the word to avoid getting stuck in an infinite loop.
-                    }
-                } else {
-
-                    line = build;                                                                                       // Set the next line of text to be drawn.
-                    wordsIndex++;                                                                                       // Iterate to the next word.
-                }
-            }
-
-            if (dropShadow) {
-
-                renderStringShadow(line, screenX, screenY, color, size, "Arimo");                                       // Draw the line of text with a drop shadow.
-            } else {
-
-                renderString(line, screenX, screenY, size, color, "Arimo");                                             // Draw the line of text without a drop shadow.
-            }
-
-            if (wordsIndex != words.length) {
-
-                screenY += lineSpacing;                                                                                 // Spacing between lines of text.
-            }
-        }
+//        String[] words = text.split(" ");                                                                               // An array of each word in the complete text, split by spaces.
+//        int wordsIndex = 0;                                                                                             // Track which index of the words array is currently being checked.
+//        int screenY = topScreenY;
+//
+//        while (wordsIndex < words.length) {                                                                             // Print each line of text.
+//
+//            boolean limitExceeded = false;                                                                              // Track whether the maximum character length of a line has been exceeded (true) or not (false) yet.
+//            String line = "";                                                                                           // Initialize the line of text that's being built.
+//
+//            while ((!limitExceeded) && (wordsIndex < words.length)) {                                                   // Add words to a line of text until either the maximum character length is exceeded OR there are no more words to print.
+//
+//                String build;                                                                                           // Create a string that will be a candidate for the next line of text to be printed.
+//
+//                if (line.equals("")) {
+//
+//                    build = words[wordsIndex];
+//                } else {
+//
+//                    build = line + " " + words[wordsIndex];
+//                }
+//
+//                if (build.length() > maxLineLength) {
+//
+//                    limitExceeded = true;                                                                               // Character length of the line has been exceeded.
+//
+//                    if (words[wordsIndex].length() > maxLineLength) {
+//
+//                        words[wordsIndex] = "???";                                                                      // If the number of characters in a single word exceeds the maximum number of characters that can be printed in a line of text, skip the word to avoid getting stuck in an infinite loop.
+//                    }
+//                } else {
+//
+//                    line = build;                                                                                       // Set the next line of text to be drawn.
+//                    wordsIndex++;                                                                                       // Iterate to the next word.
+//                }
+//            }
+//
+//            if (dropShadow) {
+//
+//                renderStringShadow(line, screenX, screenY, color, size, "Arimo");                                       // Draw the line of text with a drop shadow.
+//            } else {
+//
+//                renderString(line, screenX, screenY, size, color, "Arimo");                                             // Draw the line of text without a drop shadow.
+//            }
+//
+//            if (wordsIndex != words.length) {
+//
+//                screenY += lineSpacing;                                                                                 // Spacing between lines of text.
+//            }
+//        }
     }
 
 
