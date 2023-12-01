@@ -113,17 +113,14 @@ public class Ui {
                 break;
             case PARTY_MENU:
                 renderInGameMenuMainWindowScreen();
-                renderInGameMenuSectionTitle("Party");
-//                drawPartyMenuScreen();
+                drawPartyMenuScreen();
                 break;
             case INVENTORY_MENU:
                 renderInGameMenuMainWindowScreen();
-                renderInGameMenuSectionTitle("Inventory");
 //                drawInventoryMenuScreen();
                 break;
             case SETTINGS_MENU:
                 renderInGameMenuMainWindowScreen();
-                renderInGameMenuSectionTitle("Settings");
 //                drawSettingsMenuScreen();
                 break;
             case TRANSITION:
@@ -241,26 +238,51 @@ public class Ui {
 
         // Initialize menu icon (party, inventory, and settings) positions and render.
         float menuIconScreenX = 1 - mainWindowScreenLeftRightPadding - 0.1f;
-        float menuIconScreenY = mainWindowScreenTopBottomPadding + 0.1f;
+        float menuIconScreenY = mainWindowScreenTopBottomPadding + 0.03f;
         gp.getIconM().addToRenderPipeline(renderer, 2, menuIconScreenX, menuIconScreenY);                               // Settings menu icon.
         menuIconScreenX -= 0.05f;
         gp.getIconM().addToRenderPipeline(renderer, 1, menuIconScreenX, menuIconScreenY);                               // Inventory menu icon.
         menuIconScreenX -= 0.05f;
         gp.getIconM().addToRenderPipeline(renderer, 0, menuIconScreenX, menuIconScreenY);                               // Party menu icon.
-    }
 
+        // Initialize bottom icon border (horizontal line beneath header) position and dimensions and render.
+        float borderScreenThickness = 0.004f;                                                                           // Normalized (screen) thickness of horizontal line.
+        float borderScreenLeftRightSpace = 0.055f;                                                                      // Normalized (screen) space on either side of horizontal line between main window edge.
+        float borderScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding) - (2 * borderScreenLeftRightSpace);
+        float borderWorldThickness = gp.getCamera().screenHeightToWorldHeight(borderScreenThickness);
+        float borderWorldWidth = gp.getCamera().screenWidthToWorldWidth(borderScreenWidth);
+        float menuIconWorldHeight = gp.getIconM().getIconById(0).getNativeSpriteHeight();                               // Get native (world) height of menu icons; all are same height, so doesn't matter which is used here.
+        float menuIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(menuIconWorldHeight);
+        Vector2f borderScreenCoords = new Vector2f(
+                mainWindowScreenLeftRightPadding + borderScreenLeftRightSpace,
+                (menuIconScreenY + menuIconScreenHeight + (menuIconScreenY - mainWindowScreenTopBottomPadding)));
+        Vector2f borderWorldCoords = gp.getCamera().screenCoordsToWorldCoords(borderScreenCoords);
+        renderer.addRectangle(
+                new Vector4f(255, 255, 255, 255),
+                new Transform(borderWorldCoords, new Vector2f(borderWorldWidth, borderWorldThickness)),
+                ZIndex.CENTER_LAYER);
 
-    /**
-     * Adds the title of the active in-game menu section to the render pipeline.
-     *
-     * @param title title of active section
-     */
-    private void renderInGameMenuSectionTitle(String title) {
-
-        Vector2f textScreenCoords = new Vector2f(
-                mainWindowScreenLeftRightPadding + 0.1f,
-                mainWindowScreenTopBottomPadding + 0.1f);
-        renderString(title, textScreenCoords, 0.15f, new Vector3f(121, 149, 255), "Arimo");
+        // Initialize menu section title position and dimensions and render.
+        float fontScale = 0.17f;                                                                                        // Font size (multiplies native height).
+        float optionsCharacterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;        // It doesn't matter which character is used, since all characters in a font have the same height.
+        float optionsCharacterScreenHeight = gp.getCamera().worldHeightToScreenHeight(optionsCharacterWorldHeight);     // Normalized (screen) character height.
+        float titleScreenTopBottomPadding = (borderScreenCoords.y - mainWindowScreenTopBottomPadding - optionsCharacterScreenHeight) / 2;
+        Vector2f titleScreenCoords = new Vector2f(
+                mainWindowScreenLeftRightPadding + 0.075f,
+                mainWindowScreenTopBottomPadding + titleScreenTopBottomPadding);
+        String title = "???";
+        switch (gp.getGameState()) {
+            case PARTY_MENU:
+                title = "PARTY";
+                break;
+            case INVENTORY_MENU:
+                title = "INVENTORY";
+                break;
+            case SETTINGS_MENU:
+                title = "SETTINGS";
+                break;
+        }
+        renderString(title, titleScreenCoords, fontScale, new Vector3f(121, 149, 255), "Arimo");
     }
 
 
@@ -278,23 +300,21 @@ public class Ui {
      */
     private void drawPartyMemberStatIcons() {
 
-        int verticalSpacing = 83;                                                                                       // Core vertical spacing between each party member icon before scaling is applied.
-
-        // Draw the background icon for each party member.
-        int iconX = 15;                                                                                                 // The x-position of each icon.
-        int topIconY = 67;                                                                                              // The y-position of the top icon; used with `verticalSpacing` to get the y-position of lower icons.
+        float slotScreenX = mainWindowScreenLeftRightPadding + 0.025f;
+        float topSlotScreenY = mainWindowScreenTopBottomPadding + 0.17f;                                                // Screen y of the topmost (player entity) slot.
+        float slotScreenY = topSlotScreenY;
+        float slotSpacing = 0.175f;
 
         // Slot 0 (player entity).
-//        int iconY = mainWindowTopBottomPadding + topIconY;
-//        gp.getIconM().draw(g2, 3, iconX, iconY); // TODO : Replace with Renderer!
+        gp.getIconM().addToRenderPipeline(renderer, 3, slotScreenX, slotScreenY);
 
         // Slot 1.
-//        iconY = mainWindowTopBottomPadding + (topIconY + verticalSpacing);
-//        gp.getIconM().draw(g2, 4, iconX, iconY); // TODO : Replace with Renderer!
+        slotScreenY += slotSpacing;
+        gp.getIconM().addToRenderPipeline(renderer, 4, slotScreenX, slotScreenY);
 
         // Slot 2.
-//        iconY = mainWindowTopBottomPadding + (topIconY + (2 * verticalSpacing));
-//        gp.getIconM().draw(g2, 5, iconX, iconY); // TODO : Replace with Renderer!
+        slotScreenY += slotSpacing;
+        gp.getIconM().addToRenderPipeline(renderer, 5, slotScreenX, slotScreenY);
 
         // Draw the entity icon and corresponding text for each party member.
         int entityIconX = 23;                                                                                           // The x-position of each entity icon.
@@ -651,7 +671,6 @@ public class Ui {
 
         // Calculate position of text for first option.
         Vector2f optionsScreenCoords = new Vector2f(windowScreenCoords.x + optionsScreenLeftPadding, windowScreenCoords.y + optionsScreenTopBottomPadding);
-        Vector2f optionsWorldCoords;
 
         // Render text for each option and selection arrow next to selected option.
         for (int i = 0; i < gp.getSubMenuH().getOptions().size(); i++) {

@@ -69,17 +69,17 @@ public class Renderer {
         // Render drawable layers in order.
         for (ZIndex zIndex : ZIndex.values()) {
 
-            // Batches of drawables.
-            for (DrawableBatch batch : drawableBatches) {
-                if (batch.hasDrawable() && (batch.getzIndex() == zIndex)) {
-                    batch.flush();
-                }
-            }
-
             // Single drawables.
             for (DrawableSingle single : drawableSingles) {
                 if (!single.isAvailable() && (single.getzIndex() == zIndex)) {
                     single.flush();
+                }
+            }
+
+            // Batches of drawables.
+            for (DrawableBatch batch : drawableBatches) {
+                if (batch.hasDrawable() && (batch.getzIndex() == zIndex)) {
+                    batch.flush();
                 }
             }
         }
