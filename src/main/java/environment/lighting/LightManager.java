@@ -7,7 +7,6 @@ import render.Renderer;
 import render.ZIndex;
 import render.drawable.Transform;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 import static java.lang.Float.compare;
@@ -185,9 +184,9 @@ public class LightManager {
                     && (worldCoords.y <= gp.getCamera().getPositionMatrix().y + gp.getCamera().getScreenHeight())) {
 
                 if (compare(nodes[worldSubCol][worldSubRow].getAlpha(), 0.0f) == 0) {
-                    renderer.addRectangle(new Vector4f(0, 0, 0, 0), transform, ZIndex.BACK_LAYER);
+                    renderer.addRectangle(new Vector4f(0, 0, 0, 0), transform, ZIndex.THIRD_LAYER);
                 } else {
-                    renderer.addRectangle(new Vector4f(0, 0, 0, 255), transform, ZIndex.BACK_LAYER);
+                    renderer.addRectangle(new Vector4f(0, 0, 0, 255), transform, ZIndex.THIRD_LAYER);
                 }
             }
             worldSubCol++;                                                                                              // Iterate so that we can draw the next tile.

@@ -91,7 +91,7 @@ public abstract class ItemBase extends Drawable {
 
             this.transform.position.x = screenX;
             this.transform.position.y = screenY;
-            renderer.addDrawable(this, ZIndex.FRONT_LAYER);
+            renderer.addDrawable(this, ZIndex.FIRST_LAYER);
         } else if (!renderError) {
 
             UtilityTool.logError("Failed to add item "

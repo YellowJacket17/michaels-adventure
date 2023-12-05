@@ -14,7 +14,6 @@ import utility.exceptions.AssetLoadException;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.HashSet;
 
 /**
@@ -101,7 +100,7 @@ public class TileManager {
 
                 Sprite sprite = tiles[tileNum].getSprites().get(spriteNum);
                 drawables[worldCol][worldRow].setSprite(sprite);
-                renderer.addDrawable(drawables[worldRow][worldCol], ZIndex.BACK_LAYER);
+                renderer.addDrawable(drawables[worldRow][worldCol], ZIndex.THIRD_LAYER);
 
             } else if (!renderErrors.contains(tileNum)) {
                     UtilityTool.logError("Failed to add tile at index "

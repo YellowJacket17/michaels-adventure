@@ -5,9 +5,9 @@ package render;
  */
 public enum ZIndex {
 
-    BACK_LAYER   (0),
-    CENTER_LAYER (1),
-    FRONT_LAYER  (2);
+    THIRD_LAYER(0),
+    SECOND_LAYER(1),
+    FIRST_LAYER(2);
 
     public final int value;
 

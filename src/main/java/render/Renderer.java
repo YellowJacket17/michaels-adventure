@@ -160,7 +160,7 @@ public class Renderer {
      *               were added (bottom to top)
      * @param radius arc radius at four corners of this rectangle
      */
-    public void addRoundRectangle(Vector4f color, Transform transform, ZIndex zIndex, int radius) {
+    public void addRoundRectangle(Vector4f color, Transform transform, ZIndex zIndex, float radius) {
 
         Drawable rectangle = new Drawable(transform, color);
         addDrawableToSingle(rectangle, zIndex, radius);
@@ -186,7 +186,7 @@ public class Renderer {
      * @param zIndex layer on which to render
      * @param radius arc radius at four corners of quad
      */
-    private void addDrawableToSingle(Drawable drawable, ZIndex zIndex, int radius) {
+    private void addDrawableToSingle(Drawable drawable, ZIndex zIndex, float radius) {
 
         boolean added = false;
 

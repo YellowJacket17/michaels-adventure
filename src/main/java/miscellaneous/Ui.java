@@ -9,9 +9,7 @@ import render.Renderer;
 import render.ZIndex;
 import render.drawable.Transform;
 
-import java.awt.*;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * This class handles the drawing of all on-screen user interface (UI) elements.
@@ -113,7 +111,7 @@ public class Ui {
                 break;
             case PARTY_MENU:
                 renderInGameMenuMainWindowScreen();
-                drawPartyMenuScreen();
+                renderPartyMenuScreen();
                 break;
             case INVENTORY_MENU:
                 renderInGameMenuMainWindowScreen();
@@ -145,7 +143,7 @@ public class Ui {
      */
     private void renderDialogueScreen() {
 
-        // Font initializations.
+        // Font preparations.
         // The following information is assuming use of the font Arimo (normal/non-bold).
         float fontScale = 0.15f;                                                                                        // Font size (multiplies native height).
         float characterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;               // It doesn't matter which character is used, since all characters in a font have the same height.
@@ -163,7 +161,7 @@ public class Ui {
         renderer.addRectangle(
                 new Vector4f(0, 0, 0, 180),
                 new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
-                ZIndex.CENTER_LAYER);
+                ZIndex.SECOND_LAYER);
 
         // Dialogue sub-window and text, if applicable (i.e., area where speaker's name is printed).
         if (gp.getDialogueR().getDialogueEntityName() != null
@@ -190,7 +188,7 @@ public class Ui {
             renderer.addRectangle(
                     new Vector4f(0, 0, 0, 180),
                     new Transform(subWindowWorldCoords, new Vector2f(subWindowWorldWidth, subWindowWorldHeight)),
-                    ZIndex.CENTER_LAYER);
+                    ZIndex.SECOND_LAYER);
 
             // Set position of dialogue entity name.
             Vector2f subTextScreenCoords = new Vector2f(subWindowScreenX + subWindowScreenLeftRightPadding, subWindowScreenCoords.y + subWindowScreenTopBottomPadding);
@@ -218,10 +216,12 @@ public class Ui {
 
     /**
      * Adds components of the main window for the in-game menu to the render pipeline.
+     * Specifically, the window itself, header section icons, header section title, and header divider are added.
+     * These are elements common to all sections of the in-game menu.
      */
     private void renderInGameMenuMainWindowScreen() {
 
-        // Initialize main window position and dimensions.
+        // Prepare main window position and dimensions.
         Vector2f mainWindowScreenCoords = new Vector2f(mainWindowScreenLeftRightPadding, mainWindowScreenTopBottomPadding);
         float mainWindowScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding);
         float mainWindowScreenHeight = 1 - (2 * mainWindowScreenTopBottomPadding);
@@ -233,10 +233,10 @@ public class Ui {
         renderer.addRoundRectangle(
                 new Vector4f(0, 0, 0, 220),
                 new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
-                ZIndex.CENTER_LAYER,
+                ZIndex.SECOND_LAYER,
                 (int)mainWindowWorldHeight / 16);
 
-        // Initialize menu icon (party, inventory, and settings) positions and render.
+        // Prepare header section icon (party, inventory, and settings) positions and render.
         float menuIconScreenX = 1 - mainWindowScreenLeftRightPadding - 0.1f;
         float menuIconScreenY = mainWindowScreenTopBottomPadding + 0.03f;
         gp.getIconM().addToRenderPipeline(renderer, 2, menuIconScreenX, menuIconScreenY);                               // Settings menu icon.
@@ -245,30 +245,30 @@ public class Ui {
         menuIconScreenX -= 0.05f;
         gp.getIconM().addToRenderPipeline(renderer, 0, menuIconScreenX, menuIconScreenY);                               // Party menu icon.
 
-        // Initialize bottom icon border (horizontal line beneath header) position and dimensions and render.
-        float borderScreenThickness = 0.004f;                                                                           // Normalized (screen) thickness of horizontal line.
-        float borderScreenLeftRightSpace = 0.055f;                                                                      // Normalized (screen) space on either side of horizontal line between main window edge.
-        float borderScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding) - (2 * borderScreenLeftRightSpace);
-        float borderWorldThickness = gp.getCamera().screenHeightToWorldHeight(borderScreenThickness);
-        float borderWorldWidth = gp.getCamera().screenWidthToWorldWidth(borderScreenWidth);
+        // Prepare header divider (horizontal line beneath header) position and dimensions and render.
+        float dividerScreenThickness = 0.004f;                                                                          // Normalized (screen) thickness of horizontal line.
+        float dividerScreenLeftRightGap = 0.055f;                                                                       // Normalized (screen) space on either side of horizontal line between main window edge.
+        float dividerScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding) - (2 * dividerScreenLeftRightGap);
+        float dividerWorldThickness = gp.getCamera().screenHeightToWorldHeight(dividerScreenThickness);
+        float dividerWorldWidth = gp.getCamera().screenWidthToWorldWidth(dividerScreenWidth);
         float menuIconWorldHeight = gp.getIconM().getIconById(0).getNativeSpriteHeight();                               // Get native (world) height of menu icons; all are same height, so doesn't matter which is used here.
         float menuIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(menuIconWorldHeight);
-        Vector2f borderScreenCoords = new Vector2f(
-                mainWindowScreenLeftRightPadding + borderScreenLeftRightSpace,
+        Vector2f dividerScreenCoords = new Vector2f(
+                mainWindowScreenLeftRightPadding + dividerScreenLeftRightGap,
                 (menuIconScreenY + menuIconScreenHeight + (menuIconScreenY - mainWindowScreenTopBottomPadding)));
-        Vector2f borderWorldCoords = gp.getCamera().screenCoordsToWorldCoords(borderScreenCoords);
+        Vector2f dividerWorldCoords = gp.getCamera().screenCoordsToWorldCoords(dividerScreenCoords);
         renderer.addRectangle(
                 new Vector4f(255, 255, 255, 255),
-                new Transform(borderWorldCoords, new Vector2f(borderWorldWidth, borderWorldThickness)),
-                ZIndex.CENTER_LAYER);
+                new Transform(dividerWorldCoords, new Vector2f(dividerWorldWidth, dividerWorldThickness)),
+                ZIndex.FIRST_LAYER);
 
-        // Initialize menu section title position and dimensions and render.
+        // Prepare menu section title position and dimensions and render.
         float fontScale = 0.17f;                                                                                        // Font size (multiplies native height).
         float optionsCharacterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;        // It doesn't matter which character is used, since all characters in a font have the same height.
         float optionsCharacterScreenHeight = gp.getCamera().worldHeightToScreenHeight(optionsCharacterWorldHeight);     // Normalized (screen) character height.
-        float titleScreenTopBottomPadding = (borderScreenCoords.y - mainWindowScreenTopBottomPadding - optionsCharacterScreenHeight) / 2;
+        float titleScreenTopBottomPadding = (dividerScreenCoords.y - mainWindowScreenTopBottomPadding - optionsCharacterScreenHeight) / 2;
         Vector2f titleScreenCoords = new Vector2f(
-                mainWindowScreenLeftRightPadding + 0.075f,
+                mainWindowScreenLeftRightPadding + 0.065f,
                 mainWindowScreenTopBottomPadding + titleScreenTopBottomPadding);
         String title = "???";
         switch (gp.getGameState()) {
@@ -287,158 +287,182 @@ public class Ui {
 
 
     /**
-     * Draws the party menu screen (to be drawn on top of the core menu screen).
+     * Adds components of the party menu section of the in-game menu to the render pipeline.
+     * This is to be rendered on top of the in-game menu main window.
      */
-    private void drawPartyMenuScreen() {
+    private void renderPartyMenuScreen() {
 
-        drawPartyMemberStatIcons();
+        renderPartyMemberStatusIcons();
     }
 
 
     /**
-     * Draws stat icons for each party member on the party menu screen.
+     * Adds components of the status icons for each party member in the party menu section of the in-game menu to the
+     * render pipeline.
+     * This is to be rendered on top of the in-game menu main window.
      */
-    private void drawPartyMemberStatIcons() {
+    private void renderPartyMemberStatusIcons() {
 
-        float slotScreenX = mainWindowScreenLeftRightPadding + 0.025f;
-        float topSlotScreenY = mainWindowScreenTopBottomPadding + 0.17f;                                                // Screen y of the topmost (player entity) slot.
-        float slotScreenY = topSlotScreenY;
-        float slotSpacing = 0.175f;
+        // Prepare slot icon positions (i.e., background sprite of each stat icon).
+        float slotIconWorldHeight = gp.getIconM().getIconById(3).getNativeSpriteHeight();                               // Get native (world) height of slot icons; all are same height, so doesn't matter which is used here.
+        float slotIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(slotIconWorldHeight);
+        float bottomSlotIconScreenY = 1 - mainWindowScreenTopBottomPadding - 0.1f - slotIconScreenHeight;               // Normalized (screen) y-position of the bottommost slot.
+        float slotIconScreenX = mainWindowScreenLeftRightPadding + 0.025f;
+        float slotIconScreenY = bottomSlotIconScreenY;
+        float slotIconVerticalSpacing = 0.1f;                                                                           // Normalized (screen) spacing between each slot (does not include height of slot icon itself).
 
-        // Slot 0 (player entity).
-        gp.getIconM().addToRenderPipeline(renderer, 3, slotScreenX, slotScreenY);
+        // Render slot icon 2 (bottommost).
+        gp.getIconM().addToRenderPipeline(renderer, 5, slotIconScreenX, slotIconScreenY);
 
-        // Slot 1.
-        slotScreenY += slotSpacing;
-        gp.getIconM().addToRenderPipeline(renderer, 4, slotScreenX, slotScreenY);
+        // Render slot icon 1.
+        slotIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
+        gp.getIconM().addToRenderPipeline(renderer, 4, slotIconScreenX, slotIconScreenY);
 
-        // Slot 2.
-        slotScreenY += slotSpacing;
-        gp.getIconM().addToRenderPipeline(renderer, 5, slotScreenX, slotScreenY);
+        // Render slot icon 0 (topmost, player entity).
+        slotIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
+        gp.getIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
 
-        // Draw the entity icon and corresponding text for each party member.
-        int entityIconX = 23;                                                                                           // The x-position of each entity icon.
-        int topEntityIconY = 72;                                                                                        // The y-position of the top entity icon; used with `verticalSpacing` to get the y-position of lower icons.
-        int textX = 68;                                                                                                 // The x-position of the text in each party member icon.
-        int topTextY = 82;                                                                                              // The y-position of the text in the top party member icon; used with `verticalSpacing` to get the y-position of lower icons.
-
-        // Slot 0 (player entity).
-//        int entityIconY = mainWindowTopBottomPadding + topEntityIconY;
-//        int textY = mainWindowTopBottomPadding + topTextY;
-//        gp.getEntityIconM().draw(g2, gp.getPlayer().getEntityId(), entityIconX, entityIconY); // TODO : Replace with Renderer!
-//        drawPartyMemberIconText(gp.getPlayer(), textX, textY);
-
-        // Extract keys from party map to prepare for remaining slots.
+        // Extract keys from party map.
         Set<Integer> keySet = gp.getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
 
-        // Slot 1.
-        if ((gp.getParty().size() > 0) && (gp.getParty().get(keyArray[0]) != null)) {                                   // Safeguard in case the `party` map is either too small or contains a null entry.
-//            entityIconY = mainWindowTopBottomPadding + (topEntityIconY + verticalSpacing);
-//            textY = mainWindowTopBottomPadding + (topTextY + verticalSpacing);
-//            gp.getEntityIconM().draw(g2, gp.getParty().get(keyArray[0]).getEntityId(), entityIconX, entityIconY); // TODO : Replace with Renderer!
-//            drawPartyMemberIconText(gp.getParty().get(keyArray[0]), textX, textY);
+        // Prepare entity icon and status information text positions to render on top of respective slot icons.
+        float entityIconScreenX = slotIconScreenX + 0.01f;
+        float entityIconScreenY = bottomSlotIconScreenY + 0.012f;
+        float statusInfoTextScreenX = slotIconScreenX + 0.07f;
+        float statusInfoTextScreenY = bottomSlotIconScreenY + 0.01f;
+
+        // Render entity icon 2 (bottommost).
+        if ((gp.getParty().size() > 1) && (gp.getParty().get(keyArray[1]) != null)) {
+            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getParty().get(keyArray[1]).getEntityId(), entityIconScreenX, entityIconScreenY);
+            renderPartyMemberStatusInformation(gp.getParty().get(keyArray[1]), statusInfoTextScreenX, statusInfoTextScreenY);
         }
 
-        // Slot 2.
-        if ((gp.getParty().size() > 1) && (gp.getParty().get(keyArray[1]) != null)) {                                   // Safeguard in case the `party` map is either too small or contains a null entry.
-//            entityIconY = mainWindowTopBottomPadding + (topEntityIconY + (2 * verticalSpacing));
-//            textY = mainWindowTopBottomPadding + (topTextY + (2 * verticalSpacing));
-//            gp.getEntityIconM().draw(g2, gp.getParty().get(keyArray[1]).getEntityId(), entityIconX, entityIconY); // TODO : Replace with Renderer!
-//            drawPartyMemberIconText(gp.getParty().get(keyArray[1]), textX, textY);
+
+        // Render entity icon 1.
+        entityIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
+        statusInfoTextScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
+        if ((gp.getParty().size() > 0) && (gp.getParty().get(keyArray[0]) != null)) {
+            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getParty().get(keyArray[0]).getEntityId(), entityIconScreenX, entityIconScreenY);
+            renderPartyMemberStatusInformation(gp.getParty().get(keyArray[0]), statusInfoTextScreenX, statusInfoTextScreenY);
         }
+
+        // Render entity icon 0 (topmost, player entity).
+        entityIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
+        statusInfoTextScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
+        gp.getEntityIconM().addToRenderPipeline(renderer, gp.getPlayer().getEntityId(), entityIconScreenX, entityIconScreenY);
+        renderPartyMemberStatusInformation(gp.getPlayer(), statusInfoTextScreenX, statusInfoTextScreenY);
     }
 
 
     /**
-     * Draws text on the stat icon for a party member.
+     * Adds components of the status information to the status icon of a party member in the party menu section of the
+     * in-game menu to the render pipeline.
+     * Specifically, the party member's name, level, and health bar are added.
+     * This is to be rendered on top of a slot icon.
      *
-     * @param entity party member whose stat icon is being drawn
-     * @param textX x-coordinate of all lines of text
-     * @param topTextY y-coordinate of the top line of text being drawn
+     * @param entity party member whose status information to render
+     * @param textScreenX screen x-coordinate of all lines of text to render within the status information
+     * @param topTextScreenY screen y-coordinate of the topmost line of text to render within the status information
      */
-    private void drawPartyMemberIconText(EntityBase entity, int textX, int topTextY) {
+    private void renderPartyMemberStatusInformation(EntityBase entity, float textScreenX, float topTextScreenY) {
 
-        int textY = topTextY;
-
-        // Set font to bold for text within the party menu icon.
-//        g2.setFont(fontArimoBold);  // TODO : Replace with Renderer!
-
-        // Initialize text to draw.
+        // Prepare text.
         String name = entity.getName();
         String level = "Lv." + entity.getLevel();
         String lifeLabel = "HP";
         String lifeValue = entity.getLife() + "/" + entity.getMaxLife();
+        Vector2f textScreenCoords = new Vector2f(textScreenX, topTextScreenY);
 
-        // Draw entity name, level, and life label.
-//        renderStringShadow(name, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
-//        textY += 18;
-//        renderStringShadow(level, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
-//        textY += 18;
-//        renderStringShadow(lifeLabel, textX, textY, new Vector3f(255, 255, 255), 14F, "Arimo");
+        // Render text for name, level, and life label.
+        renderStringShadow(name, textScreenCoords, new Vector3f(255, 255, 255), 0.11f, "Arimo Bold");
+        textScreenCoords.y += 0.04f;
+        renderStringShadow(level, textScreenCoords, new Vector3f(255, 255, 255), 0.11f, "Arimo Bold");
+        textScreenCoords.y += 0.04f;
+        renderStringShadow(lifeLabel, textScreenCoords, new Vector3f(255, 255, 255), 0.11f, "Arimo Bold");
 
-        // Draw health bar.
-        int barX = textX + 22;
-        int barY = textY - 9;
-        int barWidth = 40;                                                                                              // The maximum width of the life bar interior (corresponds with maximum life).
-        int barHeight = 8;                                                                                              // The thickness of the life bar.
-        drawLifeBar(entity.getLife(), entity.getMaxLife(), barWidth, barHeight, barX, barY);
+        // Render life bar.
+        float barScreenX = textScreenCoords.x + 0.03f;
+        float barScreenY = textScreenCoords.y + 0.002f;
+        float barScreenWidth = 0.055f;                                                                                   // The maximum normalized (screen) width of the life bar interior (corresponds with maximum life).
+        float barScreenHeight = 0.023f;                                                                                  // The normalized (screen) thickness of the life bar.
+        renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, barScreenX, barScreenY);
 
         // Draw remaining life points text with a shadowed effect.
-        textX += barWidth + 13;
-        textY -= 6;
-//        renderStringShadow(lifeValue, textX, textY, new Vector3f(255, 255, 255), 12F, "Arimo");
-
-        // Reset font back to normal.
-//        g2.setFont(fontArimo);  // TODO : Replace with Renderer!
+        textScreenCoords.x += 0.074f;
+        textScreenCoords.y -= 0.008f;
+        renderStringShadow(lifeValue, textScreenCoords, new Vector3f(255, 255, 255), 0.08f, "Arimo Bold");
     }
 
 
     /**
-     * Draws a life bar.
+     * Adds a life bar to the render pipeline.
      *
      * @param life number of remaining life points
      * @param maxLife maximum number of life points
-     * @param maxWidth width of the life bar when full
-     * @param height height of the life bar
-     * @param barX x-coordinate of the left side of the life bar
-     * @param barY y-coordinate of the top side of the life bar
+     * @param screenWidth screen width of the life bar
+     * @param screenHeight screen height of the life bar
+     * @param screenX screen x-coordinate of the life bar (leftmost)
+     * @param screenY screen y-coordinate of the life bar (topmost)
      */
-    private void drawLifeBar(int life, int maxLife, int maxWidth, int height, int barX, int barY) {
+    private void renderLifeBar(int life, int maxLife, float screenWidth, float screenHeight, float screenX, float screenY) {
 
-        double proportion = ((double)(life) / (double)(maxLife));                                                       // The decimal percentage of life that the entity has relative to its maximum life.
-        int adjustedWidth = (int)Math.ceil(proportion * maxWidth);                                                      // The width of the filled-in area of the life bar representing remaining life points.
-
-        if (adjustedWidth > maxWidth) {
-            adjustedWidth = maxWidth;                                                                                   // Prevent the life bar from over-filling.
-        } else if (adjustedWidth < 0) {
-            adjustedWidth = 0;                                                                                          // Prevent the life bar from using a negative value.
+        // Prepare life bar.
+        float borderScreenThickness = screenWidth * 0.04f;                                                              // Normalized (screen) thickness of border surrounding life bar interior.
+        float remainingLifePercentage = (float)life/ (float)maxLife;                                                    // Decimal percentage of life that the entity has relative to its maximum life.
+        if (remainingLifePercentage > 1) {
+            remainingLifePercentage = 1;                                                                                // Prevent the life bar from over-filling.
+        } else if (remainingLifePercentage < 0) {
+            remainingLifePercentage = 0;                                                                                // Prevent the life bar from using a negative value.
         }
 
-        // Draw the background of the life bar.
-        Color color = new Color(0, 0, 0);
-//        g2.setColor(color);
-//        g2.fillRoundRect(barX, barY, maxWidth, height, 0, 0);  // TODO : Replace with Renderer!
+        // Render life bar background/border.
+        Vector4f color = new Vector4f(255, 255, 255, 255);
+        Vector2f screenCoords = new Vector2f(screenX, screenY);
+        Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
+        float worldWidth = gp.getCamera().screenWidthToWorldWidth(screenWidth);
+        float worldHeight = gp.getCamera().screenHeightToWorldHeight(screenHeight);
+        renderer.addRectangle(
+                color,
+                new Transform(
+                        worldCoords,
+                        new Vector2f(worldWidth, worldHeight)
+                ),
+                ZIndex.FIRST_LAYER
+        );
 
-        // Draw the interior of the life bar.
-        int halfLife = (int)Math.ceil((double)(maxWidth) / (double)(2));
-        int eighthLife = (int)Math.ceil((double)(maxWidth) / (double)(8));
+        // Render empty life bar interior.
+        color = new Vector4f(0, 0, 0, 255);
+        screenCoords = new Vector2f(screenX + borderScreenThickness, screenY + borderScreenThickness);
+        worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
+        worldWidth = gp.getCamera().screenWidthToWorldWidth(screenWidth - (borderScreenThickness * 2));
+        worldHeight = gp.getCamera().screenHeightToWorldHeight(screenHeight - (borderScreenThickness * 2));
+        renderer.addRectangle(
+                color,
+                new Transform(
+                        worldCoords,
+                        new Vector2f(worldWidth, worldHeight)
+                ),
+                ZIndex.FIRST_LAYER
+        );
 
-        if (adjustedWidth <= eighthLife) {
-            color = new Color(255, 46, 102, 220);
-        } else if (adjustedWidth <= halfLife) {
-            color = new Color(255, 251, 78, 220);
-        } else {
-            color = new Color(46, 255, 139, 220);
+        // Render filled life bar interior.
+        worldWidth = worldWidth * remainingLifePercentage;
+        if (remainingLifePercentage <= 0.125f) {                                                                        // Eighth of life or less remaining.
+            color = new Vector4f(255, 46, 102, 220);
+        } else if (remainingLifePercentage <= 0.5f) {                                                                   // Half of life or less remaining.
+            color = new Vector4f(255, 251, 78, 220);
+        } else {                                                                                                        // Greater than half of life remaining.
+            color = new Vector4f(46, 255, 139, 220);
         }
-
-//        g2.setColor(color);
-//        g2.fillRoundRect(barX, barY, adjustedWidth, height, 0, 0);  // TODO : Replace with Renderer!
-
-        // Draw the border of the life bar.
-        color = new Color(255, 255, 255);
-//        g2.setColor(color);
-//        g2.drawRoundRect(barX, barY, maxWidth, height, 3, 3);  // TODO : Replace with Renderer!
+        renderer.addRectangle(
+                color,
+                new Transform(
+                        worldCoords,
+                        new Vector2f(worldWidth, worldHeight)
+                ),
+                ZIndex.FIRST_LAYER
+        );
     }
 
 
@@ -595,7 +619,7 @@ public class Ui {
                 transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, transitionFrameCounter * 10),
                         new Transform(new Vector2f(0, 0), new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.FRONT_LAYER);
+                        ZIndex.FIRST_LAYER);
                 if (transitionFrameCounter == 25) {
                     transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to prepare it for the second phase.
                     gp.setActiveTransitionPhase(TransitionPhase.LOADING);                                               // Proceed to the next (second) phase of the transition.
@@ -605,7 +629,7 @@ public class Ui {
                 transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, 255),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.FRONT_LAYER);
+                        ZIndex.FIRST_LAYER);
                 if (transitionFrameCounter == 30) {                                                                     // At 60 FPS, this will amount to waiting on the black screen for 0.5 seconds.
                     transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to prepare it for the final (third) phase.
                     gp.setActiveTransitionPhase(TransitionPhase.FADING_FROM);                                           // Proceed to the final (third) phase of the transition.
@@ -615,7 +639,7 @@ public class Ui {
                 transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, (250 - (transitionFrameCounter * 10))),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.FRONT_LAYER);
+                        ZIndex.FIRST_LAYER);
                 if (transitionFrameCounter == 25) {
                     transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to its default value since the transition is complete.
                     gp.setActiveTransitionPhase(TransitionPhase.CLEANUP);
@@ -630,7 +654,7 @@ public class Ui {
      */
     private void renderSubMenuScreen() {
 
-        // Initialize window position and dimensions (other than window width).
+        // Prepare window position and dimensions (other than window width).
         // The following information is assuming use of the font Arimo (normal/non-bold).
         float fontScale = 0.15f;                                                                                        // Font size (multiplies native height).
         float optionsScreenTopBottomPadding = 0.02f;                                                                    // Normalized (screen) padding on top and bottom of sub-menu window.
@@ -642,7 +666,7 @@ public class Ui {
                 + (optionsCharacterScreenHeight * gp.getSubMenuH().getOptions().size());                                // Character height for each option.
         Vector2f windowScreenCoords = new Vector2f(gp.getSubMenuH().getSubMenuScreenX(), gp.getSubMenuH().getSubMenuScreenY());
 
-        // Initialize window width to width of widest option.
+        // Prepare window width to width of widest option.
         // The following information is assuming use of the font Arimo (normal/non-bold).
         float optionsScreenLeftPadding = 0.03f;
         float optionsScreenRightPadding = 0.02f;
@@ -667,7 +691,7 @@ public class Ui {
         renderer.addRectangle(
                 new Vector4f(0, 0, 0, 180),
                 new Transform(windowWorldCoords, new Vector2f(windowWorldWidth, windowWorldHeight)),
-                ZIndex.CENTER_LAYER);
+                ZIndex.SECOND_LAYER);
 
         // Calculate position of text for first option.
         Vector2f optionsScreenCoords = new Vector2f(windowScreenCoords.x + optionsScreenLeftPadding, windowScreenCoords.y + optionsScreenTopBottomPadding);
@@ -794,7 +818,7 @@ public class Ui {
      */
     private void renderStringShadow(String text, Vector2f screenCoords, Vector3f color, float size, String font) {
 
-        Vector2f shadowScreenCoords = new Vector2f(screenCoords.x + 0.0017f, screenCoords.y + 0.0017f);
+        Vector2f shadowScreenCoords = new Vector2f(screenCoords.x + 0.0015f, screenCoords.y + 0.0015f);
         renderString(text, shadowScreenCoords, size, new Vector3f(0, 0, 0), font);
         renderString(text, screenCoords, size, color, font);
     }

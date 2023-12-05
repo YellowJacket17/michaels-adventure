@@ -147,7 +147,7 @@ public class DrawableBatch {
     /**
      * Layer on which this batch will be rendered.
      */
-    private ZIndex zIndex = ZIndex.BACK_LAYER;
+    private ZIndex zIndex = ZIndex.THIRD_LAYER;
 
 
     // CONSTRUCTOR

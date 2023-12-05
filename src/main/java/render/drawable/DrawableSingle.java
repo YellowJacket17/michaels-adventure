@@ -119,12 +119,12 @@ public class DrawableSingle {
     /**
      * Layer on which this single will be rendered.
      */
-    private ZIndex zIndex = ZIndex.BACK_LAYER;
+    private ZIndex zIndex = ZIndex.THIRD_LAYER;
 
     /**
      * Radius of rounded corners.
      */
-    private int radius;
+    private float radius;
 
 
     // CONSTRUCTOR
@@ -180,7 +180,7 @@ public class DrawableSingle {
      *
      * @param radius arc radius
      */
-    public void setRadius(int radius) {
+    public void setRadius(float radius) {
 
         this.radius = radius;
     }
@@ -377,7 +377,7 @@ public class DrawableSingle {
         return zIndex;
     }
 
-    public int getRadius() {
+    public float getRadius() {
         return radius;
     }
 }

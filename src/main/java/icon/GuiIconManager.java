@@ -84,7 +84,7 @@ public class GuiIconManager {
                 guiIcon.transform.scale.x = sprite.getNativeWidth();
                 guiIcon.transform.scale.y = sprite.getNativeHeight();
                 guiIcon.setSprite(sprite);
-                renderer.addDrawable(guiIcon, ZIndex.FRONT_LAYER);
+                renderer.addDrawable(guiIcon, ZIndex.FIRST_LAYER);
             } else if (!renderErrors.contains(iconId)) {
 
                 UtilityTool.logError("Failed to add GUI icon"

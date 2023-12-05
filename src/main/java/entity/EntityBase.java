@@ -423,14 +423,14 @@ public abstract class EntityBase extends Drawable {
                     transform.position.y = worldY + worldYAdjustment;                                                   // Y-coordinate of entities of type CHARACTER is modified slightly since they can be taller than a single tile; adjusted so the bottom of the sprite lines up with the bottom of the tile the entity is occupying when rendered.
                     transform.scale.x = gp.getNativeTileSize();                                                         // Entities must be as wide as the native tile size.
                     transform.scale.y = sprite.getNativeHeight();
-                    renderer.addDrawable(this, ZIndex.BACK_LAYER);
+                    renderer.addDrawable(this, ZIndex.THIRD_LAYER);
                 } else {
 
                     transform.position.x = worldX;
                     transform.position.y = worldY;                                                                      // Entities of type OBJECT will be rendered to only fill one tile space, regardless of actual size.
                     transform.scale.x = sprite.getNativeWidth();                                                        // Entities must be as wide as the native tile size.
                     transform.scale.y = sprite.getNativeHeight();                                                       // Entities of type OBJECT must be as tall as the native tile size.
-                    renderer.addDrawable(this, ZIndex.BACK_LAYER);
+                    renderer.addDrawable(this, ZIndex.THIRD_LAYER);
                 }
             } else if (!renderError) {
 

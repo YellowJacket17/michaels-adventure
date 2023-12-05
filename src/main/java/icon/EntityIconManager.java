@@ -82,7 +82,7 @@ public class EntityIconManager {
                 entityIcon.transform.scale.x = sprite.getNativeWidth();
                 entityIcon.transform.scale.y = sprite.getNativeHeight();
                 entityIcon.setSprite(sprite);
-                renderer.addDrawable(entityIcon, ZIndex.FRONT_LAYER);
+                renderer.addDrawable(entityIcon, ZIndex.FIRST_LAYER);
             } else if (!renderErrors.contains(entityId)) {
 
                 UtilityTool.logError("Failed to draw entity icon with entity ID "

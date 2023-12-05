@@ -141,7 +141,7 @@ public abstract class LandmarkBase extends Drawable {
             transform.position.y = worldY + worldYAdjustment;
             transform.scale.x = sprite.getNativeWidth();
             transform.scale.y = sprite.getNativeHeight();
-            renderer.addDrawable(this, ZIndex.BACK_LAYER);
+            renderer.addDrawable(this, ZIndex.THIRD_LAYER);
         } else if (!renderError) {
 
             UtilityTool.logError("Failed to add landmark "
