@@ -213,6 +213,26 @@ public class GamePanel {
      */
     private boolean transitionPhaseChanged = false;
 
+    /**
+     * Core time counter (seconds) for controlling transition fade to/fade from effect.
+     */
+    private double transitionCounter;
+
+    /**
+     * Duration of fading to for transition (seconds).
+     */
+    private final double transitionCounterFadingToMax = 0.5;
+
+    /**
+     * Duration of loading for transition (seconds).
+     */
+    private final double transitionCounterLoadingMax = 0.25;
+
+    /**
+     * Duration of fading from for transition (seconds).
+     */
+    private final double transitionCounterFadingFromMax = 0.5;
+
 
     // CONSTRUCTOR
     /**
@@ -259,48 +279,51 @@ public class GamePanel {
     /**
      * Progresses the state of the entire game by one frame.
      *
-     * @param dt time since the last rendered frame (frame pacing)
+     * @param dt time since last frame (seconds)
      */
     public void update(double dt) {
 
+        // Player input.
+        player.updatePlayerInput(dt);
+
         // Transition.
-        updateTransition();
+        updateTransition(dt);
 
         // Dialogue.
-        dialogueR.update();
+        dialogueR.update(dt);
+        dialogueA.update(dt);
 
         // Cutscene.
-        cutsceneM.update();
+        cutsceneM.update(dt);
 
         // Animation.
-        animationM.update();                                                                                            // Run all animation logic to determine which images in animated assets should be drawn this frame.
-
-        // Player input.
-        player.updatePlayerInput();                                                                                     // Check for player input.
+        animationM.update(dt);
 
         // Player.
-        player.update();                                                                                                // Update the player's position if an action is in progress.
+        player.update(dt);
 
         // Entities.
-        updateEntities();
+        updateEntities(dt);
+
+        // Entity icons.
+        entityIconM.update(dt);
 
         // Environment.
 //        environmentM.update();
 
         // Camera.
-        cameraS.update();
+        cameraS.update(dt);
     }
 
 
     /**
      * Sends necessary items to the render pipeline and renders them.
      *
-     * @param dt time since the last rendered frame (frame pacing)
+     * @param dt time since last frame (seconds)
      */
     public void render(double dt) {
 
-        // NOTE:
-        // Objects are added to the render pipeline in the following order to control layering.
+        // NOTE: Drawables are added to the render pipeline in the following order to control layering.
 
         // Tile.
         tileM.addToRenderPipeline(renderer);                                                                            // Render tile sprites as defined in the TileManager class.
@@ -710,16 +733,34 @@ public class GamePanel {
 
 
     /**
-     * Updates the state of all entities by one frame.
+     * Initiates a transition.
+     * The game state is set to transition.
+     * Remember to also set a sub-transition type directly after calling this method if applicable.
+     *
+     * @param transitionType transition type
      */
-    private void updateEntities() {
+    public void initiateTransition(TransitionType transitionType) {
+
+        setGameState(GameState.TRANSITION);                                                                             // Set the game to a transition state.
+        activeTransitionType = transitionType;                                                                          // Set the overarching transition type.
+        transitionPhaseChanged = true;
+        activeTransitionPhase = TransitionPhase.FADING_TO;                                                              // All transitions start with a fade to.
+    }
+
+
+    /**
+     * Updates the state of all entities by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void updateEntities(double dt) {
 
         // Object.
         for (EntityBase entity : obj.values()) {
             if ((entity != null)
                     && (!conversingEntities.contains(entity.getEntityId()))
                     && (!combatingEntities.contains(entity.getEntityId()))) {                                           // Only update objects neither in a conversation nor in combat.
-                entity.update();
+                entity.update(dt);
             }
         }
 
@@ -728,7 +769,7 @@ public class GamePanel {
             if ((entity != null)
                     && (!conversingEntities.contains(entity.getEntityId()))
                     && (!combatingEntities.contains(entity.getEntityId()))) {                                           // Only update NPCs neither in a conversation nor in combat.
-                entity.update();
+                entity.update(dt);
             }
         }
 
@@ -737,7 +778,7 @@ public class GamePanel {
             if ((entity != null)
                     && (!conversingEntities.contains(entity.getEntityId()))
                     && (!combatingEntities.contains(entity.getEntityId()))) {                                           // Only update party members neither in a conversation nor in combat.
-                entity.update();
+                entity.update(dt);
             }
         }
     }
@@ -746,14 +787,43 @@ public class GamePanel {
     /**
      * Updates a transition (i.e., performs any loading or other logic that needs to be run immediately after a new
      * transition phase is entered).
+     *
+     * @param dt time since last frame (seconds)
      */
-    private void updateTransition() {
+    private void updateTransition(double dt) {
+
+        switch (activeTransitionPhase) {
+            case FADING_TO:                                                                                             // Phase 1: Fade screen to black.
+                transitionCounter += dt;
+                if (transitionCounter >= transitionCounterFadingToMax) {
+                    transitionCounter -= transitionCounterFadingToMax;                                                  // Rollback counter to prepare it for the second phase.
+                    activeTransitionPhase = TransitionPhase.LOADING;                                                    // Proceed to the next (second) phase of the transition.
+                    transitionPhaseChanged = true;
+                }
+                break;
+            case LOADING:                                                                                               // Phase 2: Wait on black screen.
+                transitionCounter += dt;
+                if (transitionCounter >= transitionCounterLoadingMax) {
+                    transitionCounter -= transitionCounterLoadingMax;                                                   // Rollback counter to prepare it for the final (third) phase.
+                    activeTransitionPhase = TransitionPhase.FADING_FROM;                                                // Proceed to the final (third) phase of the transition.
+                    transitionPhaseChanged = true;
+                }
+                break;
+            case FADING_FROM:                                                                                           // Phase 3: Fade from black.
+                transitionCounter += dt;
+                if (transitionCounter >= transitionCounterFadingFromMax) {
+                    transitionCounter = 0;                                                                              // Reset counter to its default state since the transition is complete.
+                    activeTransitionPhase = TransitionPhase.CLEANUP;
+                    transitionPhaseChanged = true;
+                }
+                break;
+        }
 
         if ((activeTransitionType != null) && (transitionPhaseChanged)) {
 
             switch (activeTransitionPhase) {
                 case LOADING:
-                    handleTransitionLoading();
+                    handleTransitionLoading(dt);
                     break;
                 case CLEANUP:
                     concludeTransition();
@@ -770,12 +840,14 @@ public class GamePanel {
 
     /**
      * Performs any loading that needs to be done once the screen is black during a transition of any type.
+     *
+     * @param dt time since last frame (seconds)
      */
-    private void handleTransitionLoading() {
+    private void handleTransitionLoading(double dt) {
 
         switch (activeTransitionType) {
             case WARP:
-                warpS.handleWarpTransitionLoading();
+                warpS.handleWarpTransitionLoading(dt);
                 break;
             case ENTER_COMBAT:
                 combatM.handleEnterCombatTransitionLoading();
@@ -1090,6 +1162,22 @@ public class GamePanel {
         return activeTransitionPhase;
     }
 
+    public double getTransitionCounter() {
+        return transitionCounter;
+    }
+
+    public double getTransitionCounterFadingToMax() {
+        return transitionCounterFadingToMax;
+    }
+
+    public double getTransitionCounterLoadingMax() {
+        return transitionCounterLoadingMax;
+    }
+
+    public double getTransitionCounterFadingFromMax() {
+        return transitionCounterFadingFromMax;
+    }
+
 
     // SETTERS
     public void setGameState(GameState gameState) {
@@ -1107,14 +1195,5 @@ public class GamePanel {
 
     public void setDebugActive(boolean debugActive) {
         this.debugActive = debugActive;
-    }
-
-    public void setActiveTransitionType(TransitionType activeTransitionType) {
-        this.activeTransitionType = activeTransitionType;
-    }
-
-    public void setActiveTransitionPhase(TransitionPhase activeTransitionPhase) {
-        this.activeTransitionPhase = activeTransitionPhase;
-        transitionPhaseChanged = true;
     }
 }

@@ -55,15 +55,17 @@ public class CutsceneManager {
      * Updates an active cutscene by one frame.
      * Note that the active cutscene is set by the `sceneNum` field in this class.
      * If `sceneNum` is set to zero, nothing will happen.
+     *
+     * @param dt time since last frame (seconds)
      */
-    public void update() {
+    public void update(double dt) {
 
         if (gp.getGameState() == GameState.CUTSCENE) {
 
             switch(activeSceneNum) {
                 case 1:
                     if (cts_test1.isTriggerable()) {
-                        cts_test1.run();
+                        cts_test1.run(dt);
                     }
                     break;
                 default:

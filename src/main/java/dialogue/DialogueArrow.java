@@ -18,9 +18,9 @@ public class DialogueArrow extends Drawable {
     GamePanel gp;
 
     /**
-     * Controls the number of frames between the animation of the arrow moving up and down.
+     * Controls the up-and-down animation of the dialogue arrow.
      */
-    private int rest;
+    private double rest;
 
     /**
      * Boolean tracking the up-and-down movement of the dialogue arrow when being drawn.
@@ -28,10 +28,10 @@ public class DialogueArrow extends Drawable {
     private boolean isUpPosition = false;
 
     /**
-     * Boolean tracking whether a draw error has occurred.
-     * If true, this prevents a draw error from repeatedly being printed to the console.
+     * Boolean tracking whether a render error has occurred.
+     * If true, this prevents a render error from repeatedly being printed to the console.
      */
-    private boolean drawError = false;
+    private boolean renderError = false;
 
 
     // CONSTRUCTOR
@@ -51,6 +51,26 @@ public class DialogueArrow extends Drawable {
 
     // METHODS
     /**
+     * Updates the state of the dialogue arrow by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    public void update(double dt) {
+
+        rest -= dt;
+
+        if (rest <= 0) {
+
+            while (rest <= 0) {
+
+                isUpPosition = !isUpPosition;
+                rest += 0.5;                                                                                            // Force the arrow to wait 0.5 seconds before moving again.
+            }
+        }
+    }
+
+
+    /**
      * Adds the dialogue arrow to the render pipeline.
      *
      * @param renderer Renderer instance
@@ -58,15 +78,6 @@ public class DialogueArrow extends Drawable {
      * @param screenY screen y-coordinate of the dialogue arrow (topmost, normalized between 0 and 1)
      */
     public void addToRenderPipeline(Renderer renderer, float screenX, float screenY) {
-
-        if (rest == 0) {
-
-            isUpPosition = !isUpPosition;                                                                               // Switch `isUpPosition` to the opposite boolean value.
-            rest = 30;                                                                                                  // Force the arrow to wait 30 frames before moving again.
-        } else {
-
-            rest--;                                                                                                     // Decrease frame countdown for animation by one each time a new frame with the arrow is drawn.
-        }
 
         if (!isUpPosition) {
 
@@ -79,10 +90,10 @@ public class DialogueArrow extends Drawable {
             this.transform.position.x = worldCoords.x;
             this.transform.position.y = worldCoords.y;
             renderer.addDrawable(this, ZIndex.SECOND_LAYER);
-        } else if (!drawError) {
+        } else if (!renderError) {
 
             UtilityTool.logError("Failed to add dialogue arrow to the render pipeline: sprite may not have been properly loaded upon initialization.");
-            drawError = true;
+            renderError = true;
         }
     }
 

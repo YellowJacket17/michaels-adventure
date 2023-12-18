@@ -17,7 +17,7 @@ public class Cts_Test1 extends CutsceneBase {
 
     // METHOD
     @Override
-    public void run() {
+    public void run(double dt) {
 
         EntityBase entity = gp.getEntityById(4);
 

@@ -22,7 +22,7 @@ public class Evt_Map001 extends EventMapBase {
 
     // METHODS
     @Override
-    public boolean objInteraction(EventType type, EntityBase target) {
+    public boolean objInteraction(double dt, EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
             case 1:
@@ -51,7 +51,7 @@ public class Evt_Map001 extends EventMapBase {
 
 
     @Override
-    public boolean npcInteraction(EventType type, EntityBase target) {
+    public boolean npcInteraction(double dt, EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
             case 4:
@@ -72,7 +72,7 @@ public class Evt_Map001 extends EventMapBase {
 
 
     @Override
-    public boolean partyInteraction(EventType type, EntityBase target) {
+    public boolean partyInteraction(double dt, EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
             case 5:
@@ -90,7 +90,7 @@ public class Evt_Map001 extends EventMapBase {
 
 
     @Override
-    public boolean tileInteraction(EventType type, int col, int row, EntityDirection direction) {
+    public boolean tileInteraction(double dt, EventType type, int col, int row, EntityDirection direction) {
 
         // Trigger a message.
         if ((type == EventType.CLICK) && (col == 22) && (row == 28)) {
@@ -102,7 +102,7 @@ public class Evt_Map001 extends EventMapBase {
         // Warp to map 0.
         if ((type == EventType.STEP) && (col == 25) && (row == 25)) {
 
-            gp.getWarpS().initiateWarp(0, 1, 1, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, 1);
+            gp.getWarpS().initiateWarp(dt, 0, 1, 1, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, 1);
 
             gp.playSE(0);
             return true;
@@ -112,7 +112,7 @@ public class Evt_Map001 extends EventMapBase {
         if ((type == EventType.STEP) && (col == 22) && (row == 28)) {
 
             gp.getCutsceneM().triggerCutscene(1);
-//            gp.getCameraS().setCameraScroll(0, 0, 10);
+//            gp.getCameraS().setCameraScroll(0, 0, 5);
             return true;
         }
 

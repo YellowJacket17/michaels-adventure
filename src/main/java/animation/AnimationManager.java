@@ -19,17 +19,19 @@ public class AnimationManager {
      * Constructs an AnimationManager instance.
      */
     public AnimationManager() {
-        anm_water1 = new Anm_water1(1);
+        anm_water1 = new Anm_water1(2.65);
     }
 
 
     // METHODS
     /**
      * Updates all tile and landmark animations by one frame.
+     *
+     * @param dt time since last frame (seconds)
      */
-    public void update() {
+    public void update(double dt) {
 
-        anm_water1.update();
+        anm_water1.update(dt);
     }
 
 

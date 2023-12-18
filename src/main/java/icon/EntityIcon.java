@@ -27,9 +27,14 @@ public class EntityIcon extends Drawable {
     private boolean selected;
 
     /**
-     * Variable to control animation when this icon is in a selected state.
+     * Core time counter (seconds) for controlling animation.
      */
-    private int animationCounter;
+    private double counter;
+
+    /**
+     * Maximum allowed value for core animation time counter (seconds).
+     */
+    private final double counterMax = 0.8;
 
 
     // CONSTRUCTOR
@@ -41,6 +46,40 @@ public class EntityIcon extends Drawable {
     public EntityIcon(int entityId) {
         super();
         this.entityId = entityId;
+    }
+
+
+    /**
+     * Adds frame time to this animation counter value.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    public void iterateCounter(double dt) {
+
+        counter += dt;
+    }
+
+    /**
+     * Subtracts the maximum allowed animation counter value from this animation counter value.
+     * If this counter value is less than the maximum allowed value, then this counter value will be set to zero.
+     */
+    public void rollbackCounter() {
+
+        if (counter >= counterMax) {
+
+            counter -= counterMax;
+        } else {
+
+            counter = 0;
+        }
+    }
+
+    /**
+     * Resets this animation counter back to zero.
+     */
+    public void resetCounter() {
+
+        counter = 0;
     }
 
 
@@ -65,8 +104,12 @@ public class EntityIcon extends Drawable {
         return selected;
     }
 
-    public int getAnimationCounter() {
-        return animationCounter;
+    public double getCounter() {
+        return counter;
+    }
+
+    public double getCounterMax() {
+        return counterMax;
     }
 
 
@@ -86,11 +129,7 @@ public class EntityIcon extends Drawable {
     public void setSelected(boolean selected) {
         this.selected = selected;
         if (!selected) {
-            animationCounter = 0;
+            resetCounter();
         }
-    }
-
-    public void setAnimationCounter(int animationCounter) {
-        this.animationCounter = animationCounter;
     }
 }

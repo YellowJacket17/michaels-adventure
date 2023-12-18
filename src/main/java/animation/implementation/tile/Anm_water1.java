@@ -8,8 +8,8 @@ import animation.AnimationBase;
 public class Anm_water1 extends AnimationBase {
 
     // CONSTRUCTOR
-    public Anm_water1(int speed) {
-        super(speed);
+    public Anm_water1(double counterMax) {
+        super(counterMax);
     }
 
 
@@ -17,30 +17,26 @@ public class Anm_water1 extends AnimationBase {
     @Override
     public int getSprite() {
 
-        int control1 = 7;
-        int control2 = 12;
-
-        if (counter < (control1 * control2)) {
-            return 0;
-
-        } else if (counter < (control1 * (control2 + 1))) {
-            return 1;
-
-        } else if (counter < (control1 * (control2 + 2))) {
-            return 2;
-
-        } else if (counter <  (control1 * ((control2 * 2) + 2))) {
+        if (counter <= 2.0) {
             return 3;
 
-        } else if (counter <  (control1 * ((control2 * 2) + 3))) {
+        } else if (counter <= 2.075) {
             return 2;
 
-        } else if (counter <  (control1 * ((control2 * 2) + 4))) {
+        } else if (counter <= 2.15) {
             return 1;
 
-        } else {
-            counter = 0;
+        } else if (counter <=  2.5) {
             return 0;
+
+        } else if (counter <=  2.575) {
+            return 1;
+
+        } else if (counter <=  2.65) {
+            return 2;
+
+        } else {
+            return 3;                                                                                                   // Default return sprite.
         }
     }
 }

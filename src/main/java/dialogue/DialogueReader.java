@@ -29,41 +29,43 @@ public class DialogueReader {
     private boolean readingConversation = false;
 
     /**
-     * Default number of frames between each character of dialogue that prints on screen.
+     * Default number of seconds between each character of dialogue that prints on screen.
      */
-    private final int defaultPrintCountdown = 1;
+    private final double defaultPrintCountdown = 0.016;
 
     /**
-     * Number of frames between each character of dialogue that prints on screen.
+     * Number of seconds between each character of dialogue that prints on screen.
      * In other words, this variable controls the speed at which dialogue is read.
      * The value of this variable will be set to `printCountdown` whenever a pause between characters is needed.
      * This variable can be modified if a certain piece of dialogue is desired to be read slower or faster than normal.
      */
-    private int stagedPrintCountdown = defaultPrintCountdown;
+    private double stagedPrintCountdown = defaultPrintCountdown;
 
     /**
-     * Number of frames that must pass before the player can proceed after a piece of dialogue has been read.
+     * Number of seconds that must pass before the player can proceed after a piece of dialogue has been read.
      * The value of this variable will be set to `progressionCountdown` whenever a pause in player progression is
      * needed.
      */
-    private final int stagedProgressionCountdown = 5;
+    private final double stagedProgressionCountdown = 0.083;
 
     /**
-     * Variable to store the number of frames that must pass before the next character in a piece of dialogue can be
+     * Variable to store the number of seconds that must pass before the next character in a piece of dialogue can be
      * printed to the screen.
-     * On each frame where `progressDialogue()` is called, this variable is decremented by one if greater than zero.
+     * On each frame where `progressDialogue()` is called, this variable is decremented by the frame time if greater
+     * than zero.
      * It's used with `stagedPrintCountdown` to control the speed at which dialogue is read.
      * For example if this has a value of zero, then a new character will print every frame.
-     * If this has a value of one, then a new character will print every other frame.
+     * If this has a value of one, then a new character will print every other second.
      */
-    private int printCountdown = 0;
+    private double printCountdown = 0;
 
     /**
-     * Variable to store the number of frames that must pass before the player can proceed after a piece of dialogue has
+     * Variable to store the number of seconds that must pass before the player can proceed after a piece of dialogue has
      * been read.
-     * On each frame where `progressDialogue()` is called, this variable is decremented by one if greater than zero.
+     * On each frame where `progressDialogue()` is called, this variable is decremented by the frame time if greater
+     * than zero.
      */
-    private int progressionCountdown = 0;
+    private double progressionCountdown = 0;
 
     /**
      * Variable to track which line of the dialogue window text is currently being printed on.
@@ -124,14 +126,16 @@ public class DialogueReader {
     // METHODS
     /**
      * Updates dialogue reading by one frame.
+     *
+     * @param dt time since last frame (seconds)
      */
-    public void update() {
+    public void update(double dt) {
 
         if (currentConv != null) {
 
             if (readingConversation) {
 
-                progressDialogue();                                                                                     // Progress the current piece of dialogue that's being read.
+                progressDialogue(dt);                                                                                   // Progress the current piece of dialogue that's being read.
             } else {
 
                 if ((!currentConv.isPlayerInputToEnd()) && (gp.getGameState() == GameState.DIALOGUE)) {                 // Only trigger this when the game state is set to dialogue; it prevents this from triggering repeatedly if the conversation is not set to null after the first time.
@@ -285,7 +289,7 @@ public class DialogueReader {
             if (dialoguePaused) {
 
                 readingDialogue = true;                                                                                 // Resume reading the rest of the currently staged piece of dialogue.
-                stagedPrintCountdown = defaultPrintCountdown;                                                           // Reset to the default number of frames passed between each printed character.
+                stagedPrintCountdown = defaultPrintCountdown;                                                           // Reset to the default number of seconds passed between each printed character.
             } else {
 
                 stageDialogue(currentConv.getDialogueList().get(nextDialogueIndex));                                    // Stage the next piece of dialogue in the conversation to be read.
@@ -298,8 +302,10 @@ public class DialogueReader {
     /**
      * Stages text characters from the staged piece of dialogue to be drawn by the UI class.
      * Characters are added one at a time to give a letter-by-letter printing effect.
+     *
+     * @param dt time since last frame (seconds)
      */
-    public void progressDialogue() {
+    public void progressDialogue(double dt) {
 
         if (readingDialogue) {
 
@@ -310,39 +316,41 @@ public class DialogueReader {
                 dialoguePaused = false;                                                                                 // Resume reading the rest of the current piece of dialogue as normal now that the lines have been moved up (i.e., exit paused state).
             }
 
+            if (printCountdown > 0) {
+
+                printCountdown -= dt;                                                                                   // Decrease character print countdown by frame time each time a new frame is drawn.
+            }
+
             if (progressionCountdown > 0) {
 
-                progressionCountdown--;                                                                                 // Decrease frame countdown by one each time a new frame is drawn.
+                progressionCountdown -= dt;                                                                             // Decrease progression countdown by frame time each time a new frame is drawn.
             } else {
 
-                if (printCountdown <= 0) {
+                while ((printCountdown <= 0) && (progressionCountdown <= 0)) {
 
                     int i = dialoguePrintTotal.length();                                                                // Fetch the index of the next character to be printed.
-
                     i = checkNextCharacter(i);
 
-                    if (readingDialogue) {
+                    if (printLine == 1) {
 
-                        if (printLine == 1) {
+                        dialoguePrint1 += dialogueText.charAt(i);                                                       // Add the next dialogue character to be printed (line 1).
+                    } else {
 
-                            dialoguePrint1 += dialogueText.charAt(i);                                                   // Add the next dialogue character to be printed (line 1).
-                        } else {
+                        dialoguePrint2 += dialogueText.charAt(i);                                                       // Add the next dialogue character to be printed (line 2).
+                    }
 
-                            dialoguePrint2 += dialogueText.charAt(i);                                                   // Add the next dialogue character to be printed (line 2).
-                        }
+                    dialoguePrintTotal += dialogueText.charAt(i);
+                    printCountdown += stagedPrintCountdown;                                                             // Iterate `printCounter` to wait a number of seconds until the next character is printed; if negative after iteration, the next character must immediately be printed.
 
-                        dialoguePrintTotal += dialogueText.charAt(i);
-                        printCountdown = stagedPrintCountdown;                                                          // Set to wait a number of frames specified by `stagedPrintCountdown` until the next character is printed.
+                    if (dialoguePrintTotal.length() == dialogueText.length()) {
 
-                        if (dialoguePrintTotal.length() == dialogueText.length()) {
-
-                            progressionCountdown = stagedProgressionCountdown;                                          // Force the player to wait a number of frames determined by `stagedProgressionCountdown` before progressing (prevents accidental skipping of dialogue).
-                        }
+                        progressionCountdown = stagedProgressionCountdown;                                              // Force the player to wait a number of seconds determined by `stagedProgressionCountdown` before progressing (prevents accidental skipping of dialogue).
+                        printCountdown = stagedPrintCountdown;                                                          // Reset character print countdown for the next batch to be printed out.
                     }
                 }
             }
 
-            if ((dialoguePrintTotal.length() == dialogueText.length()) && (progressionCountdown == 0)) {                // All dialogue must be printed to the screen and there must be no buffer frames remaining.
+            if ((dialoguePrintTotal.length() == dialogueText.length()) && (progressionCountdown <= 0)) {                // All dialogue must be printed to the screen and there must be no time buffer on progression.
 
                 readingDialogue = false;
                 gp.getDialogueA().reset();                                                                              // Reset the dialogue arrow to its default state (i.e., default position).
@@ -351,11 +359,6 @@ public class DialogueReader {
 
                     readingConversation = false;                                                                        // All dialogue in the conversation has finished being read.
                 }
-            }
-
-            if (printCountdown > 0) {
-
-                printCountdown--;                                                                                       // Decrease frame countdown by one each time a new frame is drawn.
             }
         }
     }
@@ -525,5 +528,11 @@ public class DialogueReader {
 
     public boolean isAlwaysShowArrow() {
         return alwaysShowArrow;
+    }
+
+
+    // SETTERS
+    public void setStagedPrintCountdown(double stagedPrintCountdown) {
+        this.stagedPrintCountdown = stagedPrintCountdown;
     }
 }

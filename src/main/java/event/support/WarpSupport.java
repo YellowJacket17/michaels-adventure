@@ -112,6 +112,7 @@ public class WarpSupport {
      * The warp is dressed with a fade-to-black transition.
      * The game state is set to transition.
      *
+     * @param dt time since last frame (seconds)
      * @param mapId ID of the map that the player entity will be warped to
      * @param col column that the player entity will be warped to
      * @param row row that the player entity will be warped to
@@ -119,12 +120,10 @@ public class WarpSupport {
      * @param loadDirection direction that the player entity will be facing once the transition completes
      * @param trackIndex music track index in the `musicURL` array in the Sound class; input -1 if no music swap is desired
      */
-    public void initiateWarp(int mapId, int col, int row, WarpTransitionType type,
+    public void initiateWarp(double dt, int mapId, int col, int row, WarpTransitionType type,
                              EntityDirection loadDirection, int trackIndex) {
 
-        gp.setGameState(GameState.TRANSITION);                                                                          // Set the game to a transition state.
-        gp.setActiveTransitionType(TransitionType.WARP);                                                                // Set the overarching transition type as warp (different from WarpTransitionType).
-        gp.setActiveTransitionPhase(TransitionPhase.FADING_TO);                                                         // Set the first phase of the transition (fade out to black); this will actually trigger the transition (fade-to-black effect) when the game state is in a transition state.
+        gp.initiateTransition(TransitionType.WARP);
         activeWarpTransitionType = type;                                                                                // Set the warp current transition type being used.
 
         stagedMapId = mapId;                                                                                            // Store the requested map.
@@ -144,7 +143,7 @@ public class WarpSupport {
                 gp.getPlayer().cancelAction();                                                                          // Cancel the player action that triggered the transition (for example, walking into a trigger tile).
                 break;
             case STEP_PORTAL:
-                gp.getPlayer().updateWarpTransitionStepPortal();                                                        // Initiate the first phase of this transition type for the player entity.
+                gp.getPlayer().updateWarpTransitionStepPortal(dt);                                                      // Initiate the first phase of this transition type for the player entity.
                 gp.getPlayer().setDirectionCandidate(loadDirection);                                                    // Set the direction that the player entity will be facing when loaded into the new map.
                 break;
         }
@@ -153,8 +152,10 @@ public class WarpSupport {
 
     /**
      * Performs any loading that needs to be done once the screen fades to black during a warp transition.
+     *
+     * @param dt time since last frame (seconds)
      */
-    public void handleWarpTransitionLoading() {
+    public void handleWarpTransitionLoading(double dt) {
 
         initiateWarp(stagedMapId, stagedCol, stagedRow);
 
@@ -163,7 +164,7 @@ public class WarpSupport {
                 // Nothing here.
                 break;
             case STEP_PORTAL:
-                gp.getPlayer().updateWarpTransitionStepPortal();                                                        // Initiate the second phase of this transition type for the player entity.
+                gp.getPlayer().updateWarpTransitionStepPortal(dt);                                                      // Initiate the second phase of this transition type for the player entity.
                 break;
         }
 

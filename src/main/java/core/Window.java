@@ -1,13 +1,18 @@
 package core;
 
+import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWImage;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWWindowPosCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import utility.UtilityTool;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.HashMap;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -34,9 +39,14 @@ public class Window {
     private GamePanel gp;
 
     /**
-     * Maximum permitted frame rate.
+     * Refresh rate of monitor (Hz).
      */
-    private int frameRateCap = 60;
+    private int monitorRefreshRate;
+
+    /**
+     * Target frame rate (FPS).
+     */
+    private int targetFrameRate = 60;
 
     /**
      * Boolean indicating whether the main game loop is running (true) or not (false).
@@ -46,14 +56,14 @@ public class Window {
 
     // WINDOW PROPERTIES
     /**
-     * Window width.
+     * Default window width (pixels).
      */
-    private int width = 1280;
+    private int defaultWidth = 1280;
 
     /**
-     * Window height.
+     * Default window height (pixels).
      */
-    private int height = 720;
+    private int defaultHeight = 720;
 
     /**
      * Window title.
@@ -103,9 +113,10 @@ public class Window {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);                                                                       // Hide window during setup process.
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);                                                                      // Enable window resizing.
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);                                                                     // Initialize window in non-maximized position.
+        glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);                                                                  // Disable double buffering (not using VSync).
 
         // Create window.
-        glfwWindow = glfwCreateWindow(width, height, title, NULL, NULL);
+        glfwWindow = glfwCreateWindow(defaultWidth, defaultHeight, title, NULL, NULL);
         if (glfwWindow == NULL) {
             throw new IllegalStateException("Failed to initialize GLFW window");
         }
@@ -121,12 +132,22 @@ public class Window {
                 resizeWindow(width, height);
             }
         });
+        glfwSetWindowPosCallback(glfwWindow, new GLFWWindowPosCallback() {
+            @Override
+            public void invoke(long window, int x, int y) {
+                repositionWindow(x, y);
+            }
+        });
+
+        // Obtain monitor refresh rate.
+        monitorRefreshRate = getRefreshRate();
+        targetFrameRate = monitorRefreshRate;
 
         // Make OpenGL context current.
         glfwMakeContextCurrent(glfwWindow);
 
-        // Enable v-sync.
-        glfwSwapInterval(1);                                                                                            // Lock frames per second to interval rate (frame rate) of physical display.
+        // Set swap interval (no VSync).
+        glfwSwapInterval(0);
 
         // Make window visible.
         glfwShowWindow(glfwWindow);
@@ -159,10 +180,12 @@ public class Window {
 
         // Initialize variables for tracking time.
         // Note that `glfwGetTime()` returns time (seconds) elapsed since GLFW was initialized.
-        double endLoopTime = glfwGetTime();                                                                             // Time at the end of a complete loop (used for limiting frame rate).
-        double startFrameTime = glfwGetTime();                                                                          // Time at the start of a frame.
-        double endFrameTime = 0;                                                                                        // Time at the end of a frame.
-        double dt = 0;                                                                                                  // Time between each rendered frame (frame pacing).
+        double currentTime = 0;                                                                                         // Time at the start of the current loop.
+        double lastFrameTime = glfwGetTime();                                                                           // Time at the start of the last frame.
+        double lastLoopTime = glfwGetTime();                                                                            // Time at the start of the last loop.
+        double dtTarget = 1.0 / targetFrameRate;                                                                        // Target time between each rendered frame (frame timing).
+        double dtActual = 0;                                                                                            // Actual time between each rendered frame (frame timing).
+        double dtAccumulated = 0;                                                                                       // Accumulated loop time.
 
         // Indicate that the main game loop is starting.
         running = true;
@@ -170,27 +193,32 @@ public class Window {
         // Main game loop.
         while (!glfwWindowShouldClose(glfwWindow) && running) {
 
-            // Prepare the frame.
-            glClearColor(r, g, b, a);                                                                                   // Set window clear color.
-            glClear(GL_COLOR_BUFFER_BIT);                                                                               // Tell OpenGL how to clear the buffer.
+            currentTime = glfwGetTime();
+            dtAccumulated += currentTime - lastLoopTime;
+            lastLoopTime = currentTime;
 
-            // Poll, update, and render.
-            glfwPollEvents();                                                                                           // Poll user input (keyboard, gamepad, etc.).
-            gp.update(dt);                                                                                              // Update all game logic by one frame.
-            gp.render(dt);                                                                                              // Render the updated frame.
+            if (dtAccumulated >= dtTarget) {
 
-            // Swap front and back window buffers.
-            glfwSwapBuffers(glfwWindow);
+                // Calculate frame pacing.
+                dtActual = currentTime - lastFrameTime;
+                lastFrameTime = currentTime;                                                                            // Store time this frame started at for use by the next frame.
+                dtTarget = 1.0 / targetFrameRate;                                                                       // In case target frame rate has changed.
 
-            // Iterate frame time.
-            endFrameTime = glfwGetTime();                                                                               // Time at the end of this frame.
-            dt = endFrameTime - startFrameTime;                                                                         // Amount of time lapsed to render the previous frame.
-            startFrameTime = endFrameTime;                                                                              // Time at the start of the next frame.
+                // Prepare the frame.
+                glClearColor(r, g, b, a);                                                                               // Set window clear color.
+                glClear(GL_COLOR_BUFFER_BIT);                                                                           // Tell OpenGL how to clear the buffer.
 
-            // Iterate loop time + limit frame rate if needed.
-            while (glfwGetTime() < (endLoopTime + (1.0 / frameRateCap))) {}                                             // Wait if frame rate cap is lower than refresh rate from v-sync.
-            endLoopTime += 1.0 / frameRateCap;                                                                          // Time at the end of this loop.
-//            System.out.println(1.0 / dt + " FPS");
+                // Poll, update, and render.
+                glfwPollEvents();                                                                                       // Poll user input (keyboard, gamepad, etc.).
+                gp.update(dtTarget);                                                                                    // Update all game logic by one frame.
+                gp.render(dtActual);                                                                                    // Render the updated frame.
+
+                // Empty buffers.
+                glFlush();
+
+                // Iterate frame time.
+                dtAccumulated -= dtActual;
+            }
         }
 
         // Free memory.
@@ -219,10 +247,22 @@ public class Window {
      */
     private void resizeWindow(int width, int height) {
 
-        this.width = width;
-        this.height = height;
         glfwSetWindowSize(glfwWindow, width, height);
         glViewport(0, 0, width, height);
+        monitorRefreshRate = getRefreshRate();
+    }
+
+
+    /**
+     * Repositions the window.
+     *
+     * @param x new x (monitor screen coordinates)
+     * @param y new y (monitor screen coordinates)
+     */
+    private void repositionWindow(int x, int y) {
+
+        glfwSetWindowPos(glfwWindow, x, y);
+        monitorRefreshRate = getRefreshRate();
     }
 
 
@@ -251,5 +291,87 @@ public class Window {
 
             stbi_image_free(pixels);
         }
+    }
+
+
+    /**
+     * Retrieves the refresh rate of the monitor that the majority of this window occupies.
+     *
+     * @return refresh rate (Hz)
+     */
+    private int getRefreshRate() {
+
+        long monitor = getClosestMonitor();
+        GLFWVidMode videoModeMonitor = glfwGetVideoMode(monitor);
+        return videoModeMonitor.refreshRate();
+    }
+
+
+    /**
+     * Retrieves the monitor that the majority of this window occupies.
+     *
+     * @return monitor handle
+     */
+    private long getClosestMonitor() {
+
+        // Window position (top-left corner).
+        IntBuffer bufferWindowPosTopLeftX = BufferUtils.createIntBuffer(1);
+        IntBuffer bufferWindowPosTopLeftY = BufferUtils.createIntBuffer(1);
+        glfwGetWindowPos(glfwWindow, bufferWindowPosTopLeftX, bufferWindowPosTopLeftY);
+        Vector2i windowPosTopLeft = new Vector2i(bufferWindowPosTopLeftX.get(0), bufferWindowPosTopLeftY.get(0));
+
+        // Window dimensions.
+        // TODO : Perhaps just use the dimensions already recorded as global variables.
+        IntBuffer bufferWindowWidth = BufferUtils.createIntBuffer(1);
+        IntBuffer bufferWindowHeight = BufferUtils.createIntBuffer(1);
+        glfwGetWindowSize(glfwWindow, bufferWindowWidth, bufferWindowHeight);
+        Vector2i windowScale = new Vector2i(bufferWindowWidth.get(0), bufferWindowHeight.get(0));
+
+        // Window position (bottom-right corner).
+        Vector2i windowPosBottomRight = new Vector2i(windowPosTopLeft.x + windowScale.x, windowPosTopLeft.y + windowScale.y);
+
+        // Retrieve handles of all connected monitors.
+        PointerBuffer monitors = glfwGetMonitors();
+        HashMap<Long, Integer> monitorOverlappingArea = new HashMap<>();
+
+        // Calculate monitor-window overlapping area for each monitor.
+        for (int i = 0; i < monitors.capacity(); i++) {
+
+            long monitor = monitors.get(i);
+
+            // Monitor position (top-left corner).
+            IntBuffer bufferMonitorPosTopLeftX = BufferUtils.createIntBuffer(1);
+            IntBuffer bufferMonitorPosTopLeftY = BufferUtils.createIntBuffer(1);
+            glfwGetMonitorPos(monitor, bufferMonitorPosTopLeftX, bufferMonitorPosTopLeftY);
+            Vector2i monitorPosTopLeft = new Vector2i(bufferMonitorPosTopLeftX.get(0), bufferMonitorPosTopLeftY.get(0));
+
+            // Monitor video dimensions.
+            GLFWVidMode videoModeMonitor = glfwGetVideoMode(monitor);
+            Vector2i monitorScale = new Vector2i(videoModeMonitor.width(), videoModeMonitor.height());
+
+            // Monitor position (bottom-right corner).
+            Vector2i monitorPosBottomRight = new Vector2i(monitorPosTopLeft.x + monitorScale.x, monitorPosTopLeft.y + monitorScale.y);
+
+            // Calculate monitor-window overlapping area.
+            int overlapWidth = Math.min(monitorPosBottomRight.x, windowPosBottomRight.x) - Math.max(monitorPosTopLeft.x, windowPosTopLeft.x);
+            int overlapHeight = Math.min(monitorPosBottomRight.y, windowPosBottomRight.y) - Math.max(monitorPosTopLeft.y, windowPosTopLeft.y);
+            if ((overlapWidth < 0) || (overlapHeight < 0)) {
+                monitorOverlappingArea.put(monitor, 0);
+            } else {
+                // TODO : Perhaps do an immediate return here if the overlapping area equals the window area.
+                monitorOverlappingArea.put(monitor, overlapWidth * overlapHeight);
+            }
+        }
+
+        // Return monitor with largest monitor-window overlapping area.
+        long closestMonitor = 0;
+        long largestOverlappingArea = -1;
+        for (long monitor : monitorOverlappingArea.keySet()) {
+            if (monitorOverlappingArea.get(monitor) > largestOverlappingArea) {
+                closestMonitor = monitor;
+                largestOverlappingArea = monitorOverlappingArea.get(monitor);
+            }
+        }
+        return closestMonitor;
     }
 }

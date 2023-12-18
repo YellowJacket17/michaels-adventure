@@ -20,14 +20,14 @@ public class Evt_Map000 extends EventMapBase {
 
     // METHODS
     @Override
-    public boolean objInteraction(EventType type, EntityBase target) {
+    public boolean objInteraction(double dt, EventType type, EntityBase target) {
 
         return false;
     }
 
 
     @Override
-    public boolean npcInteraction(EventType type, EntityBase target) {
+    public boolean npcInteraction(double dt, EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
             case 5:
@@ -43,7 +43,7 @@ public class Evt_Map000 extends EventMapBase {
 
 
     @Override
-    public boolean partyInteraction(EventType type, EntityBase target) {
+    public boolean partyInteraction(double dt, EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
             case 5:
@@ -61,11 +61,11 @@ public class Evt_Map000 extends EventMapBase {
 
 
     @Override
-    public boolean tileInteraction(EventType type, int col, int row, EntityDirection direction) {
+    public boolean tileInteraction(double dt, EventType type, int col, int row, EntityDirection direction) {
 
         // Warp to map 1.
         if ((type == EventType.STEP) && ((col == 1) || (col == 2)) && (row == 0) && (direction == EntityDirection.UP)) {
-            gp.getWarpS().initiateWarp(1, 25, 25, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, 0);
+            gp.getWarpS().initiateWarp(dt, 1, 25, 25, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, 0);
             gp.playSE(0);
             return true;
         }

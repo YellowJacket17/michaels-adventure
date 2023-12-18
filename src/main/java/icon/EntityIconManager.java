@@ -51,6 +51,32 @@ public class EntityIconManager {
 
     // METHODS
     /**
+     * Updates the state of all entity icons by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    public void update(double dt) {
+
+        EntityIcon entityIcon;
+
+        for (int key : entityIcons.keySet()) {
+
+            entityIcon = entityIcons.get(key);
+
+            if (entityIcon.isSelected()) {
+
+                entityIcon.iterateCounter(dt);
+
+                while (entityIcon.getCounter() > entityIcon.getCounterMax()) {
+
+                    entityIcon.rollbackCounter();
+                }
+            }
+        }
+    }
+
+
+    /**
      * Adds an entity icon to the render pipeline.
      *
      * @param renderer Renderer instance
@@ -183,7 +209,7 @@ public class EntityIconManager {
     public void purgeAllEntityIcons() {
 
         entityIcons.clear();
-        renderErrors.clear();                                                                                             // Reset draw errors since the list of entity icons was reset.
+        renderErrors.clear();                                                                                           // Reset draw errors since the list of entity icons was reset.
     }
 
 
@@ -195,28 +221,20 @@ public class EntityIconManager {
      */
     private Sprite selectEntitySprite(EntityIcon entityIcon) {
 
-        int animationCounter = entityIcon.getAnimationCounter();
-        Sprite sprite;
+        if (entityIcon.getCounter() <= 0.2) {
+            return entityIcon.getDown1();
 
-        if (animationCounter <= 12) {
+        } else if (entityIcon.getCounter() <= 0.4) {
+            return entityIcon.getDown2();
 
-            sprite = entityIcon.getDown2();
-        } else if ((animationCounter > 24) && (animationCounter <= 36)) {
+        } else if (entityIcon.getCounter() <= 0.6) {
+            return entityIcon.getDown1();
 
-            sprite = entityIcon.getDown3();
+        } else if (entityIcon.getCounter() <= 0.8) {
+            return entityIcon.getDown3();
+
         } else {
-
-            sprite = entityIcon.getDown1();
+            return entityIcon.getDown1();                                                                               // Default return sprite.
         }
-        animationCounter++;
-
-        if (animationCounter >= 48) {
-
-            entityIcon.setAnimationCounter(0);
-        } else {
-
-            entityIcon.setAnimationCounter(animationCounter);
-        }
-        return sprite;
     }
 }

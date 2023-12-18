@@ -142,9 +142,7 @@ public class CombatManager {
 
             // Set the game state.
             gp.setCombatActive(true);                                                                                   // Set combat mode as active.
-            gp.setGameState(GameState.TRANSITION);                                                                      // Set the game to a transition state.
-            gp.setActiveTransitionType(TransitionType.ENTER_COMBAT);                                                    // Set the overarching transition type as enter combat (different from EnterCombatTransitionType).
-            gp.setActiveTransitionPhase(TransitionPhase.FADING_TO);                                                     // Set the first phase of the transition (fade out to black); this will actually trigger the transition (fade-to-black effect) when the game state is in a transition state.
+            gp.initiateTransition(TransitionType.ENTER_COMBAT);
             activeEnterCombatTransitionType = type;                                                                     // Set the current enter combat transition type being used.
 
             // Set the center tile (column/row) of the combat field.
@@ -183,9 +181,7 @@ public class CombatManager {
      */
     public void exitCombat(ExitCombatTransitionType type) {
 
-        gp.setGameState(GameState.TRANSITION);                                                                          // Set the game to a transition state.
-        gp.setActiveTransitionType(TransitionType.EXIT_COMBAT);                                                         // Set the overarching transition type as enter combat (different from ExitCombatTransitionType).
-        gp.setActiveTransitionPhase(TransitionPhase.FADING_TO);                                                         // Set the first phase of the transition (fade out to black); this will actually trigger the transition (fade-to-black effect) when the game state is in a transition state.
+        gp.initiateTransition(TransitionType.EXIT_COMBAT);
         activeExitCombatTransitionType = type;                                                                          // Set the current exit combat transition type being used.
     }
 

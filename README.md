@@ -45,10 +45,5 @@ The application will run with them missing, but some warnings and errors will be
 In the `src/main/resources/sound/tracks/` directory, the application expects files named `testTrack2.wav`, `testTrack3.wav`, and `testTrack4.wav`.
 In the `src/main/resources/sound/effects/` directory, the application expects a file named `testEffect1.wav`.
 
-## Development Plan
-I'm currently reworking the render to use OpenGL via LWJGL (Lightweight Java Game Library).
-This also includes font render.
-The `shaders` and `font-render` repositories contains code that will be integrated with this application once complete.
-
 ## Notes ##
 Special thanks to RhiSnow and his YouTube series on Java game development, which provided essential foundations for getting this project off the ground.

@@ -18,10 +18,10 @@ public class SelectionArrow extends Drawable {
     GamePanel gp;
 
     /**
-     * Boolean tracking whether a draw error has occurred. If true, this prevents a draw error from repeatedly being
+     * Boolean tracking whether a render error has occurred. If true, this prevents a render error from repeatedly being
      * printed to the console.
      */
-    private boolean drawError = false;
+    private boolean renderError = false;
 
 
     // CONSTRUCTOR
@@ -55,10 +55,10 @@ public class SelectionArrow extends Drawable {
             this.transform.position.x = worldCoords.x;
             this.transform.position.y = worldCoords.y;
             renderer.addDrawable(this, ZIndex.SECOND_LAYER);
-        } else if (!drawError) {
+        } else if (!renderError) {
 
             UtilityTool.logError("Failed to add selection arrow to the render pipeline: sprite may not have been properly loaded upon initialization.");
-            drawError = true;
+            renderError = true;
         }
     }
 }

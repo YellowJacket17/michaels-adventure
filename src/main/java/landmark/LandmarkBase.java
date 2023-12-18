@@ -71,7 +71,7 @@ public abstract class LandmarkBase extends Drawable {
      * Landmark's world position.
      * This is the coordinate of the bottom-leftmost tile occupied by this landmark.
      */
-    protected int worldX, worldY;
+    protected float worldX, worldY;
 
     /**
      * List of landmark sprites.
@@ -169,20 +169,20 @@ public abstract class LandmarkBase extends Drawable {
         return name;
     }
 
-    public int getWorldX() {
+    public float getWorldX() {
         return worldX;
     }
 
-    public int getWorldY() {
+    public float getWorldY() {
         return worldY;
     }
 
     public int getCol() {
-        return worldX / gp.getNativeTileSize();
+        return (int)(worldX / gp.getNativeTileSize());
     }
 
     public int getRow() {
-        return worldY / gp.getNativeTileSize();
+        return (int)(worldY / gp.getNativeTileSize());
     }
 
     public ArrayList<Sprite> getSprites() {

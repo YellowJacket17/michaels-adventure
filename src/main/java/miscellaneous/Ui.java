@@ -21,12 +21,6 @@ public class Ui {
     private Renderer renderer;
 
     /**
-     * Counter to control the fade to/from effect of a transition screen.
-     */
-    private int transitionFrameCounter;
-
-
-    /**
      * Variable to store current selected party member in the party menu.
      * The default value is zero (first slot).
      */
@@ -94,7 +88,7 @@ public class Ui {
      * Adds all UI elements to the render pipeline.
      *
      * @param renderer Renderer instance
-     * @param dt time since the last rendered frame (frame pacing)
+     * @param dt time since last frame (seconds)
      */
     public void addToRenderPipeline(Renderer renderer, double dt) {
 
@@ -613,37 +607,25 @@ public class Ui {
         Vector2f worldCoords = new Vector2f(0, 0);
         float worldWidth = gp.getMaxWorldCol() * gp.getNativeTileSize();                                                // Overlaid black rectangle will span entire width of world.
         float worldHeight = gp.getMaxWorldRow() * gp.getNativeTileSize();                                               // Overlaid black rectangle will span entire height of world.
+        float alpha = 0;
 
         switch (gp.getActiveTransitionPhase()) {
             case FADING_TO:                                                                                             // Phase 1: Fade screen to black.
-                transitionFrameCounter++;
-                renderer.addRectangle(new Vector4f(0, 0, 0, transitionFrameCounter * 10),
+                alpha = (float)(gp.getTransitionCounter() / gp.getTransitionCounterFadingToMax()) * 255;
+                renderer.addRectangle(new Vector4f(0, 0, 0, alpha),
                         new Transform(new Vector2f(0, 0), new Vector2f(worldWidth, worldHeight)),
                         ZIndex.FIRST_LAYER);
-                if (transitionFrameCounter == 25) {
-                    transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to prepare it for the second phase.
-                    gp.setActiveTransitionPhase(TransitionPhase.LOADING);                                               // Proceed to the next (second) phase of the transition.
-                }
                 break;
             case LOADING:                                                                                               // Phase 2: Wait on black screen.
-                transitionFrameCounter++;
                 renderer.addRectangle(new Vector4f(0, 0, 0, 255),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
                         ZIndex.FIRST_LAYER);
-                if (transitionFrameCounter == 30) {                                                                     // At 60 FPS, this will amount to waiting on the black screen for 0.5 seconds.
-                    transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to prepare it for the final (third) phase.
-                    gp.setActiveTransitionPhase(TransitionPhase.FADING_FROM);                                           // Proceed to the final (third) phase of the transition.
-                }
                 break;
             case FADING_FROM:                                                                                           // Phase 3: Fade from black.
-                transitionFrameCounter++;
-                renderer.addRectangle(new Vector4f(0, 0, 0, (250 - (transitionFrameCounter * 10))),
+                alpha = 255 - ((float)(gp.getTransitionCounter() / gp.getTransitionCounterFadingToMax()) * 255);
+                renderer.addRectangle(new Vector4f(0, 0, 0, alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
                         ZIndex.FIRST_LAYER);
-                if (transitionFrameCounter == 25) {
-                    transitionFrameCounter = 0;                                                                         // Reset `transitionFrameCounter` to its default value since the transition is complete.
-                    gp.setActiveTransitionPhase(TransitionPhase.CLEANUP);
-                }
                 break;
         }
     }
@@ -710,45 +692,9 @@ public class Ui {
 
 
     /**
-     * Updates which party member is selected in the party menu screen.
-     */
-    private void updateSelectedPartyMember() {
-
-        Set<Integer> keySet = gp.getParty().keySet();
-        Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
-
-        switch (partySlotSelected) {
-            case 0:
-                selectPartySlot0(true);                                                                                 // Set slot 0 (player entity) to selected.
-                selectPartySlot1(false);                                                                                // Set slot 1 to not selected.
-                selectPartySlot2(false);                                                                                // Set slot 2 to not selected.
-                break;
-            case 1:
-                if ((gp.getParty().size() > 0) && (gp.getParty().get(keyArray[0]) != null)) {                           // Check whether a party member actually occupies this slot or not.
-                    selectPartySlot0(false);                                                                            // Set slot 0 (player entity) to not selected.
-                    selectPartySlot1(true);                                                                             // Set slot 1 to selected.
-                    selectPartySlot2(false);                                                                            // Set slot 2 to not selected.
-                } else {
-                    setPartySlotSelected(partySlotSelected - 1);                                                        // No party member exists in this slot, so move up to the slot above.
-                }
-                break;
-            case 2:
-                if ((gp.getParty().size() > 1) && (gp.getParty().get(keyArray[1]) != null)) {                           // Check whether a part member actually occupies this slot or not.
-                    selectPartySlot0(false);                                                                            // Set slot 0 (player entity) to not selected.
-                    selectPartySlot1(false);                                                                            // Set slot 1 to not selected.
-                    selectPartySlot2(true);                                                                             // Set slot 2 to selected.
-                } else {
-                    setPartySlotSelected(partySlotSelected - 1);                                                        // No party member exists in this slot, so move up to the slot above.
-                }
-                break;
-        }
-    }
-
-
-    /**
      * Draws debug information.
      *
-     * @param dt time since the last rendered frame (frame pacing)
+     * @param dt time since last frame (seconds)
      */
     private void renderDebug(double dt) {
 
@@ -893,6 +839,42 @@ public class Ui {
 
 
     /**
+     * Updates which party member is selected in the party menu screen.
+     */
+    private void setSelectedPartyMember() {
+
+        Set<Integer> keySet = gp.getParty().keySet();
+        Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
+
+        switch (partySlotSelected) {
+            case 0:
+                selectPartySlot0(true);                                                                                 // Set slot 0 (player entity) to selected.
+                selectPartySlot1(false);                                                                                // Set slot 1 to not selected.
+                selectPartySlot2(false);                                                                                // Set slot 2 to not selected.
+                break;
+            case 1:
+                if ((gp.getParty().size() > 0) && (gp.getParty().get(keyArray[0]) != null)) {                           // Check whether a party member actually occupies this slot or not.
+                    selectPartySlot0(false);                                                                            // Set slot 0 (player entity) to not selected.
+                    selectPartySlot1(true);                                                                             // Set slot 1 to selected.
+                    selectPartySlot2(false);                                                                            // Set slot 2 to not selected.
+                } else {
+                    setPartySlotSelected(partySlotSelected - 1);                                                        // No party member exists in this slot, so move up to the slot above.
+                }
+                break;
+            case 2:
+                if ((gp.getParty().size() > 1) && (gp.getParty().get(keyArray[1]) != null)) {                           // Check whether a part member actually occupies this slot or not.
+                    selectPartySlot0(false);                                                                            // Set slot 0 (player entity) to not selected.
+                    selectPartySlot1(false);                                                                            // Set slot 1 to not selected.
+                    selectPartySlot2(true);                                                                             // Set slot 2 to selected.
+                } else {
+                    setPartySlotSelected(partySlotSelected - 1);                                                        // No party member exists in this slot, so move up to the slot above.
+                }
+                break;
+        }
+    }
+
+
+    /**
      * Sets whether slot 0 (player) in the party menu is selected or not.
      *
      * @param selected whether slot 0 is selected (true) or not (false)
@@ -979,7 +961,7 @@ public class Ui {
         } else {
             this.partySlotSelected = partySlotSelected;
         }
-        updateSelectedPartyMember();
+        setSelectedPartyMember();
     }
 
     public void setItemRowSelected(int itemRowSelected) {

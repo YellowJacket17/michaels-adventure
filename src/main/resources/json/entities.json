@@ -41,7 +41,7 @@
         "defaultAction": "randomSteps",
         "attributes": {
             "name": "Test NPC 1",
-            "speed": 2,
+            "speed": 120,
             "maxLife": 1,
             "life": 1,
             "maxSkillPoints": 20,
@@ -71,7 +71,7 @@
         "defaultAction": "randomSteps",
         "attributes": {
             "name": "Test NPC 2",
-            "speed": 2,
+            "speed": 120,
             "maxLife": 25,
             "life": 12,
             "maxSkillPoints": 12,
@@ -101,7 +101,7 @@
         "defaultAction": "randomSteps",
         "attributes": {
             "name": "Test NPC 3",
-            "speed": 2,
+            "speed": 120,
             "maxLife": 17,
             "life": 1,
             "maxSkillPoints": 3,
@@ -131,7 +131,7 @@
         "defaultAction": "randomTurns",
         "attributes": {
             "name": "Test NPC 4",
-            "speed": 2,
+            "speed": 120,
             "maxLife": 1,
             "life": 1,
             "maxSkillPoints": 2,
@@ -159,7 +159,7 @@
         "defaultAction": "randomTurns",
         "attributes": {
             "name": "Test NPC 5",
-            "speed": 2,
+            "speed": 120,
             "maxLife": 1,
             "life": 1,
             "maxSkillPoints": 2,

@@ -67,10 +67,11 @@ public class EventManager {
     /**
      * Handles what to do if the player interacts with an object entity.
      *
+     * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
      * @return whether an object event was triggered (true) or not (false)
      */
-    public boolean handleObjectInteraction(EventType type) {
+    public boolean handleObjectInteraction(double dt, EventType type) {
 
         int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getObj());                                     // If there's collision with an object (i.e., object in front of player entity), retrieve the entity ID of the object.
 
@@ -82,9 +83,9 @@ public class EventManager {
 
                 switch (gp.getLoadedMap().getMapId()) {                                                                 // Switch which map to check for interaction events on depending on the current loaded map.
                     case 0:
-                        return evt_map000.objInteraction(type, target);
+                        return evt_map000.objInteraction(dt, type, target);
                     case 1:
-                        return evt_map001.objInteraction(type, target);
+                        return evt_map001.objInteraction(dt, type, target);
                 }
             }
         }
@@ -95,10 +96,11 @@ public class EventManager {
     /**
      * Handles what to do if the player interacts with an NPC character entity.
      *
+     * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
      * @return whether an NPC event was triggered (true) or not (false)
      */
-    public boolean handleNpcInteraction(EventType type) {
+    public boolean handleNpcInteraction(double dt, EventType type) {
 
         int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getNpc());                                     // If there's collision with an NPC (i.e., NPC in front of player), retrieve the entity ID of the NPC.
 
@@ -110,9 +112,9 @@ public class EventManager {
 
                 switch (gp.getLoadedMap().getMapId()) {                                                                 // Switch which map to check for interaction events on depending on the current loaded map.
                     case 0:
-                        return evt_map000.npcInteraction(type, target);
+                        return evt_map000.npcInteraction(dt, type, target);
                     case 1:
-                        return evt_map001.npcInteraction(type, target);
+                        return evt_map001.npcInteraction(dt, type, target);
                 }
             }
         }
@@ -123,10 +125,11 @@ public class EventManager {
     /**
      * Handles what to do if the player interacts with a party member character entity.
      *
+     * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
      * @return whether a party member event was triggered (true) or not (false)
      */
-    public boolean handlePartyInteraction(EventType type) {
+    public boolean handlePartyInteraction(double dt, EventType type) {
 
         if (gp.isPartyVisible()) {                                                                                      // Only interact with party members if they're visible.
 
@@ -140,9 +143,9 @@ public class EventManager {
 
                     switch (gp.getLoadedMap().getMapId()) {                                                             // Switch which map to check for interaction events on depending on the current loaded map.
                         case 0:
-                            return evt_map000.partyInteraction(type, target);
+                            return evt_map000.partyInteraction(dt, type, target);
                         case 1:
-                            return evt_map001.partyInteraction(type, target);
+                            return evt_map001.partyInteraction(dt, type, target);
                     }
                 }
             }
@@ -154,10 +157,11 @@ public class EventManager {
     /**
      * Handles what to do if the player interacts with a tile directly in front (i.e., certain column/row).
      *
+     * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
      * @return whether a tile event was triggered (true) or not (false)
      */
-    public boolean handleTileInteraction(EventType type) {
+    public boolean handleTileInteraction(double dt, EventType type) {
 
         int playerCol = gp.getPlayer().getCol();                                                                        // Initialize variable with player entity's current tile position.
         int playerRow = gp.getPlayer().getRow();                                                                        // ^^^
@@ -193,9 +197,9 @@ public class EventManager {
 
         switch (gp.getLoadedMap().getMapId()) {                                                                         // Switch which map to check for interaction events on depending on the current loaded map.
                 case 0:
-                    return evt_map000.tileInteraction(type, targetCol, targetRow, gp.getPlayer().getDirectionCurrent());
+                    return evt_map000.tileInteraction(dt, type, targetCol, targetRow, gp.getPlayer().getDirectionCurrent());
                 case 1:
-                    return evt_map001.tileInteraction(type, targetCol, targetRow, gp.getPlayer().getDirectionCurrent());
+                    return evt_map001.tileInteraction(dt, type, targetCol, targetRow, gp.getPlayer().getDirectionCurrent());
             }
         return false;
     }
@@ -317,7 +321,7 @@ public class EventManager {
         switch (mode) {
             case 1:
                 gp.clearConversingEntities();                                                                           // All conversations between entities have ended.
-                gp.getPlayer().setInteractionCountdown(10);                                                             // Player must wait 10 frames before interacting with another entity, for example (prevents player from getting stuck in interaction loop).
+                gp.getPlayer().setInteractionCountdown(0.16);                                                           // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity, for example (prevents player from getting stuck in interaction loop).
                 gp.setGameState(GameState.EXPLORE);                                                                     // Return control back to the player.
                 break;
             case 2:
@@ -352,7 +356,7 @@ public class EventManager {
                 if (gp.getDialogueR().getCurrentConv() != null) {
                     gp.getDialogueR().reset();                                                                          // Reset the DialogueReader's fields back to their default values.
                 }
-                gp.getPlayer().setInteractionCountdown(10);                                                             // Player must wait 10 frames before interacting with another entity (prevents player from getting stuck in interaction loop).
+                gp.getPlayer().setInteractionCountdown(0.16);                                                           // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity (prevents player from getting stuck in interaction loop).
                 gp.setGameState(GameState.EXPLORE);                                                                     // No further logic will run.
                 break;
             case 2:

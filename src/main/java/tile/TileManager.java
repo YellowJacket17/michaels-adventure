@@ -295,8 +295,8 @@ public class TileManager {
 
         while ((col < gp.getMaxWorldCol()) && (row < gp.getMaxWorldRow())) {
 
-            int worldX = col * gp.getNativeTileSize();
-            int worldY = row * gp.getNativeTileSize();
+            float worldX = col * gp.getNativeTileSize();
+            float worldY = row * gp.getNativeTileSize();
             Sprite sprite = tiles[defaultTile].getSprites().get(0);                                                     // Initialize with default sprite.
             Drawable drawable = new Drawable(
                     new Transform(

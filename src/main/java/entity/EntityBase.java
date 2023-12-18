@@ -56,7 +56,6 @@ public abstract class EntityBase extends Drawable {
      *    - Entities are solid/have collision by default unless changed during or after instantiation.
      *    - An entity's `speed` is not required for instantiation and will be zero (Java default) unless defined.
      *      If a character OR object that can move class is made, define a value for `speed` on instantiation.
-     *      An entity's speed MUST be a factor of the tile size defined in the GamePanel.
      *    - An entity is not required to have a `name` (it's not required as part of the Entity class's constructor).
      *      To give a default `name` to an entity, define it in that entity's class.
      *    - An entity has two states for following a path: `onPath` and `onEntity`.
@@ -107,27 +106,27 @@ public abstract class EntityBase extends Drawable {
     /**
      * Entity's current world position.
      */
-    protected int worldX, worldY;
+    protected float worldX, worldY;
 
     /**
      * Record of entity's previous/starting world position if it is currently moving from one tile to an adjacent one.
      * This is used while an entity is in a state of motion.
      * If an entity is not in a state of motion, this will equal the current world position.
      */
-    protected int worldXStart, worldYStart;
+    protected float worldXStart, worldYStart;
 
     /**
      * Record of entity's target world position if it is currently moving from one tile to an adjacent one.
      * This is used while an entity is in a state of motion.
      * If an entity is not in a state of motion, this will equal the current world position.
      */
-    protected int worldXEnd, worldYEnd;
+    protected float worldXEnd, worldYEnd;
 
     /**
      * Entity's last world position.
      * This is the location of the previous tile an entity resided on before moving to its current one.
      */
-    protected int worldXLast, worldYLast;
+    protected float worldXLast, worldYLast;
 
     /**
      * Current direction that this entity is facing.
@@ -224,9 +223,9 @@ public abstract class EntityBase extends Drawable {
     protected double worldCounter;
 
     /**
-     * Controls the number of frames this entity must wait before moving again after exiting a state of motion.
+     * Controls the number of seconds this entity must wait before moving again after exiting a state of motion.
      */
-    protected int rest;
+    protected double rest;
 
 
     // BASIC ATTRIBUTES
@@ -237,11 +236,10 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Entity world walking speed.
-     * This is the number of pixels (i.e., world units) this entity will move each frame while in a state of motion.
-     * Note that this value should be a factor of the tile size.
+     * This is the number of integer world units that this entity will move per second while in a state of motion.
      * Do not confuse this variable with an entity's agility stat.
      */
-    protected int speed = 2;
+    protected int speed = 120;
 
 
     // COMBAT ATTRIBUTES
@@ -380,21 +378,23 @@ public abstract class EntityBase extends Drawable {
     // METHODS
     /**
      * Updates the state of this entity by one frame.
+     *
+     * @param dt time since last frame (seconds)
      */
-    public void update() {
+    public void update(double dt) {
 
         // These are core actions that take precedent over all others.
         if (onEntity) {
-            actionFollowEntity(onEntityId);
+            actionFollowEntity(dt, onEntityId);
             return;
         }
         if (onPath) {
-            actionPath(onPathGoalCol, onPathGoalRow);
+            actionPath(dt, onPathGoalCol, onPathGoalRow);
             return;
         }
 
         // Set other actions.
-        setAction();
+        setAction(dt);
     }
 
 
@@ -651,23 +651,27 @@ public abstract class EntityBase extends Drawable {
      *
      * @param seconds number of seconds to rest
      */
-    protected void setRest(int seconds) {
+    protected void setRest(double seconds) {
 
-        rest = seconds * 60;  // TODO : Change this to not hard-code the FPS as 60.
+        rest = seconds;
     }
 
 
     /**
      * Updates this entity's world position by one frame if it's in a state of motion, using a walking animation.
      * If this entity reaches its target tile, it will exit the state of motion.
+     *
+     * @param dt time since last frame (seconds)
      */
-    protected void updateAction() {
+    protected void updateAction(double dt) {
 
         if (moving) {
 
+            worldCounter += speed * dt;                                                                                 // Add to the number of world units the entity has moved while in the current state of motion.
+
             if (!colliding) {                                                                                           // If colliding is false, the entity can move.
 
-                updateWorldPosition();
+                updateWorldPosition(dt);
             }
 
             if (worldCounter <= gp.getNativeTileSize() / 2) {                                                           // Walking animation; entity will have a foot forward for half of the world units traversed.
@@ -684,14 +688,14 @@ public abstract class EntityBase extends Drawable {
                 spriteNumCurrent = 1;
             }
 
-            worldCounter += speed;                                                                                      // Add to the number of world units (i.e., world units) the entity has moved while in the current state of motion.
-
             if (worldCounter >= gp.getNativeTileSize()) {                                                               // Check if the entity has moved a number of world units equal to a tile size in the current state of motion.
 
                 moving = false;                                                                                         // If a tile's length has been traversed, the entity exits a state of motion.
                 worldCounter = 0;                                                                                       // Reset the world unit counter.
-                worldXLast = worldXStart;                                                                               // Store the last position the entity was at (x).
-                worldYLast = worldYStart;                                                                               // Store the last position the entity was at (y).
+                worldX = worldXEnd;                                                                                     // Set entity position as target position (in case it was slightly overshot).
+                worldY = worldYEnd;                                                                                     // ^^^
+                worldXLast = worldXStart;                                                                               // Store the last position the entity was at.
+                worldYLast = worldYStart;                                                                               // ^^^
                 worldXStart = worldXEnd;
                 worldYStart = worldYEnd;
 
@@ -708,22 +712,24 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Updates the world position of this entity by one unit of its speed in its current direction.
+     * Updates the world position of this entity according to its speed in its current direction.
+     *
+     * @param dt time since last frame (seconds)
      */
-    protected void updateWorldPosition() {
+    protected void updateWorldPosition(double dt) {
 
         switch (directionCurrent) {                                                                                     // Entity will change position in the appropriate direction.
             case UP:
-                worldY -= speed;                                                                                        // Speed will scale with the window size.
+                worldY -= speed * dt;
                 break;
             case DOWN:
-                worldY += speed;                                                                                        // Speed will scale with the window size.
+                worldY += speed * dt;
                 break;
             case LEFT:
-                worldX -= speed;                                                                                        // Speed will scale with the window size.
+                worldX -= speed * dt;
                 break;
             case RIGHT:
-                worldX += speed;                                                                                        // Speed will scale with the window size.
+                worldX += speed * dt;
                 break;
         }
     }
@@ -732,15 +738,17 @@ public abstract class EntityBase extends Drawable {
     /**
      * Sets this entity's behavior.
      * Override this method in implemented entity classes if custom actions are desired.
+     *
+     * @param dt time since last frame (seconds)
      */
-    protected void setAction() {
+    protected void setAction(double dt) {
 
         switch (defaultIdle) {
             case RANDOM_STEPS:
-                actionRandomSteps();
+                actionRandomSteps(dt);
                 break;
             case RANDOM_TURNS:
-                actionRandomTurns();
+                actionRandomTurns(dt);
                 break;
         }
     }
@@ -755,8 +763,8 @@ public abstract class EntityBase extends Drawable {
      */
     protected void searchPath(int goalCol, int goalRow) {
 
-        int startCol = (worldX / gp.getNativeTileSize());                                                               // The  column that the entity starts in.
-        int startRow = (worldY / gp.getNativeTileSize());                                                               // The row that the entity starts in.
+        int startCol = (int)(worldX / gp.getNativeTileSize());                                                          // The  column that the entity starts in.
+        int startRow = (int)(worldY / gp.getNativeTileSize());                                                          // The row that the entity starts in.
 
         gp.getPathF().setNodes(startCol, startRow, goalCol, goalRow);                                                   // Pass in the necessary data to the A* pathfinding algorithm to search for a valid path.
 
@@ -807,9 +815,10 @@ public abstract class EntityBase extends Drawable {
     /**
      * Action: Sets this entity to follow another entity.
      *
+     * @param dt time since last frame (seconds)
      * @param entityId ID of the entity to be followed
      */
-    protected void actionFollowEntity(int entityId) {
+    protected void actionFollowEntity(double dt, int entityId) {
 
         EntityBase target = gp.getEntityById(entityId);
 
@@ -817,7 +826,7 @@ public abstract class EntityBase extends Drawable {
 
             int goalCol = target.getColLast();                                                                          // Set the goal to be the target entity's last position.
             int goalRow = target.getRowLast();                                                                          // ^^^
-            actionPath(goalCol, goalRow);                                                                               // Initiate a pathfinding operation.
+            actionPath(dt, goalCol, goalRow);                                                                           // Initiate a pathfinding operation.
         } else {
 
             onEntity = false;                                                                                           // Entity to follow does not exist, so exit this state.
@@ -832,35 +841,38 @@ public abstract class EntityBase extends Drawable {
     /**
      * Action: Sets this entity to find and follow a path to a specified goal tile.
      *
+     * @param dt time since last frame (seconds)
      * @param goalCol column of the goal tile
      * @param goalRow row of the goal tile
      */
-    protected void actionPath(int goalCol, int goalRow) {
+    protected void actionPath(double dt, int goalCol, int goalRow) {
 
         if (!moving) {
 
             searchPath(goalCol, goalRow);
         }
-        updateAction();                                                                                                 // The entity's position on the map will be updated each frame while `onPath` is true (i.e., it will continue walking).
+        updateAction(dt);                                                                                               // The entity's position on the map will be updated each frame while `onPath` is true (i.e., it will continue walking).
     }
 
 
     /**
      * Action: Sets this entity to take a step to a random adjacent tile that's available.
+     *
+     * @param dt time since last frame (seconds)
      */
-    protected void actionRandomSteps() {
+    protected void actionRandomSteps(double dt) {
 
         if (rest > 0) {
 
-            rest--;                                                                                                     // Decrease rest time by one frame each time a new frame is rendered.
+            rest -= dt;                                                                                                 // Decrease rest time by one frame each time a new frame is rendered.
         }
         boolean movingFlag = moving;                                                                                    // Set a flag to see if the entity entered this method in a state of motion.
 
-        if (rest == 0) {
+        if (rest <= 0) {
 
             initiateRandomStep();
         }
-        updateAction();
+        updateAction(dt);
 
         if ((!moving) && (movingFlag)) {                                                                                // If this statement is true, it means the entity exited a state a motion (i.e., concluded a step) while in this method.
 
@@ -871,21 +883,23 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Action: Sets this entity to turn in a random direction.
+     *
+     * @param dt time since last frame (seconds)
      */
-    protected void actionRandomTurns() {
+    protected void actionRandomTurns(double dt) {
 
         if (moving) {
 
-            updateAction();                                                                                             // If entity is currently in a state of motion, it needs to finish that before doing anything else.
+            updateAction(dt);                                                                                           // If entity is currently in a state of motion, it needs to finish that before doing anything else.
             return;
         }
 
         if (rest > 0) {
 
-            rest--;
+            rest -= dt;
         }
 
-        if (rest == 0) {
+        if (rest <= 0) {
 
             directionCandidate = selectRandomDirection();
 
@@ -1109,68 +1123,68 @@ public abstract class EntityBase extends Drawable {
         return right3;
     }
 
-    public int getWorldX() {
+    public float getWorldX() {
         return worldX;
     }
 
-    public int getWorldY() {
+    public float getWorldY() {
         return worldY;
     }
 
-    public int getWorldXStart() {
+    public float getWorldXStart() {
         return worldXStart;
     }
 
-    public int getWorldYStart() {
+    public float getWorldYStart() {
         return worldYStart;
     }
 
-    public int getWorldXEnd() {
+    public float getWorldXEnd() {
         return worldXEnd;
     }
 
-    public int getWorldYEnd() {
+    public float getWorldYEnd() {
         return worldYEnd;
     }
 
-    public int getWorldXLast() {
+    public  float getWorldXLast() {
         return worldXLast;
     }
 
-    public int getWorldYLast() {
+    public float getWorldYLast() {
         return worldYLast;
     }
 
     public int getCol() {
-        return worldX / gp.getNativeTileSize();
+        return (int)(worldX / gp.getNativeTileSize());
     }
 
     public int getRow() {
-        return worldY / gp.getNativeTileSize();
+        return (int)(worldY / gp.getNativeTileSize());
     }
 
     public int getColStart() {
-        return worldXStart / gp.getNativeTileSize();
+        return (int)(worldXStart / gp.getNativeTileSize());
     }
 
     public int getRowStart() {
-        return worldYStart / gp.getNativeTileSize();
+        return (int)(worldYStart / gp.getNativeTileSize());
     }
 
     public int getColEnd() {
-        return worldXEnd / gp.getNativeTileSize();
+        return (int)(worldXEnd / gp.getNativeTileSize());
     }
 
     public int getRowEnd() {
-        return worldYEnd / gp.getNativeTileSize();
+        return (int)(worldYEnd / gp.getNativeTileSize());
     }
 
     public int getColLast() {
-        return worldXLast / gp.getNativeTileSize();
+        return (int)(worldXLast / gp.getNativeTileSize());
     }
 
     public int getRowLast() {
-        return worldYLast / gp.getNativeTileSize();
+        return (int)(worldYLast / gp.getNativeTileSize());
     }
 
     public EntityDirection getDirectionCurrent() {
@@ -1421,7 +1435,7 @@ public abstract class EntityBase extends Drawable {
     }
 
     public void setSpeed(int speed) {
-        if ((gp.getNativeTileSize() % speed == 0) && (speed > 0)) {
+        if (speed > 0) {
             this.speed = speed;
         }
     }

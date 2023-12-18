@@ -35,7 +35,7 @@ public class CameraSupport {
     /**
      * Variable to store the starting camera world position (center of camera) of a camera scroll effect.
      */
-    private float startingWorldX, startingWorldY;
+    private float startWorldX, startWorldY;
 
     /**
      * Variable to store the target camera world position (center of camera) of a camera scroll effect.
@@ -53,22 +53,15 @@ public class CameraSupport {
      */
     private float currentWorldX, currentWorldY;
 
-    private float leftoverWorldX, leftoverWorldY;
+    /**
+     * Variable to count the number of seconds that have passed so far during a camera scroll effect.
+     */
+    private double durationCount;
 
     /**
-     * Variable to store the calculated number of frames that a camera scroll effect will take to complete.
+     * Variable to store the total number of seconds that a camera scroll effect is set to last for.
      */
-    private int totalFrames;
-
-    /**
-     * Variable to count the number of frames that have passed so far during a camera scroll effect.
-     */
-    private int frameCount;
-
-    /**
-     * Variable to store the calculated camera scroll speed.
-     */
-    private float speedX, speedY;
+    private double durationTotal;
 
 
     // CONSTRUCTOR
@@ -86,19 +79,22 @@ public class CameraSupport {
     /**
      * Updates the state of any active camera effects by one frame.
      * This includes entity tracking; if the tracked entity is null, this effect will do nothing.
+     *
+     * @param dt time since last frame (seconds)
      */
-    public void update() {
+    public void update(double dt) {
 
         if (cameraScrolling) {
 
-            updateCameraScroll();
+            updateCameraScroll(dt);
         } else if ((trackedEntity != null) && (!overrideEntityTracking)) {
 
-            float centerScreenX = (gp.getCamera().getScreenWidth() / 2) - (gp.getNativeTileSize() / 2);
-            float centerScreenY = gp.getCamera().getScreenHeight() / 2;
+            float centerScreenX = ((float)gp.getCamera().getScreenWidth() / 2) - ((float)gp.getNativeTileSize() / 2);
+            float centerScreenY = (float)gp.getCamera().getScreenHeight() / 2;
             gp.getCamera().adjustPosition(
-                    new Vector2f(trackedEntity.getWorldX() - centerScreenX,
-                    trackedEntity.getWorldY() - centerScreenY
+                    new Vector2f(
+                            trackedEntity.getWorldX() - centerScreenX,
+                            trackedEntity.getWorldY() - centerScreenY
                     )
             );
         }
@@ -145,24 +141,22 @@ public class CameraSupport {
      * If the tracked entity is null or a camera scroll effect is in effect, then nothing will happen.
      * Any override on the tracked entity will be removed.
      *
-     * @param speed speed at which to scroll the camera; minimum allowed is 1, maximum is 20
+     * @param duration duration (seconds) of the camera scroll; minimum allowed is 1, maximum is 20
      * @throws IllegalArgumentException if an illegal speed is passed as argument
      */
-    public void resetCameraScroll(float speed) {
+    public void resetCameraScroll(float duration) {
 
-        if ((!cameraScrolling) && (trackedEntity != null) && (speed > 0) && (speed <= 20)) {
+        if ((!cameraScrolling) && (trackedEntity != null) && (duration > 0) && (duration <= 20)) {
 
-            float centerScreenX = ((float)gp.getCamera().getScreenWidth() / 2) - ((float)gp.getNativeTileSize() / 2);
-            float centerScreenY = (float)gp.getCamera().getScreenHeight() / 2;
             setCameraScroll(
-                    (float)trackedEntity.getWorldX() - centerScreenX,
-                    (float)trackedEntity.getWorldY() - centerScreenY,
-                    speed
+                    trackedEntity.getWorldX() + ((float)gp.getNativeTileSize() / 2),
+                    trackedEntity.getWorldY(),
+                    duration
             );
             overrideEntityTracking = false;
-        } else if ((speed < 1) || (speed > 20)) {
+        } else if ((duration < 1) || (duration > 20)) {
 
-            throw new IllegalArgumentException("Attempted to set a camera scroll speed outside of bounds 1 - 20 (both inclusive)");
+            throw new IllegalArgumentException("Attempted to set a camera scroll duration outside of bounds 1 - 20 (both inclusive)");
         }
     }
 
@@ -196,69 +190,46 @@ public class CameraSupport {
      *
      * @param worldX world position (center of camera) to scroll the camera to (x)
      * @param worldY world position (center of camera) to scroll the camera to (y)
-     * @param speed speed at which to scroll the camera; minimum allowed is 1, maximum is 20
+     * @param duration duration (seconds) of the camera scroll; minimum allowed is 1, maximum is 20
      * @throws IllegalArgumentException if an illegal speed is passed as argument
      */
-    public void setCameraScroll(float worldX, float worldY, float speed) {
+    public void setCameraScroll(float worldX, float worldY, float duration) {
 
-        if ((!cameraScrolling) && (speed > 0) && (speed <= 20)) {
+        if ((!cameraScrolling) && (duration > 0) && (duration <= 20)) {
 
             cameraScrolling = true;
+            durationTotal = duration;
 
-            startingWorldX = gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2);
-            startingWorldY = gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2);
+            startWorldX = gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2);
+            startWorldY = gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2);
 
             targetWorldX = worldX;
             targetWorldY = worldY;
 
-            differenceWorldX = targetWorldX - startingWorldX;
-            differenceWorldY = targetWorldY - startingWorldY;
+            differenceWorldX = targetWorldX - startWorldX;
+            differenceWorldY = targetWorldY - startWorldY;
 
-            if (differenceWorldX > differenceWorldY) {
-
-                if (targetWorldX < startingWorldX) {
-
-                    speedX = -speed;
-                } else {
-
-                    speedX = speed;
-                }
-                totalFrames = Math.abs((int)Math.ceil(differenceWorldX / speedX));
-                leftoverWorldX = differenceWorldX % speedX;
-                speedY = differenceWorldY / totalFrames;
-            } else {
-
-                if (targetWorldY < startingWorldY) {
-
-                    speedY = -speed;
-                } else {
-
-                    speedY = speed;
-                }
-                totalFrames = Math.abs((int)Math.ceil(differenceWorldY / speedY));
-                leftoverWorldY = differenceWorldY % speedY;
-                speedX = differenceWorldX / totalFrames;
-            }
-
-            currentWorldX = startingWorldX;
-            currentWorldY = startingWorldY;
+            currentWorldX = startWorldX;
+            currentWorldY = startWorldY;
 
             overrideEntityTracking = true;
-        } else if ((speed < 1) || (speed > 20)) {
+        } else if ((duration < 1) || (duration > 20)) {
 
-            throw new IllegalArgumentException("Attempted to set a camera scroll speed outside of bounds 1 - 20 (both inclusive)");
+            throw new IllegalArgumentException("Attempted to set a camera scroll duration outside of bounds 1 - 20 (both inclusive)");
         }
     }
 
 
     /**
      * Updates the camera scroll effect by one frame if in effect.
+     *
+     * @param dt time since last frame (seconds)
      */
-    private void updateCameraScroll() {
+    private void updateCameraScroll(double dt) {
 
         if (cameraScrolling) {
 
-            if (frameCount == (totalFrames - 1)) {
+            if (durationCount > durationTotal) {
 
                 float cameraWorldX = targetWorldX - ((float)gp.getCamera().getScreenWidth() / 2);
                 float cameraWorldY = targetWorldY - ((float)gp.getCamera().getScreenHeight() / 2);
@@ -266,12 +237,12 @@ public class CameraSupport {
                 reset();
             } else {
 
-                currentWorldX += speedX;
-                currentWorldY += speedY;
+                currentWorldX = startWorldX + (float)(durationCount / durationTotal) * differenceWorldX;
+                currentWorldY = startWorldY + (float)(durationCount / durationTotal) * differenceWorldY;
                 float cameraWorldX = currentWorldX - ((float)gp.getCamera().getScreenWidth() / 2);
                 float cameraWorldY = currentWorldY - ((float)gp.getCamera().getScreenHeight() / 2);
                 gp.getCamera().adjustPosition(new Vector2f(cameraWorldX, cameraWorldY));
-                frameCount++;
+                durationCount += dt;
             }
         }
     }
@@ -284,18 +255,16 @@ public class CameraSupport {
     private void reset() {
 
         cameraScrolling = false;
-        startingWorldX = 0;
-        startingWorldY = 0;
+        startWorldX = 0;
+        startWorldY = 0;
         targetWorldX = 0;
         targetWorldY = 0;
         differenceWorldX = 0;
         differenceWorldY = 0;
         currentWorldX = 0;
         currentWorldY = 0;
-        totalFrames = 0;
-        frameCount = 0;
-        speedX = 0;
-        speedY = 0;
+        durationCount = 0;
+        durationTotal = 0;
     }
 
 

@@ -7,35 +7,42 @@ public abstract class AnimationBase {
     
     // FIELDS
     /**
-     * Core counter for controlling animation.
+     * Core time counter (seconds) for controlling animation.
      */
-    protected int counter;
+    protected double counter;
 
     /**
-     * Controls rate at which `counter` increases.
-     * A higher number causes `counter` to increase faster, making transitions between images quicker.
+     * Maximum allowed value for core animation time counter (seconds).
      */
-    protected int speed;
+    protected double counterMax;
 
 
     // CONSTRUCTOR
     /**
      * Constructs an Animation instance.
      *
-     * @param speed initial rate at which to update animations
+     * @param counterMax maximum allowed value for core animation time counter (seconds).
      */
-    public AnimationBase(int speed) {
-        this.speed = speed;
+    public AnimationBase(double counterMax) {
+
+        this.counterMax = counterMax;
     }
 
 
     // METHODS
     /**
      * Updates the animation counter, the value of which is used to determine the next image to be drawn.
+     *
+     * @param dt time since last frame (seconds)
      */
-    public void update() {
+    public void update(double dt) {
 
-        counter = (counter + 1) * speed;
+        counter += dt;
+
+        while (counter >= counterMax) {
+
+            counter -= counterMax;
+        }
     }
 
 

@@ -48,8 +48,10 @@ public abstract class CutsceneBase {
     // METHODS
     /**
      * Plays the cutscene according to its current phase.
+     *
+     * @param dt time since last frame (seconds)
      */
-    public abstract void run();
+    public abstract void run(double dt);
 
 
     /**
