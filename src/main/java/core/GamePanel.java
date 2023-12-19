@@ -234,6 +234,13 @@ public class GamePanel {
     private final double transitionCounterFadingFromMax = 0.5;
 
 
+    // VSYNC
+    /**
+     * Boolean indicating whether VSync is enabled (true) or disabled (false).
+     */
+    private boolean vSyncEnabled = false;
+
+
     // CONSTRUCTOR
     /**
      * Constructs a GamePanel instance.
@@ -1178,6 +1185,10 @@ public class GamePanel {
         return transitionCounterFadingFromMax;
     }
 
+    public boolean isvSyncEnabled() {
+        return vSyncEnabled;
+    }
+
 
     // SETTERS
     public void setGameState(GameState gameState) {
@@ -1195,5 +1206,9 @@ public class GamePanel {
 
     public void setDebugActive(boolean debugActive) {
         this.debugActive = debugActive;
+    }
+
+    public void setvSyncEnabled(boolean vSyncEnabled) {
+        this.vSyncEnabled = vSyncEnabled;
     }
 }

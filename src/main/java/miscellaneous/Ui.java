@@ -709,28 +709,33 @@ public class Ui {
         String memoryUsage = "JVM Memory Usage: " + usedMemoryMegabytes + " MB";
         renderStringShadow(memoryUsage, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
-        // Frame rate.
+        // VSync.
         screenCoords = new Vector2f(screenX, 0.07f);
+        String vSync = "VSync: " + (gp.isvSyncEnabled() ? "Enabled" : "Disabled");
+        renderStringShadow(vSync, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
+
+        // Frame rate.
+        screenCoords = new Vector2f(screenX, 0.13f);
         String fps = "FPS: " + (int)(1.0 / dt);
         renderStringShadow(fps, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Player column.
-        screenCoords = new Vector2f(screenX, 0.13f);
+        screenCoords = new Vector2f(screenX, 0.19f);
         String col = "Player Col: " + gp.getPlayer().getCol();
         renderStringShadow(col, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Player row.
-        screenCoords = new Vector2f(screenX, 0.19f);
+        screenCoords = new Vector2f(screenX, 0.25f);
         String row = "Player Row: " + gp.getPlayer().getRow();
         renderStringShadow(row, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Camera center (x).
-        screenCoords = new Vector2f(screenX, 0.25f);
+        screenCoords = new Vector2f(screenX, 0.31f);
         String centerX = "Camera Center X: " + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
         renderStringShadow(centerX, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Camera center (y).
-        screenCoords = new Vector2f(screenX, 0.31f);
+        screenCoords = new Vector2f(screenX, 0.37f);
         String centerY = "Camera Center Y: " + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
         renderStringShadow(centerY, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
     }

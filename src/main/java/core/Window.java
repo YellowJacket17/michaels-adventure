@@ -39,6 +39,11 @@ public class Window {
     private GamePanel gp;
 
     /**
+     * Boolean indicating whether vSync is enabled (true) or not (false).
+     */
+    private boolean vSyncEnabled = false;
+
+    /**
      * Refresh rate of monitor (Hz).
      */
     private int monitorRefreshRate;
@@ -113,7 +118,7 @@ public class Window {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);                                                                       // Hide window during setup process.
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);                                                                      // Enable window resizing.
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);                                                                     // Initialize window in non-maximized position.
-        glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);                                                                  // Disable double buffering (not using VSync).
+        glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
         // Create window.
         glfwWindow = glfwCreateWindow(defaultWidth, defaultHeight, title, NULL, NULL);
@@ -146,8 +151,12 @@ public class Window {
         // Make OpenGL context current.
         glfwMakeContextCurrent(glfwWindow);
 
-        // Set swap interval (no VSync).
-        glfwSwapInterval(0);
+        // Set VSync.
+        if (vSyncEnabled) {
+            glfwSwapInterval(1);
+        } else {
+            glfwSwapInterval(0);
+        }
 
         // Make window visible.
         glfwShowWindow(glfwWindow);
@@ -170,6 +179,7 @@ public class Window {
 
         gp = new GamePanel();
         gp.init();
+        gp.setvSyncEnabled(vSyncEnabled);
     }
 
 
@@ -178,13 +188,15 @@ public class Window {
      */
     public void run() {
 
-        // Initialize variables for tracking time.
+        // Initialize variables for tracking time (applicable to both enabled and disabled VSync).
         // Note that `glfwGetTime()` returns time (seconds) elapsed since GLFW was initialized.
         double currentTime = 0;                                                                                         // Time at the start of the current loop.
         double lastFrameTime = glfwGetTime();                                                                           // Time at the start of the last frame.
-        double lastLoopTime = glfwGetTime();                                                                            // Time at the start of the last loop.
-        double dtTarget = 1.0 / targetFrameRate;                                                                        // Target time between each rendered frame (frame timing).
+        double dtTarget = 0;                                                                                            // Target time between each rendered frame (frame timing).
         double dtActual = 0;                                                                                            // Actual time between each rendered frame (frame timing).
+
+        // Initialize variables for tracking time (applicable to only disabled VSync).
+        double lastLoopTime = glfwGetTime();                                                                            // Time at the start of the last loop.
         double dtAccumulated = 0;                                                                                       // Accumulated loop time.
 
         // Indicate that the main game loop is starting.
@@ -193,36 +205,56 @@ public class Window {
         // Main game loop.
         while (!glfwWindowShouldClose(glfwWindow) && running) {
 
+            // Set current time.
             currentTime = glfwGetTime();
-            dtAccumulated += currentTime - lastLoopTime;
-            lastLoopTime = currentTime;
 
-            if (dtAccumulated >= dtTarget) {
+            // Check VSync toggle.
+            if (gp.isvSyncEnabled() != vSyncEnabled) {
+                vSyncEnabled = gp.isvSyncEnabled();
+                targetFrameRate = monitorRefreshRate;
+                if (vSyncEnabled) {
+                    glfwSwapInterval(1);
+                } else {
+                    glfwSwapInterval(0);
+                    lastLoopTime = glfwGetTime();
+                    dtAccumulated = 0;
+                }
+            }
 
-                // Calculate frame pacing.
+            // Set target frame pace.
+            dtTarget = 1.0 / targetFrameRate;
+
+            if (vSyncEnabled) {
+
+                // Calculate frame pace.
                 dtActual = currentTime - lastFrameTime;
-                lastFrameTime = currentTime;                                                                            // Store time this frame started at for use by the next frame.
-                dtTarget = 1.0 / targetFrameRate;                                                                       // In case target frame rate has changed.
+                lastFrameTime = currentTime;
 
-                // Prepare the frame.
-                glClearColor(r, g, b, a);                                                                               // Set window clear color.
-                glClear(GL_COLOR_BUFFER_BIT);                                                                           // Tell OpenGL how to clear the buffer.
+                // Generate frame.
+                generateFrame(dtTarget, dtActual);
 
-                // Poll, update, and render.
-                glfwPollEvents();                                                                                       // Poll user input (keyboard, gamepad, etc.).
-                gp.update(dtTarget);                                                                                    // Update all game logic by one frame.
-                gp.render(dtActual);                                                                                    // Render the updated frame.
+            } else {
 
-                // Empty buffers.
-                glFlush();
+                dtAccumulated += currentTime - lastLoopTime;
+                lastLoopTime = currentTime;
 
-                // Iterate frame time.
-                dtAccumulated -= dtActual;
+                if (dtAccumulated >= dtTarget) {
+
+                    // Calculate frame pace.
+                    dtActual = currentTime - lastFrameTime;
+                    lastFrameTime = currentTime;
+
+                    // Generate frame.
+                    generateFrame(dtTarget, dtActual);
+
+                    // Iterate frame time.
+                    dtAccumulated -= dtTarget;
+                }
             }
         }
 
         // Free memory.
-        glfwFreeCallbacks(glfwWindow);                                                                                  // Free any callbacks attached to the window.
+        glfwFreeCallbacks(glfwWindow);
         glfwDestroyWindow(glfwWindow);
 
         // Terminate GLFW.
@@ -240,6 +272,28 @@ public class Window {
 
 
     /**
+     * Prepares, polls, updates, and renders a new frame.
+     *
+     * @param dtTarget target frame pacing
+     * @param dtActual actual frame pacing
+     */
+    private void generateFrame(double dtTarget, double dtActual) {
+
+        // Prepare the frame.
+        glClearColor(r, g, b, a);                                                                                       // Set window clear color.
+        glClear(GL_COLOR_BUFFER_BIT);                                                                                   // Tell OpenGL how to clear the buffer.
+
+        // Poll, update, and render.
+        glfwPollEvents();                                                                                               // Poll user input (keyboard, gamepad, etc.).
+        gp.update(dtTarget);                                                                                            // Update all game logic by one frame.
+        gp.render(dtActual);                                                                                            // Render the updated frame.
+
+        // Empty buffers.
+        glfwSwapBuffers(glfwWindow);
+    }
+
+
+    /**
      * Resizes the window and viewport.
      *
      * @param width new width (pixels)
@@ -250,6 +304,12 @@ public class Window {
         glfwSetWindowSize(glfwWindow, width, height);
         glViewport(0, 0, width, height);
         monitorRefreshRate = getRefreshRate();
+
+        if (((monitorRefreshRate != targetFrameRate) && vSyncEnabled)
+                || (monitorRefreshRate < targetFrameRate)) {
+
+            targetFrameRate = monitorRefreshRate;
+        }
     }
 
 
@@ -263,6 +323,12 @@ public class Window {
 
         glfwSetWindowPos(glfwWindow, x, y);
         monitorRefreshRate = getRefreshRate();
+
+        if (((monitorRefreshRate != targetFrameRate) && vSyncEnabled)
+            || (monitorRefreshRate < targetFrameRate)) {
+
+            targetFrameRate = monitorRefreshRate;
+        }
     }
 
 

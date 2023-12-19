@@ -87,6 +87,15 @@ public class Player extends EntityBase {
     private boolean debugActioned = false;
 
     /**
+     * Variable to store whether VSync has been enabled/disabled on the current V key press.
+     * This is set to true when the V key is pressed and false when released.
+     * The use for this is, when enabling VSync via the V key, VSync cannot be manually disabled until
+     * the user releases the V key and presses it again (reverse is also true for disabling VSync).
+     * This prevents VSync from flickering on/off if the user keeps the V key held down.
+     */
+    private boolean vSyncActioned = false;
+
+    /**
      * List representing the player's inventory, in which items are stored.
      * The maximum allowed capacity of this list represents the maximum allowed size of the player's inventory.
      */
@@ -740,6 +749,15 @@ public class Player extends EntityBase {
      *
      */
     private void updateDebugInput() {
+
+        if ((vSyncActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_V))) {
+            vSyncActioned = false;
+        }
+
+        if ((KeyListener.isKeyPressed(GLFW_KEY_V)) && (!vSyncActioned)) {
+            gp.setvSyncEnabled(!gp.isvSyncEnabled());
+            vSyncActioned = true;
+        }
 
         if ((debugActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_Q))) {
             debugActioned = false;                                                                                      // Enable the ability of the player to enable the debug mode by pressing the Q key.
