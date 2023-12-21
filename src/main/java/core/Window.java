@@ -12,6 +12,8 @@ import utility.UtilityTool;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -44,6 +46,11 @@ public class Window {
     private boolean vSyncEnabled = false;
 
     /**
+     * Boolean tracking whether game speed is tethered to target frame rate (true) or not (false).
+     */
+    private boolean gameSpeedTethered = false;
+
+    /**
      * Refresh rate of monitor (Hz).
      */
     private int monitorRefreshRate;
@@ -51,7 +58,7 @@ public class Window {
     /**
      * Target frame rate (FPS).
      */
-    private int targetFrameRate = 60;
+    private int targetFrameRate;
 
     /**
      * Boolean indicating whether the main game loop is running (true) or not (false).
@@ -180,6 +187,8 @@ public class Window {
         gp = new GamePanel();
         gp.init();
         gp.getSystemSetting(0).setActiveOption(vSyncEnabled ? 1 : 0);
+        populateFrameRateOptions(generateFrameRateOptions());
+        gp.getSystemSetting(2).setActiveOption(gameSpeedTethered ? 1 : 0);
     }
 
 
@@ -213,6 +222,12 @@ public class Window {
                 lastLoopTime = glfwGetTime();
             }
 
+            // Poll for frame rate limit changes.
+            pollFrameRateLimit();
+
+            // Poll for tether game speed changes.
+            pollTetherGamedSpeed();
+
             // Set target frame pace.
             dtTarget = 1.0 / targetFrameRate;
 
@@ -223,8 +238,11 @@ public class Window {
                 lastFrameTime = currentTime;
 
                 // Generate frame.
-                generateFrame(dtTarget, dtActual);
-
+                if (gameSpeedTethered) {
+                    generateFrame(dtTarget, dtActual);
+                } else {
+                    generateFrame(dtActual, dtActual);
+                }
             } else {
 
                 dtAccumulated += currentTime - lastLoopTime;
@@ -237,7 +255,11 @@ public class Window {
                     lastFrameTime = currentTime;
 
                     // Generate frame.
-                    generateFrame(dtTarget, dtActual);
+                    if (gameSpeedTethered) {
+                        generateFrame(dtTarget, dtActual);
+                    } else {
+                        generateFrame(dtActual, dtActual);
+                    }
 
                     // Iterate frame time.
                     dtAccumulated -= dtTarget;
@@ -266,10 +288,10 @@ public class Window {
     /**
      * Prepares, polls, updates, and renders a new frame.
      *
-     * @param dtTarget target frame pacing
-     * @param dtActual actual frame pacing
+     * @param dtUpdate frame pace to pass to update logic
+     * @param dtRender frame pace to pass to render logic
      */
-    private void generateFrame(double dtTarget, double dtActual) {
+    private void generateFrame(double dtUpdate, double dtRender) {
 
         // Prepare the frame.
         glClearColor(r, g, b, a);                                                                                       // Set window clear color.
@@ -277,8 +299,8 @@ public class Window {
 
         // Poll, update, and render.
         glfwPollEvents();                                                                                               // Poll user input (keyboard, gamepad, etc.).
-        gp.update(dtTarget);                                                                                            // Update all game logic by one frame.
-        gp.render(dtActual);                                                                                            // Render the updated frame.
+        gp.update(dtUpdate);                                                                                            // Update all game logic by one frame.
+        gp.render(dtRender);                                                                                            // Render the updated frame.
 
         // Empty buffers.
         glfwSwapBuffers(glfwWindow);
@@ -286,7 +308,7 @@ public class Window {
 
 
     /**
-     * Polls for changes in VSync settings.
+     * Polls for changes in VSync in system settings.
      * If a change has occurred, it is immediately applied.
      *
      * @return whether a change has occurred (true) or not (false)
@@ -296,14 +318,54 @@ public class Window {
         if ((gp.getSystemSetting(0).getActiveOption() == 0) && vSyncEnabled) {
 
             vSyncEnabled = false;
-            targetFrameRate = monitorRefreshRate;
             glfwSwapInterval(0);
+            populateFrameRateOptions(generateFrameRateOptions());
             return true;
         } else if ((gp.getSystemSetting(0).getActiveOption() == 1) && !vSyncEnabled) {
 
             vSyncEnabled = true;
-            targetFrameRate = monitorRefreshRate;
             glfwSwapInterval(1);
+            populateFrameRateOptions(generateFrameRateOptions());
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Polls for changes in frame rate limit in system settings.
+     * If a change has occurred, it is immediately applied.
+     *
+     * @return whether a change has occurred (true) or not (false)
+     */
+    private boolean pollFrameRateLimit() {
+
+        int activeOption = Integer.parseInt(gp.getSystemSetting(1).getOption(gp.getSystemSetting(1).getActiveOption()));
+
+        if (activeOption != targetFrameRate) {
+
+            targetFrameRate = activeOption;
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Polls for changes in tether game speed in system settings.
+     * If a change has occurred, it is immediately applied.
+     *
+     * @return whether a change has occurred (true) or not (false)
+     */
+    private boolean pollTetherGamedSpeed() {
+
+        if ((gp.getSystemSetting(2).getActiveOption() == 0) && gameSpeedTethered) {
+
+            gameSpeedTethered = false;
+            return true;
+        } else if ((gp.getSystemSetting(2).getActiveOption() == 1) && !gameSpeedTethered) {
+
+            gameSpeedTethered = true;
             return true;
         }
         return false;
@@ -321,12 +383,6 @@ public class Window {
         glfwSetWindowSize(glfwWindow, width, height);
         glViewport(0, 0, width, height);
         monitorRefreshRate = getRefreshRate();
-
-        if (((monitorRefreshRate != targetFrameRate) && vSyncEnabled)
-                || (monitorRefreshRate < targetFrameRate)) {
-
-            targetFrameRate = monitorRefreshRate;
-        }
     }
 
 
@@ -340,12 +396,6 @@ public class Window {
 
         glfwSetWindowPos(glfwWindow, x, y);
         monitorRefreshRate = getRefreshRate();
-
-        if (((monitorRefreshRate != targetFrameRate) && vSyncEnabled)
-            || (monitorRefreshRate < targetFrameRate)) {
-
-            targetFrameRate = monitorRefreshRate;
-        }
     }
 
 
@@ -456,5 +506,45 @@ public class Window {
             }
         }
         return closestMonitor;
+    }
+
+
+    /**
+     * Generates a list of allowable frame rates.
+     * The list is generated based on VSync and monitor refresh rate.
+     *
+     * @return list of frame rates
+     */
+    private ArrayList<Integer> generateFrameRateOptions() {
+
+        ArrayList<Integer> frameRateOptions = new ArrayList<>();
+        frameRateOptions.add(monitorRefreshRate);
+
+        if (!vSyncEnabled) {
+
+            frameRateOptions.add(30);
+            frameRateOptions.add(60);
+            frameRateOptions.add(90);
+            frameRateOptions.add(120);
+            Collections.sort(frameRateOptions);
+        }
+        return frameRateOptions;
+    }
+
+
+    /**
+     * Populates the list of allowable frame rate limits in system settings.
+     */
+    private void populateFrameRateOptions(ArrayList<Integer> frameRateOptions) {
+
+        gp.getSystemSetting(1).removeAllOptions();
+        int index = 0;
+        for (int option : frameRateOptions) {
+            gp.getSystemSetting(1).addOption(String.valueOf(option));
+            if (option == monitorRefreshRate) {
+                gp.getSystemSetting(1).setActiveOption(index);
+            }
+            index++;
+        }
     }
 }

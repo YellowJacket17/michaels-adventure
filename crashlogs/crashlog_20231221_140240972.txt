@@ -1,0 +1,11 @@
+12/21/2023 14:02:40:473  INFO     Application started.
+12/21/2023 14:02:40:967  ERROR    An unhandled exception has occurred.
+java.lang.NullPointerException: Cannot invoke "core.GamePanel.setTargetFrameRateOptions(java.util.ArrayList)" because "this.gp" is null
+	at core.Window.generateTargetFrameRateOptions(Window.java:321)
+	at core.Window.repositionWindow(Window.java:394)
+	at core.Window$2.invoke(Window.java:145)
+	at org.lwjgl.glfw.GLFWWindowPosCallbackI.callback(GLFWWindowPosCallbackI.java:44)
+	at org.lwjgl.system.JNI.invokePV(Native Method)
+	at org.lwjgl.glfw.GLFW.glfwShowWindow(GLFW.java:2870)
+	at core.Window.initWindow(Window.java:164)
+	at core.App.main(App.java:18)

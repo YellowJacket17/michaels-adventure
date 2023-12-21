@@ -67,6 +67,11 @@ public class Setting {
             if (options.get(i).equals(option)) {
 
                 options.remove(i);
+
+                if (activeOption == i) {
+
+                    activeOption = 0;
+                }
             }
         }
     }
@@ -77,10 +82,8 @@ public class Setting {
      */
     public void removeAllOptions() {
 
-        for (int i = 0; i < options.size(); i++) {
-
-            options.remove(i);
-        }
+        options.clear();
+        activeOption = 0;
     }
 
 

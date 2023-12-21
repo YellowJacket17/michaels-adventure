@@ -262,11 +262,19 @@ public class GamePanel {
         selectionA = new SelectionArrow(this);
         player = new Player(this);
 
-        // Initialize available settings.
+        // Initialize system settings.
         Setting vSyncSetting = new Setting("VSync", "Syncs frame rate with monitor refresh rate to prevent screen tearing.");
         vSyncSetting.addOption("Disabled");
         vSyncSetting.addOption("Enabled");
         systemSettings.add(vSyncSetting);
+
+        Setting FrameRateLimitSetting = new Setting("Frame Rate Limit", "Maximum frame rate that the game will run at.");
+        systemSettings.add(FrameRateLimitSetting);
+
+        Setting tetherGameSpeedSetting = new Setting("Tether Game Speed", "Tethers game speed to the frame rate limit.");
+        tetherGameSpeedSetting.addOption("Disabled");
+        tetherGameSpeedSetting.addOption("Enabled");
+        systemSettings.add(tetherGameSpeedSetting);
 
         // Load map along with associated entities and dialogue.
         loadMap(1);
