@@ -43,12 +43,12 @@ public class Window {
     /**
      * Boolean indicating whether vSync is enabled (true) or not (false).
      */
-    private boolean vSyncEnabled = false;
+    private boolean vSyncEnabled = true;
 
     /**
      * Boolean tracking whether game speed is tethered to target frame rate (true) or not (false).
      */
-    private boolean gameSpeedTethered = false;
+    private boolean gameSpeedTethered = true;
 
     /**
      * Refresh rate of monitor (Hz).
@@ -308,71 +308,6 @@ public class Window {
 
 
     /**
-     * Polls for changes in VSync in system settings.
-     * If a change has occurred, it is immediately applied.
-     *
-     * @return whether a change has occurred (true) or not (false)
-     */
-    private boolean pollVSync() {
-
-        if ((gp.getSystemSetting(0).getActiveOption() == 0) && vSyncEnabled) {
-
-            vSyncEnabled = false;
-            glfwSwapInterval(0);
-            populateFrameRateOptions(generateFrameRateOptions());
-            return true;
-        } else if ((gp.getSystemSetting(0).getActiveOption() == 1) && !vSyncEnabled) {
-
-            vSyncEnabled = true;
-            glfwSwapInterval(1);
-            populateFrameRateOptions(generateFrameRateOptions());
-            return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * Polls for changes in frame rate limit in system settings.
-     * If a change has occurred, it is immediately applied.
-     *
-     * @return whether a change has occurred (true) or not (false)
-     */
-    private boolean pollFrameRateLimit() {
-
-        int activeOption = Integer.parseInt(gp.getSystemSetting(1).getOption(gp.getSystemSetting(1).getActiveOption()));
-
-        if (activeOption != targetFrameRate) {
-
-            targetFrameRate = activeOption;
-            return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * Polls for changes in tether game speed in system settings.
-     * If a change has occurred, it is immediately applied.
-     *
-     * @return whether a change has occurred (true) or not (false)
-     */
-    private boolean pollTetherGamedSpeed() {
-
-        if ((gp.getSystemSetting(2).getActiveOption() == 0) && gameSpeedTethered) {
-
-            gameSpeedTethered = false;
-            return true;
-        } else if ((gp.getSystemSetting(2).getActiveOption() == 1) && !gameSpeedTethered) {
-
-            gameSpeedTethered = true;
-            return true;
-        }
-        return false;
-    }
-
-
-    /**
      * Resizes the window and viewport.
      *
      * @param width new width (pixels)
@@ -506,6 +441,71 @@ public class Window {
             }
         }
         return closestMonitor;
+    }
+
+
+    /**
+     * Polls for changes in VSync in system settings.
+     * If a change has occurred, it is immediately applied.
+     *
+     * @return whether a change has occurred (true) or not (false)
+     */
+    private boolean pollVSync() {
+
+        if ((gp.getSystemSetting(0).getActiveOption() == 0) && vSyncEnabled) {
+
+            vSyncEnabled = false;
+            glfwSwapInterval(0);
+            populateFrameRateOptions(generateFrameRateOptions());
+            return true;
+        } else if ((gp.getSystemSetting(0).getActiveOption() == 1) && !vSyncEnabled) {
+
+            vSyncEnabled = true;
+            glfwSwapInterval(1);
+            populateFrameRateOptions(generateFrameRateOptions());
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Polls for changes in frame rate limit in system settings.
+     * If a change has occurred, it is immediately applied.
+     *
+     * @return whether a change has occurred (true) or not (false)
+     */
+    private boolean pollFrameRateLimit() {
+
+        int activeOption = Integer.parseInt(gp.getSystemSetting(1).getOption(gp.getSystemSetting(1).getActiveOption()));
+
+        if (activeOption != targetFrameRate) {
+
+            targetFrameRate = activeOption;
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Polls for changes in tether game speed in system settings.
+     * If a change has occurred, it is immediately applied.
+     *
+     * @return whether a change has occurred (true) or not (false)
+     */
+    private boolean pollTetherGamedSpeed() {
+
+        if ((gp.getSystemSetting(2).getActiveOption() == 0) && gameSpeedTethered) {
+
+            gameSpeedTethered = false;
+            return true;
+        } else if ((gp.getSystemSetting(2).getActiveOption() == 1) && !gameSpeedTethered) {
+
+            gameSpeedTethered = true;
+            return true;
+        }
+        return false;
     }
 
 

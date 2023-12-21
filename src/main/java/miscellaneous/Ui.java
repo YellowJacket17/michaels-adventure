@@ -624,14 +624,10 @@ public class Ui {
     private void renderSettingsMenuScreen() {
 
         // Initializations.
-        float fontScale = 0.15f;
-        float characterNormalWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;         // It doesn't matter which character is used, since all characters in a font have the same height.
-        float characterNormalScreenHeight = gp.getCamera().worldHeightToScreenHeight(characterNormalWorldHeight);       // Normalized (screen) character height.
-        float characterBoldWorldHeight = renderer.getFont("Arimo Bold").getCharacter('A').getHeight() * fontScale;
-        float characterBoldScreenHeight = gp.getCamera().worldHeightToScreenHeight(characterBoldWorldHeight);
+        float fontScale = 0.15f;                                                                                        // Font size (multiplies native height).
         float settingLabelLeftScreenPadding = mainWindowScreenLeftRightPadding + 0.055f;                                // Normalized (screen) padding between the leftmost edge of the screen and setting labels.
         float settingLabelTopmostScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;                                 // Normalized (screen) y-position of topmost setting.
-        float settingScreenSpacing = characterNormalScreenHeight + 0.05f;                                               // Normalized (screen) vertical spacing between each setting.
+        float settingScreenSpacing = 0.082f;                                                                            // Normalized (screen) vertical spacing between each setting.
         float settingLabelValueScreenGap = 0.4f;                                                                        // Normalized (screen) horizontal gap between a setting's label and its active option.
         float scrollArrowWorldWidth = gp.getGuiIconM().getIconById(9).getNativeSpriteWidth();                           // Both the left and right scroll arrows have the same width, so either height can be retrieved.
         float scrollArrowScreenWidth = gp.getCamera().worldWidthToScreenWidth(scrollArrowWorldWidth);                   // Normalized (screen) width of scroll arrows.
@@ -645,54 +641,45 @@ public class Ui {
                 settingLabelScreenCoords.x + settingLabelValueScreenGap,
                 settingLabelScreenCoords.y);
 
-        // TODO : Perhaps break some of the repeated logic below into methods.
-
         // First setting (VSync).
-        setting = gp.getSystemSetting(0);
-        if (systemSettingSelected == 0) {
-            renderString(setting.getLabel(), settingLabelScreenCoords, fontScale, new Vector3f(244, 154, 45), "Arimo Bold");
-        } else {
-            renderString(setting.getLabel(), settingLabelScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
-        }
-        renderString(setting.getOption(setting.getActiveOption()), settingValueScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
-        if (systemSettingSelected == 0) {
-            float scrollArrowScreenY = settingValueScreenCoords.y + ((characterNormalScreenHeight - scrollArrowScreenHeight) / 2);
-            float rightScrollArrowScreenX = settingValueScreenCoords.x - 0.02f - scrollArrowScreenWidth;
-            float leftScrollArrowScreenX = rightScrollArrowScreenX - 0.015f - scrollArrowScreenWidth;
-            gp.getGuiIconM().addToRenderPipeline(renderer, 9, leftScrollArrowScreenX, scrollArrowScreenY);
-            gp.getGuiIconM().addToRenderPipeline(renderer, 10, rightScrollArrowScreenX, scrollArrowScreenY);
-        }
+        renderSystemSetting(0, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);
 
         // Second setting (frame rate limit).
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
-        setting = gp.getSystemSetting(1);
-        if (systemSettingSelected == 1) {
-            renderString(setting.getLabel(), settingLabelScreenCoords, fontScale, new Vector3f(244, 154, 45), "Arimo Bold");
-        } else {
-            renderString(setting.getLabel(), settingLabelScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
-        }
-        renderString(setting.getOption(setting.getActiveOption()), settingValueScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
-        if (systemSettingSelected == 1) {
-            float scrollArrowScreenY = settingValueScreenCoords.y + ((characterNormalScreenHeight - scrollArrowScreenHeight) / 2);
-            float rightScrollArrowScreenX = settingValueScreenCoords.x - 0.02f - scrollArrowScreenWidth;
-            float leftScrollArrowScreenX = rightScrollArrowScreenX - 0.015f - scrollArrowScreenWidth;
-            gp.getGuiIconM().addToRenderPipeline(renderer, 9, leftScrollArrowScreenX, scrollArrowScreenY);
-            gp.getGuiIconM().addToRenderPipeline(renderer, 10, rightScrollArrowScreenX, scrollArrowScreenY);
-        }
+        renderSystemSetting(1, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);
 
         // Third setting (tether game speed).
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
-        setting = gp.getSystemSetting(2);
-        if (systemSettingSelected == 2) {
+        renderSystemSetting(2, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);
+    }
+
+
+    /**
+     * Adds components of a system setting to the render pipeline.
+     *
+     * @param index system setting index
+     * @param settingLabelScreenCoords normalized (screen) coordinates of system setting label
+     * @param settingValueScreenCoords normalized (screen) coordinates of system setting value
+     * @param fontScale font size (multiplies native height)
+     * @param scrollArrowScreenWidth normalized (screen) width of left and right scroll arrows (both assumed to be same size)
+     * @param scrollArrowScreenHeight normalized (screen) height of left and right scroll arrows (both assumed to be same size)
+     */
+    private void renderSystemSetting(int index, Vector2f settingLabelScreenCoords, Vector2f settingValueScreenCoords,
+                                     float fontScale, float scrollArrowScreenWidth, float scrollArrowScreenHeight) {
+
+        Setting setting = gp.getSystemSetting(index);
+        if (systemSettingSelected == index) {
             renderString(setting.getLabel(), settingLabelScreenCoords, fontScale, new Vector3f(244, 154, 45), "Arimo Bold");
         } else {
             renderString(setting.getLabel(), settingLabelScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
         }
         renderString(setting.getOption(setting.getActiveOption()), settingValueScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
-        if (systemSettingSelected == 2) {
-            float scrollArrowScreenY = settingValueScreenCoords.y + ((characterNormalScreenHeight - scrollArrowScreenHeight) / 2);
+        if (systemSettingSelected == index) {
+            float characterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;
+            float characterScreenHeight = gp.getCamera().worldHeightToScreenHeight(characterWorldHeight);
+            float scrollArrowScreenY = settingValueScreenCoords.y + ((characterScreenHeight - scrollArrowScreenHeight) / 2);
             float rightScrollArrowScreenX = settingValueScreenCoords.x - 0.02f - scrollArrowScreenWidth;
             float leftScrollArrowScreenX = rightScrollArrowScreenX - 0.015f - scrollArrowScreenWidth;
             gp.getGuiIconM().addToRenderPipeline(renderer, 9, leftScrollArrowScreenX, scrollArrowScreenY);
@@ -795,7 +782,7 @@ public class Ui {
 
 
     /**
-     * Draws debug information.
+     * Adds debug information components to the render pipeline.
      */
     private void renderDebug() {
 

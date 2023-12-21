@@ -46,11 +46,4 @@ In the `src/main/resources/sound/tracks/` directory, the application expects fil
 In the `src/main/resources/sound/effects/` directory, the application expects a file named `testEffect1.wav`.
 
 ## Notes ##
-Only compatible with Windows at the moment.
-Mac and Linux support are planned for the future.
-
-Special thanks to RhiSnow for the excellent YouTube series on game development in Java (YouTube channel RhiSnow).
-This series provided essential foundations for getting this project off the ground.
-
-Special thanks to Gabriel Ambrosio for the excellent video series on game development in Java (YouTube channel GamesWithGabe).
-This series provided essential knowledge for writing the rendering engine in this project.
+Compatible with Windows (x64) and Mac.
