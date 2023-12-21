@@ -70,6 +70,28 @@ public class Ui {
      */
     private boolean[][] occupiedItemSlots;
 
+    /**
+     * Variable to store the current selected system setting in the settings menu.
+     */
+    private int systemSettingSelected;
+
+    /**
+     * Variable to store the current selected option of the current selected system setting in the settings menu.
+     */
+    private int systemOptionSelected;
+
+    /**
+     * Variable to track the FPS value displayed in debug mode.
+     * This value is updated every one second with the frame rate at that instant, regardless of whether debug mode is
+     * active or not.
+     */
+    private int fpsTracker;
+
+    /**
+     * Core time counter (seconds) for controlling when the FPS tracker variable is updated.
+     */
+    private double fpsCounter;
+
 
     // CONSTRUCTOR
     /**
@@ -92,6 +114,12 @@ public class Ui {
      */
     public void addToRenderPipeline(Renderer renderer, double dt) {
 
+        fpsCounter -= dt;
+        if (fpsCounter <= 0) {
+            fpsTracker = (int)(1.0 / dt);
+            fpsCounter += 1;                                                                                            // FPS displayed in debug mode will be updated every one second.
+        }
+
         if (this.renderer != renderer) {
             this.renderer = renderer;                                                                                   // Makes it easier to access current renderer across entire class.
         }
@@ -113,7 +141,7 @@ public class Ui {
                 break;
             case SETTINGS_MENU:
                 renderInGameMenuMainWindowScreen();
-//                drawSettingsMenuScreen();
+                renderSettingsMenuScreen();
                 break;
             case TRANSITION:
                 renderTransitionScreen();
@@ -127,7 +155,7 @@ public class Ui {
 
         // DEBUG.
         if (gp.isDebugActive()) {
-            renderDebug(dt);
+            renderDebug();
         }
     }
 
@@ -233,11 +261,11 @@ public class Ui {
         // Prepare header section icon (party, inventory, and settings) positions and render.
         float menuIconScreenX = 1 - mainWindowScreenLeftRightPadding - 0.1f;
         float menuIconScreenY = mainWindowScreenTopBottomPadding + 0.03f;
-        gp.getIconM().addToRenderPipeline(renderer, 2, menuIconScreenX, menuIconScreenY);                               // Settings menu icon.
+        gp.getGuiIconM().addToRenderPipeline(renderer, 2, menuIconScreenX, menuIconScreenY);                            // Settings menu icon.
         menuIconScreenX -= 0.05f;
-        gp.getIconM().addToRenderPipeline(renderer, 1, menuIconScreenX, menuIconScreenY);                               // Inventory menu icon.
+        gp.getGuiIconM().addToRenderPipeline(renderer, 1, menuIconScreenX, menuIconScreenY);                            // Inventory menu icon.
         menuIconScreenX -= 0.05f;
-        gp.getIconM().addToRenderPipeline(renderer, 0, menuIconScreenX, menuIconScreenY);                               // Party menu icon.
+        gp.getGuiIconM().addToRenderPipeline(renderer, 0, menuIconScreenX, menuIconScreenY);                            // Party menu icon.
 
         // Prepare header divider (horizontal line beneath header) position and dimensions and render.
         float dividerScreenThickness = 0.004f;                                                                          // Normalized (screen) thickness of horizontal line.
@@ -245,7 +273,7 @@ public class Ui {
         float dividerScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding) - (2 * dividerScreenLeftRightGap);
         float dividerWorldThickness = gp.getCamera().screenHeightToWorldHeight(dividerScreenThickness);
         float dividerWorldWidth = gp.getCamera().screenWidthToWorldWidth(dividerScreenWidth);
-        float menuIconWorldHeight = gp.getIconM().getIconById(0).getNativeSpriteHeight();                               // Get native (world) height of menu icons; all are same height, so doesn't matter which is used here.
+        float menuIconWorldHeight = gp.getGuiIconM().getIconById(0).getNativeSpriteHeight();                            // Get native (world) height of menu icons; all are same height, so doesn't matter which is used here.
         float menuIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(menuIconWorldHeight);
         Vector2f dividerScreenCoords = new Vector2f(
                 mainWindowScreenLeftRightPadding + dividerScreenLeftRightGap,
@@ -298,7 +326,7 @@ public class Ui {
     private void renderPartyMemberStatusIcons() {
 
         // Prepare slot icon positions (i.e., background sprite of each stat icon).
-        float slotIconWorldHeight = gp.getIconM().getIconById(3).getNativeSpriteHeight();                               // Get native (world) height of slot icons; all are same height, so doesn't matter which is used here.
+        float slotIconWorldHeight = gp.getGuiIconM().getIconById(3).getNativeSpriteHeight();                            // Get native (world) height of slot icons; all are same height, so doesn't matter which is used here.
         float slotIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(slotIconWorldHeight);
         float bottomSlotIconScreenY = 1 - mainWindowScreenTopBottomPadding - 0.1f - slotIconScreenHeight;               // Normalized (screen) y-position of the bottommost slot.
         float slotIconScreenX = mainWindowScreenLeftRightPadding + 0.025f;
@@ -306,15 +334,15 @@ public class Ui {
         float slotIconVerticalSpacing = 0.1f;                                                                           // Normalized (screen) spacing between each slot (does not include height of slot icon itself).
 
         // Render slot icon 2 (bottommost).
-        gp.getIconM().addToRenderPipeline(renderer, 5, slotIconScreenX, slotIconScreenY);
+        gp.getGuiIconM().addToRenderPipeline(renderer, 5, slotIconScreenX, slotIconScreenY);
 
         // Render slot icon 1.
         slotIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
-        gp.getIconM().addToRenderPipeline(renderer, 4, slotIconScreenX, slotIconScreenY);
+        gp.getGuiIconM().addToRenderPipeline(renderer, 4, slotIconScreenX, slotIconScreenY);
 
         // Render slot icon 0 (topmost, player entity).
         slotIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
-        gp.getIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
+        gp.getGuiIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
 
         // Extract keys from party map.
         Set<Integer> keySet = gp.getParty().keySet();
@@ -378,8 +406,8 @@ public class Ui {
         // Render life bar.
         float barScreenX = textScreenCoords.x + 0.03f;
         float barScreenY = textScreenCoords.y + 0.002f;
-        float barScreenWidth = 0.055f;                                                                                   // The maximum normalized (screen) width of the life bar interior (corresponds with maximum life).
-        float barScreenHeight = 0.023f;                                                                                  // The normalized (screen) thickness of the life bar.
+        float barScreenWidth = 0.055f;                                                                                  // The maximum normalized (screen) width of the life bar interior (corresponds with maximum life).
+        float barScreenHeight = 0.023f;                                                                                 // The normalized (screen) thickness of the life bar.
         renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, barScreenX, barScreenY);
 
         // Draw remaining life points text with a shadowed effect.
@@ -590,11 +618,29 @@ public class Ui {
 
 
     /**
-     * Draws the settings menu screen (to be drawn on top of the core menu screen).
+     * Adds components of the settings menu section of the in-game menu to the render pipeline.
+     * This is to be rendered on top of the in-game menu main window.
      */
-    private void drawSettingsMenuScreen() {
+    private void renderSettingsMenuScreen() {
 
-        // Nothing here... yet.
+        // General initializations.
+        float fontScale = 0.15f;
+        Setting setting;
+        Vector2f settingLabelScreenCoords = new Vector2f(
+                mainWindowScreenLeftRightPadding + 0.055f,
+                1 - mainWindowScreenTopBottomPadding - 0.7f);
+        Vector2f settingValueScreenCoords = new Vector2f(
+                settingLabelScreenCoords.x + 0.2f,
+                settingLabelScreenCoords.y);
+
+        // First setting.
+        setting = gp.getSystemSetting(0);
+        renderString(setting.getLabel(), settingLabelScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo Bold");
+        renderString(setting.getOption(systemOptionSelected), settingValueScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        if (systemSettingSelected == 0) {
+            gp.getGuiIconM().addToRenderPipeline(renderer, 9, settingLabelScreenCoords.x + 0.1f, settingLabelScreenCoords.y);
+            gp.getGuiIconM().addToRenderPipeline(renderer, 10, settingLabelScreenCoords.x + 0.12f, settingLabelScreenCoords.y);
+        }
     }
 
 
@@ -693,10 +739,8 @@ public class Ui {
 
     /**
      * Draws debug information.
-     *
-     * @param dt time since last frame (seconds)
      */
-    private void renderDebug(double dt) {
+    private void renderDebug() {
 
         float fontScale = 0.18f;
         float screenX = 0.01f;
@@ -711,12 +755,12 @@ public class Ui {
 
         // VSync.
         screenCoords = new Vector2f(screenX, 0.07f);
-        String vSync = "VSync: " + (gp.isvSyncEnabled() ? "Enabled" : "Disabled");
+        String vSync = "VSync: " + ((gp.getSystemSetting(0).getActiveOption() == 0) ? "Disabled" : "Enabled");
         renderStringShadow(vSync, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Frame rate.
         screenCoords = new Vector2f(screenX, 0.13f);
-        String fps = "FPS: " + (int)(1.0 / dt);
+        String fps = "FPS: " + fpsTracker;
         renderStringShadow(fps, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
 
         // Player column.
@@ -844,9 +888,9 @@ public class Ui {
 
 
     /**
-     * Updates which party member is selected in the party menu screen.
+     * Updates which party member is active in the party menu screen.
      */
-    private void setSelectedPartyMember() {
+    private void setActivePartyMember() {
 
         Set<Integer> keySet = gp.getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
@@ -887,7 +931,7 @@ public class Ui {
     private void selectPartySlot0(boolean selected) {
 
         gp.getEntityIconM().getEntityIconById(gp.getPlayer().getEntityId()).setSelected(selected);
-        gp.getIconM().getIconById(3).setSelected(selected);
+        gp.getGuiIconM().getIconById(3).setSelected(selected);
     }
 
 
@@ -905,7 +949,7 @@ public class Ui {
 
             gp.getEntityIconM().getEntityIconById(gp.getParty().get(keyArray[0]).getEntityId()).setSelected(selected);
         }
-        gp.getIconM().getIconById(4).setSelected(selected);
+        gp.getGuiIconM().getIconById(4).setSelected(selected);
     }
 
 
@@ -923,7 +967,30 @@ public class Ui {
 
             gp.getEntityIconM().getEntityIconById(gp.getParty().get(keyArray[1]).getEntityId()).setSelected(selected);
         }
-        gp.getIconM().getIconById(5).setSelected(selected);
+        gp.getGuiIconM().getIconById(5).setSelected(selected);
+    }
+
+
+    /**
+     * Updates whether the scroll arrows (both left and right) appear as active or not in the settings menu screen.
+     */
+    private void setActiveScrollArrows() {
+
+        if (systemOptionSelected > 0) {                                                                                 // Left arrow.
+
+            gp.getGuiIconM().getIconById(9).setSelected(true);
+        } else {
+
+            gp.getGuiIconM().getIconById(9).setSelected(false);
+        }
+
+        if (systemOptionSelected < gp.getSystemSetting(systemSettingSelected).getOptionsSize() - 1) {                   // Right arrow.
+
+            gp.getGuiIconM().getIconById(10).setSelected(true);
+        } else {
+
+            gp.getGuiIconM().getIconById(10).setSelected(false);
+        }
     }
 
 
@@ -956,6 +1023,14 @@ public class Ui {
         return occupiedItemSlots;
     }
 
+    public int getSystemSettingSelected() {
+        return systemSettingSelected;
+    }
+
+    public int getSystemOptionSelected() {
+        return systemOptionSelected;
+    }
+
 
     // SETTERS
     public void setPartySlotSelected(int partySlotSelected) {
@@ -966,7 +1041,7 @@ public class Ui {
         } else {
             this.partySlotSelected = partySlotSelected;
         }
-        setSelectedPartyMember();
+        setActivePartyMember();
     }
 
     public void setItemRowSelected(int itemRowSelected) {
@@ -984,6 +1059,21 @@ public class Ui {
                 this.itemColSelected = itemColSelected;
                 inventoryIndexSelected = (maxNumItemRow * itemRowSelected) + (itemColSelected);
             }
+        }
+    }
+
+    public void setSystemSettingSelected(int systemSettingSelected) {
+        if ((systemSettingSelected >= 0) && (systemSettingSelected < gp.getSystemSettingsSize())) {
+            this.systemSettingSelected = systemSettingSelected;
+            systemOptionSelected = gp.getSystemSetting(systemSettingSelected).getActiveOption();
+        }
+    }
+
+    public void setSystemOptionSelected(int systemOptionSelected) {
+        if ((systemOptionSelected >= 0) && (systemOptionSelected < gp.getSystemSetting(systemSettingSelected).getOptionsSize())) {
+            this.systemOptionSelected = systemOptionSelected;
+            gp.getSystemSetting(systemSettingSelected).setActiveOption(systemOptionSelected);
+            setActiveScrollArrows();
         }
     }
 }

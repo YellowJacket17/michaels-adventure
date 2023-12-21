@@ -179,7 +179,7 @@ public class Window {
 
         gp = new GamePanel();
         gp.init();
-        gp.setvSyncEnabled(vSyncEnabled);
+        gp.getSystemSetting(0).setActiveOption(vSyncEnabled ? 1 : 0);
     }
 
 
@@ -208,17 +208,9 @@ public class Window {
             // Set current time.
             currentTime = glfwGetTime();
 
-            // Check VSync toggle.
-            if (gp.isvSyncEnabled() != vSyncEnabled) {
-                vSyncEnabled = gp.isvSyncEnabled();
-                targetFrameRate = monitorRefreshRate;
-                if (vSyncEnabled) {
-                    glfwSwapInterval(1);
-                } else {
-                    glfwSwapInterval(0);
-                    lastLoopTime = glfwGetTime();
-                    dtAccumulated = 0;
-                }
+            // Poll for VSync changes.
+            if (pollVSync()) {
+                lastLoopTime = glfwGetTime();
             }
 
             // Set target frame pace.
@@ -290,6 +282,31 @@ public class Window {
 
         // Empty buffers.
         glfwSwapBuffers(glfwWindow);
+    }
+
+
+    /**
+     * Polls for changes in VSync settings.
+     * If a change has occurred, it is immediately applied.
+     *
+     * @return whether a change has occurred (true) or not (false)
+     */
+    private boolean pollVSync() {
+
+        if ((gp.getSystemSetting(0).getActiveOption() == 0) && vSyncEnabled) {
+
+            vSyncEnabled = false;
+            targetFrameRate = monitorRefreshRate;
+            glfwSwapInterval(0);
+            return true;
+        } else if ((gp.getSystemSetting(0).getActiveOption() == 1) && !vSyncEnabled) {
+
+            vSyncEnabled = true;
+            targetFrameRate = monitorRefreshRate;
+            glfwSwapInterval(1);
+            return true;
+        }
+        return false;
     }
 
 

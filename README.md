@@ -30,8 +30,6 @@
 
 **Q:** Enable/disable debug mode.
 
-**V:** Enable/disable VSync.
-
 **Up arrow:** Upward camera movement if debug mode is enabled.
 
 **Down arrow:** Downward camera movement if debug mode is enabled.
@@ -41,13 +39,16 @@
 **Right arrow:** Rightward camera movement if debug mode is enabled.
 
 ## Audio
-All `.wav` files are ommitted from the remote repository due to file size.
+All `.wav` files are omitted from the remote repository due to file size.
 These files belong in the `src/main/resources/sound/` directory.
 The application will run with them missing, but some warnings and errors will be printed to console.
 In the `src/main/resources/sound/tracks/` directory, the application expects files named `testTrack2.wav`, `testTrack3.wav`, and `testTrack4.wav`.
 In the `src/main/resources/sound/effects/` directory, the application expects a file named `testEffect1.wav`.
 
 ## Notes ##
+Only compatible with Windows at the moment.
+Mac and Linux support are planned for the future.
+
 Special thanks to RhiSnow for the excellent YouTube series on game development in Java (YouTube channel RhiSnow).
 This series provided essential foundations for getting this project off the ground.
 

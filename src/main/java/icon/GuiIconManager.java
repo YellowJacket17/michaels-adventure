@@ -186,5 +186,19 @@ public class GuiIconManager {
         guiIcon.setName("Item menu selector");
         guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(2));
         icons.put(guiIcon.getIconId(), guiIcon);
+
+        // Leftward scroll arrow - Icon ID 9.
+        guiIcon = new GuiIcon(9);
+        guiIcon.setName("Leftward scroll arrow");
+        guiIcon.setActive(AssetPool.getSpritesheet(5).getSprite(13));
+        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(14));
+        icons.put(guiIcon.getIconId(), guiIcon);
+
+        // Rightward scroll arrow - Icon ID 10.
+        guiIcon = new GuiIcon(10);
+        guiIcon.setName("Rightward scroll arrow");
+        guiIcon.setActive(AssetPool.getSpritesheet(5).getSprite(11));
+        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(12));
+        icons.put(guiIcon.getIconId(), guiIcon);
     }
 }

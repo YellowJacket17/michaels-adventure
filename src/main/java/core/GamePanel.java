@@ -25,10 +25,7 @@ import landmark.LandmarkManager;
 import map.Map;
 import submenu.SubMenuHandler;
 import tile.TileManager;
-import utility.AssetPool;
-import utility.JsonParser;
-import utility.UtilityTool;
-import utility.LimitedLinkedHashMap;
+import utility.*;
 
 import java.util.*;
 import java.util.List;
@@ -92,7 +89,7 @@ public class GamePanel {
     private final DialogueReader dialogueR = new DialogueReader(this);
     private TileManager tileM;
     private final LandmarkManager landmarkM = new LandmarkManager(this);
-    private GuiIconManager iconM;
+    private GuiIconManager guiIconM;
     private final EntityIconManager entityIconM = new EntityIconManager(this);
     private final EnvironmentManager environmentM = new EnvironmentManager(this);
     private final CutsceneManager cutsceneM = new CutsceneManager(this);
@@ -234,11 +231,11 @@ public class GamePanel {
     private final double transitionCounterFadingFromMax = 0.5;
 
 
-    // VSYNC
+    // SETTINGS
     /**
-     * Boolean indicating whether VSync is enabled (true) or disabled (false).
+     * List to store system settings available to the player.
      */
-    private boolean vSyncEnabled = false;
+    private LimitedArrayList<Setting> systemSettings = new LimitedArrayList<>(10);
 
 
     // CONSTRUCTOR
@@ -260,10 +257,16 @@ public class GamePanel {
         // Initialize remaining system classes.
         camera = new Camera(NATIVE_SCREEN_WIDTH, NATIVE_SCREEN_HEIGHT);
         tileM = new TileManager(this);
-        iconM = new GuiIconManager(this);
+        guiIconM = new GuiIconManager(this);
         dialogueA = new DialogueArrow(this);
         selectionA = new SelectionArrow(this);
         player = new Player(this);
+
+        // Initialize available settings.
+        Setting vSyncSetting = new Setting("VSync", "Syncs frame rate with monitor refresh rate to prevent screen tearing.");
+        vSyncSetting.addOption("Disabled");
+        vSyncSetting.addOption("Enabled");
+        systemSettings.add(vSyncSetting);
 
         // Load map along with associated entities and dialogue.
         loadMap(1);
@@ -831,6 +834,7 @@ public class GamePanel {
             switch (activeTransitionPhase) {
                 case LOADING:
                     handleTransitionLoading(dt);
+                    System.gc();                                                                                        // Now is a good time for garbage collection by the JVM.
                     break;
                 case CLEANUP:
                     concludeTransition();
@@ -901,13 +905,13 @@ public class GamePanel {
         switch (currentGameState) {
 
             case PARTY_MENU:
-                iconM.getIconById(0).setSelected(false);                                                                // Deselect the party menu icon.
+                guiIconM.getIconById(0).setSelected(false);                                                             // Deselect the party menu icon.
                 ui.setPartySlotSelected(0);                                                                             // Set the selected party member stat icon back to its default.
                 entityIconM.purgeAllEntityIcons();
                 break;
 
             case INVENTORY_MENU:
-                iconM.getIconById(1).setSelected(false);                                                                // Deselected the inventory menu icon.
+                guiIconM.getIconById(1).setSelected(false);                                                             // Deselected the inventory menu icon.
                 ui.setItemColSelected(0);                                                                               // Set the item slot back to its default column.
                 ui.setItemRowSelected(0);                                                                               // Set the item slot back to its default row.
                 for (int row = 0; row < ui.getMaxNumItemRow(); row++) {                                                 // Set all entries in the array of occupied item slots to false.
@@ -918,7 +922,9 @@ public class GamePanel {
                 break;
 
             case SETTINGS_MENU:
-                iconM.getIconById(2).setSelected(false);                                                                // Deselect the settings menu icon.
+                guiIconM.getIconById(2).setSelected(false);                                                             // Deselect the settings menu icon.
+                ui.setSystemSettingSelected(0);                                                                         // Reset selected setting to default.
+                ui.setSystemOptionSelected(systemSettings.get(0).getActiveOption());                                    // Reset selected option to default (i.e., active option of the default setting).
                 break;
         }
 
@@ -926,15 +932,15 @@ public class GamePanel {
         switch (newGameState) {
 
             case PARTY_MENU:
-                iconM.getIconById(0).setSelected(true);                                                                 // Select the party menu icon.
+                guiIconM.getIconById(0).setSelected(true);                                                              // Select the party menu icon.
                 entityIconM.createPartyEntityIcons();                                                                   // Create entity icons for the party members.
                 entityIconM.getEntityIconById(player.getEntityId()).setSelected(true);                                  // Set the player icon as being selected (will animate the player icon).
-                iconM.getIconById(3).setSelected(true);                                                                 // Set the background icon for the player as being selected (will darken the background).
+                guiIconM.getIconById(3).setSelected(true);                                                              // Set the background icon for the player as being selected (will darken the background).
                 ui.setPartySlotSelected(0);                                                                             // Set the player's party member stat icon as being selected in the UI.
                 break;
 
             case INVENTORY_MENU:
-                iconM.getIconById(1).setSelected(true);                                                                 // Select the inventory menu icon.
+                guiIconM.getIconById(1).setSelected(true);                                                              // Select the inventory menu icon.
                 int numItems = player.getInventory().size();
                 int itemIndex = 0;                                                                                      // Variable to track how many item slots in the player's inventory have been assigned to an array slot.
                 for (int row = 0; row < ui.getMaxNumItemRow(); row++) {                                                 // Set the array of occupied item slots (inventory is displayed as a grid).
@@ -947,12 +953,14 @@ public class GamePanel {
                         itemIndex++;
                     }
                 }
-                ui.setItemRowSelected(0);                                                                               // Set the top-left item icon as being selected.
-                ui.setItemColSelected(0);                                                                               // ^^^
+                ui.setItemColSelected(0);                                                                               // Set the top-left item icon as being selected.
+                ui.setItemRowSelected(0);                                                                               // ^^^
                 break;
 
             case SETTINGS_MENU:
-                iconM.getIconById(2).setSelected(true);                                                                 // Select the settings menu icon.
+                guiIconM.getIconById(2).setSelected(true);                                                              // Select the settings menu icon.
+                ui.setSystemSettingSelected(0);
+                ui.setSystemOptionSelected(systemSettings.get(0).getActiveOption());
                 break;
         }
     }
@@ -992,9 +1000,9 @@ public class GamePanel {
 
         // Icons spritesheet (spritesheet 5).
         filePath = "/spritesheets/icons.png";
-        widths = new int[] {152, 152, 40, 36, 36, 28, 28, 28, 28, 28, 28};
-        heights = new int[] {56, 56, 40, 36, 36, 28, 28, 28, 28, 28, 28};
-        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 11, widths, heights, 0));
+        widths = new int[] {152, 152, 40, 36, 36, 28, 28, 28, 28, 28, 28, 6, 6, 6, 6};
+        heights = new int[] {56, 56, 40, 36, 36, 28, 28, 28, 28, 28, 28, 10, 10, 10, 10};
+        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 15, widths, heights, 0));
 
         // Miscellaneous spritesheet (spritesheet 6).
         filePath = "/spritesheets/miscellaneous.png";
@@ -1053,8 +1061,8 @@ public class GamePanel {
         return landmarkM;
     }
 
-    public GuiIconManager getIconM() {
-        return iconM;
+    public GuiIconManager getGuiIconM() {
+        return guiIconM;
     }
 
     public EntityIconManager getEntityIconM() {
@@ -1185,8 +1193,15 @@ public class GamePanel {
         return transitionCounterFadingFromMax;
     }
 
-    public boolean isvSyncEnabled() {
-        return vSyncEnabled;
+    public int getSystemSettingsSize() {
+        return systemSettings.size();
+    }
+
+    public Setting getSystemSetting(int setting) {
+        if ((setting < systemSettings.size()) && (setting >= 0)) {
+            return systemSettings.get(setting);
+        }
+        return null;
     }
 
 
@@ -1206,9 +1221,5 @@ public class GamePanel {
 
     public void setDebugActive(boolean debugActive) {
         this.debugActive = debugActive;
-    }
-
-    public void setvSyncEnabled(boolean vSyncEnabled) {
-        this.vSyncEnabled = vSyncEnabled;
     }
 }
