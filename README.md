@@ -46,4 +46,18 @@ In the `src/main/resources/sound/tracks/` directory, the application expects fil
 In the `src/main/resources/sound/effects/` directory, the application expects a file named `testEffect1.wav`.
 
 ## Notes ##
-Compatible with Windows (x64) and Mac.
+Compatible with Windows x64, macOS x64, and macOS arm64.
+
+The combat system is incomplete.
+When entering combat, the only menu options that currently function are "Skill" and "Flee".
+All other options will break the combat loop.
+Once selecting an attack within the "Skill" option, the player will be looped back to the menu options.
+
+Within system settings, a setting labeled "Tether Game Speed" exists.
+When enabled, this setting will tie game update logic to the frame rate limit.
+In other words, if the actual frame rate dips below the target frame rate set in the "Frame Rate Limit" setting, then
+the entire game will appear to slow down. Conversely, if the actual frame rate hits above the target frame rate, then
+the entire game will appear to speed up.
+Despite these quirks, tethering the game speed to the target frame rate can help the game to feel/run smoother.
+This is due to more consistent frame times when updating game logic.
+Each time game logic is updated, the exact same frame time will be used, equal to one over the target frame rate.

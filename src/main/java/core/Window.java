@@ -318,6 +318,9 @@ public class Window {
         glfwSetWindowSize(glfwWindow, width, height);
         glViewport(0, 0, width, height);
         monitorRefreshRate = getRefreshRate();
+        if (running) {
+            populateFrameRateOptions(generateFrameRateOptions());
+        }
     }
 
 
@@ -331,6 +334,9 @@ public class Window {
 
         glfwSetWindowPos(glfwWindow, x, y);
         monitorRefreshRate = getRefreshRate();
+        if (running) {
+            populateFrameRateOptions(generateFrameRateOptions());
+        }
     }
 
 
