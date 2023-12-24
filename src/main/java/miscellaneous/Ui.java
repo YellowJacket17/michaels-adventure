@@ -653,6 +653,7 @@ public class Ui {
         settingValueScreenCoords.y += settingScreenSpacing;
         renderSystemSetting(2, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);
 
+        // Fourth setting (full screen).
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
         renderSystemSetting(3, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);

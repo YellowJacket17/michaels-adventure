@@ -473,7 +473,7 @@ public class DialogueReader {
                 }
             }
 
-            if ((dialoguePrintTemp + " " + nextWord).length() > (int)(3.4 * (GamePanel.NATIVE_TILE_SIZE / GamePanel.NATIVE_TILE_SIZE))) {
+            if ((dialoguePrintTemp + " " + nextWord).length() > (int)(3.4 * (GamePanel.NATIVE_SCREEN_WIDTH / GamePanel.NATIVE_TILE_SIZE))) {
 
                 printLine++;                                                                                            // Start printing character on the next line of the dialogue window.
                 dialoguePrintTotal += ' ';                                                                              // Add a space to the total dialogue printed to compensate for skipping over the space when printing the next character.
