@@ -1,0 +1,9 @@
+12/24/2023 10:59:02:649  INFO     Application started.
+12/24/2023 10:59:02:778  ERROR    An unhandled exception has occurred.
+java.lang.NullPointerException
+	at org.lwjgl.system.Checks.check(Checks.java:188)
+	at org.lwjgl.glfw.GLFW.nglfwGetWindowPos(GLFW.java:2409)
+	at org.lwjgl.glfw.GLFW.glfwGetWindowPos(GLFW.java:2437)
+	at core.Window.getClosestMonitor(Window.java:404)
+	at core.Window.initWindow(Window.java:127)
+	at core.App.main(App.java:18)

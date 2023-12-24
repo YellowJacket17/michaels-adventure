@@ -266,6 +266,11 @@ public class GamePanel {
         tetherGameSpeedSetting.addOption("Enabled");
         systemSettings.add(tetherGameSpeedSetting);
 
+        Setting fullScreenSetting = new Setting("Full Screen", "Sets the game viewport to occupy the full monitor screen.");
+        fullScreenSetting.addOption("Disabled");
+        fullScreenSetting.addOption("Enabled");
+        systemSettings.add(fullScreenSetting);
+
         // Load map along with associated entities and dialogue.
         loadMap(1);
 

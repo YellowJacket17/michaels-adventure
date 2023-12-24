@@ -121,6 +121,13 @@ public class Player extends EntityBase {
             menuActioned = false;                                                                                       // Enable the ability of the player to open/close the menu (party, inventory, settings) by pressing the Space key.
         }
 
+        if ((gp.getSystemSetting(3).getActiveOption() == 1) && (KeyListener.isKeyPressed((GLFW_KEY_ESCAPE)))) {
+            gp.getSystemSetting(3).setActiveOption(0);                                                                  // Exit full screen mode if enabled.
+            if (gp.getUi().getSystemSettingSelected() == 3) {
+                gp.getUi().setSystemOptionSelected(0);
+            }
+        }
+
         switch (gp.getGameState()) {
             case EXPLORE:
                 updateExploreInput(dt);

@@ -42,6 +42,18 @@ public class Window {
     private GamePanel gp;
 
     /**
+     * Refresh rate of monitor (Hz).
+     */
+    private int monitorRefreshRate;
+
+    /**
+     * Boolean indicating whether the main game loop is running (true) or not (false).
+     */
+    private boolean running = false;
+
+
+    // SYSTEM SETTINGS
+    /**
      * Boolean indicating whether vSync is enabled (true) or not (false).
      */
     private boolean vSyncEnabled = true;
@@ -52,19 +64,29 @@ public class Window {
     private boolean gameSpeedTethered = true;
 
     /**
-     * Refresh rate of monitor (Hz).
+     * Boolean tracking whether full screen is enabled (true) or not (false).
      */
-    private int monitorRefreshRate;
+    private boolean fullScreenEnabled = false;
 
     /**
-     * Target frame rate (FPS).
+     * Target frame rate (frames per second).
      */
     private int targetFrameRate;
 
     /**
-     * Boolean indicating whether the main game loop is running (true) or not (false).
+     * Variable to temporarily store the screen coordinates (x and y) of this window right before entering full screen
+     * mode.
+     * This allows these screen coordinates to be restored once full screen mode is exited.
+     *
      */
-    private boolean running = false;
+    private Vector2i tempWindowPos = new Vector2i();
+
+    /**
+     * Variable to temporarily store the screen size (width and height) of this window right before entering full screen
+     * mode.
+     * This allows this screen size to be restored once full screen mode is exited.
+     */
+    private Vector2i tempWindowScale = new Vector2i();
 
 
     // WINDOW PROPERTIES
@@ -223,6 +245,9 @@ public class Window {
 
             // Poll for tether game speed changes.
             pollTetherGamedSpeed();
+
+            // Poll for full screen changes.
+            pollFullScreen();
 
             // Set target frame pace.
             dtTarget = 1.0 / targetFrameRate;
@@ -520,6 +545,54 @@ public class Window {
         } else if ((gp.getSystemSetting(2).getActiveOption() == 1) && !gameSpeedTethered) {
 
             gameSpeedTethered = true;
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Polls for changes in full screen in system settings.
+     * If a change has occurred, it is immediately applied.
+     *
+     * @return whether a change has occurred (true) or not (false)
+     */
+    private boolean pollFullScreen() {
+
+        if ((gp.getSystemSetting(3).getActiveOption() == 0) && fullScreenEnabled) {
+
+            long monitor = getClosestMonitor();
+            GLFWVidMode videoModeMonitor = glfwGetVideoMode(monitor);
+
+            glfwSetWindowMonitor(glfwWindow, NULL, tempWindowPos.x, tempWindowPos.y, tempWindowScale.x, tempWindowScale.y, videoModeMonitor.refreshRate());
+            fullScreenEnabled = false;
+
+            tempWindowPos.x = 0;
+            tempWindowPos.y = 0;
+            tempWindowScale.x = 0;
+            tempWindowScale.y = 0;
+            return true;
+        } else if ((gp.getSystemSetting(3).getActiveOption() == 1) && !fullScreenEnabled) {
+
+            long monitor = getClosestMonitor();
+            GLFWVidMode videoModeMonitor = glfwGetVideoMode(monitor);
+
+            IntBuffer bufferWindowPosX = BufferUtils.createIntBuffer(1);
+            IntBuffer bufferWindowPosY = BufferUtils.createIntBuffer(1);
+            glfwGetWindowPos(glfwWindow, bufferWindowPosX, bufferWindowPosY);
+            Vector2i windowPos = new Vector2i(bufferWindowPosX.get(0), bufferWindowPosY.get(0));
+            tempWindowPos.x = windowPos.x;
+            tempWindowPos.y = windowPos.y;
+
+            IntBuffer bufferWindowWidth = BufferUtils.createIntBuffer(1);
+            IntBuffer bufferWindowHeight = BufferUtils.createIntBuffer(1);
+            glfwGetWindowSize(glfwWindow, bufferWindowWidth, bufferWindowHeight);
+            Vector2i windowScale = new Vector2i(bufferWindowWidth.get(0), bufferWindowHeight.get(0));
+            tempWindowScale.x = windowScale.x;
+            tempWindowScale.y = windowScale.y;
+
+            glfwSetWindowMonitor(glfwWindow, monitor, 0, 0, videoModeMonitor.width(), videoModeMonitor.height(), videoModeMonitor.refreshRate());
+            fullScreenEnabled = true;
             return true;
         }
         return false;

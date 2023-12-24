@@ -22,6 +22,8 @@
 
 **Space:** Open/close the main menu.
 
+**Esc:** Exit full screen mode when full screen mode is enabled.
+
 **1:** Switch to the party section of the main menu.
 
 **2:** Switch to the inventory section of the main menu.

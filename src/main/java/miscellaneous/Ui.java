@@ -652,6 +652,10 @@ public class Ui {
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
         renderSystemSetting(2, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);
+
+        settingLabelScreenCoords.y += settingScreenSpacing;
+        settingValueScreenCoords.y += settingScreenSpacing;
+        renderSystemSetting(3, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);
     }
 
 
