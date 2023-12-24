@@ -133,9 +133,9 @@ public abstract class LandmarkBase extends Drawable {
             sprite = sprites.get(spriteNum);
             int worldYAdjustment = 0;                                                                                   // `worldY` adjustment so that the sprite is rendered correctly.
 
-            if (sprite.getNativeHeight() > gp.getNativeTileSize()) {
+            if (sprite.getNativeHeight() > GamePanel.NATIVE_TILE_SIZE) {
 
-                worldYAdjustment = -sprite.getNativeHeight() + gp.getNativeTileSize();
+                worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE;
             }
             transform.position.x = worldX;
             transform.position.y = worldY + worldYAdjustment;
@@ -178,11 +178,11 @@ public abstract class LandmarkBase extends Drawable {
     }
 
     public int getCol() {
-        return (int)(worldX / gp.getNativeTileSize());
+        return (int)(worldX / GamePanel.NATIVE_TILE_SIZE);
     }
 
     public int getRow() {
-        return (int)(worldY / gp.getNativeTileSize());
+        return (int)(worldY / GamePanel.NATIVE_TILE_SIZE);
     }
 
     public ArrayList<Sprite> getSprites() {
@@ -216,10 +216,10 @@ public abstract class LandmarkBase extends Drawable {
     }
 
     public void setCol(int col) {
-        worldX = col * gp.getNativeTileSize();
+        worldX = col * GamePanel.NATIVE_TILE_SIZE;
     }
 
     public void setRow(int row) {
-        worldY = row * gp.getNativeTileSize();
+        worldY = row * GamePanel.NATIVE_TILE_SIZE;
     }
 }

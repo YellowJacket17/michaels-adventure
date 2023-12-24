@@ -89,7 +89,7 @@ public class CameraSupport {
             updateCameraScroll(dt);
         } else if ((trackedEntity != null) && (!overrideEntityTracking)) {
 
-            float centerScreenX = ((float)gp.getCamera().getScreenWidth() / 2) - ((float)gp.getNativeTileSize() / 2);
+            float centerScreenX = ((float)gp.getCamera().getScreenWidth() / 2) - ((float)GamePanel.NATIVE_TILE_SIZE / 2);
             float centerScreenY = (float)gp.getCamera().getScreenHeight() / 2;
             gp.getCamera().adjustPosition(
                     new Vector2f(
@@ -123,12 +123,12 @@ public class CameraSupport {
 
         if ((!cameraScrolling) && (trackedEntity != null)) {
 
-            float centerScreenX = ((float)gp.getCamera().getScreenWidth() / 2) - ((float)gp.getNativeTileSize() / 2);
+            float centerScreenX = ((float)gp.getCamera().getScreenWidth() / 2) - ((float)GamePanel.NATIVE_TILE_SIZE / 2);
             float centerScreenY = (float)gp.getCamera().getScreenHeight() / 2;
             gp.getCamera().adjustPosition(
                     new Vector2f(
-                            (float)trackedEntity.getWorldX() - centerScreenX,
-                            (float)trackedEntity.getWorldY() - centerScreenY
+                            trackedEntity.getWorldX() - centerScreenX,
+                            trackedEntity.getWorldY() - centerScreenY
                     )
             );
             overrideEntityTracking = false;
@@ -149,7 +149,7 @@ public class CameraSupport {
         if ((!cameraScrolling) && (trackedEntity != null) && (duration > 0) && (duration <= 20)) {
 
             setCameraScroll(
-                    trackedEntity.getWorldX() + ((float)gp.getNativeTileSize() / 2),
+                    trackedEntity.getWorldX() + ((float)GamePanel.NATIVE_TILE_SIZE / 2),
                     trackedEntity.getWorldY(),
                     duration
             );

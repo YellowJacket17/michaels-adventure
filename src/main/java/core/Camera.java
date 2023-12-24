@@ -77,18 +77,18 @@ public class Camera {
 
     // CONSTRUCTOR
     /**
-     * Constructs a SystemCamera instance.
+     * Constructs a Camera instance.
      *
-     * @param screenWidth visible screen width (NOT necessarily pixels but some amount of units)
-     * @param screenHeight visible screen height (NOT necessarily pixels but some amount of units)
+     * @param screenWidth visible screen width (NOT necessarily pixels); the larger the value, the more zoomed out the
+     *                    camera will appear
+     * @param screenHeight visible screen height (NOT necessarily pixels); the larger the value, the more zoomed out the
+     *                    camera will appear
      */
     public Camera(int screenWidth, int screenHeight) {
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
         this.positionMatrix = new Vector2f(0, 0);
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
-        adjustProjection();
+        adjustProjection(screenWidth, screenHeight);
         adjustView();
     }
 
@@ -96,10 +96,17 @@ public class Camera {
     // METHODS
     /**
      * Adjusts the projection matrix.
-     * The current visible screen size (width and height) will be applied.
+     * The passed visible screen size (width and height) will be applied.
+     *
+     * @param screenWidth visible screen width (NOT necessarily pixels); the larger the value, the more zoomed out the
+     *                    camera will appear
+     * @param screenHeight visible screen height (NOT necessarily pixels); the larger the value, the more zoomed out the
+     *                    camera will appear
      */
-    public void adjustProjection() {
+    public void adjustProjection(int screenWidth, int screenHeight) {
 
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
         projectionMatrix.identity();                                                                                    // Sets the projection matrix to equal the identity matrix.
         projectionMatrix.ortho(0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 0.0f, 100.0f);                      // Screen coordinate (0, 0) is defined at the top-left; note that this flips everything rendered on screen in the y-direction.
     }

@@ -63,7 +63,7 @@ public class Lighting {
     public Lighting(GamePanel gp, int circleSize) {
 
         // Create a buffered image.
-        darknessFilter = new BufferedImage(gp.getNativeScreenWidth(), gp.getNativeScreenHeight(), BufferedImage.TYPE_INT_ARGB);
+        darknessFilter = new BufferedImage(GamePanel.NATIVE_SCREEN_WIDTH, GamePanel.NATIVE_SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = (Graphics2D)darknessFilter.getGraphics();                                                       // Everything this `g2` draws will be recorded on this `darknessFilter`.
 
         // Calculate the center of the light circle (x and y).
@@ -107,7 +107,7 @@ public class Lighting {
 //        g2.setPaint(gPaint);
 
         // Draw the rectangle.
-        g2.fillRect(0, 0, gp.getNativeScreenWidth(), gp.getNativeScreenHeight());
+        g2.fillRect(0, 0, GamePanel.NATIVE_SCREEN_WIDTH, GamePanel.NATIVE_SCREEN_HEIGHT);
 
         g2.dispose();
     }

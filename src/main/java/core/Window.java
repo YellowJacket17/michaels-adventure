@@ -1,5 +1,6 @@
 package core;
 
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
@@ -68,14 +69,9 @@ public class Window {
 
     // WINDOW PROPERTIES
     /**
-     * Default window width (pixels).
+     * Viewport aspect ratio.
      */
-    private int defaultWidth = 1280;
-
-    /**
-     * Default window height (pixels).
-     */
-    private int defaultHeight = 720;
+    private final Vector2f aspectRatio = new Vector2f(16f, 9f);
 
     /**
      * Window title.
@@ -128,7 +124,7 @@ public class Window {
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
         // Create window.
-        glfwWindow = glfwCreateWindow(defaultWidth, defaultHeight, title, NULL, NULL);
+        glfwWindow = glfwCreateWindow(GamePanel.NATIVE_SCREEN_WIDTH, GamePanel.NATIVE_SCREEN_HEIGHT, title, NULL, NULL);
         if (glfwWindow == NULL) {
             throw new IllegalStateException("Failed to initialize GLFW window");
         }
@@ -315,9 +311,22 @@ public class Window {
      */
     private void resizeWindow(int width, int height) {
 
+        int viewportWidth;
+        int viewportHeight;
+
+        if (((float)width / height) > (aspectRatio.x / aspectRatio.y)) {
+
+            viewportWidth = (int)((aspectRatio.x / aspectRatio.y) * height);
+            viewportHeight = height;
+        } else {
+
+            viewportWidth = width;
+            viewportHeight = (int)((aspectRatio.y/ aspectRatio.x) * width);
+        }
         glfwSetWindowSize(glfwWindow, width, height);
-        glViewport(0, 0, width, height);
+        glViewport(((width - viewportWidth) / 2), ((height - viewportHeight) / 2), viewportWidth, viewportHeight);
         monitorRefreshRate = getRefreshRate();
+
         if (running) {
             populateFrameRateOptions(generateFrameRateOptions());
         }
@@ -334,6 +343,7 @@ public class Window {
 
         glfwSetWindowPos(glfwWindow, x, y);
         monitorRefreshRate = getRefreshRate();
+
         if (running) {
             populateFrameRateOptions(generateFrameRateOptions());
         }
@@ -395,7 +405,6 @@ public class Window {
         Vector2i windowPosTopLeft = new Vector2i(bufferWindowPosTopLeftX.get(0), bufferWindowPosTopLeftY.get(0));
 
         // Window dimensions.
-        // TODO : Perhaps just use the dimensions already recorded as global variables.
         IntBuffer bufferWindowWidth = BufferUtils.createIntBuffer(1);
         IntBuffer bufferWindowHeight = BufferUtils.createIntBuffer(1);
         glfwGetWindowSize(glfwWindow, bufferWindowWidth, bufferWindowHeight);
@@ -432,7 +441,9 @@ public class Window {
             if ((overlapWidth < 0) || (overlapHeight < 0)) {
                 monitorOverlappingArea.put(monitor, 0);
             } else {
-                // TODO : Perhaps do an immediate return here if the overlapping area equals the window area.
+                if ((windowScale.x == overlapWidth) && (windowScale.y == overlapHeight)) {
+                    return monitor;
+                }
                 monitorOverlappingArea.put(monitor, overlapWidth * overlapHeight);
             }
         }
@@ -543,14 +554,26 @@ public class Window {
      */
     private void populateFrameRateOptions(ArrayList<Integer> frameRateOptions) {
 
+        boolean activeOptionApplied = false;
+        String activeOption = gp.getSystemSetting(1).getOption(gp.getSystemSetting(1).getActiveOption());
         gp.getSystemSetting(1).removeAllOptions();
         int index = 0;
+
         for (int option : frameRateOptions) {
+
             gp.getSystemSetting(1).addOption(String.valueOf(option));
-            if (option == monitorRefreshRate) {
+
+            if ((activeOption != null) && (option == Integer.parseInt(activeOption))) {
+
                 gp.getSystemSetting(1).setActiveOption(index);
+                activeOptionApplied = true;
             }
             index++;
+        }
+
+        if (!activeOptionApplied) {
+
+            gp.getSystemSetting(1).setActiveOption(0);
         }
     }
 }

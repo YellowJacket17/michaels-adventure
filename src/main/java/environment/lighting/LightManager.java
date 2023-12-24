@@ -48,7 +48,7 @@ public class LightManager {
      */
     public LightManager(GamePanel gp) {
         this.gp = gp;
-        nodesPerTile = gp.getNativeTileSize() / nodeSize;
+        nodesPerTile = GamePanel.NATIVE_TILE_SIZE / nodeSize;
         instantiateNodes();
     }
 
@@ -171,8 +171,8 @@ public class LightManager {
         int worldSubRow = 0;
         Vector2f size = new Vector2f(nodeSize, nodeSize);
 
-        while ((worldSubCol < (gp.getMaxWorldCol() * nodesPerTile))
-                && (worldSubRow < (gp.getMaxWorldRow() * nodesPerTile))) {                                              // Draw each node from left to right for each sub-row, starting with the top row and working downwards.
+        while ((worldSubCol < (GamePanel.MAX_WORLD_COL * nodesPerTile))
+                && (worldSubRow < (GamePanel.MAX_WORLD_ROW * nodesPerTile))) {                                          // Draw each node from left to right for each sub-row, starting with the top row and working downwards.
 
             Vector2f worldCoords = new Vector2f(worldSubCol * nodeSize, worldSubRow * nodeSize);
             Transform transform = new Transform(worldCoords, size);
@@ -191,7 +191,7 @@ public class LightManager {
             }
             worldSubCol++;                                                                                              // Iterate so that we can draw the next tile.
 
-            if (worldSubCol == (gp.getMaxWorldCol() * nodesPerTile)) {
+            if (worldSubCol == (GamePanel.MAX_WORLD_COL * nodesPerTile)) {
                 worldSubCol = 0;
                 worldSubRow++;
             }
@@ -204,18 +204,18 @@ public class LightManager {
      */
     private void instantiateNodes() {
 
-        nodes = new Node[gp.getMaxWorldCol() * nodesPerTile][gp.getMaxWorldRow() * nodesPerTile];                       // Each overworld tile is broken into a 16x16 grid of sub-tiles.
+        nodes = new Node[GamePanel.MAX_WORLD_COL * nodesPerTile][GamePanel.MAX_WORLD_ROW * nodesPerTile];               // Each overworld tile is broken into a 16x16 grid of sub-tiles.
 
         int subCol = 0;
         int subRow = 0;
 
-        while ((subCol < (gp.getMaxWorldCol() * nodesPerTile)) && (subRow < (gp.getMaxWorldRow() * nodesPerTile))) {
+        while ((subCol < (GamePanel.MAX_WORLD_COL * nodesPerTile)) && (subRow < (GamePanel.MAX_WORLD_ROW * nodesPerTile))) {
 
             nodes[subCol][subRow] = new Node(subCol, subRow);
 
             subCol++;
 
-            if (subCol == (gp.getMaxWorldCol() * nodesPerTile)) {
+            if (subCol == (GamePanel.MAX_WORLD_COL * nodesPerTile)) {
 
                 subCol = 0;
                 subRow++;
@@ -234,7 +234,7 @@ public class LightManager {
         int subCol = 0;
         int subRow = 0;
 
-        while ((subCol < (gp.getMaxWorldCol() * nodesPerTile)) && (subRow < (gp.getMaxWorldRow() * nodesPerTile))) {
+        while ((subCol < (GamePanel.MAX_WORLD_COL * nodesPerTile)) && (subRow < (GamePanel.MAX_WORLD_ROW * nodesPerTile))) {
 
             nodes[subCol][subRow].setAlpha(0.98f);                                                                      // Reset `alpha` to the base default value for this node.
             nodes[subCol][subRow].setEndOfRay(false);                                                                   // Reset `endOfRay` for this node.
@@ -242,7 +242,7 @@ public class LightManager {
 
             subCol++;
 
-            if (subCol == (gp.getMaxWorldCol() * nodesPerTile)) {
+            if (subCol == (GamePanel.MAX_WORLD_COL * nodesPerTile)) {
 
                 subCol = 0;
                 subRow++;

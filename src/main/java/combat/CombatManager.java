@@ -471,8 +471,8 @@ public class CombatManager {
         generateTurnOrder();
 
         // Set camera to center on the combat field.
-        gp.getCameraS().setCameraSnap((fieldCenterCol * gp.getNativeTileSize()) + (gp.getNativeTileSize() / 2) ,
-                fieldCenterRow * gp.getNativeTileSize());
+        gp.getCameraS().setCameraSnap((fieldCenterCol * GamePanel.NATIVE_TILE_SIZE) + (GamePanel.NATIVE_TILE_SIZE / 2),
+                fieldCenterRow * GamePanel.NATIVE_TILE_SIZE);
     }
 
 

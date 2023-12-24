@@ -328,7 +328,7 @@ public class Ui {
         // Prepare slot icon positions (i.e., background sprite of each stat icon).
         float slotIconWorldHeight = gp.getGuiIconM().getIconById(3).getNativeSpriteHeight();                            // Get native (world) height of slot icons; all are same height, so doesn't matter which is used here.
         float slotIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(slotIconWorldHeight);
-        float bottomSlotIconScreenY = 1 - mainWindowScreenTopBottomPadding - 0.1f - slotIconScreenHeight;               // Normalized (screen) y-position of the bottommost slot.
+        float bottomSlotIconScreenY = 1 - mainWindowScreenTopBottomPadding - 0.081f - slotIconScreenHeight;             // Normalized (screen) y-position of the bottommost slot.
         float slotIconScreenX = mainWindowScreenLeftRightPadding + 0.025f;
         float slotIconScreenY = bottomSlotIconScreenY;
         float slotIconVerticalSpacing = 0.1f;                                                                           // Normalized (screen) spacing between each slot (does not include height of slot icon itself).
@@ -506,7 +506,7 @@ public class Ui {
         // Initialize position and color.
         Vector3f nameColor = new Vector3f(121, 149, 255);
         Vector3f quantityColor = new Vector3f(211, 125, 45);
-        int textX = (gp.getNativeScreenWidth() / 2) + 10;
+        int textX = (GamePanel.NATIVE_SCREEN_WIDTH / 2) + 10;
 //        int textY = mainWindowTopBottomPadding + 68;
 
         // Initialize text to draw.
@@ -633,7 +633,6 @@ public class Ui {
         float scrollArrowScreenWidth = gp.getCamera().worldWidthToScreenWidth(scrollArrowWorldWidth);                   // Normalized (screen) width of scroll arrows.
         float scrollArrowWorldHeight = gp.getGuiIconM().getIconById(9).getNativeSpriteHeight();                         // Both the left and right scroll arrows have the same height, so either height can be retrieved.
         float scrollArrowScreenHeight = gp.getCamera().worldHeightToScreenHeight(scrollArrowWorldHeight);               // Normalized (screen) height of scroll arrows.
-        Setting setting;
         Vector2f settingLabelScreenCoords = new Vector2f(
                 settingLabelLeftScreenPadding,
                 settingLabelTopmostScreenY);
@@ -695,8 +694,8 @@ public class Ui {
     private void renderTransitionScreen() {
 
         Vector2f worldCoords = new Vector2f(0, 0);
-        float worldWidth = gp.getMaxWorldCol() * gp.getNativeTileSize();                                                // Overlaid black rectangle will span entire width of world.
-        float worldHeight = gp.getMaxWorldRow() * gp.getNativeTileSize();                                               // Overlaid black rectangle will span entire height of world.
+        float worldWidth = GamePanel.MAX_WORLD_COL * GamePanel.NATIVE_TILE_SIZE;                                        // Overlaid black rectangle will span entire width of world.
+        float worldHeight = GamePanel.MAX_WORLD_ROW * GamePanel.NATIVE_TILE_SIZE;                                       // Overlaid black rectangle will span entire height of world.
         float alpha = 0;
 
         switch (gp.getActiveTransitionPhase()) {

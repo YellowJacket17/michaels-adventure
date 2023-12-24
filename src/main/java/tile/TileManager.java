@@ -61,7 +61,7 @@ public class TileManager {
      */
     public TileManager(GamePanel gp) {
         this.gp = gp;
-        drawables = new Drawable[gp.getMaxWorldCol()][gp.getMaxWorldRow()];
+        drawables = new Drawable[GamePanel.MAX_WORLD_COL][GamePanel.MAX_WORLD_ROW];
         getTileImage();                                                                                                 // Load tile sprites upon instantiation.
         initializeDrawablesArray();
     }
@@ -78,7 +78,7 @@ public class TileManager {
         int worldCol = 0;
         int worldRow = 0;
 
-        while ((worldCol < gp.getMaxWorldCol()) && (worldRow < gp.getMaxWorldRow())) {                                  // Render each tile from left to right for each row, starting with the top row and working downwards.
+        while ((worldCol < GamePanel.MAX_WORLD_COL) && (worldRow < GamePanel.MAX_WORLD_ROW)) {                          // Render each tile from left to right for each row, starting with the top row and working downwards.
 
             int tileNum;
             try {
@@ -111,7 +111,7 @@ public class TileManager {
             }
 
             worldCol++;                                                                                                 // Iterate so that we can render the next tile.
-            if (worldCol == gp.getMaxWorldCol()) {
+            if (worldCol == GamePanel.MAX_WORLD_COL) {
                 worldCol = 0;
                 worldRow++;
             }
@@ -142,7 +142,7 @@ public class TileManager {
             parsedMapId = Integer.toString(mapId);
         }
         String completeFilePath = "/maps/map" + parsedMapId + "/map" + parsedMapId + "_tiles.txt";
-        int[][] mapTileNum = new int[gp.getMaxWorldCol()][gp.getMaxWorldRow()];                                         // Initialize an array to store loaded tile data.
+        int[][] mapTileNum = new int[GamePanel.MAX_WORLD_COL][GamePanel.MAX_WORLD_ROW];                                 // Initialize an array to store loaded tile data.
 
         try (InputStream is = getClass().getResourceAsStream(completeFilePath);
              BufferedReader br = new BufferedReader(new InputStreamReader(is))) {                                       // We will read tile values from the map text file one value at a time.
@@ -150,13 +150,13 @@ public class TileManager {
             int col = 0;
             int row = 0;
 
-            while (row < gp.getMaxWorldRow()) {                                                                         // Read each row of the map data from the text file.
+            while (row < GamePanel.MAX_WORLD_ROW) {                                                                     // Read each row of the map data from the text file.
 
                 String line = br.readLine();                                                                            // `readLine()` reads a line of text from the text file and puts it into the String variable `line`.
 
                 if (line == null) {                                                                                     // Check to see if we've exceeded the number of rows specified in the loaded map data.
 
-                    for (int i = 0; i <= gp.getMaxWorldCol(); i++) {
+                    for (int i = 0; i <= GamePanel.MAX_WORLD_COL; i++) {
 
                         mapTileNum[col][row] = defaultTile;                                                             // Set the value of the current tile being read.
                     }
@@ -164,7 +164,7 @@ public class TileManager {
 
                     String[] numbers = line.split(" ");                                                                 // The line of text read previously will be split into an array; `split(" ")` will split the string at a space.
 
-                    while (col < gp.getMaxWorldCol()) {                                                                 // Read each column of the given line of text.
+                    while (col < GamePanel.MAX_WORLD_COL) {                                                             // Read each column of the given line of text.
 
                         if (col >= numbers.length) {                                                                    // Check to see if we've exceeded the number of columns specified in the loaded map data.
 
@@ -293,21 +293,21 @@ public class TileManager {
         int col = 0;
         int row = 0;
 
-        while ((col < gp.getMaxWorldCol()) && (row < gp.getMaxWorldRow())) {
+        while ((col < GamePanel.MAX_WORLD_COL) && (row < GamePanel.MAX_WORLD_ROW)) {
 
-            float worldX = col * gp.getNativeTileSize();
-            float worldY = row * gp.getNativeTileSize();
+            float worldX = col * GamePanel.NATIVE_TILE_SIZE;
+            float worldY = row * GamePanel.NATIVE_TILE_SIZE;
             Sprite sprite = tiles[defaultTile].getSprites().get(0);                                                     // Initialize with default sprite.
             Drawable drawable = new Drawable(
                     new Transform(
                             new Vector2f(worldX, worldY),
-                            new Vector2f(gp.getNativeTileSize(), gp.getNativeTileSize())),                              // Sprite size must match native tile size.
+                            new Vector2f(GamePanel.NATIVE_TILE_SIZE, GamePanel.NATIVE_TILE_SIZE)),                      // Sprite size must match native tile size.
                     sprite);
             drawables[col][row] = drawable;
 
             col++;
 
-            if (col == gp.getMaxWorldCol()) {
+            if (col == GamePanel.MAX_WORLD_COL) {
 
                 col = 0;
                 row++;
@@ -324,12 +324,12 @@ public class TileManager {
         int col = 0;
         int row = 0;
 
-        while ((col < gp.getMaxWorldCol()) && (row < gp.getMaxWorldRow())) {
+        while ((col < GamePanel.MAX_WORLD_COL) && (row < GamePanel.MAX_WORLD_ROW)) {
 
             drawables[col][row].setSprite(tiles[defaultTile].getSprites().get(0));
             col++;
 
-            if (col == gp.getMaxWorldCol()) {
+            if (col == GamePanel.MAX_WORLD_COL) {
 
                 col = 0;
                 row++;

@@ -415,13 +415,13 @@ public abstract class EntityBase extends Drawable {
 
                     int worldYAdjustment = 0;                                                                           // Amount in the y-direction that the character sprite needs to be adjusted when rendered.
 
-                    if (sprite.getNativeHeight() > gp.getNativeTileSize()) {
+                    if (sprite.getNativeHeight() > GamePanel.NATIVE_TILE_SIZE) {
 
-                        worldYAdjustment = -sprite.getNativeHeight() + gp.getNativeTileSize();
+                        worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE;
                     }
                     transform.position.x = worldX;
                     transform.position.y = worldY + worldYAdjustment;                                                   // Y-coordinate of entities of type CHARACTER is modified slightly since they can be taller than a single tile; adjusted so the bottom of the sprite lines up with the bottom of the tile the entity is occupying when rendered.
-                    transform.scale.x = gp.getNativeTileSize();                                                         // Entities must be as wide as the native tile size.
+                    transform.scale.x = GamePanel.NATIVE_TILE_SIZE;                                                     // Entities must be as wide as the native tile size.
                     transform.scale.y = sprite.getNativeHeight();
                     renderer.addDrawable(this, ZIndex.THIRD_LAYER);
                 } else {
@@ -475,27 +475,27 @@ public abstract class EntityBase extends Drawable {
                     directionCandidate = EntityDirection.UP;
                     directionLast = EntityDirection.UP;
                     worldXEnd = worldX;
-                    worldYEnd = worldY - gp.getNativeTileSize();
+                    worldYEnd = worldY - GamePanel.NATIVE_TILE_SIZE;
                     break;
                 case DOWN:
                     directionCurrent = EntityDirection.DOWN;
                     directionCandidate = EntityDirection.DOWN;
                     directionLast = EntityDirection.DOWN;
                     worldXEnd = worldX;
-                    worldYEnd = worldY + gp.getNativeTileSize();
+                    worldYEnd = worldY + GamePanel.NATIVE_TILE_SIZE;
                     break;
                 case LEFT:
                     directionCurrent = EntityDirection.LEFT;
                     directionCandidate = EntityDirection.LEFT;
                     directionLast = EntityDirection.LEFT;
-                    worldXEnd = worldX - gp.getNativeTileSize();
+                    worldXEnd = worldX - GamePanel.NATIVE_TILE_SIZE;
                     worldYEnd = worldY;
                     break;
                 case RIGHT:
                     directionCurrent = EntityDirection.RIGHT;
                     directionCandidate = EntityDirection.RIGHT;
                     directionLast = EntityDirection.RIGHT;
-                    worldXEnd = worldX + gp.getNativeTileSize();
+                    worldXEnd = worldX + GamePanel.NATIVE_TILE_SIZE;
                     worldYEnd = worldY;
                     break;
             }
@@ -674,7 +674,7 @@ public abstract class EntityBase extends Drawable {
                 updateWorldPosition(dt);
             }
 
-            if (worldCounter <= gp.getNativeTileSize() / 2) {                                                           // Walking animation; entity will have a foot forward for half of the world units traversed.
+            if (worldCounter <= GamePanel.NATIVE_TILE_SIZE / 2) {                                                       // Walking animation; entity will have a foot forward for half of the world units traversed.
 
                 if (spriteNumLast == 2) {
 
@@ -688,7 +688,7 @@ public abstract class EntityBase extends Drawable {
                 spriteNumCurrent = 1;
             }
 
-            if (worldCounter >= gp.getNativeTileSize()) {                                                               // Check if the entity has moved a number of world units equal to a tile size in the current state of motion.
+            if (worldCounter >= GamePanel.NATIVE_TILE_SIZE) {                                                           // Check if the entity has moved a number of world units equal to a tile size in the current state of motion.
 
                 moving = false;                                                                                         // If a tile's length has been traversed, the entity exits a state of motion.
                 worldCounter = 0;                                                                                       // Reset the world unit counter.
@@ -763,15 +763,15 @@ public abstract class EntityBase extends Drawable {
      */
     protected void searchPath(int goalCol, int goalRow) {
 
-        int startCol = (int)(worldX / gp.getNativeTileSize());                                                          // The  column that the entity starts in.
-        int startRow = (int)(worldY / gp.getNativeTileSize());                                                          // The row that the entity starts in.
+        int startCol = (int)(worldX / GamePanel.NATIVE_TILE_SIZE);                                                      // The  column that the entity starts in.
+        int startRow = (int)(worldY / GamePanel.NATIVE_TILE_SIZE);                                                      // The row that the entity starts in.
 
         gp.getPathF().setNodes(startCol, startRow, goalCol, goalRow);                                                   // Pass in the necessary data to the A* pathfinding algorithm to search for a valid path.
 
         if (gp.getPathF().search(this)) {                                                                               // If this statement is true, a path has been found.
 
-            int nextWorldX = gp.getPathF().getPathList().get(0).getCol() * gp.getNativeTileSize();
-            int nextWorldY = gp.getPathF().getPathList().get(0).getRow() * gp.getNativeTileSize();
+            int nextWorldX = gp.getPathF().getPathList().get(0).getCol() * GamePanel.NATIVE_TILE_SIZE;
+            int nextWorldY = gp.getPathF().getPathList().get(0).getRow() * GamePanel.NATIVE_TILE_SIZE;
 
             if ((worldY > nextWorldY) && (worldX == nextWorldX)) {                                                      // Check if the entity can move up.
                 autoStep(EntityDirection.UP);
@@ -960,18 +960,18 @@ public abstract class EntityBase extends Drawable {
                 switch (directionCandidate) {
                     case UP:
                         worldXEnd = worldX;
-                        worldYEnd = worldY - gp.getNativeTileSize();
+                        worldYEnd = worldY - GamePanel.NATIVE_TILE_SIZE;
                         break;
                     case DOWN:
                         worldXEnd = worldX;
-                        worldYEnd = worldY + gp.getNativeTileSize();
+                        worldYEnd = worldY + GamePanel.NATIVE_TILE_SIZE;
                         break;
                     case LEFT:
-                        worldXEnd = worldX - gp.getNativeTileSize();
+                        worldXEnd = worldX - GamePanel.NATIVE_TILE_SIZE;
                         worldYEnd = worldY;
                         break;
                     case RIGHT:
-                        worldXEnd = worldX + gp.getNativeTileSize();
+                        worldXEnd = worldX + GamePanel.NATIVE_TILE_SIZE;
                         worldYEnd = worldY;
                         break;
                 }
@@ -1156,35 +1156,35 @@ public abstract class EntityBase extends Drawable {
     }
 
     public int getCol() {
-        return (int)(worldX / gp.getNativeTileSize());
+        return (int)(worldX / GamePanel.NATIVE_TILE_SIZE);
     }
 
     public int getRow() {
-        return (int)(worldY / gp.getNativeTileSize());
+        return (int)(worldY / GamePanel.NATIVE_TILE_SIZE);
     }
 
     public int getColStart() {
-        return (int)(worldXStart / gp.getNativeTileSize());
+        return (int)(worldXStart / GamePanel.NATIVE_TILE_SIZE);
     }
 
     public int getRowStart() {
-        return (int)(worldYStart / gp.getNativeTileSize());
+        return (int)(worldYStart / GamePanel.NATIVE_TILE_SIZE);
     }
 
     public int getColEnd() {
-        return (int)(worldXEnd / gp.getNativeTileSize());
+        return (int)(worldXEnd / GamePanel.NATIVE_TILE_SIZE);
     }
 
     public int getRowEnd() {
-        return (int)(worldYEnd / gp.getNativeTileSize());
+        return (int)(worldYEnd / GamePanel.NATIVE_TILE_SIZE);
     }
 
     public int getColLast() {
-        return (int)(worldXLast / gp.getNativeTileSize());
+        return (int)(worldXLast / GamePanel.NATIVE_TILE_SIZE);
     }
 
     public int getRowLast() {
-        return (int)(worldYLast / gp.getNativeTileSize());
+        return (int)(worldYLast / GamePanel.NATIVE_TILE_SIZE);
     }
 
     public EntityDirection getDirectionCurrent() {
@@ -1348,33 +1348,33 @@ public abstract class EntityBase extends Drawable {
     }
 
     public void setCol(int col) {
-        worldX = col * gp.getNativeTileSize();
-        worldXStart = col * gp.getNativeTileSize();
-        worldXEnd = col * gp.getNativeTileSize();
-        worldXLast = col * gp.getNativeTileSize();
+        worldX = col * GamePanel.NATIVE_TILE_SIZE;
+        worldXStart = col * GamePanel.NATIVE_TILE_SIZE;
+        worldXEnd = col * GamePanel.NATIVE_TILE_SIZE;
+        worldXLast = col * GamePanel.NATIVE_TILE_SIZE;
     }
 
     public void setRow(int row) {
-        worldY = row * gp.getNativeTileSize();
-        worldYStart = row * gp.getNativeTileSize();
-        worldYEnd = row * gp.getNativeTileSize();
-        worldYLast = row * gp.getNativeTileSize();
+        worldY = row * GamePanel.NATIVE_TILE_SIZE;
+        worldYStart = row * GamePanel.NATIVE_TILE_SIZE;
+        worldYEnd = row * GamePanel.NATIVE_TILE_SIZE;
+        worldYLast = row * GamePanel.NATIVE_TILE_SIZE;
     }
 
     public void setColEnd(int col) {
-        worldXEnd = col * gp.getNativeTileSize();
+        worldXEnd = col * GamePanel.NATIVE_TILE_SIZE;
     }
 
     public void setRowEnd(int row) {
-        worldYEnd = row * gp.getNativeTileSize();
+        worldYEnd = row * GamePanel.NATIVE_TILE_SIZE;
     }
 
     public void setColLast(int col) {
-        worldXLast = col * gp.getNativeTileSize();
+        worldXLast = col * GamePanel.NATIVE_TILE_SIZE;
     }
 
     public void setRowLast(int row) {
-        worldYLast = row * gp.getNativeTileSize();
+        worldYLast = row * GamePanel.NATIVE_TILE_SIZE;
     }
 
     public void setDirectionCurrent(EntityDirection directionCurrent) {

@@ -63,7 +63,7 @@ public class LandmarkManager {
             int col = 0;
             int row = 0;
 
-            while (row < gp.getMaxWorldRow()) {                                                                         // Read each row of the map data from the text file.
+            while (row < GamePanel.MAX_WORLD_ROW) {                                                                     // Read each row of the map data from the text file.
 
                 String line = br.readLine();                                                                            // `readLine()` reads a line of text from the text file and puts it into the String variable `line`.
 
@@ -71,7 +71,7 @@ public class LandmarkManager {
 
                     String[] numbers = line.split(" ");                                                                 // The line of text read previously will be split into an array; `split(" ")` will split the string at a space.
 
-                    while (col < gp.getMaxWorldCol()) {                                                                 // Read each column of the given line of text.
+                    while (col < GamePanel.MAX_WORLD_COL) {                                                             // Read each column of the given line of text.
 
                         if (col < numbers.length) {
 

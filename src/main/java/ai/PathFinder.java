@@ -93,7 +93,7 @@ public class PathFinder {
         int col = 0;
         int row = 0;
 
-        while ((col < gp.getMaxWorldCol()) && (row < gp.getMaxWorldRow())) {
+        while ((col < GamePanel.MAX_WORLD_COL) && (row < GamePanel.MAX_WORLD_ROW)) {
 
             int tileNum = gp.getLoadedMap().getMapTileNum()[col][row];
 
@@ -105,7 +105,7 @@ public class PathFinder {
             getCost(nodes[col][row]);                                                                                   // Set cost on this node.
             col++;
 
-            if (col == gp.getMaxWorldCol()) {
+            if (col == GamePanel.MAX_WORLD_COL) {
 
                 col = 0;
                 row++;
@@ -145,12 +145,12 @@ public class PathFinder {
             }
 
             // Open the Down node.
-            if ((row + 1) < gp.getMaxWorldRow()) {
+            if ((row + 1) < GamePanel.MAX_WORLD_ROW) {
                 openNode(nodes[col][row + 1]);
             }
 
             // Open the Right node.
-            if ((col + 1) < gp.getMaxWorldCol()) {
+            if ((col + 1) < GamePanel.MAX_WORLD_COL) {
                 openNode(nodes[col + 1][row]);
             }
 
@@ -197,18 +197,18 @@ public class PathFinder {
      */
     private void instantiateNodes() {
 
-        nodes = new Node[gp.getMaxWorldCol()][gp.getMaxWorldRow()];
+        nodes = new Node[GamePanel.MAX_WORLD_COL][GamePanel.MAX_WORLD_ROW];
 
         int col = 0;
         int row = 0;
 
-        while ((col < gp.getMaxWorldCol()) && (row < gp.getMaxWorldRow())) {
+        while ((col < GamePanel.MAX_WORLD_COL) && (row < GamePanel.MAX_WORLD_ROW)) {
 
             nodes[col][row] = new Node(col, row);
 
             col++;
 
-            if (col == gp.getMaxWorldCol()) {
+            if (col == GamePanel.MAX_WORLD_COL) {
 
                 col = 0;
                 row++;
@@ -225,7 +225,7 @@ public class PathFinder {
         int col = 0;
         int row = 0;
 
-        while ((col < gp.getMaxWorldCol()) && (row < gp.getMaxWorldRow())) {                                            // Reset each node.
+        while ((col < GamePanel.MAX_WORLD_COL) && (row < GamePanel.MAX_WORLD_ROW)) {                                    // Reset each node.
 
             nodes[col][row].setOpen(false);                                                                             // Reset `open` for this node.
             nodes[col][row].setChecked(false);                                                                          // Reset `checked` for this node.
@@ -233,7 +233,7 @@ public class PathFinder {
 
             col++;
 
-            if (col == gp.getMaxWorldCol()) {
+            if (col == GamePanel.MAX_WORLD_COL) {
 
                 col = 0;
                 row++;

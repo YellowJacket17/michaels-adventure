@@ -1,0 +1,8 @@
+12/22/2023 10:57:56:509  INFO     Application started.
+12/22/2023 10:58:07:543  ERROR    An unhandled exception has occurred.
+java.lang.NumberFormatException: Cannot parse null string
+	at java.base/java.lang.Integer.parseInt(Integer.java:630)
+	at java.base/java.lang.Integer.parseInt(Integer.java:786)
+	at core.Window.populateFrameRateOptions(Window.java:550)
+	at core.Window.initGame(Window.java:190)
+	at core.App.main(App.java:19)

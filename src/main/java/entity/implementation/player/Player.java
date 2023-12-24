@@ -203,13 +203,13 @@ public class Player extends EntityBase {
 
                 int worldYAdjustment = 0;                                                                               // Amount in the y-direction that the player sprite needs to be adjusted when rendered.
 
-                if (sprite.getNativeHeight() > gp.getNativeTileSize()) {
+                if (sprite.getNativeHeight() > GamePanel.NATIVE_TILE_SIZE) {
 
-                    worldYAdjustment = -sprite.getNativeHeight() + gp.getNativeTileSize();
+                    worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE;
                 }
                 transform.position.x = worldX;
                 transform.position.y = worldY + worldYAdjustment;                                                       // Y-coordinate of entities of type CHARACTER is modified slightly since they can be taller than a single tile; adjusted so the bottom of the sprite lines up with the bottom of the tile the entity is occupying when rendered.
-                transform.scale.x = gp.getNativeTileSize();                                                             // Entities must be as wide as the native tile size.
+                transform.scale.x = GamePanel.NATIVE_TILE_SIZE;                                                         // Entities must be as wide as the native tile size.
                 transform.scale.y = sprite.getNativeHeight();
                 renderer.addDrawable(this, ZIndex.THIRD_LAYER);
             } else if (!renderError) {
@@ -372,7 +372,7 @@ public class Player extends EntityBase {
                 }
             }
 
-            if ((turning && (worldCounter <= 16 / 2)) || (worldCounter <= gp.getNativeTileSize() / 2)) {                // Walking animation; player entity will have a foot forward for half of the world units traversed.
+            if ((turning && (worldCounter <= 16 / 2)) || (worldCounter <= GamePanel.NATIVE_TILE_SIZE / 2)) {            // Walking animation; player entity will have a foot forward for half of the world units traversed.
 
                 if (spriteNumLast == 2) {
 
@@ -386,7 +386,7 @@ public class Player extends EntityBase {
                 spriteNumCurrent = 1;
             }
 
-            if ((turning && (worldCounter >= 16)) || (worldCounter >= gp.getNativeTileSize())) {                        // Check if the world unit counter meets criteria to finish turning OR check if the player entity has moved a number of world units equal to a tile size in the current state of motion.
+            if ((turning && (worldCounter >= 16)) || (worldCounter >= GamePanel.NATIVE_TILE_SIZE)) {                    // Check if the world unit counter meets criteria to finish turning OR check if the player entity has moved a number of world units equal to a tile size in the current state of motion.
                 moving = false;                                                                                         // If we've moved a tile's length, the player character exits a state of motion and can again be controlled.
                 worldCounter = 0;                                                                                       // Reset the world unit counter.
                 moveCountdown = stagedMoveCountdown;                                                                    // Provide a 2 frame buffer for the player to change direction and keep momentum upon exiting the current state of motion.
@@ -529,24 +529,24 @@ public class Player extends EntityBase {
                         directionCurrent = EntityDirection.UP;
                         directionCandidate = EntityDirection.UP;
                         worldXEnd = worldX;
-                        worldYEnd = worldY - gp.getNativeTileSize();
+                        worldYEnd = worldY - GamePanel.NATIVE_TILE_SIZE;
 
                     } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
                         directionCurrent = EntityDirection.DOWN;
                         directionCandidate = EntityDirection.DOWN;
                         worldXEnd = worldX;
-                        worldYEnd = worldY + gp.getNativeTileSize();
+                        worldYEnd = worldY + GamePanel.NATIVE_TILE_SIZE;
 
                     } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
                         directionCurrent = EntityDirection.LEFT;
                         directionCandidate = EntityDirection.LEFT;
-                        worldXEnd = worldX - gp.getNativeTileSize();
+                        worldXEnd = worldX - GamePanel.NATIVE_TILE_SIZE;
                         worldYEnd = worldY;
 
                     } else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
                         directionCurrent = EntityDirection.RIGHT;
                         directionCandidate = EntityDirection.RIGHT;
-                        worldXEnd = worldX + gp.getNativeTileSize();
+                        worldXEnd = worldX + GamePanel.NATIVE_TILE_SIZE;
                         worldYEnd = worldY;
                     }
                     moving = true;                                                                                      // When a direction key is pressed, the player character enters a state of motion.

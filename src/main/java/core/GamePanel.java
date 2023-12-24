@@ -41,39 +41,29 @@ public class GamePanel {
      * Native size of rendered tiles.
      * Tiles are the same width and height.
      */
-    private static final int NATIVE_TILE_SIZE = 32;
+    public static final int NATIVE_TILE_SIZE = 32;
 
     /**
-     * Tiles per column in the screen space.
+     * Native screen width.
      */
-    private static final int MAX_SCREEN_COL = 24;
+    public static final int NATIVE_SCREEN_WIDTH = 768;
 
     /**
-     * Tiles per row in the screen space.
+     * Native screen height.
      */
-    private static final int MAX_SCREEN_ROW = 14;
-
-    /**
-     * Native screen width as determined by the native tile size and number of columns.
-     */
-    private static final int NATIVE_SCREEN_WIDTH = NATIVE_TILE_SIZE * MAX_SCREEN_COL;
-
-    /**
-     * Native screen height as determined by the native tile size and number of rows.
-     */
-    private static final int NATIVE_SCREEN_HEIGHT = NATIVE_TILE_SIZE * MAX_SCREEN_ROW;
+    public static final int NATIVE_SCREEN_HEIGHT = 432;
 
 
      // WORLD SETTINGS
     /**
      * Maximum number of tiles allowed in a map column.
      */
-    private static final int MAX_WORLD_COL = 100;
+    public static final int MAX_WORLD_COL = 100;
 
     /**
      *  Maximum number of tiles allowed in a map row.
      */
-    private static final int MAX_WORLD_ROW = 100;
+    public static final int MAX_WORLD_ROW = 100;
 
     /**
      * Current loaded map.
@@ -1021,26 +1011,6 @@ public class GamePanel {
 
 
     // GETTERS
-    public int getNativeTileSize() {
-        return NATIVE_TILE_SIZE;
-    }
-
-    public int getNativeScreenWidth() {
-        return NATIVE_SCREEN_WIDTH;
-    }
-
-    public int getNativeScreenHeight() {
-        return NATIVE_SCREEN_HEIGHT;
-    }
-
-    public int getMaxWorldCol() {
-        return MAX_WORLD_COL;
-    }
-
-    public int getMaxWorldRow() {
-        return MAX_WORLD_ROW;
-    }
-
     public Map getLoadedMap() {
         return loadedMap;
     }
