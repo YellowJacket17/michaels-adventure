@@ -313,6 +313,7 @@ public class DialogueReader {
 
                 dialoguePrint1 = dialoguePrint2;                                                                        // If a new line of dialogue is needed after two have already been printed, replace the first line with the existing second.
                 dialoguePrint2 = "";                                                                                    // Reset the second line of dialogue so that new characters can be printed to it.
+                printLine = 2;                                                                                          // Set the active print line to line 2.
                 dialoguePaused = false;                                                                                 // Resume reading the rest of the current piece of dialogue as normal now that the lines have been moved up (i.e., exit paused state).
             }
 
@@ -329,16 +330,16 @@ public class DialogueReader {
                 while ((printCountdown <= 0) && (progressionCountdown <= 0)) {
 
                     int i = dialoguePrintTotal.length();                                                                // Fetch the index of the next character to be printed.
+                    System.out.println(dialogueText.charAt(i));
                     i = checkNextCharacter(i);
 
                     if (printLine == 1) {
 
                         dialoguePrint1 += dialogueText.charAt(i);                                                       // Add the next dialogue character to be printed (line 1).
-                    } else {
+                    } else if (printLine == 2) {
 
                         dialoguePrint2 += dialogueText.charAt(i);                                                       // Add the next dialogue character to be printed (line 2).
                     }
-
                     dialoguePrintTotal += dialogueText.charAt(i);
                     printCountdown += stagedPrintCountdown;                                                             // Iterate `printCounter` to wait a number of seconds until the next character is printed; if negative after iteration, the next character must immediately be printed.
 
@@ -476,7 +477,6 @@ public class DialogueReader {
             if ((dialoguePrintTemp + " " + nextWord).length() > (int)(3.4 * (GamePanel.NATIVE_SCREEN_WIDTH / GamePanel.NATIVE_TILE_SIZE))) {
 
                 printLine++;                                                                                            // Start printing character on the next line of the dialogue window.
-                dialoguePrintTotal += ' ';                                                                              // Add a space to the total dialogue printed to compensate for skipping over the space when printing the next character.
 
                 if (printLine > 2) {
 
@@ -485,6 +485,7 @@ public class DialogueReader {
                     gp.getDialogueA().reset();                                                                          // Reset the dialogue arrow to its default state (i.e., default position).
                 } else {
 
+                    dialoguePrintTotal += ' ';                                                                          // Add a space to the total dialogue printed to compensate for skipping over the space when printing the next character.
                     i++;                                                                                                // Skip over the space when printing the next character.
                 }
             }
