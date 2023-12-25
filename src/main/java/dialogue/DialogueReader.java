@@ -330,7 +330,6 @@ public class DialogueReader {
                 while ((printCountdown <= 0) && (progressionCountdown <= 0)) {
 
                     int i = dialoguePrintTotal.length();                                                                // Fetch the index of the next character to be printed.
-                    System.out.println(dialogueText.charAt(i));
                     i = checkNextCharacter(i);
 
                     if (printLine == 1) {
