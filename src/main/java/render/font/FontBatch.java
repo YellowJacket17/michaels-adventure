@@ -321,7 +321,14 @@ public class FontBatch {
     }
 
 
-    // GETTER
+    // GETTERS
+    public boolean isEmpty() {
+        if (numVertices == 0) {
+            return true;
+        }
+        return false;
+    }
+
     public String getFont() {
         if (font != null) {
             return font.getName();
