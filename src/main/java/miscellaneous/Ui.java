@@ -328,7 +328,7 @@ public class Ui {
         float slotIconWorldHeight = gp.getGuiIconM().getIconById(3).getNativeSpriteHeight();                            // Get native (world) height of slot icons; all are same height, so doesn't matter which is used here.
         float slotIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(slotIconWorldHeight);
         float bottomSlotIconScreenY = 1 - mainWindowScreenTopBottomPadding - 0.081f - slotIconScreenHeight;             // Normalized (screen) y-position of the bottommost slot.
-        float slotIconScreenX = mainWindowScreenLeftRightPadding + 0.025f;
+        float slotIconScreenX = mainWindowScreenLeftRightPadding + 0.055f;
         float slotIconScreenY = bottomSlotIconScreenY;
         float slotIconVerticalSpacing = 0.1f;                                                                           // Normalized (screen) spacing between each slot (does not include height of slot icon itself).
 
@@ -396,11 +396,11 @@ public class Ui {
         Vector2f textScreenCoords = new Vector2f(textScreenX, topTextScreenY);
 
         // Render text for name, level, and life label.
-        renderStringShadow(name, textScreenCoords, new Vector3f(255, 255, 255), 0.11f, "Arimo Bold");
+        renderStringShadow(name, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), "Arimo Bold");
         textScreenCoords.y += 0.04f;
-        renderStringShadow(level, textScreenCoords, new Vector3f(255, 255, 255), 0.11f, "Arimo Bold");
+        renderStringShadow(level, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), "Arimo Bold");
         textScreenCoords.y += 0.04f;
-        renderStringShadow(lifeLabel, textScreenCoords, new Vector3f(255, 255, 255), 0.11f, "Arimo Bold");
+        renderStringShadow(lifeLabel, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), "Arimo Bold");
 
         // Render life bar.
         float barScreenX = textScreenCoords.x + 0.03f;
@@ -412,7 +412,7 @@ public class Ui {
         // Draw remaining life points text with a shadowed effect.
         textScreenCoords.x += 0.074f;
         textScreenCoords.y -= 0.008f;
-        renderStringShadow(lifeValue, textScreenCoords, new Vector3f(255, 255, 255), 0.08f, "Arimo Bold");
+        renderStringShadow(lifeValue, textScreenCoords, 0.08f, new Vector3f(255, 255, 255), "Arimo Bold");
     }
 
 
@@ -511,7 +511,7 @@ public class Ui {
         float itemBackdropScreenHeight = gp.getCamera().worldHeightToScreenHeight(itemBackdropWorldHeight);             // Normalized (screen) height of the item/slot backdrop (both stackable and non-stackable are the same).
         float horizontalScreenSpacing = itemBackdropScreenWidth + 0.03f;                                                // Normalized (screen) horizontal spacing between each item slot/icon backdrop.
         float verticalScreenSpacing = itemBackdropScreenHeight + 0.05f;                                                 // Normalized (screen) vertical spacing between each item slot/icon backdrop.
-        float leftmostItemBackdropScreenX = mainWindowScreenLeftRightPadding + 0.025f;                                  // Normalized (screen) x-position of the leftmost item slot/icon backdrop.
+        float leftmostItemBackdropScreenX = mainWindowScreenLeftRightPadding + 0.055f;                                  // Normalized (screen) x-position of the leftmost item slot/icon backdrop.
         float topmostItemBackdropScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;                                 // Normalized (screen) y-position of the topmost item slot/icon backdrop.
         float itemBackdropScreenX;
         float itemBackdropScreenY;
@@ -553,7 +553,7 @@ public class Ui {
 
                     gp.getGuiIconM().addToRenderPipeline(renderer, 6, itemBackdropScreenX, itemBackdropScreenY);
                     gp.getPlayer().getInventory().get(itemIndex).addToRenderPipeline(renderer, itemIconScreenX, itemIconScreenY);
-                    renderStringShadow(quantity, quantityScreenCoords, new Vector3f(255, 255, 255), 0.12f, "Arimo Bold");
+                    renderStringShadow(quantity, quantityScreenCoords, 0.12f, new Vector3f(255, 255, 255), "Arimo Bold");
                 } else {
 
                     gp.getGuiIconM().addToRenderPipeline(renderer, 7, itemBackdropScreenX, itemBackdropScreenY);
@@ -588,7 +588,7 @@ public class Ui {
         Vector3f nameColor = new Vector3f(121, 149, 255);
         Vector3f quantityColor = new Vector3f(244, 154, 45);
         Vector3f descriptionColor = new Vector3f(255, 255, 255);
-        float leftmostScreenX = mainWindowScreenLeftRightPadding + ((1 - (2 * mainWindowScreenLeftRightPadding)) / 2);
+        float leftmostScreenX = mainWindowScreenLeftRightPadding + ((1 - (2 * mainWindowScreenLeftRightPadding)) / 2) + 0.05f;
         float topmostScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;
         Vector2f screenCoords = new Vector2f(leftmostScreenX, topmostScreenY);
         String name = gp.getPlayer().getInventory().get(inventoryIndexSelected).getName();
@@ -596,11 +596,11 @@ public class Ui {
         String description = gp.getPlayer().getInventory().get(inventoryIndexSelected).getDescription();
 
         // Render name, quantity, and description.
-        renderStringShadow(name, screenCoords, nameColor, 0.15f, "Arimo");
+        renderStringShadow(name, screenCoords, 0.15f, nameColor, "Arimo Bold");
         screenCoords.y += 0.090f;
-        renderStringShadow(quantity, screenCoords, quantityColor, 0.15f, "Arimo");
+        renderStringShadow(quantity, screenCoords, 0.15f, quantityColor, "Arimo Bold");
         screenCoords.y += 0.090f;
-        renderStringBlock(description, screenCoords, 40, 0.065f, descriptionColor, 0.15f, true);
+        renderStringBlock(description, screenCoords, 23, 0.065f, 0.15f, descriptionColor, "Arimo", true);
     }
 
 
@@ -786,37 +786,37 @@ public class Ui {
         Long freeMemoryBytes = Runtime.getRuntime().freeMemory();
         Long usedMemoryMegabytes = (totalMemoryBytes - freeMemoryBytes) / 1000000;
         String memoryUsage = "JVM Memory Usage: " + usedMemoryMegabytes + " MB";
-        renderStringShadow(memoryUsage, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
+        renderStringShadow(memoryUsage, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // VSync.
         screenCoords = new Vector2f(screenX, 0.07f);
         String vSync = "VSync: " + ((gp.getSystemSetting(0).getActiveOption() == 0) ? "Disabled" : "Enabled");
-        renderStringShadow(vSync, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
+        renderStringShadow(vSync, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Frame rate.
         screenCoords = new Vector2f(screenX, 0.13f);
         String fps = "FPS: " + fpsTracker;
-        renderStringShadow(fps, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
+        renderStringShadow(fps, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Player column.
         screenCoords = new Vector2f(screenX, 0.19f);
         String col = "Player Col: " + gp.getPlayer().getCol();
-        renderStringShadow(col, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
+        renderStringShadow(col, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Player row.
         screenCoords = new Vector2f(screenX, 0.25f);
         String row = "Player Row: " + gp.getPlayer().getRow();
-        renderStringShadow(row, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
+        renderStringShadow(row, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Camera center (x).
         screenCoords = new Vector2f(screenX, 0.31f);
         String centerX = "Camera Center X: " + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
-        renderStringShadow(centerX, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
+        renderStringShadow(centerX, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Camera center (y).
         screenCoords = new Vector2f(screenX, 0.37f);
         String centerY = "Camera Center Y: " + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
-        renderStringShadow(centerY, screenCoords, new Vector3f(255, 255, 255), fontScale, "Arimo");
+        renderStringShadow(centerY, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
     }
 
 
@@ -825,8 +825,9 @@ public class Ui {
      *
      * @param text text to be drawn
      * @param screenCoords screen coordinates of the text (leftmost and topmost, normalized between 0 and 1)
-     * @param color text color (r, g, b)
      * @param size size at which to draw the text
+     * @param color text color (r, g, b)
+     * @param font name of font to use
      */
     private void renderString(String text, Vector2f screenCoords, float size, Vector3f color, String font) {
 
@@ -843,10 +844,11 @@ public class Ui {
      *
      * @param text text to be drawn
      * @param screenCoords screen coordinates of the text (leftmost and topmost, normalized between 0 and 1)
-     * @param color text color (r, g, b)
      * @param size size at which to draw the text
+     * @param color text color (r, g, b)
+     * @param font name of font to use
      */
-    private void renderStringShadow(String text, Vector2f screenCoords, Vector3f color, float size, String font) {
+    private void renderStringShadow(String text, Vector2f screenCoords, float size, Vector3f color, String font) {
 
         Vector2f shadowScreenCoords = new Vector2f(screenCoords.x + 0.0015f, screenCoords.y + 0.0015f);
         renderString(text, shadowScreenCoords, size, new Vector3f(0, 0, 0), font);
@@ -861,12 +863,13 @@ public class Ui {
      * @param screenCoords screen coordinates of the text block (lefmost and topmost, normalized between 0 and 1).
      * @param maxLineLength maximum number of characters allowed in a printed line of text
      * @param lineSpacing space between each printed line of text
-     * @param color color of the printed text (r, g, b)
      * @param size size at which to draw the text
+     * @param color color of the printed text (r, g, b)
+     * @param font name of font to use
      * @param dropShadow whether a drop shadow should be drawn (true) or not (false)
      */
     private void renderStringBlock(String text, Vector2f screenCoords, int maxLineLength, float lineSpacing,
-                                   Vector3f color, float size, boolean dropShadow) {
+                                   float size, Vector3f color, String font, boolean dropShadow) {
 
         String[] words = text.split(" ");                                                                               // An array of each word in the complete text, split by spaces.
         int wordsIndex = 0;                                                                                             // Track which index of the words array is currently being checked.
@@ -905,10 +908,10 @@ public class Ui {
 
             if (dropShadow) {
 
-                renderStringShadow(line, screenCoords, color, size, "Arimo");                                           // Render the line of text with a drop shadow.
+                renderStringShadow(line, screenCoords, size, color, font);                                              // Render the line of text with a drop shadow.
             } else {
 
-                renderString(line, screenCoords, size, color, "Arimo");                                                 // Render the line of text without a drop shadow.
+                renderString(line, screenCoords, size, color, font);                                                    // Render the line of text without a drop shadow.
             }
 
             if (wordsIndex != words.length) {
