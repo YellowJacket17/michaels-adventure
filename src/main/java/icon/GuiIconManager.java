@@ -169,13 +169,13 @@ public class GuiIconManager {
         guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(1));
         icons.put(guiIcon.getIconId(), guiIcon);
 
-        // Item menu backdrop - Icon ID 6.
+        // Stackable item menu backdrop - Icon ID 6.
         guiIcon = new GuiIcon(6);
         guiIcon.setName("Item menu stackable backdrop");
         guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(3));
         icons.put(guiIcon.getIconId(), guiIcon);
 
-        // Item menu backdrop - Icon ID 7.
+        // Non-stackable item menu backdrop - Icon ID 7.
         guiIcon = new GuiIcon(7);
         guiIcon.setName("Item menu non-stackable backdrop");
         guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(4));

@@ -46,7 +46,7 @@ public class DialogueReader {
      * The value of this variable will be set to `progressionCountdown` whenever a pause in player progression is
      * needed.
      */
-    private final double stagedProgressionCountdown = 0.083;
+    private final double stagedProgressionCountdown = 0.1;
 
     /**
      * Variable to store the number of seconds that must pass before the next character in a piece of dialogue can be

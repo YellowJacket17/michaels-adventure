@@ -47,7 +47,7 @@ public class Player extends EntityBase {
      * The value of this variable will be set to `interactionCountdown` whenever a pause in menu interaction is needed.
      * This value will have a noticeable impact on the "feel" of the game while in menus.
      */
-    private final double stagedMenuInteractionCountdown = 0.15;
+    private final double stagedMenuInteractionCountdown = 0.16;
 
     /**
      * Variable to store the number of seconds that the player has to change direction while retaining momentum upon

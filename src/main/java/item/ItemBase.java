@@ -2,6 +2,7 @@ package item;
 
 import core.GamePanel;
 import entity.EntityBase;
+import org.joml.Vector2f;
 import render.Renderer;
 import render.Sprite;
 import render.ZIndex;
@@ -82,15 +83,16 @@ public abstract class ItemBase extends Drawable {
      * Adds an item to the render pipeline.
      *
      * @param renderer Renderer instance
-     * @param screenX screen x-coordinate of the dialogue arrow (leftmost, normalized between 0 and 1)
-     * @param screenY screen y-coordinate of the dialogue arrow (topmost, normalized between 0 and 1)
+     * @param screenX screen x-coordinate of the item (leftmost, normalized between 0 and 1)
+     * @param screenY screen y-coordinate of the item (topmost, normalized between 0 and 1)
      */
     public void addToRenderPipeline(Renderer renderer, float screenX, float screenY) {
 
         if (sprite != null) {
 
-            this.transform.position.x = screenX;
-            this.transform.position.y = screenY;
+            Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
+            this.transform.position.x = worldCoords.x;
+            this.transform.position.y = worldCoords.y;
             renderer.addDrawable(this, ZIndex.FIRST_LAYER);
         } else if (!renderError) {
 

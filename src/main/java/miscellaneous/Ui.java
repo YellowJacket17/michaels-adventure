@@ -37,12 +37,12 @@ public class Ui {
     private final float mainWindowScreenLeftRightPadding = 0.06f;
 
     /**
-     * Constant that sets the number of item slot rows that can be displayed at once in the inventory menu.
+     * Sets the maximum number of item slot rows that can be displayed at once in the inventory menu.
      */
     private final int maxNumItemRow = 5;
 
     /**
-     * Constant that sets the number of item slot columns that can be displayed at once in the inventory menu.
+     * Sets the maximum number of item slot columns (i.e., number of item slots in a row) that can be displayed at once.
      */
     private final int maxNumItemCol = 5;
 
@@ -137,7 +137,7 @@ public class Ui {
                 break;
             case INVENTORY_MENU:
                 renderInGameMenuMainWindowScreen();
-//                drawInventoryMenuScreen();
+                renderInventoryMenuScreen();
                 break;
             case SETTINGS_MENU:
                 renderInGameMenuMainWindowScreen();
@@ -321,7 +321,6 @@ public class Ui {
     /**
      * Adds components of the status icons for each party member in the party menu section of the in-game menu to the
      * render pipeline.
-     * This is to be rendered on top of the in-game menu main window.
      */
     private void renderPartyMemberStatusIcons() {
 
@@ -422,8 +421,8 @@ public class Ui {
      *
      * @param life number of remaining life points
      * @param maxLife maximum number of life points
-     * @param screenWidth screen width of the life bar
-     * @param screenHeight screen height of the life bar
+     * @param screenWidth normalized (screen) width of the life bar
+     * @param screenHeight normalized (screen) height of the life bar
      * @param screenX screen x-coordinate of the life bar (leftmost)
      * @param screenY screen y-coordinate of the life bar (topmost)
      */
@@ -489,131 +488,119 @@ public class Ui {
 
 
     /**
-     * Draws the inventory menu screen (to be drawn on top of the core menu screen).
+     * Adds components of the inventory menu section of the in-game menu to the render pipeline.
+     * This is to be rendered on top of the in-game menu main window.
      */
-    private void drawInventoryMenuScreen() {
+    private void renderInventoryMenuScreen() {
 
-        drawItemIcons();
-        drawItemDetailText();
+        renderItemIcons();
+        renderSelectedItemDescription();
     }
 
 
     /**
-     * Draws details about the currently selected item on the inventory menu screen.
+     * Adds components of the icons for each item in the inventory menu section of the in-game menu to the render
+     * pipeline.
      */
-    private void drawItemDetailText() {
+    private void renderItemIcons() {
 
-        // Initialize position and color.
-        Vector3f nameColor = new Vector3f(121, 149, 255);
-        Vector3f quantityColor = new Vector3f(211, 125, 45);
-        int textX = (GamePanel.NATIVE_SCREEN_WIDTH / 2) + 10;
-//        int textY = mainWindowTopBottomPadding + 68;
-
-        // Initialize text to draw.
-        String name = gp.getPlayer().getInventory().get(inventoryIndexSelected).getName();
-        String description = gp.getPlayer().getInventory().get(inventoryIndexSelected).getDescription();
-        String quantity = "Quantity: " + gp.getPlayer().getInventory().get(inventoryIndexSelected).getAmount();
-
-        // Draw item name, description, and quantity.
-//        renderStringShadow(name, textX, textY, nameColor, 16F, "Arimo");
-//        textY += 30;
-//        renderStringShadow(quantity, textX, textY, quantityColor, 16F, "Arimo");
-//        textY += 30;
-//        drawStringBlock(description, textX, textY, 40, 18, new Vector3f(255, 255, 255), 16F, true);
-    }
-
-
-    /**
-     * Draws icons for each item on the inventory menu screen.
-     */
-    private void drawItemIcons() {
-
-        int verticalSpacing = 51;                                                                                       // Core vertical spacing between each item icon before scaling is applied.
-        int horizontalSpacing = 51;                                                                                     // Core horizontal spacing between each item icon before scaling is applied.
+        // Initializations.
+        int itemBackdropWorldWidth = gp.getGuiIconM().getIconById(6).getNativeSpriteWidth();
+        int itemBackdropWorldHeight = gp.getGuiIconM().getIconById(6).getNativeSpriteHeight();
+        float itemBackdropScreenWidth = gp.getCamera().worldWidthToScreenWidth(itemBackdropWorldWidth);                 // Normalized (screen) width of the item/slot backdrop (both stackable and non-stackable are the same).
+        float itemBackdropScreenHeight = gp.getCamera().worldHeightToScreenHeight(itemBackdropWorldHeight);             // Normalized (screen) height of the item/slot backdrop (both stackable and non-stackable are the same).
+        float horizontalScreenSpacing = itemBackdropScreenWidth + 0.03f;                                                // Normalized (screen) horizontal spacing between each item slot/icon backdrop.
+        float verticalScreenSpacing = itemBackdropScreenHeight + 0.05f;                                                 // Normalized (screen) vertical spacing between each item slot/icon backdrop.
+        float leftmostItemBackdropScreenX = mainWindowScreenLeftRightPadding + 0.025f;                                  // Normalized (screen) x-position of the leftmost item slot/icon backdrop.
+        float topmostItemBackdropScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;                                 // Normalized (screen) y-position of the topmost item slot/icon backdrop.
+        float itemBackdropScreenX;
+        float itemBackdropScreenY;
+        float itemIconScreenX;
+        float itemIconScreenY;
+        int itemIconWorldWidth;
+        int itemIconWorldHeight;
+        float itemIconScreenWidth;
+        float itemIconScreenHeight;
+        String quantity;
+        Vector2f quantityScreenCoords = new Vector2f();
         int numItems = gp.getPlayer().getInventory().size();                                                            // Number of items currently in the player's inventory.
 
-        // Draw the backdrop for each item icon.
-        int leftIconX = 15;                                                                                             // The x-position of the leftmost icon backdrops; used with `horizontalSpacing` to get the x-position of the icons to the right.
-        int topIconY = 58;                                                                                              // The y-position of the topmost icon backdrops; used with `verticalSpacing` to get the y-position of lower icons.
-        int row = 0;                                                                                                    // Initialize a variable to track which row is currently being worked on.
-        int itemIndex = 0;                                                                                              // Initialize a variable to track which item is currently being worked on when looping through the player's inventory.
+        // Render each item slot/icon (backdrop, icon, amount, and selector).
+        int row = 0;                                                                                                    // Variable to track which row is currently being rendered.
+        int itemIndex = 0;                                                                                              // Variable to track which item slot/icon is currently being rendered when looping through the player's inventory.
 
         while ((row < maxNumItemRow) && (itemIndex < numItems)) {
 
-            int col = 0;                                                                                                // Initialize a variable to track which column in the current row is currently being worked on.
+            int col = 0;                                                                                                // Variable to track which column is currently being rendered.
+            itemBackdropScreenY = topmostItemBackdropScreenY + (verticalScreenSpacing * row);
 
             while ((col < maxNumItemCol) && (itemIndex < numItems)) {
 
-                int iconX = leftIconX + (horizontalSpacing * col);
-//                int iconY = mainWindowTopBottomPadding + (topIconY + (verticalSpacing * row));
+                itemIconWorldWidth = gp.getPlayer().getInventory().get(itemIndex).getNativeSpriteWidth();
+                itemIconWorldHeight = gp.getPlayer().getInventory().get(itemIndex).getNativeSpriteHeight();
+                itemIconScreenWidth = gp.getCamera().worldWidthToScreenWidth(itemIconWorldWidth);
+                itemIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(itemIconWorldHeight);
 
-                if (gp.getPlayer().getInventory().get(itemIndex).isStackable()) {                                       // Switch which icon backdrop to draw based on whether the item is stackable or not.
+                itemBackdropScreenX = leftmostItemBackdropScreenX + (horizontalScreenSpacing * col);
+                itemIconScreenX = itemBackdropScreenX + ((itemBackdropScreenWidth - itemIconScreenWidth) / 2);          // Normalized (screen) width of the item/slot icon.
+                itemIconScreenY = itemBackdropScreenY + ((itemBackdropScreenHeight - itemIconScreenHeight) / 2);        // Normalized (screen) height of the item/slot icon.
 
-//                    gp.getIconM().draw(g2, 6, iconX, iconY); // TODO : Replace with Renderer!
+                if (gp.getPlayer().getInventory().get(itemIndex).isStackable()) {
+
+                    quantity = Integer.toString(gp.getPlayer().getInventory().get(itemIndex).getAmount());
+                    quantityScreenCoords.x = itemBackdropScreenX + (itemBackdropScreenWidth * 0.9f);
+                    quantityScreenCoords.y = itemBackdropScreenY + (itemBackdropScreenHeight * 0.9f);
+
+                    gp.getGuiIconM().addToRenderPipeline(renderer, 6, itemBackdropScreenX, itemBackdropScreenY);
+                    gp.getPlayer().getInventory().get(itemIndex).addToRenderPipeline(renderer, itemIconScreenX, itemIconScreenY);
+                    renderStringShadow(quantity, quantityScreenCoords, new Vector3f(255, 255, 255), 0.12f, "Arimo Bold");
                 } else {
 
-//                    gp.getIconM().draw(g2, 7, iconX, iconY); // TODO : Replace with Renderer!
+                    gp.getGuiIconM().addToRenderPipeline(renderer, 7, itemBackdropScreenX, itemBackdropScreenY);
+                    gp.getPlayer().getInventory().get(itemIndex).addToRenderPipeline(renderer, itemIconScreenX, itemIconScreenY);
                 }
-                itemIndex++;                                                                                            // Iterate to the next item.
-                col++;                                                                                                  // Iterate to the next column.
-            }
-            row++;                                                                                                      // Iterate to the next row.
-        }
 
-        // Draw item images on each item backdrop, using the items present in the player's inventory.
-        // Also draw the item selector according to the currently selected row and column.
-        // Also store the index of the currently selected item in the player's inventory.
-        int leftImageX = leftIconX + 2;                                                                                 // The x-position of the leftmost item images; used with `horizontalSpacing` to get the x-position of the icons to the right.
-        int topImageY = topIconY + 2;                                                                                   // The y-position of the topmost item images; used with `verticalSpacing` to get the y-position of the lower images.
-        row = 0;                                                                                                        // Reset the variable that tracks which row is currently being worked on.
-        itemIndex = 0;                                                                                                  // Reset the variable that tracks which item is currently being worked on when looping through the player's inventory.
+                if ((itemRowSelected == row) && (itemColSelected == col)) {
 
-        while ((row < maxNumItemRow) && (itemIndex < numItems)) {
-
-            int col = 0;                                                                                                // Initialize a variable to track which column in the current row is currently being worked on.
-
-            while ((col < maxNumItemCol) && (itemIndex < numItems)) {
-
-                int imageX = leftImageX + (horizontalSpacing * col);
-//                int imageY = mainWindowTopBottomPadding + (topImageY + (verticalSpacing * row));
-//                gp.getPlayer().getInventory().get(itemIndex).draw(g2, imageX, imageY); // TODO : Replace with Renderer!
-
-                if ((row == itemRowSelected) && (col == itemColSelected)) {
-
-                    int selectorX = imageX - 4;
-//                    int selectorY = imageY - 4;
-//                    gp.getIconM().draw(g2, 8, selectorX, selectorY); // TODO : Replace with Renderer!                 // Draw the item selector on the selected item icon.
+                    int selectorWorldWidth = gp.getGuiIconM().getIconById(8).getNativeSpriteWidth();
+                    int selectorWorldHeight = gp.getGuiIconM().getIconById(8).getNativeSpriteHeight();
+                    float selectorScreenWidth = gp.getCamera().worldWidthToScreenWidth(selectorWorldWidth);
+                    float selectorScreenHeight = gp.getCamera().worldHeightToScreenHeight(selectorWorldHeight);
+                    float selectorScreenX = itemBackdropScreenX - ((selectorScreenWidth - itemBackdropScreenWidth) / 2);
+                    float selectorScreenY = itemBackdropScreenY - ((selectorScreenHeight - itemBackdropScreenHeight) / 2);
+                    gp.getGuiIconM().addToRenderPipeline(renderer, 8, selectorScreenX, selectorScreenY);
                 }
-                itemIndex++;                                                                                            // Iterate to the next item.
-                col++;                                                                                                  // Iterate to the next column.
+                itemIndex++;
+                col++;
             }
-            row++;                                                                                                      // Iterate to the next row.
+            row++;
         }
+    }
 
-        // Draw the amounts in each stack of items.
-        int leftQuantityX = leftIconX + 34;                                                                             // The x-position of the leftmost item quantities; used with `horizontalSpacing` to get the x-position of the quantities to the right.
-        int topQuantityY = topIconY + 41;                                                                               // The y-position of the topmost item quantities; used with `verticalSpacing` to get the y-position of the lower quantities.
-        row = 0;                                                                                                        // Reset the variable that tracks which row is currently being worked on.
-        itemIndex = 0;                                                                                                  // Reset the variable that tracks which item is currently being worked on when looping through the player's inventory.
 
-        while ((row < maxNumItemRow) && (itemIndex < numItems)) {
+    /**
+     * Adds components of description block of currently selected item in the inventory menu section of the in-game menu
+     * to the render pipeline.
+     */
+    private void renderSelectedItemDescription() {
 
-            int col = 0;                                                                                                // Initialize a variable to track which column in the current row is currently being worked on.
+        // Initializations.
+        Vector3f nameColor = new Vector3f(121, 149, 255);
+        Vector3f quantityColor = new Vector3f(244, 154, 45);
+        Vector3f descriptionColor = new Vector3f(255, 255, 255);
+        float leftmostScreenX = mainWindowScreenLeftRightPadding + ((1 - (2 * mainWindowScreenLeftRightPadding)) / 2);
+        float topmostScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;
+        Vector2f screenCoords = new Vector2f(leftmostScreenX, topmostScreenY);
+        String name = gp.getPlayer().getInventory().get(inventoryIndexSelected).getName();
+        String quantity = "Quantity: " + gp.getPlayer().getInventory().get(inventoryIndexSelected).getAmount();
+        String description = gp.getPlayer().getInventory().get(inventoryIndexSelected).getDescription();
 
-            while ((col < maxNumItemCol) && (itemIndex < numItems)) {
-
-                if (gp.getPlayer().getInventory().get(itemIndex).isStackable()) {                                       // Only draw the item quantity if it's stackable.
-
-                    String quantity = Integer.toString(gp.getPlayer().getInventory().get(itemIndex).getAmount());
-                    int quantityX = leftQuantityX + (horizontalSpacing * col);
-//                    int quantityY = mainWindowTopBottomPadding + (topQuantityY + (verticalSpacing * row));
-//                    renderStringShadow(quantity, quantityX, quantityY, new Vector3f(255, 255, 255), 14F, "Arimo");
-                }
-                itemIndex++;                                                                                            // Iterate to the next item.
-                col++;                                                                                                  // Iterate to the next column.
-            }
-            row++;                                                                                                      // Iterate to the next row.
-        }
+        // Render name, quantity, and description.
+        renderStringShadow(name, screenCoords, nameColor, 0.15f, "Arimo");
+        screenCoords.y += 0.090f;
+        renderStringShadow(quantity, screenCoords, quantityColor, 0.15f, "Arimo");
+        screenCoords.y += 0.090f;
+        renderStringBlock(description, screenCoords, 40, 0.065f, descriptionColor, 0.15f, true);
     }
 
 
@@ -868,70 +855,67 @@ public class Ui {
 
 
     /**
-     * Prints a block of text line-by-line according to a specified line character limit.
-     * Text will be printed with the currently set font.
+     * Adds a block of text with a specified line character limit to the render pipeline.
      *
      * @param text complete text to be printed
-     * @param screenX x-coordinate of the printed text block (leftmost)
-     * @param topScreenY y-coordinate of the top line of the printed text block (topmost)
+     * @param screenCoords screen coordinates of the text block (lefmost and topmost, normalized between 0 and 1).
      * @param maxLineLength maximum number of characters allowed in a printed line of text
      * @param lineSpacing space between each printed line of text
      * @param color color of the printed text (r, g, b)
      * @param size size at which to draw the text
      * @param dropShadow whether a drop shadow should be drawn (true) or not (false)
      */
-    private void drawStringBlock(String text, int screenX, int topScreenY, int maxLineLength, int lineSpacing,
-                                 Vector3f color, float size, boolean dropShadow) {
+    private void renderStringBlock(String text, Vector2f screenCoords, int maxLineLength, float lineSpacing,
+                                   Vector3f color, float size, boolean dropShadow) {
 
-//        String[] words = text.split(" ");                                                                               // An array of each word in the complete text, split by spaces.
-//        int wordsIndex = 0;                                                                                             // Track which index of the words array is currently being checked.
-//        int screenY = topScreenY;
-//
-//        while (wordsIndex < words.length) {                                                                             // Print each line of text.
-//
-//            boolean limitExceeded = false;                                                                              // Track whether the maximum character length of a line has been exceeded (true) or not (false) yet.
-//            String line = "";                                                                                           // Initialize the line of text that's being built.
-//
-//            while ((!limitExceeded) && (wordsIndex < words.length)) {                                                   // Add words to a line of text until either the maximum character length is exceeded OR there are no more words to print.
-//
-//                String build;                                                                                           // Create a string that will be a candidate for the next line of text to be printed.
-//
-//                if (line.equals("")) {
-//
-//                    build = words[wordsIndex];
-//                } else {
-//
-//                    build = line + " " + words[wordsIndex];
-//                }
-//
-//                if (build.length() > maxLineLength) {
-//
-//                    limitExceeded = true;                                                                               // Character length of the line has been exceeded.
-//
-//                    if (words[wordsIndex].length() > maxLineLength) {
-//
-//                        words[wordsIndex] = "???";                                                                      // If the number of characters in a single word exceeds the maximum number of characters that can be printed in a line of text, skip the word to avoid getting stuck in an infinite loop.
-//                    }
-//                } else {
-//
-//                    line = build;                                                                                       // Set the next line of text to be drawn.
-//                    wordsIndex++;                                                                                       // Iterate to the next word.
-//                }
-//            }
-//
-//            if (dropShadow) {
-//
-//                renderStringShadow(line, screenX, screenY, color, size, "Arimo");                                       // Draw the line of text with a drop shadow.
-//            } else {
-//
-//                renderString(line, screenX, screenY, size, color, "Arimo");                                             // Draw the line of text without a drop shadow.
-//            }
-//
-//            if (wordsIndex != words.length) {
-//
-//                screenY += lineSpacing;                                                                                 // Spacing between lines of text.
-//            }
-//        }
+        String[] words = text.split(" ");                                                                               // An array of each word in the complete text, split by spaces.
+        int wordsIndex = 0;                                                                                             // Track which index of the words array is currently being checked.
+
+        while (wordsIndex < words.length) {                                                                             // Print each line of text.
+
+            boolean limitExceeded = false;                                                                              // Track whether the maximum character length of a line has been exceeded (true) or not (false) yet.
+            String line = "";                                                                                           // Initialize the line of text that's being built.
+
+            while ((!limitExceeded) && (wordsIndex < words.length)) {                                                   // Add words to a line of text until either the maximum character length is exceeded OR there are no more words to print.
+
+                String build;                                                                                           // Create a string that will be a candidate for the next line of text to be printed.
+
+                if (line.equals("")) {
+
+                    build = words[wordsIndex];
+                } else {
+
+                    build = line + " " + words[wordsIndex];
+                }
+
+                if (build.length() > maxLineLength) {
+
+                    limitExceeded = true;                                                                               // Character length of the line has been exceeded.
+
+                    if (words[wordsIndex].length() > maxLineLength) {
+
+                        words[wordsIndex] = "???";                                                                      // If the number of characters in a single word exceeds the maximum number of characters that can be printed in a line of text, skip the word to avoid getting stuck in an infinite loop.
+                    }
+                } else {
+
+                    line = build;                                                                                       // Set the next line of text to be rendered.
+                    wordsIndex++;                                                                                       // Iterate to the next word.
+                }
+            }
+
+            if (dropShadow) {
+
+                renderStringShadow(line, screenCoords, color, size, "Arimo");                                           // Render the line of text with a drop shadow.
+            } else {
+
+                renderString(line, screenCoords, size, color, "Arimo");                                                 // Render the line of text without a drop shadow.
+            }
+
+            if (wordsIndex != words.length) {
+
+                screenCoords.y += lineSpacing;                                                                          // Spacing between lines of text.
+            }
+        }
     }
 
 
