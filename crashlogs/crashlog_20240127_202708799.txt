@@ -1,0 +1,8 @@
+01/27/2024 20:27:05:539  INFO     Application started.
+01/27/2024 20:27:08:797  ERROR    An unhandled exception has occurred.
+java.lang.IllegalStateException: Tile size must be evenly divisible by light node size.
+	at environment.lighting.LightManager.<init>(LightManager.java:61)
+	at environment.EnvironmentManager.setup(EnvironmentManager.java:60)
+	at core.GamePanel.init(GamePanel.java:287)
+	at core.Window.initGame(Window.java:212)
+	at core.App.main(App.java:19)

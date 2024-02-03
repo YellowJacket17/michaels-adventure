@@ -1,5 +1,5 @@
 #type vertex
-#version 330 core
+#version 410 core
 layout (location=0) in vec3 aPos;                            // Position attribute.
 layout (location=1) in vec4 aColor;                          // Color attribute.
 layout (location=2) in vec2 aTexCoords;                      // Texture position attribute.
@@ -20,7 +20,7 @@ void main() {
 }
 
 #type fragment
-#version 330 core
+#version 410 core
 
 in vec4 fColor;                                              // Need an in for vec4 color.
 in vec2 fTexCoords;

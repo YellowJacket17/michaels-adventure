@@ -1,0 +1,11 @@
+01/31/2024 20:11:25:752  INFO     Application started.
+01/31/2024 20:11:28:499  INFO     Starting game loop.
+01/31/2024 20:11:28:505  ERROR    An unhandled exception has occurred.
+java.lang.ArrayIndexOutOfBoundsException: Index 400 out of bounds for length 400
+	at environment.lighting.LightManager.calculateRays(LightManager.java:172)
+	at environment.lighting.LightManager.update(LightManager.java:78)
+	at environment.EnvironmentManager.update(EnvironmentManager.java:36)
+	at core.GamePanel.update(GamePanel.java:325)
+	at core.Window.generateFrame(Window.java:335)
+	at core.Window.run(Window.java:276)
+	at core.App.main(App.java:21)

@@ -1,5 +1,6 @@
 package core;
 
+import jdk.jshell.execution.Util;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
@@ -101,24 +102,24 @@ public class Window {
     private final String title = "Michael's Adventure";
 
     /**
-     * Window background color (red component).
+     * Window clear color (red component).
      */
     private final float r = 0.0f;
 
     /**
-     * Window background color (green component).
+     * Window clear color (green component).
      */
     private final float g = 0.0f;
 
     /**
-     * Window background color (blue component).
+     * Window clear color (blue component).
      */
     private final float b = 0.0f;
 
     /**
-     * Window background color (alpha component).
+     * Window clear color (alpha component).
      */
-    private final float a = 1.0f;
+    private final float a = 0.0f;
 
 
     // CONSTRUCTOR
@@ -145,6 +146,11 @@ public class Window {
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);                                                                     // Initialize window in non-maximized position.
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
         // Create window.
         glfwWindow = glfwCreateWindow(GamePanel.NATIVE_SCREEN_WIDTH, GamePanel.NATIVE_SCREEN_HEIGHT, title, NULL, NULL);
         if (glfwWindow == NULL) {
@@ -154,7 +160,7 @@ public class Window {
         // Set window icon.
         loadWindowIcon();
 
-        // Listeners.
+        // Create listeners.
         glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
         glfwSetWindowSizeCallback(glfwWindow, new GLFWWindowSizeCallback() {
             @Override
@@ -169,7 +175,7 @@ public class Window {
             }
         });
 
-        // Obtain monitor refresh rate.
+        // Set target frame rate.
         monitorRefreshRate = getRefreshRate();
         targetFrameRate = monitorRefreshRate;
 
@@ -192,8 +198,8 @@ public class Window {
         GL.createCapabilities();
 
         // Enable blending (alpha values).
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+//        glEnable(GL_BLEND);
+//        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     }
 
 
@@ -207,6 +213,8 @@ public class Window {
         gp.getSystemSetting(0).setActiveOption(vSyncEnabled ? 1 : 0);
         populateFrameRateOptions(generateFrameRateOptions());
         gp.getSystemSetting(2).setActiveOption(gameSpeedTethered ? 1 : 0);
+        gp.getSystemSetting(3).setActiveOption(fullScreenEnabled ? 1 : 0);
+        fullScreenEnabled = fullScreenEnabled ? false : true;
     }
 
 
@@ -214,6 +222,11 @@ public class Window {
      * Starts the main game loop.
      */
     public void run() {
+
+        // Set window clear color and alpha blending.
+        glClearColor(r, g, b, a);                                                                                       // Set window clear color.
+        glEnable(GL_BLEND);                                                                                             // Enable blending (alpha values).
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);                                                                    // Set blending function.
 
         // Initialize variables for tracking time (applicable to both enabled and disabled VSync).
         // Note that `glfwGetTime()` returns time (seconds) elapsed since GLFW was initialized.
@@ -298,7 +311,7 @@ public class Window {
 
 
     /**
-     * Terminates the main game loop and subsequently shuts down the application.
+     * If running, terminates the main game loop and subsequently shuts down the application.
      */
     public void terminate() {
 
@@ -315,8 +328,7 @@ public class Window {
     private void generateFrame(double dtUpdate, double dtRender) {
 
         // Prepare the frame.
-        glClearColor(r, g, b, a);                                                                                       // Set window clear color.
-        glClear(GL_COLOR_BUFFER_BIT);                                                                                   // Tell OpenGL how to clear the buffer.
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);                                                             // Tell OpenGL how to clear the framebuffer.
 
         // Poll, update, and render.
         glfwPollEvents();                                                                                               // Poll user input (keyboard, gamepad, etc.).
