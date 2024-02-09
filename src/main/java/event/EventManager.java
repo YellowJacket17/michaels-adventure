@@ -22,22 +22,22 @@ import java.util.List;
  */
 public class EventManager {
 
-    // BASE FIELD
+    // BASIC FIELD
     private final GamePanel gp;
 
 
-    // MAP INTERACTION FIELDS
+    // MAP EVENT FIELDS
     private final Evt_Map000 evt_map000;
     private final Evt_Map001 evt_map001;
 
 
-    // CONVERSATION INTERACTION FIELDS
+    // CONVERSATION EVENT FIELDS
     private final Evt_Conv001 evt_conv001;
     private final Evt_Conv002 evt_conv002;
     private final Evt_Conv004 evt_conv004;
 
 
-    // SUB-MENU INTERACTION FIELDS
+    // SUB-MENU EVENT FIELDS
     private final Evt_SubMenu000 evt_subMenu000;
     private final Evt_SubMenu001 evt_subMenu001;
 

@@ -3,10 +3,10 @@ package combat;
 import combat.implementation.action.*;
 import core.GamePanel;
 import miscellaneous.GameState;
-import miscellaneous.TransitionPhase;
 import miscellaneous.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
+import utility.LimitedArrayList;
 import utility.UtilityTool;
 
 import java.util.*;
@@ -23,13 +23,13 @@ public class CombatManager {
     private final HashMap<Integer, Integer> storedEntityCols = new HashMap<>();                                         // Stores the columns that all combating entities occupied when combat was initiated; entity ID is the key, column is the value.
     private final HashMap<Integer, Integer> storedEntityRows = new HashMap<>();                                         // Stores the rows that all combating entities occupied when combat was initiated; entity ID is the key, row is the value.
     private final HashMap<Integer, EntityDirection> storedEntityDirections = new HashMap<>();                           // Stores the direction that all combating entities were facing when combat was initiated; entity ID is the key, entity direction is the value.
-    private final HashSet<Integer> opposingEntities = new HashSet<>();                                                  // Stores the IDs of opposing entities during combat.
+    private final LinkedHashSet<Integer> opposingEntities = new LinkedHashSet<>();                                      // Stores the IDs of opposing entities during combat.
     private EnterCombatTransitionType activeEnterCombatTransitionType;                                                  // Set which specific enter combat transition type is currently being performed.
     private ExitCombatTransitionType activeExitCombatTransitionType;                                                    // Set which specific exit combat transition type is currently being performed.
     private final LinkedList<Integer> queuedEntityTurnOrder = new LinkedList<>();                                       // List of queued turn order for entities to move in; the entity at the front of the queue is the one whose turn it currently is.
     private final LinkedList<ActionBase> queuedActions = new LinkedList<>();                                            // List of queued actions to run during a turn in combat.
     private final List<String> rootCombatOptions;                                                                       // List to store root combat options (fight, inventory, etc.).
-    private int lastSelectedSubMenuOption = -1;                                                                         // Stores the last sub-menu option (index) that was selected; a value of -1 is the default.
+    private final LimitedArrayList<Integer> selectedSubMenuOptionLog = new LimitedArrayList<>(10);                      // List to log the latest ten sub-menu options selected.
     private SubMenuType lastSubMenuType;                                                                                // Stores the last sub-menu type that was actioned.
     private boolean lastActionSubmenu = false;                                                                          // Stores whether the last action that was run was one to generate a sub-menu.
 
@@ -186,7 +186,6 @@ public class CombatManager {
     }
 
 
-
     /**
      * Performs any loading that needs to be done once the screen fades to black during an enter combat transition.
      */
@@ -199,7 +198,6 @@ public class CombatManager {
                 break;
         }
     }
-
 
 
     /**
@@ -342,6 +340,9 @@ public class CombatManager {
             case FIGHT:
                 runFightSubMenuSelection();
                 break;
+            case TARGET_SELECT:
+                runTargetSelectSubMenuSelection();
+                break;
         }
     }
 
@@ -351,17 +352,17 @@ public class CombatManager {
      */
     private void runRootSubMenuSelection() {
 
-        switch (lastSelectedSubMenuOption) {
+        switch (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1)) {
             case 0:
                 break;
             case 1:
                 break;
             case 2:
-                List<String> attackOptions = new ArrayList<>();
-                for (AttackBase attack : gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getAttacks()) {
-                    attackOptions.add(attack.getName());
+                List<String> moveOptions = new ArrayList<>();
+                for (MoveBase move : gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves()) {
+                    moveOptions.add(move.getName());
                 }
-                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.FIGHT, attackOptions));
+                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.FIGHT, moveOptions));
                 break;
             case 3:
                 break;
@@ -381,13 +382,42 @@ public class CombatManager {
      */
     private void runFightSubMenuSelection() {
 
-        EntityBase entity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
-        AttackBase attack = entity.getAttacks().get(lastSelectedSubMenuOption);
-        String message = buildUseAttackMessage(entity.getName(), attack.getName());
+        List<String> targetOptions = new ArrayList<>();
+        for (int entityId : opposingEntities) {
+            targetOptions.add(gp.getEntityById(entityId).getName());
+        }
+        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.TARGET_SELECT, targetOptions));
+    }
+
+
+    /**
+     * Runs logic based on the last option that was selected in the target select combat sub-menu.
+     */
+    private void runTargetSelectSubMenuSelection() {
+
+        EntityBase targetEntity = null;
+        int currentIndex = 0;
+        for (int entityId : opposingEntities) {
+            if (currentIndex == selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1)) {
+                targetEntity = gp.getEntityById(entityId);
+                break;
+            } else {
+                currentIndex++;
+            }
+        }
+        EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
+        MoveBase move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 2));
+        String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
         addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+//        addQueuedActionBack(new Act_UseMove(gp, move, entity.getEntityId(), 0));
+
+        // TODO : Need a way variable to temporarily store the move selected in the previous sub-menu.
+        //        Unless a log of selected sub-menu options is kept and we just reference the second-to-last one added.
+        //        This log could perhaps store the latest ten sub-menu options selected (indices).
 
         // TODO : We'll call generateTurnActions() to calculate the series of actions that will result from this
-        //        attack being used; perhaps the above action can also be generated placed in generateTurnActions()?
+        //        move being used; perhaps the above action can also be generated placed in generateTurnActions()?
+
     }
 
 
@@ -489,7 +519,6 @@ public class CombatManager {
             if (!gp.getParty().containsKey(entityId)) {
                 gp.getEntityById(entityId).setCol(storedEntityCols.get(entityId));
             }
-
         }
 
         for (int entityId : storedEntityRows.keySet()) {
@@ -628,26 +657,26 @@ public class CombatManager {
 
 
     /**
-     * Builds a string for the use attack message according to the passed entity name and attack name.
+     * Builds a string for the use move message according to the passed entity name and move name.
      *
      * @param entityName attacking entity
-     * @param attackName attack being used
+     * @param moveName move being used
      * @return built string
      */
-    private String buildUseAttackMessage(String entityName, String attackName) {
+    private String buildUseMoveMessage(String entityName, String moveName) {
 
         String buildEntityName = "???";
-        String buildAttackName = "???";
+        String buildMoveName = "???";
 
         if ((entityName != null) && (!entityName.equals(""))) {
             buildEntityName = entityName;
         }
 
-        if ((attackName != null) && (!attackName.equals(""))) {
-            buildAttackName = attackName;
+        if ((moveName != null) && (!moveName.equals(""))) {
+            buildMoveName = moveName;
         }
 
-        return buildEntityName + " used " + buildAttackName + "!";
+        return buildEntityName + " used " + buildMoveName + "!";
     }
 
 
@@ -681,6 +710,8 @@ public class CombatManager {
 
         if (queuedActions.peekFirst() != null) {
             queuedActions.pollFirst().run();
+        } else {
+            progressCombat();                                                                                           // If no actions are queued, force back to the root combat menu.
         }
     }
 
@@ -714,16 +745,19 @@ public class CombatManager {
         activeExitCombatTransitionType = null;
         queuedEntityTurnOrder.clear();
         queuedActions.clear();
-        lastSelectedSubMenuOption = -1;
+        selectedSubMenuOptionLog.clear();
         lastSubMenuType = null;
         lastActionSubmenu = false;
     }
 
 
-    // TODO : Add apprpriate getters/setters.
+    // TODO : Add appropriate getters/setters.
     // SETTERS
-    public void setLastSelectedSubMenuOption(int lastSelectedSubMenuOption) {
-        this.lastSelectedSubMenuOption = lastSelectedSubMenuOption;
+    public void addLastSelectedSubMenuOption(int lastSelectedSubMenuOption) {
+        if (selectedSubMenuOptionLog.size() == selectedSubMenuOptionLog.maxCapacity()) {
+            selectedSubMenuOptionLog.remove(0);
+        }
+        selectedSubMenuOptionLog.add(lastSelectedSubMenuOption);
     }
 
     public void setLastSubMenuType(SubMenuType lastSubMenuType) {

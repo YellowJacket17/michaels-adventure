@@ -18,6 +18,7 @@ public class Act_GenerateSubMenu extends ActionBase {
     private final List<String> options = new ArrayList<>();
     private final float subMenuScreenX;
     private final float subMenuScreenY;
+    private final boolean subMenuDefaultPosition;
 
 
     // CONSTRUCTORS
@@ -27,8 +28,9 @@ public class Act_GenerateSubMenu extends ActionBase {
         for (String item : options) {
             this.options.add(item);
         }
-        this.subMenuScreenX = 0.01f; // TODO : Adjust!
-        this.subMenuScreenY = 0.01f; // TODO : Adjust!
+        this.subMenuScreenX = 0;
+        this.subMenuScreenY = 0;
+        this.subMenuDefaultPosition = true;
     }
 
 
@@ -40,6 +42,7 @@ public class Act_GenerateSubMenu extends ActionBase {
         }
         this.subMenuScreenX = subMenuScreenX;
         this.subMenuScreenY = subMenuScreenY;
+        this.subMenuDefaultPosition = false;
     }
 
 
@@ -61,6 +64,10 @@ public class Act_GenerateSubMenu extends ActionBase {
     private void displaySubMenu() {
 
         gp.setGameState(GameState.SUB_MENU);
-        gp.getSubMenuH().generateSubMenu(options, 1, subMenuScreenX, subMenuScreenY);
+        if (subMenuDefaultPosition) {
+            gp.getSubMenuH().generateSubMenu(options, 1);
+        } else {
+            gp.getSubMenuH().generateSubMenu(options, 1, subMenuScreenX, subMenuScreenY);
+        }
     }
 }

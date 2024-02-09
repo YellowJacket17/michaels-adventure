@@ -58,7 +58,7 @@
             "defaultCol": 24,
             "defaultRow": 25
         },
-        "attacks": {
+        "moves": {
             "slot1": 1
         }
     },
@@ -88,7 +88,7 @@
             "defaultCol": 3,
             "defaultRow": 8
         },
-        "attacks": {
+        "moves": {
             "slot1": 1
         }
     },
@@ -118,7 +118,7 @@
             "defaultCol": 14,
             "defaultRow": 1
         },
-        "attacks": {
+        "moves": {
             "slot1": 1
         }
     },
@@ -146,7 +146,7 @@
             "defaultCol": 13,
             "defaultRow": 1
         },
-        "attacks": {
+        "moves": {
             "slot1": 1
         }
     },
@@ -174,7 +174,7 @@
             "defaultCol": 8,
             "defaultRow": 6
         },
-        "attacks": {
+        "moves": {
             "slot1": 1
         }
     }

@@ -1,6 +1,6 @@
 package entity;
 
-import combat.AttackBase;
+import combat.MoveBase;
 import core.GamePanel;
 import render.Renderer;
 import render.Sprite;
@@ -254,12 +254,12 @@ public abstract class EntityBase extends Drawable {
     protected int life;
 
     /**
-     * Entity's maximum available skill points for attacks.
+     * Entity's maximum available skill points for moves in combat.
      */
     protected int maxSkillPoints;
 
     /**
-     * Entity's remaining available skill points for attacks.
+     * Entity's remaining available skill points for moves in combat.
      */
     protected int skillPoints;
 
@@ -348,11 +348,11 @@ public abstract class EntityBase extends Drawable {
     protected int nextLevelExp;
 
 
-    // COMBAT ATTACKS
+    // COMBAT MOVES
     /**
-     * List to store this entity's attacks to be used in combat.
+     * List to store this entity's combat moves.
      */
-    protected final LimitedArrayList<AttackBase> attacks = new LimitedArrayList<>(4);
+    protected final LimitedArrayList<MoveBase> moves = new LimitedArrayList<>(4);
 
 
     // CONSTRUCTOR
@@ -1307,8 +1307,8 @@ public abstract class EntityBase extends Drawable {
         return nextLevelExp;
     }
 
-    public LimitedArrayList<AttackBase> getAttacks() {
-        return attacks;
+    public LimitedArrayList<MoveBase> getMoves() {
+        return moves;
     }
 
 

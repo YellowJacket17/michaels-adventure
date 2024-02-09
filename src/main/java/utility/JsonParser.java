@@ -1,7 +1,7 @@
 package utility;
 
-import combat.AttackBase;
-import combat.implementation.attack.Atk_Tackle;
+import combat.MoveBase;
+import combat.implementation.move.Mve_Tackle;
 import dialogue.Conversation;
 import dialogue.Dialogue;
 import entity.EntityBase;
@@ -288,40 +288,40 @@ public class JsonParser {
                     entity.setLevel(level);
                     entity.setNextLevelExp(nextLevelExp);
 
-                    // Attacks.
-                    JSONObject attacksJson = (JSONObject)entityJson.get("attacks");
+                    // Combat moves.
+                    JSONObject movesJson = (JSONObject)entityJson.get("moves");
                     try {
-                        int attackId = (int)((long)attacksJson.get("slot1"));
-                        AttackBase attack = instantiateAttack(gp, attackId);
-                        if (attack != null) {
-                            entity.getAttacks().add(attack);
+                        int moveId = (int)((long)movesJson.get("slot1"));
+                        MoveBase move = instantiateMove(gp, moveId);
+                        if (move != null) {
+                            entity.getMoves().add(move);
                         }
                     } catch (NullPointerException e) {
                         // Nothing here.
                     }
                     try {
-                        int attackId = (int)((long)attacksJson.get("slot2"));
-                        AttackBase attack = instantiateAttack(gp, attackId);
-                        if (attack != null) {
-                            entity.getAttacks().add(attack);
+                        int moveId = (int)((long)movesJson.get("slot2"));
+                        MoveBase move = instantiateMove(gp, moveId);
+                        if (move != null) {
+                            entity.getMoves().add(move);
                         }
                     } catch (NullPointerException e) {
                         // Nothing here.
                     }
                     try {
-                        int attackId = (int)((long)attacksJson.get("slot3"));
-                        AttackBase attack = instantiateAttack(gp, attackId);
-                        if (attack != null) {
-                            entity.getAttacks().add(attack);
+                        int moveId = (int)((long)movesJson.get("slot3"));
+                        MoveBase move = instantiateMove(gp, moveId);
+                        if (move != null) {
+                            entity.getMoves().add(move);
                         }
                     } catch (NullPointerException e) {
                         // Nothing here.
                     }
                     try {
-                        int attackId = (int)((long)attacksJson.get("slot4"));
-                        AttackBase attack = instantiateAttack(gp, attackId);
-                        if (attack != null) {
-                            entity.getAttacks().add(attack);
+                        int moveId = (int)((long)movesJson.get("slot4"));
+                        MoveBase move = instantiateMove(gp, moveId);
+                        if (move != null) {
+                            entity.getMoves().add(move);
                         }
                     } catch (NullPointerException e) {
                         // Nothing here.
@@ -459,20 +459,20 @@ public class JsonParser {
 
 
     /**
-     * Instantiates an appropriate attack subclass based on the inputted attack ID.
+     * Instantiates an appropriate combat move subclass based on the inputted move ID.
      *
      * @param gp GamePanel instance to load into
-     * @param attackId ID of attack to be instantiated
+     * @param moveId ID of move to be instantiated
      * @return attack
      */
-    private static AttackBase instantiateAttack(GamePanel gp, int attackId) {
+    private static MoveBase instantiateMove(GamePanel gp, int moveId) {
 
-        AttackBase attack = null;
+        MoveBase move = null;
 
-        switch (attackId) {
+        switch (moveId) {
             case 0:
-                attack = new Atk_Tackle(gp);
+                move = new Mve_Tackle(gp);
         }
-        return attack;
+        return move;
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class SubMenuHandler {
 
-    // BASIC FIELDS
+    // FIELDS
     private final GamePanel gp;
 
     /**
@@ -33,6 +33,14 @@ public class SubMenuHandler {
      * The default value is zero.
      */
     private float subMenuScreenX, subMenuScreenY;
+
+    /**
+     * Boolean indicating whether the sub-menu window will be rendered at the default screen position or a custom screen
+     * position.
+     * If this is marked as true, then the values of `subMenuScreenX` and `subMenuScreenY` will be ignored.
+     * The default value is true.
+     */
+    private boolean subMenuDefaultPosition = true;
 
     /**
      * Variable to store the selected index of the sub-menu currently being displayed.
@@ -63,25 +71,35 @@ public class SubMenuHandler {
      */
     public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY) {
 
+        this.subMenuScreenX = subMenuScreenX;
+        this.subMenuScreenY = subMenuScreenY;
+        this.subMenuDefaultPosition = false;
+        generateSubMenu(options, subMenuId);
+    }
+
+
+    /**
+     * Generates a sub-menu.
+     *
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     */
+    public void generateSubMenu(List<String> options, int subMenuId) {
+
         indexSelected = 0;                                                                                              // Ensures the default selected option is set to index zero.
 
-        if ((options.size() >= 1) && (options.size() < 8)) {
+        if ((options.size() >= 1) && (options.size() <= 8)) {
 
             for (String item : options) {
                 this.options.add(item);
             }
             this.subMenuId = subMenuId;
-            this.subMenuScreenX = subMenuScreenX;
-            this.subMenuScreenY = subMenuScreenY;
         } else {
 
-            if ((options.size() < 1) || (options.size() >= 8)) {
-
-                throw new IllegalArgumentException("Attempted to set a sub-menu with a number of options ("
-                        + options.size()
-                        + ") outside of bounds 1 - 8 (both inclusive)");
-            }
-            gp.getInteractionM().handlePostSubMenu(subMenuId, indexSelected);
+            throw new IllegalArgumentException("Attempted to set a sub-menu with a number of options ("
+                    + options.size()
+                    + ") outside of bounds 1 - 8 (both inclusive)");
         }
     }
 
@@ -95,6 +113,7 @@ public class SubMenuHandler {
         subMenuId = -1;
         subMenuScreenX = 0;
         subMenuScreenY = 0;
+        subMenuDefaultPosition = true;
         indexSelected = 0;
         options.clear();
     }
@@ -111,6 +130,10 @@ public class SubMenuHandler {
 
     public float getSubMenuScreenY() {
         return subMenuScreenY;
+    }
+
+    public boolean isSubMenuDefaultPosition() {
+        return subMenuDefaultPosition;
     }
 
     public int getIndexSelected() {

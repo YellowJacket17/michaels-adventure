@@ -35,6 +35,15 @@ public class SubMenuSupport {
      */
     private float tempSubMenuScreenX, tempSubMenuScreenY;
 
+    /**
+     * Stored boolean indicating whether a sub-menu will be rendered at the default screen position or a custom screen
+     * position.
+     * This is used for a sub-menu to be displayed after a corresponding dialogue prompt has been read.
+     * If this is marked as true, then the values of `tempSubMenuScreenX` and `tempSubMenuScreenY` will be ignored.
+     * The default value is true.
+     */
+    private boolean tempSubMenuDefaultPosition = true;
+
 
     // CONSTRUCTOR
     /**
@@ -55,7 +64,13 @@ public class SubMenuSupport {
 
         // NOTE: This method is called as part of logic triggered by `displaySubMenuPrompt()` in InteractionManager.
 
-        displaySubMenuBasic(tempOptions, tempSubMenuId, tempSubMenuScreenX, tempSubMenuScreenY);// Display the sub-menu now that the prompt has been read.
+        if (tempSubMenuDefaultPosition) {
+
+            displaySubMenuBasic(tempOptions, tempSubMenuId);                                                            // Display the sub-menu now that the prompt has been read.
+        } else {
+
+            displaySubMenuBasic(tempOptions, tempSubMenuId, tempSubMenuScreenX, tempSubMenuScreenY);                    // Display the sub-menu now that the prompt has been read.
+        }
         reset();                                                                                                        // Reset variables that stored values for the sub-menu back to their default values.
     }
 
@@ -85,11 +100,8 @@ public class SubMenuSupport {
      */
     public void displaySubMenuBasic(List<String> options, int subMenuId) {
 
-        float subMenuScreenX = 0.01f; // TODO : Adjust!
-        float subMenuScreenY = 0.01f; // TODO : Adjust!
-
         gp.setGameState(GameState.SUB_MENU);
-        gp.getSubMenuH().generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY);
+        gp.getSubMenuH().generateSubMenu(options, subMenuId);
     }
 
 
@@ -105,15 +117,10 @@ public class SubMenuSupport {
      */
     public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuScreenX, int subMenuScreenY) {
 
-        for (String item : options) {
-            tempOptions.add(item);
-        }
-        tempSubMenuId = subMenuId;
         tempSubMenuScreenX = subMenuScreenX;
         tempSubMenuScreenY = subMenuScreenY;
-
-        gp.setGameState(GameState.DIALOGUE);
-        gp.getDialogueR().initiateSubMenuMessage(prompt);
+        tempSubMenuDefaultPosition = false;
+        displaySubMenuPrompt(prompt, options, subMenuId);
     }
 
 
@@ -131,9 +138,6 @@ public class SubMenuSupport {
             tempOptions.add(item);
         }
         tempSubMenuId = subMenuId;
-        tempSubMenuScreenX = 0.01f; // TODO : Adjust!
-        tempSubMenuScreenY = 0.01f; // TODO : Adjust!
-
         gp.setGameState(GameState.DIALOGUE);
         gp.getDialogueR().initiateSubMenuMessage(prompt);
     }
@@ -149,5 +153,6 @@ public class SubMenuSupport {
         tempSubMenuId = 0;
         tempSubMenuScreenX = 0;
         tempSubMenuScreenY = 0;
+        tempSubMenuDefaultPosition = true;
     }
 }

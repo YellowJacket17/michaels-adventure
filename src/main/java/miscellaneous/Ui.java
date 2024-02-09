@@ -717,7 +717,7 @@ public class Ui {
      */
     private void renderSubMenuScreen() {
 
-        // Prepare window position and dimensions (other than window width).
+        // Prepare window dimensions (other than window width).
         // The following information is assuming use of the font Arimo (normal/non-bold).
         float fontScale = 0.15f;                                                                                        // Font size (multiplies native height).
         float optionsScreenTopBottomPadding = 0.02f;                                                                    // Normalized (screen) padding on top and bottom of sub-menu window.
@@ -727,7 +727,6 @@ public class Ui {
         float windowScreenHeight = (optionsScreenSpacing * (gp.getSubMenuH().getOptions().size() - 1))                  // Spacing between options text.
                 + (2 * optionsScreenTopBottomPadding)                                                                   // Padding on top and bottom of sub-menu window.
                 + (optionsCharacterScreenHeight * gp.getSubMenuH().getOptions().size());                                // Character height for each option.
-        Vector2f windowScreenCoords = new Vector2f(gp.getSubMenuH().getSubMenuScreenX(), gp.getSubMenuH().getSubMenuScreenY());
 
         // Prepare window width to width of widest option.
         // The following information is assuming use of the font Arimo (normal/non-bold).
@@ -746,6 +745,14 @@ public class Ui {
             }
         }
         float windowScreenWidth = gp.getCamera().worldWidthToScreenWidth(maxOptionWorldWidth) + optionsScreenLeftPadding + optionsScreenRightPadding;
+
+        // Calculate window position.
+        Vector2f windowScreenCoords;                                                                                    // Declare variable to store window screen coordinates (initialized immediately below).
+        if (gp.getSubMenuH().isSubMenuDefaultPosition()) {                                                              // This is where the default position of the sub-menu window is defined.
+            windowScreenCoords = new Vector2f(1 - 0.03f - windowScreenWidth, 1 - 0.2f - 0.03f - windowScreenHeight);    // The 0.2f in the y-component is the height of the main dialogue window in the `renderDialogueScreen()` method.
+        } else {
+            windowScreenCoords = new Vector2f(gp.getSubMenuH().getSubMenuScreenX(), gp.getSubMenuH().getSubMenuScreenY());
+        }
 
         // Render sub-menu window.
         Vector2f windowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(windowScreenCoords);

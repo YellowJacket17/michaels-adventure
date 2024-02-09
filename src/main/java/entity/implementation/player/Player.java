@@ -1,7 +1,7 @@
 package entity.implementation.player;
 
-import combat.implementation.attack.Atk_Punch;
-import combat.implementation.attack.Atk_Tackle;
+import combat.implementation.move.Mve_Punch;
+import combat.implementation.move.Mve_Tackle;
 import miscellaneous.GameState;
 import core.KeyListener;
 import entity.EntityBase;
@@ -483,9 +483,9 @@ public class Player extends EntityBase {
         setLevel(12);
         setNextLevelExp(5);
 
-        // Combat attacks.
-        attacks.add(new Atk_Tackle(gp));
-        attacks.add(new Atk_Punch(gp));
+        // Combat moves.
+        moves.add(new Mve_Tackle(gp));
+        moves.add(new Mve_Punch(gp));
 
         // Items.
         ItemBase item;

@@ -5,5 +5,6 @@ package combat;
  */
 public enum SubMenuType {
     ROOT,
-    FIGHT
+    FIGHT,
+    TARGET_SELECT
 }
