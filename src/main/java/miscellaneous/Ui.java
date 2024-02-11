@@ -153,6 +153,11 @@ public class Ui {
                 }
         }
 
+        // COMBAT
+        if (gp.isCombatActive()) {
+            renderCombatScreen();
+        }
+
         // DEBUG.
         if (gp.isDebugActive()) {
             renderDebug();
@@ -775,6 +780,23 @@ public class Ui {
                 gp.getSelectionA().addToRenderPipeline(renderer, optionsScreenCoords.x - 0.02f, selectionArrowScreenY);
             }
             optionsScreenCoords.y += optionsCharacterScreenHeight + optionsScreenSpacing;
+        }
+    }
+
+
+    /**
+     * Adds combat UI components to the render pipeline.
+     */
+    private void renderCombatScreen() {
+
+        float barScreenWidth = 0.11f; // 0.055f
+        float barScreenHeight = 0.046f; // 0.023f
+        float barScreenY = 0;
+
+        for (int entityId : gp.getCombatM().getOpposingEntities()) {
+            EntityBase entity = gp.getEntityById(entityId);
+            renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, 1 - barScreenWidth, barScreenY);
+            barScreenY += (barScreenHeight + 0.05f);
         }
     }
 

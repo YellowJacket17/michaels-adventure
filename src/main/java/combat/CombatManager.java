@@ -18,20 +18,84 @@ public class CombatManager {
 
     // FIELDS
     private final GamePanel gp;
-    private int fieldCenterCol, fieldCenterRow;                                                                         // Set the center column/row of the combat field.
-    private int storedTrackIndex = -1;                                                                                  // Stores the music track that was playing when combat was initiated; a value of -1 means that no music track was playing.
-    private final HashMap<Integer, Integer> storedEntityCols = new HashMap<>();                                         // Stores the columns that all combating entities occupied when combat was initiated; entity ID is the key, column is the value.
-    private final HashMap<Integer, Integer> storedEntityRows = new HashMap<>();                                         // Stores the rows that all combating entities occupied when combat was initiated; entity ID is the key, row is the value.
-    private final HashMap<Integer, EntityDirection> storedEntityDirections = new HashMap<>();                           // Stores the direction that all combating entities were facing when combat was initiated; entity ID is the key, entity direction is the value.
-    private final LinkedHashSet<Integer> opposingEntities = new LinkedHashSet<>();                                      // Stores the IDs of opposing entities during combat.
-    private EnterCombatTransitionType activeEnterCombatTransitionType;                                                  // Set which specific enter combat transition type is currently being performed.
-    private ExitCombatTransitionType activeExitCombatTransitionType;                                                    // Set which specific exit combat transition type is currently being performed.
-    private final LinkedList<Integer> queuedEntityTurnOrder = new LinkedList<>();                                       // List of queued turn order for entities to move in; the entity at the front of the queue is the one whose turn it currently is.
-    private final LinkedList<ActionBase> queuedActions = new LinkedList<>();                                            // List of queued actions to run during a turn in combat.
-    private final List<String> rootCombatOptions;                                                                       // List to store root combat options (fight, inventory, etc.).
-    private final LimitedArrayList<Integer> selectedSubMenuOptionLog = new LimitedArrayList<>(10);                      // List to log the latest ten sub-menu options selected.
-    private SubMenuType lastSubMenuType;                                                                                // Stores the last sub-menu type that was actioned.
-    private boolean lastActionSubmenu = false;                                                                          // Stores whether the last action that was run was one to generate a sub-menu.
+
+    /**
+     * Location of the center of the combat field.
+     */
+    private int fieldCenterCol, fieldCenterRow;
+
+    /**
+     * Stored music track that was playing when combat was initiated.
+     * A value of -1 means that no music track was playing.
+     */
+    private int storedTrackIndex = -1;
+
+    /**
+     * Map to store the column (i.e., world position) that all combating entities occupied before combat was initiated;
+     * entity ID is the key, column is the value.
+     */
+    private final HashMap<Integer, Integer> storedEntityCols = new HashMap<>();
+
+    /**
+     * Map to store the rows (i.e., world position) that all combating entities occupied before combat was initiated;
+     * entity ID is the key, row is the value.
+     */
+    private final HashMap<Integer, Integer> storedEntityRows = new HashMap<>();
+
+    /**
+     * Map to store the direction the all combating entities were facing in before combat was initiated; entity ID is
+     * the key, direction is the value.
+     */
+    private final HashMap<Integer, EntityDirection> storedEntityDirections = new HashMap<>();
+
+    /**
+     * Set to store IDs of opposing entities involved in combat.
+     * A set is used to avoid having the same entity entered twice or thrice.
+     */
+    private final LinkedHashSet<Integer> opposingEntities = new LinkedHashSet<>();
+
+    /**
+     * Variable to store the current enter combat transition type being performed (null if none).
+     */
+    private EnterCombatTransitionType activeEnterCombatTransitionType;
+
+    /**
+     * Variable to store the current exit combat transition type being performed (null if none).
+     */
+    private ExitCombatTransitionType activeExitCombatTransitionType;
+
+    /**
+     * List of queued turn order for entities involved in combat.
+     * The entity at the front of the queue is the entity whose turn it currently is.
+     */
+    private final LinkedList<Integer> queuedEntityTurnOrder = new LinkedList<>();
+
+    /**
+     * List of queued actions to run in combat.
+     */
+    private final LinkedList<ActionBase> queuedActions = new LinkedList<>();
+
+    /**
+     * List to store root combat options (fight, inventory, etc.).
+     */
+    private final List<String> rootCombatOptions;
+
+    /**
+     * List to log the last ten sub-menu options selected.
+     * The values stored are the option indices.
+     * The oldest selection is at index 0, the latest is at the top (size of list minus one).
+     */
+    private final LimitedArrayList<Integer> selectedSubMenuOptionLog = new LimitedArrayList<>(10);
+
+    /**
+     * Stores the last sub-menu type that was actioned.
+     */
+    private SubMenuType lastSubMenuType;
+
+    /**
+     * Boolean indicating whether the last action that was run was on to generate a sub-menu.
+     */
+    private boolean lastActionSubmenu = false;
 
 
     // CONSTRUCTOR
@@ -42,7 +106,6 @@ public class CombatManager {
      */
     public CombatManager(GamePanel gp) {
         this.gp = gp;
-
         rootCombatOptions = List.of("Guard", "Attack", "Skill", "Inventory", "Party", "Flee");                          // Immutable list.
     }
 
@@ -409,11 +472,7 @@ public class CombatManager {
         MoveBase move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 2));
         String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
         addQueuedActionBack(new Act_ReadMessage(gp, message, true));
-//        addQueuedActionBack(new Act_UseMove(gp, move, entity.getEntityId(), 0));
-
-        // TODO : Need a way variable to temporarily store the move selected in the previous sub-menu.
-        //        Unless a log of selected sub-menu options is kept and we just reference the second-to-last one added.
-        //        This log could perhaps store the latest ten sub-menu options selected (indices).
+        addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
 
         // TODO : We'll call generateTurnActions() to calculate the series of actions that will result from this
         //        move being used; perhaps the above action can also be generated placed in generateTurnActions()?
@@ -610,7 +669,7 @@ public class CombatManager {
                     int i = random.nextInt(entitiesHighestAgility.size());                                              // Get a random number from 0 to the highest index in the list of entities with the highest agility.
 
 //                    System.out.println("Entity ID: " + entitiesHighestAgility.get(i) + " -> Agility: " + gp.getEntityById(entitiesHighestAgility.get(i)).getAgility());
-                    queuedEntityTurnOrder.addLast(entitiesHighestAgility.get(i));                                             // Add the randomly selected entity as the next in the turn list.
+                    queuedEntityTurnOrder.addLast(entitiesHighestAgility.get(i));                                       // Add the randomly selected entity as the next in the turn list.
                     entitiesToPlace.remove(entitiesHighestAgility.get(i));
                     entitiesHighestAgility.remove(i);                                                                   // Remove the randomly selected entity from the list of entities with the highest agility.
                 }
@@ -752,6 +811,12 @@ public class CombatManager {
 
 
     // TODO : Add appropriate getters/setters.
+    // GETTER
+    public LinkedHashSet<Integer> getOpposingEntities() {
+        return opposingEntities;
+    }
+
+
     // SETTERS
     public void addLastSelectedSubMenuOption(int lastSelectedSubMenuOption) {
         if (selectedSubMenuOptionLog.size() == selectedSubMenuOptionLog.maxCapacity()) {

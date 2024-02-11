@@ -4,6 +4,8 @@ import combat.MoveBase;
 import combat.MoveCategory;
 import core.GamePanel;
 
+import java.util.List;
+
 /**
  * This class defines a move (Struggle).
  * Note that this is the default move when an entity cannot otherwise move.
@@ -30,5 +32,5 @@ public class Mve_Struggle extends MoveBase {
 
     // METHOD
     @Override
-    public void runEffects() {}
+    public void runEffects(int sourceEntityId, List<Integer> targetEntityIds) {}
 }

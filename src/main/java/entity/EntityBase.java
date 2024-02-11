@@ -1456,6 +1456,28 @@ public abstract class EntityBase extends Drawable {
         }
     }
 
+    public void addLife(int addition) {
+        int result = life + addition;
+        if ((result > 0) && (result <= maxLife)) {
+            life = result;
+        } else if (result > maxLife) {
+            life = maxLife;
+        } else if (result < 0) {
+            life = 0;
+        }
+    }
+
+    public void subtractLife(int subtraction) {
+        int result = life - subtraction;
+        if ((result > 0) && (result <= maxLife)) {
+            life = result;
+        } else if (result < 0) {
+            life = 0;
+        } else if (result > maxLife) {
+            life = maxLife;
+        }
+    }
+
     public void setMaxSkillPoints(int maxSkillPoints) {
         if (maxSkillPoints >= 0) {
             this.maxSkillPoints = maxSkillPoints;

@@ -42,8 +42,8 @@
         "attributes": {
             "name": "Test NPC 1",
             "speed": 120,
-            "maxLife": 1,
-            "life": 1,
+            "maxLife": 100,
+            "life": 100,
             "maxSkillPoints": 20,
             "skillPoints": 20,
             "baseAttack": 1,
@@ -160,8 +160,8 @@
         "attributes": {
             "name": "Test NPC 5",
             "speed": 120,
-            "maxLife": 1,
-            "life": 1,
+            "maxLife": 125,
+            "life": 125,
             "maxSkillPoints": 2,
             "skillPoints": 2,
             "baseAttack": 1,

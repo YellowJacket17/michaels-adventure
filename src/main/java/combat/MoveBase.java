@@ -2,6 +2,8 @@ package combat;
 
 import core.GamePanel;
 
+import java.util.List;
+
 /**
  * This abstract class defines base logic for a move in combat.
  */
@@ -46,7 +48,7 @@ public abstract class MoveBase {
     /**
      * Runs move effect logic.
      */
-    public abstract void runEffects();
+    public abstract void runEffects(int sourceEntityId, List<Integer> targetEntityId);
 
 
     // GETTERS

@@ -4,6 +4,8 @@ import combat.MoveBase;
 import combat.MoveCategory;
 import core.GamePanel;
 
+import java.util.List;
+
 /**
  * This class defines a move (Punch).
  */
@@ -29,5 +31,5 @@ public class Mve_Punch extends MoveBase {
 
     // METHOD
     @Override
-    public void runEffects() {}
+    public void runEffects(int sourceEntityId, List<Integer> targetEntityIds) {}
 }
