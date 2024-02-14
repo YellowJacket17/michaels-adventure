@@ -1,6 +1,7 @@
 package combat;
 
 import combat.implementation.action.*;
+import combat.implementation.move.Mve_Struggle;
 import core.GamePanel;
 import miscellaneous.GameState;
 import miscellaneous.TransitionType;
@@ -97,6 +98,16 @@ public class CombatManager {
      */
     private boolean lastActionSubmenu = false;
 
+    /**
+     * Boolean to set whether combat UI is rendered or not.
+     */
+    private boolean combatUiVisible = false;
+
+    /**
+     * Default combat move if an entity has no assigned moves.
+     */
+    private final MoveBase defaultMove;
+
 
     // CONSTRUCTOR
     /**
@@ -106,6 +117,7 @@ public class CombatManager {
      */
     public CombatManager(GamePanel gp) {
         this.gp = gp;
+        defaultMove = new Mve_Struggle(gp);
         rootCombatOptions = List.of("Guard", "Attack", "Skill", "Inventory", "Party", "Flee");                          // Immutable list.
     }
 
@@ -114,29 +126,61 @@ public class CombatManager {
     /**
      * Progresses combat after the previous action has finished.
      * This function serves as the main driver for progressing combat logic.
+     * Action subclasses must call this function as the last call in their `run()` function if it is desired that they
+     * immediately progress combat to the next queued action upon finishing execution.
      */
     public void progressCombat() {
 
-        // If last action was a sub-menu, handle result of user selection.
-        if (lastActionSubmenu) {
+
+        if (lastActionSubmenu) {                                                                                        // If last action was a sub-menu, handle result of user selection.
 
             runSubMenuSelection();
             runNextQueuedAction();
-
-        // If there are still queued actions, run the next one.
-        } else if (!queuedActions.isEmpty()) {
+        } else if (!queuedActions.isEmpty()) {                                                                          // If there are still queued actions, run the next one.
 
             runNextQueuedAction();
+        } else {                                                                                                        // Begin the turn of the entity at the front of the turn order queue.
 
-        // Begin the turn of the entity at the front of the turn order queue.
-        } else {
+            if (opposingEntities.contains(queuedEntityTurnOrder.peekFirst())) {                                         // If entity at the front of the turn order queue is an opposing entity.
 
-            // TODO : Branch logic depending on whether it's a party or opposing entity.
-            //  For an opposing entity, decision will be made automatically by the program in a separate method.
-            String message = buildRootMenuPrompt(gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName());
-            addQueuedActionBack(new Act_ReadMessage(gp, message, false));
-            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions));
-            runNextQueuedAction();
+                // TODO : Break some logic here into separate, dedicated methods.
+
+                // Get source entity.
+                EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
+
+                // Generate random move for source entity to use.
+                MoveBase move;
+                Random random = new Random();
+                int i;
+                try {
+                    i = random.nextInt(sourceEntity.getMoves().size());                                                 // Generate random number from 0 to number of moves minus one (both inclusive).
+                    move = sourceEntity.getMoves().get(i);
+                } catch (IllegalArgumentException e) {
+                    move = defaultMove;
+                }
+
+                // Generate random target entity.
+                EntityBase targetEntity;
+                i = random.nextInt(gp.getParty().size() + 1);                                                           // Generate random number from 0 to number of party members (both inclusive)
+                if (i == gp.getParty().size()) {
+                    targetEntity = gp.getPlayer();
+                } else {
+                    targetEntity = gp.getParty().get(
+                            gp.getParty().keySet().toArray(new Integer[gp.getParty().size()])[i]);
+                }
+
+                // Add move action.
+                String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
+                addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+                addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
+                runNextQueuedAction();
+            } else {                                                                                                    // If entity at the front of the turn order queue is a party member/player.
+
+                String message = buildRootMenuPrompt(gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName());
+                addQueuedActionBack(new Act_ReadMessage(gp, message, false));
+                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions));
+                runNextQueuedAction();
+            }
         }
     }
 
@@ -317,6 +361,7 @@ public class CombatManager {
         // Stage a message action.
         String message = build + " would like to fight!";
         addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+        addQueuedActionBack(new Act_ToggleCombatUi(gp, true));
 
         // Enter the main method for progressing combat.
         progressCombat();
@@ -349,12 +394,33 @@ public class CombatManager {
                 concludeBasicExitCombatTransition();
                 break;
         }
-
         reset();
         resetAllCombatingEntityStats();
         gp.clearCombatingEntities();
         gp.getDialogueR().reset();
         gp.setCombatActive(false);
+    }
+
+
+    /**
+     * Adds an action to the end of the queue of actions.
+     *
+     * @param action action to add to the queue
+     */
+    public void addQueuedActionBack(ActionBase action) {
+
+        queuedActions.addLast(action);
+    }
+
+
+    /**
+     * Adds an action to the front of the queue of actions.
+     *
+     * @param action action to add to the queue
+     */
+    public void addQueuedActionFront(ActionBase action) {
+
+        queuedActions.addFirst(action);
     }
 
 
@@ -381,11 +447,16 @@ public class CombatManager {
 
 
     /**
-     * Generates and queues actions for the entity whose turn it currently is.
+     * Runs the action at the front of the queue of actions.
+     * Once complete, the action is removed from the queue.
      */
-    private void generateTurnActions() {
+    private void runNextQueuedAction() {
 
-        // TODO : Last action must ALWAYS be to end the current entity's turn!
+        if (queuedActions.peekFirst() != null) {
+            queuedActions.pollFirst().run();
+        } else {
+            progressCombat();                                                                                           // If no actions are queued, force back to the root combat menu.
+        }
     }
 
 
@@ -425,6 +496,9 @@ public class CombatManager {
                 for (MoveBase move : gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves()) {
                     moveOptions.add(move.getName());
                 }
+                if (moveOptions.size() == 0) {
+                    moveOptions.add(defaultMove.getName());
+                }
                 addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.FIGHT, moveOptions));
                 break;
             case 3:
@@ -434,6 +508,7 @@ public class CombatManager {
             case 5:
                 String message = "Fleeing the fight!";
                 addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+                addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
                 addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
                 break;
         }
@@ -469,14 +544,15 @@ public class CombatManager {
             }
         }
         EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
-        MoveBase move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 2));
+        MoveBase move;
+        if (sourceEntity.getMoves().size() == 0) {
+            move = defaultMove;
+        } else {
+            move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 2));
+        }
         String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
         addQueuedActionBack(new Act_ReadMessage(gp, message, true));
         addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
-
-        // TODO : We'll call generateTurnActions() to calculate the series of actions that will result from this
-        //        move being used; perhaps the above action can also be generated placed in generateTurnActions()?
-
     }
 
 
@@ -517,7 +593,6 @@ public class CombatManager {
 
                     entity.setRow(fieldCenterRow + 2);
                 }
-
                 placedPartyMembers++;
             }
         }
@@ -740,42 +815,6 @@ public class CombatManager {
 
 
     /**
-     * Adds an action to the end of the queue of actions.
-     *
-     * @param action action to add to the queue
-     */
-    private void addQueuedActionBack(ActionBase action) {
-
-        queuedActions.addLast(action);
-    }
-
-
-    /**
-     * Adds an action to the front of the queue of actions.
-     *
-     * @param action action to add to the queue
-     */
-    private void addQueuedActionFront(ActionBase action) {
-
-        queuedActions.addFirst(action);
-    }
-
-
-    /**
-     * Runs the action at the front of the queue of actions.
-     * Once complete, the action is removed from the queue.
-     */
-    private void runNextQueuedAction() {
-
-        if (queuedActions.peekFirst() != null) {
-            queuedActions.pollFirst().run();
-        } else {
-            progressCombat();                                                                                           // If no actions are queued, force back to the root combat menu.
-        }
-    }
-
-
-    /**
      * Remove all buffs from stats (attack, defense, magic, agility) for all combating entities.
      */
     private void resetAllCombatingEntityStats() {
@@ -807,13 +846,18 @@ public class CombatManager {
         selectedSubMenuOptionLog.clear();
         lastSubMenuType = null;
         lastActionSubmenu = false;
+        combatUiVisible = false;
     }
 
 
     // TODO : Add appropriate getters/setters.
-    // GETTER
+    // GETTERS
     public LinkedHashSet<Integer> getOpposingEntities() {
         return opposingEntities;
+    }
+
+    public boolean isCombatUiVisible() {
+        return combatUiVisible;
     }
 
 
@@ -831,5 +875,9 @@ public class CombatManager {
 
     public void setLastActionSubmenu(boolean lastActionSubmenu) {
         this.lastActionSubmenu = lastActionSubmenu;
+    }
+
+    public void setCombatUiVisible(boolean combatUiVisible) {
+        this.combatUiVisible = combatUiVisible;
     }
 }

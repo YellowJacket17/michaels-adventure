@@ -470,7 +470,7 @@ public class JsonParser {
         MoveBase move = null;
 
         switch (moveId) {
-            case 0:
+            case 1:
                 move = new Mve_Tackle(gp);
         }
         return move;

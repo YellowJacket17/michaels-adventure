@@ -114,7 +114,7 @@ public class Player extends EntityBase {
         }
 
         if (moveCountdown > 0) {
-            moveCountdown -= dt;                                                                                            // Decrease move frame countdown by one each time a new frame is drawn.
+            moveCountdown -= dt;                                                                                        // Decrease move frame countdown by one each time a new frame is drawn.
         }
 
         if ((menuActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_SPACE))) {

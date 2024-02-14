@@ -5,11 +5,14 @@ import combat.ExitCombatTransitionType;
 import core.GamePanel;
 
 /**
- * This class defines an action (exit combat).
+ * This class defines a combat action (exit combat).
  */
 public class Act_ExitCombat extends ActionBase {
 
     // FIELD
+    /**
+     * Variable to store exit combat transition type to be performed.
+     */
     private final ExitCombatTransitionType type;
 
 

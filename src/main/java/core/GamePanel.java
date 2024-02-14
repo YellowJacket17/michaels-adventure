@@ -169,7 +169,7 @@ public class GamePanel {
     private GameState gameState;
 
     /**
-     * Boolean to set whether party members are drawn in the world or not.
+     * Boolean to set whether party members are rendered or not.
      */
     private boolean partyVisible = true;
 

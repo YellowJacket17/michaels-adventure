@@ -9,7 +9,7 @@ import utility.LimitedArrayList;
 import java.util.List;
 
 /**
- * This class defines an action (use a combat move).
+ * This class defines a combat action (use a combat move).
  */
 public class Act_UseMove extends ActionBase {
 
@@ -110,6 +110,12 @@ public class Act_UseMove extends ActionBase {
             gp.getEntityById(targetEntityId).subtractLife(targetDamage);
         }
         move.runEffects(sourceEntityId, targetEntityIds);
+
+        // TODO : Additional logic would be added here for how to handle if an attacked entity faints, etc.
+        //  For now, we'll just end the current entity's turn.
+
+        gp.getCombatM().addQueuedActionBack(new Act_EndEntityTurn(gp));
+        gp.getCombatM().progressCombat();
     }
 
 

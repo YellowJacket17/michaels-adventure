@@ -5,13 +5,20 @@ import core.GamePanel;
 import miscellaneous.GameState;
 
 /**
- * This class defines an action (read a message).
+ * This class defines a combat action (read a message).
  */
 public class Act_ReadMessage extends ActionBase {
 
     // FIELDS
-    private final String message;                                                                                       // Text to be read.
-    private final boolean interactive;                                                                                  // Whether player input is required to progress the message (true) or not (false).
+    /**
+     * Text to be read.
+     */
+    private final String message;
+
+    /**
+     * Boolean indicating whether player input is required to progress this message (true) or not (false).
+     */
+    private final boolean interactive;
 
 
     // CONSTRUCTOR

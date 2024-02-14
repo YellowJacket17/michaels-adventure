@@ -789,14 +789,34 @@ public class Ui {
      */
     private void renderCombatScreen() {
 
-        float barScreenWidth = 0.11f; // 0.055f
-        float barScreenHeight = 0.046f; // 0.023f
-        float barScreenY = 0;
+        if (gp.getCombatM().isCombatUiVisible()){
 
-        for (int entityId : gp.getCombatM().getOpposingEntities()) {
-            EntityBase entity = gp.getEntityById(entityId);
-            renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, 1 - barScreenWidth, barScreenY);
+            // TODO : Clean this up + make actual status bars for each combating entity (includes name, life bar, etc.).
+
+            // Opposing entities.
+            float barScreenWidth = 0.11f; // 0.055f
+            float barScreenHeight = 0.046f; // 0.023f
+            float barScreenY = 0;
+
+            for (int entityId : gp.getCombatM().getOpposingEntities()) {
+
+                EntityBase entity = gp.getEntityById(entityId);
+                renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, 1 - barScreenWidth, barScreenY);
+                barScreenY += (barScreenHeight + 0.05f);
+            }
+
+            // Player entity.
+            barScreenY = 0;
+            renderLifeBar(gp.getPlayer().getLife(), gp.getPlayer().getMaxLife(), barScreenWidth, barScreenHeight, 0, barScreenY);
             barScreenY += (barScreenHeight + 0.05f);
+
+            // Party members.
+            for (int entityId : gp.getParty().keySet()) {
+
+                EntityBase entity = gp.getEntityById(entityId);
+                renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, 0, barScreenY);
+                barScreenY += (barScreenHeight + 0.05f);
+            }
         }
     }
 

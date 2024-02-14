@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class defines an action (generate a sub-menu).
+ * This class defines a combat action (generate a sub-menu).
  */
 public class Act_GenerateSubMenu extends ActionBase {
 
