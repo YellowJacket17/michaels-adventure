@@ -10,6 +10,7 @@ import render.ZIndex;
 import render.drawable.Transform;
 
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * This class handles the drawing of all on-screen user interface (UI) elements.
@@ -412,7 +413,8 @@ public class Ui {
         float barScreenY = textScreenCoords.y + 0.002f;
         float barScreenWidth = 0.055f;                                                                                  // The maximum normalized (screen) width of the life bar interior (corresponds with maximum life).
         float barScreenHeight = 0.023f;                                                                                 // The normalized (screen) thickness of the life bar.
-        renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, barScreenX, barScreenY);
+        Vector4f barBorderColor = new Vector4f(255, 255, 255, 255);
+        renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, barScreenX, barScreenY, barBorderColor);
 
         // Draw remaining life points text with a shadowed effect.
         textScreenCoords.x += 0.074f;
@@ -430,8 +432,9 @@ public class Ui {
      * @param screenHeight normalized (screen) height of the life bar
      * @param screenX screen x-coordinate of the life bar (leftmost)
      * @param screenY screen y-coordinate of the life bar (topmost)
+     * @param borderColor bar border color (r, g, b, a)
      */
-    private void renderLifeBar(int life, int maxLife, float screenWidth, float screenHeight, float screenX, float screenY) {
+    private void renderLifeBar(int life, int maxLife, float screenWidth, float screenHeight, float screenX, float screenY, Vector4f borderColor) {
 
         // Prepare life bar.
         float borderScreenThickness = screenWidth * 0.04f;                                                              // Normalized (screen) thickness of border surrounding life bar interior.
@@ -443,7 +446,7 @@ public class Ui {
         }
 
         // Render life bar background/border.
-        Vector4f color = new Vector4f(255, 255, 255, 255);
+        Vector4f color = borderColor;
         Vector2f screenCoords = new Vector2f(screenX, screenY);
         Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
         float worldWidth = gp.getCamera().screenWidthToWorldWidth(screenWidth);
@@ -794,30 +797,68 @@ public class Ui {
             // TODO : Clean this up + make actual status bars for each combating entity (includes name, life bar, etc.).
 
             // Opposing entities.
-            float barScreenWidth = 0.11f; // 0.055f
-            float barScreenHeight = 0.046f; // 0.023f
-            float barScreenY = 0;
+            float bannerScreenY = 0;
 
             for (int entityId : gp.getCombatM().getOpposingEntities()) {
 
                 EntityBase entity = gp.getEntityById(entityId);
-                renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, 1 - barScreenWidth, barScreenY);
-                barScreenY += (barScreenHeight + 0.05f);
+                renderEntityCombatBanner(entity.getEntityId(), 1 - 0.15f, bannerScreenY);
+                bannerScreenY += 0.08f;
             }
 
             // Player entity.
-            barScreenY = 0;
-            renderLifeBar(gp.getPlayer().getLife(), gp.getPlayer().getMaxLife(), barScreenWidth, barScreenHeight, 0, barScreenY);
-            barScreenY += (barScreenHeight + 0.05f);
+            bannerScreenY = 0;
+            renderEntityCombatBanner(gp.getPlayer().getEntityId(), 0, 0);
+            bannerScreenY += 0.08f;
 
             // Party members.
             for (int entityId : gp.getParty().keySet()) {
 
                 EntityBase entity = gp.getEntityById(entityId);
-                renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, 0, barScreenY);
-                barScreenY += (barScreenHeight + 0.05f);
+                renderEntityCombatBanner(entity.getEntityId(), 0, bannerScreenY);
+                bannerScreenY += 0.08f;
             }
         }
+    }
+
+
+    /**
+     * Adds an entity combat banner (i.e., rectangle that contains name, health bar, etc. during combat) to the render
+     * pipeline.
+     *
+     * @param entityId ID of entity whose banner to render
+     * @param bannerScreenX screen x-coordinate of the banner (leftmost)
+     * @param bannerScreenY screen y-coordinate of the banner (topmost)
+     */
+    private void renderEntityCombatBanner(int entityId, float bannerScreenX, float bannerScreenY) {
+
+        Vector2f bannerScreenCoords = new Vector2f(bannerScreenX, bannerScreenY);
+        Vector2f bannerWorldCoords = gp.getCamera().screenCoordsToWorldCoords(bannerScreenCoords);
+        float bannerScreenWidth = 0.15f;
+        float bannerScreenHeight = 0.07f;
+        float bannerWorldWidth = gp.getCamera().screenWidthToWorldWidth(bannerScreenWidth);
+        float bannerWorldHeight = gp.getCamera().screenHeightToWorldHeight(bannerScreenHeight);
+
+        renderer.addRectangle(
+                new Vector4f(255, 255, 255, 255),
+                new Transform(
+                        bannerWorldCoords,
+                        new Vector2f(bannerWorldWidth, bannerWorldHeight)
+                ),
+                ZIndex.THIRD_LAYER
+        );
+        Vector2f nameScreenCoords = new Vector2f(bannerScreenX, bannerScreenY);
+        renderString(gp.getEntityById(entityId).getName(), nameScreenCoords, 0.11f, new Vector3f(0, 0, 0), "Arimo Bold");
+
+        float barScreenWidth = 0.11f;
+        float barScreenHeight = 0.03f;
+        float barScreenX = bannerScreenX + 0.03f;
+        float barScreenY = bannerScreenY + bannerScreenHeight - barScreenHeight;
+        renderLifeBar(gp.getEntityById(entityId).getLife(), gp.getEntityById(entityId).getMaxLife(), barScreenWidth, barScreenHeight, barScreenX, barScreenY, new Vector4f(0, 0, 0, 255));
+
+        Vector2f lifeLabelScreenCoords = new Vector2f(bannerScreenX, barScreenY);
+        renderString("HP", lifeLabelScreenCoords, 0.11f, new Vector3f(190, 97, 104), "Arimo Bold");
+        renderString(gp.getEntityById(entityId).getName(), nameScreenCoords, 0.11f, new Vector3f(0, 0, 0), "Arimo Bold");
     }
 
 
