@@ -332,6 +332,11 @@ public abstract class EntityBase extends Drawable {
     protected double agilityBuff;
 
     /**
+     * Entity's status (faint, etc.).
+     */
+    protected EntityStatus status;
+
+    /**
      * Amount of experience this entity has earned at its current level.
      * This is not cumulative of lifetime experience earned by this entity.
      */
@@ -1295,6 +1300,10 @@ public abstract class EntityBase extends Drawable {
         return agility;
     }
 
+    public EntityStatus getStatus() {
+        return status;
+    }
+
     public int getExp() {
         return exp;
     }
@@ -1458,7 +1467,7 @@ public abstract class EntityBase extends Drawable {
 
     public void addLife(int addition) {
         int result = life + addition;
-        if ((result > 0) && (result <= maxLife)) {
+        if ((result >= 0) && (result <= maxLife)) {
             life = result;
         } else if (result > maxLife) {
             life = maxLife;
@@ -1469,7 +1478,7 @@ public abstract class EntityBase extends Drawable {
 
     public void subtractLife(int subtraction) {
         int result = life - subtraction;
-        if ((result > 0) && (result <= maxLife)) {
+        if ((result >= 0) && (result <= maxLife)) {
             life = result;
         } else if (result < 0) {
             life = 0;
@@ -1548,6 +1557,10 @@ public abstract class EntityBase extends Drawable {
     public void setAgilityBuff(int agilityBuff) {
         this.agilityBuff = agilityBuff;
         calculateAgility();
+    }
+
+    public void setStatus(EntityStatus status) {
+        this.status = status;
     }
 
     public void setExp(int exp) {

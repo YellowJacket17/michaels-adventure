@@ -3,6 +3,7 @@ package combat;
 import combat.implementation.action.*;
 import combat.implementation.move.Mve_Struggle;
 import core.GamePanel;
+import entity.EntityStatus;
 import miscellaneous.GameState;
 import miscellaneous.TransitionType;
 import entity.EntityBase;
@@ -319,9 +320,7 @@ public class CombatManager {
 
         // Build first message to display at the start of the fight.
         String build = "";
-
         String stagedName = "";
-
         int i = 0;
 
         for (int entityId : opposingEntities) {
@@ -340,7 +339,6 @@ public class CombatManager {
 
                     build += "and ";
                 }
-
                 build += stagedName;
             } else {
 
@@ -354,7 +352,6 @@ public class CombatManager {
                     build += " ";
                 }
             }
-
             i++;
         }
 
@@ -431,17 +428,30 @@ public class CombatManager {
      */
     public void endEntityTurn() {
 
-        if (queuedEntityTurnOrder.peekFirst() != null) {
+        // TODO : Perhaps add logic for all entities being fainted.
 
-            queuedEntityTurnOrder.removeFirst();
+        boolean viableEntity = false;
 
-            if (queuedEntityTurnOrder.peekFirst() == null) {
+        while (!viableEntity) {
+
+            if (queuedEntityTurnOrder.peekFirst() != null) {
+
+                queuedEntityTurnOrder.removeFirst();
+
+                if (queuedEntityTurnOrder.peekFirst() == null) {
+
+                    generateTurnOrder();
+                }
+
+            } else {
 
                 generateTurnOrder();
             }
-        } else {
 
-            generateTurnOrder();
+            if (gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getStatus() != EntityStatus.FAINT) {
+
+                viableEntity = true;
+            }
         }
     }
 

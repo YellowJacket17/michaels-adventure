@@ -4,6 +4,8 @@ import combat.ActionBase;
 import combat.MoveBase;
 import combat.MoveCategory;
 import core.GamePanel;
+import entity.EntityBase;
+import entity.EntityStatus;
 import utility.LimitedArrayList;
 
 import java.util.List;
@@ -113,9 +115,54 @@ public class Act_UseMove extends ActionBase {
 
         // TODO : Additional logic would be added here for how to handle if an attacked entity faints, etc.
         //  For now, we'll just end the current entity's turn.
+        //  Also, should fainting be polled before running effects as well?
 
+        pollFainted();
         gp.getCombatM().addQueuedActionBack(new Act_EndEntityTurn(gp));
         gp.getCombatM().progressCombat();
+    }
+
+
+    /**
+     * Polls whether any entities involved in this action have fainted since the last poll.
+     */
+    private void pollFainted() {
+
+        checkEntityFainted(sourceEntityId);
+
+        for (int targetEntityId : targetEntityIds) {
+
+            checkEntityFainted(targetEntityId);
+        }
+    }
+
+
+    /**
+     * Checks whether an entity has fainted.
+     * If it has, its status is changed and a message is queued to display.
+     *
+     * @param entityId ID of entity to check
+     */
+    private void checkEntityFainted(int entityId) {
+
+        EntityBase targetEntity = gp.getEntityById(entityId);
+
+        if ((targetEntity.getLife() <= 0)
+                && (targetEntity.getStatus() != EntityStatus.FAINT)) {
+
+            targetEntity.setStatus(EntityStatus.FAINT);
+            String stagedName = "";
+
+            if (!targetEntity.getName().equals("")) {
+
+                stagedName = "???";
+            } else {
+
+                targetEntity.getName();
+            }
+            String message = targetEntity.getName() + " has no energy left to fight!";
+            gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+        }
     }
 
 
