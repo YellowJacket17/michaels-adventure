@@ -775,8 +775,14 @@ public class Ui {
         Vector2f optionsScreenCoords = new Vector2f(windowScreenCoords.x + optionsScreenLeftPadding, windowScreenCoords.y + optionsScreenTopBottomPadding);
 
         // Render text for each option and selection arrow next to selected option.
+        Vector3f color;
         for (int i = 0; i < gp.getSubMenuH().getOptions().size(); i++) {
-            renderString(gp.getSubMenuH().getOptions().get(i), optionsScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+            if (gp.getSubMenuH().getColors().get(i) != null) {
+                color = gp.getSubMenuH().getColors().get(i);
+            } else {
+                color = new Vector3f(255, 255, 255);
+            }
+            renderString(gp.getSubMenuH().getOptions().get(i), optionsScreenCoords, fontScale, color, "Arimo");
             if (i == gp.getSubMenuH().getIndexSelected()) {
                 float selectionArrowScreenHeight = gp.getCamera().worldHeightToScreenHeight(gp.getSelectionA().getNativeSpriteHeight());
                 float selectionArrowScreenY = optionsScreenCoords.y + (optionsCharacterScreenHeight / 2) - (selectionArrowScreenHeight / 2);

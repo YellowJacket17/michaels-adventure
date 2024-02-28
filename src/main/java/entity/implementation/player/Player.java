@@ -13,6 +13,7 @@ import item.implementation.Itm_Controller;
 import item.implementation.Itm_Key;
 import item.ItemBase;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import render.Renderer;
 import render.ZIndex;
 import utility.AssetPool;
@@ -20,6 +21,7 @@ import utility.LimitedArrayList;
 import utility.UtilityTool;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -782,7 +784,6 @@ public class Player extends EntityBase {
                 String prompt = "Reset camera back to player?";
                 gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 0);
             }
-
             gp.setDebugActive(!gp.isDebugActive());
             debugActioned = true;                                                                                       // Disable the ability of the player to enable the debug mode by pressing the Q key.
         }

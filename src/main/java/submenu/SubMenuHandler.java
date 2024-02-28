@@ -1,8 +1,10 @@
 package submenu;
 
 import core.GamePanel;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,6 +50,12 @@ public class SubMenuHandler {
      */
     private int indexSelected;
 
+    /**
+     * Map of stored colors for each sub-menu option; option index is the key, color (r, g, b) is the value.
+     * The default map is empty.
+     */
+    private HashMap<Integer, Vector3f> colors = new HashMap<>();
+
 
     // CONSTRUCTOR
     /**
@@ -57,6 +65,43 @@ public class SubMenuHandler {
      */
     public SubMenuHandler(GamePanel gp) {
         this.gp = gp;
+    }
+
+
+    /**
+     * Generates a sub-menu.
+     *
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
+     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     */
+    public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
+                                HashMap<Integer, Vector3f> colors) {
+
+        for (int key : colors.keySet()) {
+            this.colors.put(key, colors.get(key));
+        }
+        generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY);
+    }
+
+
+    /**
+     * Generates a sub-menu.
+     *
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
+     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     */
+    public void generateSubMenu(List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors) {
+
+        for (int key : colors.keySet()) {
+            this.colors.put(key, colors.get(key));
+        }
+        generateSubMenu(options, subMenuId);
     }
 
 
@@ -110,16 +155,21 @@ public class SubMenuHandler {
      */
     public void reset() {
 
+        options.clear();
         subMenuId = -1;
         subMenuScreenX = 0;
         subMenuScreenY = 0;
         subMenuDefaultPosition = true;
         indexSelected = 0;
-        options.clear();
+        colors.clear();
     }
 
 
     // GETTERS
+    public List<String> getOptions() {
+        return options;
+    }
+
     public int getSubMenuId() {
         return subMenuId;
     }
@@ -140,8 +190,8 @@ public class SubMenuHandler {
         return indexSelected;
     }
 
-    public List<String> getOptions() {
-        return options;
+    public HashMap<Integer, Vector3f> getColors() {
+        return colors;
     }
 
 

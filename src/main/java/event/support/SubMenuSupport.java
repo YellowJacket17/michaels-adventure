@@ -2,8 +2,10 @@ package event.support;
 
 import core.GamePanel;
 import miscellaneous.GameState;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -44,6 +46,13 @@ public class SubMenuSupport {
      */
     private boolean tempSubMenuDefaultPosition = true;
 
+    /**
+     * Map of stored colors for each sub-menu option to display; option index is the key, color (r, g, b) is the value.
+     * This is used for a sub-menu to be displayed after a corresponding dialogue prompt has been read.
+     * The default map is empty.
+     */
+    private final HashMap<Integer, Vector3f> tempColors = new HashMap<>();
+
 
     // CONSTRUCTOR
     /**
@@ -66,12 +75,45 @@ public class SubMenuSupport {
 
         if (tempSubMenuDefaultPosition) {
 
-            displaySubMenuBasic(tempOptions, tempSubMenuId);                                                            // Display the sub-menu now that the prompt has been read.
+            displaySubMenuBasic(tempOptions, tempSubMenuId, tempColors);                                                // Display the sub-menu now that the prompt has been read.
         } else {
 
-            displaySubMenuBasic(tempOptions, tempSubMenuId, tempSubMenuScreenX, tempSubMenuScreenY);                    // Display the sub-menu now that the prompt has been read.
+            displaySubMenuBasic(tempOptions, tempSubMenuId, tempSubMenuScreenX, tempSubMenuScreenY, tempColors);        // Display the sub-menu now that the prompt has been read.
         }
         reset();                                                                                                        // Reset variables that stored values for the sub-menu back to their default values.
+    }
+
+
+    /**
+     * Initiates a sub-menu to instantly appear with the passed options.
+     * The game state is set to sub-menu.
+     *
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
+     */
+    public void displaySubMenuBasic(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
+                                    HashMap<Integer, Vector3f> colors) {
+
+        gp.setGameState(GameState.SUB_MENU);
+        gp.getSubMenuH().generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY, colors);
+    }
+
+
+    /**
+     * Initiates a sub-menu to instantly appear with the passed options.
+     * The game state is set to sub-menu.
+     *
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
+     */
+    public void displaySubMenuBasic(List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors) {
+
+        gp.setGameState(GameState.SUB_MENU);
+        gp.getSubMenuH().generateSubMenu(options, subMenuId, colors);
     }
 
 
@@ -102,6 +144,45 @@ public class SubMenuSupport {
 
         gp.setGameState(GameState.SUB_MENU);
         gp.getSubMenuH().generateSubMenu(options, subMenuId);
+    }
+
+
+    /**
+     * Initiates a sub-menu to appear after an accompanying prompt is read.
+     * The game state is set to dialogue.
+     *
+     * @param prompt text to be displayed
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
+     */
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuScreenX, int subMenuScreenY,
+                                     HashMap<Integer, Vector3f> colors) {
+
+        for (Integer key : colors.keySet()) {
+            tempColors.put(key, colors.get(key));
+        }
+        displaySubMenuPrompt(prompt, options, subMenuId, subMenuScreenX, subMenuScreenY);
+    }
+
+
+    /**
+     * Initiates a sub-menu to appear after an accompanying prompt is read.
+     * The game state is set to dialogue.
+     *
+     * @param prompt text to be displayed
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
+     */
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors) {
+
+        for (Integer key : colors.keySet()) {
+            tempColors.put(key, colors.get(key));
+        }
+        displaySubMenuPrompt(prompt, options, subMenuId);
     }
 
 
@@ -154,5 +235,6 @@ public class SubMenuSupport {
         tempSubMenuScreenX = 0;
         tempSubMenuScreenY = 0;
         tempSubMenuDefaultPosition = true;
+        tempColors.clear();
     }
 }

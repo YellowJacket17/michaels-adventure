@@ -8,6 +8,7 @@ import miscellaneous.GameState;
 import miscellaneous.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
+import org.joml.Vector3f;
 import utility.LimitedArrayList;
 import utility.UtilityTool;
 

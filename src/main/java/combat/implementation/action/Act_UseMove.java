@@ -160,7 +160,7 @@ public class Act_UseMove extends ActionBase {
 
                 targetEntity.getName();
             }
-            String message = targetEntity.getName() + " has no energy left to fight!";
+            String message = stagedName + " has no energy left to fight!";
             gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
         }
     }
