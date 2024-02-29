@@ -503,26 +503,47 @@ public class CombatManager {
             case 1:
                 break;
             case 2:
-                List<String> moveOptions = new ArrayList<>();
-                for (MoveBase move : gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves()) {
-                    moveOptions.add(move.getName());
-                }
-                if (moveOptions.size() == 0) {
-                    moveOptions.add(defaultMove.getName());
-                }
-                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.FIGHT, moveOptions));
+                handleRootSubMenuSelectionSkills();
                 break;
             case 3:
                 break;
             case 4:
                 break;
             case 5:
-                String message = "Fleeing the fight!";
-                addQueuedActionBack(new Act_ReadMessage(gp, message, true));
-                addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
-                addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
+                handleRootSubMenuSelectionFlee();
                 break;
         }
+    }
+
+
+    /**
+     * Runs logic pertaining to the selection of the 'Skills' option in the root combat sub-menu.
+     */
+    private void handleRootSubMenuSelectionSkills() {
+
+        List<String> moveOptions = new ArrayList<>();
+        for (MoveBase move : gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves()) {
+            moveOptions.add(move.getName());
+        }
+        if (moveOptions.size() == 0) {
+            moveOptions.add(defaultMove.getName());
+        }
+        moveOptions.add("Back");
+        HashMap<Integer, Vector3f> colors = new HashMap<>();
+        colors.put(moveOptions.size() - 1, new Vector3f(255, 46, 102));
+        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.FIGHT, moveOptions, colors));
+    }
+
+
+    /**
+     * Runs logic pertaining to the selection of the 'Flee' option in the root combat sub-menu.
+     */
+    private void handleRootSubMenuSelectionFlee() {
+
+        String message = "Fleeing the fight!";
+        addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+        addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
+        addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
     }
 
 
@@ -531,11 +552,29 @@ public class CombatManager {
      */
     private void runFightSubMenuSelection() {
 
-        List<String> targetOptions = new ArrayList<>();
-        for (int entityId : opposingEntities) {
-            targetOptions.add(gp.getEntityById(entityId).getName());
+        int numMoves = gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves().size();                           // Populate with number of moves of entity whose turn it is.
+
+        if (numMoves == 0) {
+
+            numMoves = 1;                                                                                               // Populate with default move since entity whose turn it is has no moves.
         }
-        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.TARGET_SELECT, targetOptions));
+
+        if (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1) == numMoves) {                            // Determine whether the 'Back' option was selected or not.
+
+            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions));
+        } else {
+
+            List<String> targetOptions = new ArrayList<>();
+
+            for (int entityId : opposingEntities) {
+
+                targetOptions.add(gp.getEntityById(entityId).getName());
+            }
+            targetOptions.add("Back");
+            HashMap<Integer, Vector3f> colors = new HashMap<>();
+            colors.put(targetOptions.size() - 1, new Vector3f(255, 46, 102));
+            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.TARGET_SELECT, targetOptions, colors));
+        }
     }
 
 
@@ -544,26 +583,41 @@ public class CombatManager {
      */
     private void runTargetSelectSubMenuSelection() {
 
-        EntityBase targetEntity = null;
-        int currentIndex = 0;
-        for (int entityId : opposingEntities) {
-            if (currentIndex == selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1)) {
-                targetEntity = gp.getEntityById(entityId);
-                break;
-            } else {
-                currentIndex++;
-            }
-        }
-        EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
-        MoveBase move;
-        if (sourceEntity.getMoves().size() == 0) {
-            move = defaultMove;
+        // TODO : If we add party members as selectable targets, this `if` statement directly below must be adjusted accordingly.
+
+        if (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1) == opposingEntities.size()) {             // Determine whether the 'Back' option was selected or not.
+
+            handleRootSubMenuSelectionSkills();
         } else {
-            move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 2));
+
+            EntityBase targetEntity = null;
+            int currentIndex = 0;
+
+            for (int entityId : opposingEntities) {
+
+                if (currentIndex == selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1)) {
+
+                    targetEntity = gp.getEntityById(entityId);
+                    break;
+                } else {
+
+                    currentIndex++;
+                }
+            }
+            EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
+            MoveBase move;
+
+            if (sourceEntity.getMoves().size() == 0) {
+
+                move = defaultMove;
+            } else {
+
+                move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 2));
+            }
+            String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
+            addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+            addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
         }
-        String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
-        addQueuedActionBack(new Act_ReadMessage(gp, message, true));
-        addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
     }
 
 
