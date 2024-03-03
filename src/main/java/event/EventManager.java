@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * This class is used to control events triggered by player interaction with the world.
- * Methods facilitating these interactions exist here as well (talk to NPC, follow path, pickup item, etc.).
+ * The public methods in this class serve as primary endpoints to use when programming in-game events.
  */
 public class EventManager {
 

@@ -111,6 +111,12 @@ public class CombatManager {
      */
     private final MoveBase defaultMove;
 
+    /**
+     * Set to store IDs of entities currently in a guarding state.
+     * A set is used to avoid having the same entity entered twice or thrice.
+     */
+    private final LinkedHashSet<Integer> guardingEntities = new LinkedHashSet<>();
+
 
     // CONSTRUCTOR
     /**
@@ -400,27 +406,38 @@ public class CombatManager {
      */
     public void endEntityTurn() {
 
-        boolean viableEntity = false;
+        boolean viableEntity = false;                                                                                   // A viable entity is a non-fainted one.
+        boolean generateTurnOrderCalled = false;                                                                        // Boolean tracking whether the turn order has already been re-generated.
 
         while (!viableEntity) {
 
-            if (queuedEntityTurnOrder.peekFirst() != null) {
+            queuedEntityTurnOrder.removeFirst();
 
-                queuedEntityTurnOrder.removeFirst();
+            if (queuedEntityTurnOrder.peekFirst() == null) {
 
-                if (queuedEntityTurnOrder.peekFirst() == null) {
+                if (!generateTurnOrderCalled) {
 
                     generateTurnOrder();
+                    generateTurnOrderCalled = true;
+                } else {
+
+                    String message = "No combatants have any remaining energy to fight.";
+                    addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+                    addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
+                    addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));                        // Precaution in case this loop is entered with no remaining viable entities.
                 }
-
-            } else {
-
-                generateTurnOrder();
             }
 
             if (gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getStatus() != EntityStatus.FAINT) {
 
                 viableEntity = true;
+
+                if (guardingEntities.remove(queuedEntityTurnOrder.peekFirst())) {                                       // If the entity was in a guarding state, end it.
+
+                    String message = gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName()
+                            + " reverted their defensive stance.";
+                    addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+                }
             }
         }
     }
@@ -492,6 +509,10 @@ public class CombatManager {
      */
     private void handleRootSubMenuSelectionGuard() {
 
+        guardingEntities.add(queuedEntityTurnOrder.peekFirst());
+        String message = gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName() + " assumed a defensive stance.";
+        addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+        addQueuedActionBack(new Act_EndEntityTurn(gp));
     }
 
 
@@ -817,10 +838,9 @@ public class CombatManager {
 
     /**
      * Generates the actions that an NPC combating entity will take during its turn.
+     * This method serves as the root of NPC combat AI.
      */
     private void generateNpcTurn() {
-
-        // TODO : Prevent a move from being chosen if insufficient skill points remain.
 
         // Get source entity.
         EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
@@ -984,6 +1004,10 @@ public class CombatManager {
 
     public boolean isCombatUiVisible() {
         return combatUiVisible;
+    }
+
+    public LinkedHashSet<Integer> getGuardingEntities() {
+        return guardingEntities;
     }
 
 

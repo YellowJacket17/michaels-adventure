@@ -1,0 +1,17 @@
+03/03/2024 17:26:46:142  INFO     Application started.
+03/03/2024 17:26:49:935  INFO     Starting game loop.
+03/03/2024 17:27:00:395  ERROR    An unhandled exception has occurred.
+java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because the return value of "java.util.LinkedList.peekFirst()" is null
+	at combat.CombatManager.endEntityTurn(CombatManager.java:432)
+	at combat.implementation.action.Act_EndEntityTurn.run(Act_EndEntityTurn.java:21)
+	at combat.CombatManager.runNextQueuedAction(CombatManager.java:454)
+	at combat.CombatManager.progressCombat(CombatManager.java:150)
+	at combat.implementation.action.Act_UseMove.run(Act_UseMove.java:141)
+	at combat.CombatManager.runNextQueuedAction(CombatManager.java:454)
+	at combat.CombatManager.progressCombat(CombatManager.java:150)
+	at entity.implementation.player.Player.updateDialogueInput(Player.java:598)
+	at entity.implementation.player.Player.updatePlayerInput(Player.java:138)
+	at core.GamePanel.update(GamePanel.java:300)
+	at core.Window.generateFrame(Window.java:335)
+	at core.Window.run(Window.java:276)
+	at core.App.main(App.java:21)

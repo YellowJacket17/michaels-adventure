@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * This class contains methods to facilitate sub-menus.
+ * The public methods in this class serve as primary endpoints to use when programming in-game events.
  */
 public class SubMenuSupport {
 

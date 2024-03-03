@@ -11,6 +11,7 @@ import utility.LimitedLinkedHashMap;
 
 /**
  * This class contains methods to facilitate warping.
+ * The public methods in this class serve as primary endpoints to use when programming in-game events.
  */
 public class WarpSupport {
 

@@ -6,6 +6,7 @@ import org.joml.Vector2f;
 
 /**
  * This class contains methods to facilitate camera movement.
+ * The public methods in this class serve as primary endpoints to use when programming in-game events.
  */
 public class CameraSupport {
 

@@ -92,22 +92,37 @@ public class Act_UseMove extends ActionBase {
     @Override
     public void run() {
 
+        // TODO : Is the list `allDamage` necessary?
         LimitedArrayList<Integer> allDamage = new LimitedArrayList<>(6);
         int sourceEntityAttack = gp.getEntityById(sourceEntityId).getAttack();
         int sourceEntityMagic = gp.getEntityById(sourceEntityId).getMagic();
+        int targetDamage = 0;
+        boolean targetGuarding = false;
 
         for (int targetEntityId : targetEntityIds) {                                                                    // Calculate and apply damage dealt to each target entity.
 
-            int targetDamage = 0;
+            if (gp.getCombatM().getGuardingEntities().contains(targetEntityId)) {                                       // Determine if the target entity is in a guarding state.
+
+                targetGuarding = true;
+                gp.getCombatM().getGuardingEntities().remove(targetEntityId);
+                String message = gp.getEntityById(targetEntityId).getName() + " reverted their defensive stance.";
+                gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+            } else {
+
+                targetGuarding = false;
+            }
+
             if (move.getCategory() == MoveCategory.PHYSICAL) {
 
                 int targetEntityDefense = gp.getEntityById(targetEntityId).getDefense();
                 targetDamage = move.getPower() * (sourceEntityAttack / targetEntityDefense);
+                if (targetGuarding) {targetDamage /= 2;}
                 allDamage.add(targetDamage);
             } else if (move.getCategory() == MoveCategory.MAGIC) {
 
                 int targetEntityMagic = gp.getEntityById(targetEntityId).getMagic();
                 targetDamage = move.getPower() * (sourceEntityMagic / targetEntityMagic);
+                if (targetGuarding) {targetDamage /= 2;}
                 allDamage.add(targetDamage);
             }
             gp.getEntityById(targetEntityId).subtractLife(targetDamage);
@@ -117,16 +132,23 @@ public class Act_UseMove extends ActionBase {
 
         // TODO : Should fainting be polled before running effects as well?
 
-        pollJustFainted();
+        // TODO : Think about at what point damaging status conditions would be applied.
+        //  These will likely be applied as the last thing in a turn.
+        //  Would these go in the action `endEntityTurn`?
+
+        pollFainting();
         gp.getCombatM().addQueuedActionBack(new Act_EndEntityTurn(gp));
         gp.getCombatM().progressCombat();
     }
 
 
     /**
-     * Polls whether any entities involved in this action have fainted since the last poll.
+     * Polls whether any entities involved in this action have just fainted; in other words, if any entities have zero
+     * life but not a fainted status.
+     * If one or more have and that causes either all party entities to be fainted or all opposing entities to be
+     * fainted, then combat will be exited.
      */
-    private void pollJustFainted() {
+    private void pollFainting() {
 
         checkJustFainted(sourceEntityId);
 
