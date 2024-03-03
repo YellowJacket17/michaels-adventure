@@ -1503,6 +1503,28 @@ public abstract class EntityBase extends Drawable {
         }
     }
 
+    public void addSkillPoints(int addition) {
+        int result = skillPoints + addition;
+        if ((result >= 0) && (result <= maxSkillPoints)) {
+            skillPoints = result;
+        } else if (result > maxSkillPoints) {
+            skillPoints = maxSkillPoints;
+        } else if (result < 0) {
+            skillPoints = 0;
+        }
+    }
+
+    public void subtractSkillPoints(int subtraction) {
+        int result = skillPoints - subtraction;
+        if ((result >= 0) && (result <= maxSkillPoints)) {
+            skillPoints = result;
+        } else if (result < 0) {
+            skillPoints = 0;
+        } else if (result > maxSkillPoints) {
+            skillPoints = maxSkillPoints;
+        }
+    }
+
     public void setBaseAttack(int baseAttack) {
         if (baseAttack >= 0) {
             this.baseAttack = baseAttack;

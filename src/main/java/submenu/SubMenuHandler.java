@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -54,7 +55,13 @@ public class SubMenuHandler {
      * Map of stored colors for each sub-menu option; option index is the key, color (r, g, b) is the value.
      * The default map is empty.
      */
-    private HashMap<Integer, Vector3f> colors = new HashMap<>();
+    private final HashMap<Integer, Vector3f> colors = new HashMap<>();
+
+    /**
+     * Set to store the indices of any disabled sub-menu options.
+     * The default set is empty.
+     */
+    private final HashSet<Integer> disabledOptions = new HashSet<>();
 
 
     // CONSTRUCTOR
@@ -65,6 +72,27 @@ public class SubMenuHandler {
      */
     public SubMenuHandler(GamePanel gp) {
         this.gp = gp;
+    }
+
+
+    /**
+     * Generates a sub-menu.
+     *
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
+     * @param disabledOptions set of indices of disabled sub-menu options
+     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     */
+    public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
+                                HashMap<Integer, Vector3f> colors, HashSet<Integer> disabledOptions) {
+
+        for (int item : disabledOptions) {
+            this.disabledOptions.add(item);
+        }
+        generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY, colors);
     }
 
 
@@ -94,6 +122,25 @@ public class SubMenuHandler {
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
+     * @param disabledOptions set of indices of disabled sub-menu options
+     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     */
+    public void generateSubMenu(List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors,
+                                HashSet<Integer> disabledOptions) {
+
+        for (int item : disabledOptions) {
+            this.disabledOptions.add(item);
+        }
+        generateSubMenu(options, subMenuId, colors);
+    }
+
+
+    /**
+     * Generates a sub-menu.
+     *
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      * @throws IllegalArgumentException if either an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors) {
@@ -112,6 +159,26 @@ public class SubMenuHandler {
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
      * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
      * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param disabledOptions set of indices of disabled sub-menu options
+     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     */
+    public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
+                                HashSet<Integer> disabledOptions) {
+
+       for (int item : disabledOptions) {
+           this.disabledOptions.add(item);
+       }
+       generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY);
+    }
+
+
+    /**
+     * Generates a sub-menu.
+     *
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
      * @throws IllegalArgumentException if either an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY) {
@@ -119,6 +186,23 @@ public class SubMenuHandler {
         this.subMenuScreenX = subMenuScreenX;
         this.subMenuScreenY = subMenuScreenY;
         this.subMenuDefaultPosition = false;
+        generateSubMenu(options, subMenuId);
+    }
+
+
+    /**
+     * Generates a sub-menu.
+     *
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param disabledOptions set of indices of disabled sub-menu options
+     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     */
+    public void generateSubMenu(List<String> options, int subMenuId, HashSet<Integer> disabledOptions) {
+
+        for (int item : disabledOptions) {
+            this.disabledOptions.add(item);
+        }
         generateSubMenu(options, subMenuId);
     }
 
@@ -162,6 +246,7 @@ public class SubMenuHandler {
         subMenuDefaultPosition = true;
         indexSelected = 0;
         colors.clear();
+        disabledOptions.clear();
     }
 
 
@@ -192,6 +277,10 @@ public class SubMenuHandler {
 
     public HashMap<Integer, Vector3f> getColors() {
         return colors;
+    }
+
+    public HashSet<Integer> getDisabledOptions() {
+        return disabledOptions;
     }
 
 

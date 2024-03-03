@@ -1,7 +1,7 @@
 package combat;
 
 import combat.implementation.action.*;
-import combat.implementation.move.Mve_Struggle;
+import combat.implementation.move.Mve_BasicAttack;
 import core.GamePanel;
 import entity.EntityStatus;
 import miscellaneous.GameState;
@@ -91,9 +91,10 @@ public class CombatManager {
     private final LimitedArrayList<Integer> selectedSubMenuOptionLog = new LimitedArrayList<>(10);
 
     /**
-     * Stores the last sub-menu type that was actioned.
+     * List to log the last ten sub-menu types actioned.
+     * The oldest selection is at index 0, the latest is at the top (size of list minus one).
      */
-    private SubMenuType lastSubMenuType;
+    private final LimitedArrayList<SubMenuType> actionedSubMenuTypeLog = new LimitedArrayList<>(10);
 
     /**
      * Boolean indicating whether the last action that was run was on to generate a sub-menu.
@@ -119,7 +120,7 @@ public class CombatManager {
      */
     public CombatManager(GamePanel gp) {
         this.gp = gp;
-        defaultMove = new Mve_Struggle(gp);
+        defaultMove = new Mve_BasicAttack(gp);
         rootCombatOptions = List.of("Guard", "Attack", "Skill", "Inventory", "Party", "Flee");                          // Immutable list.
     }
 
@@ -145,37 +146,7 @@ public class CombatManager {
 
             if (opposingEntities.contains(queuedEntityTurnOrder.peekFirst())) {                                         // If entity at the front of the turn order queue is an opposing entity.
 
-                // TODO : Break some logic here into separate, dedicated methods.
-
-                // Get source entity.
-                EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
-
-                // Generate random move for source entity to use.
-                MoveBase move;
-                Random random = new Random();
-                int i;
-                try {
-                    i = random.nextInt(sourceEntity.getMoves().size());                                                 // Generate random number from 0 to number of moves minus one (both inclusive).
-                    move = sourceEntity.getMoves().get(i);
-                } catch (IllegalArgumentException e) {
-                    move = defaultMove;
-                }
-
-                // Generate random target entity.
-                EntityBase targetEntity;
-                i = random.nextInt(gp.getParty().size() + 1);                                                           // Generate random number from 0 to number of party members (both inclusive)
-                if (i == gp.getParty().size()) {
-                    targetEntity = gp.getPlayer();
-                } else {
-                    targetEntity = gp.getParty().get(
-                            gp.getParty().keySet().toArray(new Integer[gp.getParty().size()])[i]);
-                }
-
-                // Add move action.
-                String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
-                addQueuedActionBack(new Act_ReadMessage(gp, message, true));
-                addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
-                runNextQueuedAction();
+                generateNpcTurn();
             } else {                                                                                                    // If entity at the front of the turn order queue is a party member/player.
 
                 String message = buildRootMenuPrompt(gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName());
@@ -429,8 +400,6 @@ public class CombatManager {
      */
     public void endEntityTurn() {
 
-        // TODO : Perhaps add logic for all entities being fainted.
-
         boolean viableEntity = false;
 
         while (!viableEntity) {
@@ -478,12 +447,12 @@ public class CombatManager {
 
         lastActionSubmenu = false;
 
-        switch (lastSubMenuType) {
+        switch (actionedSubMenuTypeLog.get(actionedSubMenuTypeLog.size() - 1)) {
             case ROOT:
                 runRootSubMenuSelection();
                 break;
-            case FIGHT:
-                runFightSubMenuSelection();
+            case SKILL:
+                runSkillSubMenuSelection();
                 break;
             case TARGET_SELECT:
                 runTargetSelectSubMenuSelection();
@@ -499,11 +468,13 @@ public class CombatManager {
 
         switch (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1)) {
             case 0:
+                handleRootSubMenuSelectionGuard();
                 break;
             case 1:
+                handleRootSubMenuSelectionAttack();
                 break;
             case 2:
-                handleRootSubMenuSelectionSkills();
+                handleRootSubMenuSelectionSkill();
                 break;
             case 3:
                 break;
@@ -517,27 +488,44 @@ public class CombatManager {
 
 
     /**
-     * Runs logic pertaining to the selection of the 'Skills' option in the root combat sub-menu.
+     * Runs logic pertaining to the selection of the 'Guard' option in the root combat sub-menu.
      */
-    private void handleRootSubMenuSelectionSkills() {
+    private void handleRootSubMenuSelectionGuard() {
 
-        // TODO : Need to account for if enough SP is available to use a move.
+    }
+
+
+    /**
+     * Runs logic pertaining to the selection of the 'Attack' option in the root combat sub-menu.
+     */
+    private void handleRootSubMenuSelectionAttack() {
+
+        generateTargetSelectSubMenuAction();
+    }
+
+
+    /**
+     * Runs logic pertaining to the selection of the 'Skill' option in the root combat sub-menu.
+     */
+    private void handleRootSubMenuSelectionSkill() {
 
         List<String> moveOptions = new ArrayList<>();
+        HashMap<Integer, Vector3f> colors = new HashMap<>();
+        HashSet<Integer> disabledOptions = new HashSet<>();
 
         for (MoveBase move : gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves()) {
 
             moveOptions.add(move.getName());
-        }
 
-        if (moveOptions.size() == 0) {
+            if (move.getSkillPoints() > gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getSkillPoints()) {
 
-            moveOptions.add(defaultMove.getName());
+                colors.put(moveOptions.size() - 1, new Vector3f(112, 112, 112));
+                disabledOptions.add(moveOptions.size() - 1);
+            }
         }
         moveOptions.add("Back");
-        HashMap<Integer, Vector3f> colors = new HashMap<>();
         colors.put(moveOptions.size() - 1, new Vector3f(255, 46, 102));
-        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.FIGHT, moveOptions, colors));
+        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.SKILL, moveOptions, colors, disabledOptions));
     }
 
 
@@ -554,9 +542,9 @@ public class CombatManager {
 
 
     /**
-     * Runs logic based on the last option that was selected in the fight combat sub-menu.
+     * Runs logic based on the last option that was selected in the skill combat sub-menu.
      */
-    private void runFightSubMenuSelection() {
+    private void runSkillSubMenuSelection() {
 
         int numMoves = gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves().size();                           // Populate with number of moves of entity whose turn it is.
 
@@ -570,19 +558,7 @@ public class CombatManager {
             addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions));
         } else {
 
-            List<String> targetOptions = new ArrayList<>();
-
-            for (int entityId : opposingEntities) {
-
-                if (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT) {
-
-                    targetOptions.add(gp.getEntityById(entityId).getName());
-                }
-            }
-            targetOptions.add("Back");
-            HashMap<Integer, Vector3f> colors = new HashMap<>();
-            colors.put(targetOptions.size() - 1, new Vector3f(255, 46, 102));
-            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.TARGET_SELECT, targetOptions, colors));
+            generateTargetSelectSubMenuAction();
         }
     }
 
@@ -606,7 +582,14 @@ public class CombatManager {
 
         if (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1) == activeOpposingEntities.size()) {       // Determine whether the 'Back' option was selected or not.
 
-            handleRootSubMenuSelectionSkills();
+            switch (actionedSubMenuTypeLog.get(actionedSubMenuTypeLog.size() - 2)) {
+                case ROOT:
+                    addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions));
+                    break;
+                case SKILL:
+                    handleRootSubMenuSelectionSkill();                                                                  // Return to the skill sub-menu.
+                    break;
+            }
         } else {
 
             EntityBase targetEntity = gp.getEntityById(
@@ -615,17 +598,22 @@ public class CombatManager {
                                     selectedSubMenuOptionLog.size() - 1)));
             EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
             MoveBase move;
+            String message;
 
-            if (sourceEntity.getMoves().size() == 0) {
-
-                move = defaultMove;
-            } else {
-
-                move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 2));
+            switch (actionedSubMenuTypeLog.get(actionedSubMenuTypeLog.size() - 2)) {
+                case ROOT:                                                                                              // A basic attack must have been selected (i.e., 'Attack' option in root combat sub-menu).
+                    move = defaultMove;
+                    message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
+                    addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+                    addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
+                    break;
+                case SKILL:                                                                                             // A skill move must have been selected (i.e., 'Skill' option in root combat sub-menu).
+                    move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 2));
+                    message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
+                    addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+                    addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
+                    break;
             }
-            String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
-            addQueuedActionBack(new Act_ReadMessage(gp, message, true));
-            addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
         }
     }
 
@@ -828,6 +816,70 @@ public class CombatManager {
 
 
     /**
+     * Generates the actions that an NPC combating entity will take during its turn.
+     */
+    private void generateNpcTurn() {
+
+        // TODO : Prevent a move from being chosen if insufficient skill points remain.
+
+        // Get source entity.
+        EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
+
+        // Generate possible moves for source entity to use
+        ArrayList<MoveBase> possibleMoves = new ArrayList<>();
+        possibleMoves.add(defaultMove);
+        for (MoveBase move : sourceEntity.getMoves()) {
+            if (move.skillPoints <= sourceEntity.getSkillPoints()) {
+                possibleMoves.add(move);
+            }
+        }
+
+        // Select random move for source entity to use.
+        MoveBase move;
+        Random random = new Random();
+        int i = random.nextInt(possibleMoves.size());                                                                   // Generate random number from 0 to number of possible moves minus one (both inclusive).
+        move = possibleMoves.get(i);
+
+        // Generate random target entity.
+        EntityBase targetEntity;
+        i = random.nextInt(gp.getParty().size() + 1);                                                                   // Generate random number from 0 to number of party members (both inclusive)
+        if (i == gp.getParty().size()) {
+            targetEntity = gp.getPlayer();
+        } else {
+            targetEntity = gp.getParty().get(
+                    gp.getParty().keySet().toArray(new Integer[gp.getParty().size()])[i]);
+        }
+
+        // Add move action.
+        String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
+        addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+        addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
+        runNextQueuedAction();
+    }
+
+
+    /**
+     * Generates a sub-menu action for selecting targets and adds it to the back of the queue of actions.
+     */
+    private void generateTargetSelectSubMenuAction() {
+
+        List<String> targetOptions = new ArrayList<>();
+
+        for (int entityId : opposingEntities) {
+
+            if (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT) {
+
+                targetOptions.add(gp.getEntityById(entityId).getName());
+            }
+        }
+        targetOptions.add("Back");
+        HashMap<Integer, Vector3f> colors = new HashMap<>();
+        colors.put(targetOptions.size() - 1, new Vector3f(255, 46, 102));
+        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.TARGET_SELECT, targetOptions, colors));
+    }
+
+
+    /**
      * Sets a target entity to a combating state.
      * If ethe target entity is already in a combating state, it will remain as such.
      * The target entity's pre-combat world position is also stored for later use (if needed post-combat).
@@ -918,7 +970,7 @@ public class CombatManager {
         queuedEntityTurnOrder.clear();
         queuedActions.clear();
         selectedSubMenuOptionLog.clear();
-        lastSubMenuType = null;
+        actionedSubMenuTypeLog.clear();
         lastActionSubmenu = false;
         combatUiVisible = false;
     }
@@ -943,8 +995,11 @@ public class CombatManager {
         selectedSubMenuOptionLog.add(lastSelectedSubMenuOption);
     }
 
-    public void setLastSubMenuType(SubMenuType lastSubMenuType) {
-        this.lastSubMenuType = lastSubMenuType;
+    public void addLastSubMenuType(SubMenuType lastSubMenuType) {
+        if (actionedSubMenuTypeLog.size() == actionedSubMenuTypeLog.maxCapacity()) {
+            actionedSubMenuTypeLog.remove(0);
+        }
+        actionedSubMenuTypeLog.add(lastSubMenuType);
     }
 
     public void setLastActionSubmenu(boolean lastActionSubmenu) {

@@ -96,7 +96,7 @@ public class Act_UseMove extends ActionBase {
         int sourceEntityAttack = gp.getEntityById(sourceEntityId).getAttack();
         int sourceEntityMagic = gp.getEntityById(sourceEntityId).getMagic();
 
-        for (int targetEntityId : targetEntityIds) {
+        for (int targetEntityId : targetEntityIds) {                                                                    // Calculate and apply damage dealt to each target entity.
 
             int targetDamage = 0;
             if (move.getCategory() == MoveCategory.PHYSICAL) {
@@ -112,13 +112,10 @@ public class Act_UseMove extends ActionBase {
             }
             gp.getEntityById(targetEntityId).subtractLife(targetDamage);
         }
-        move.runEffects(sourceEntityId, targetEntityIds);
+        gp.getEntityById(sourceEntityId).subtractSkillPoints(move.getSkillPoints());                                    // Subtract skill points used by this move.
+        move.runEffects(sourceEntityId, targetEntityIds);                                                               // Apply any additional affects that this move may have.
 
-        // TODO : Subtract appropriate amount of SP from attacker if relevant.
-
-        // TODO : Additional logic would be added here for how to handle if an attacked entity faints, etc.
-        //  For now, we'll just end the current entity's turn.
-        //  Also, should fainting be polled before running effects as well?
+        // TODO : Should fainting be polled before running effects as well?
 
         pollJustFainted();
         gp.getCombatM().addQueuedActionBack(new Act_EndEntityTurn(gp));

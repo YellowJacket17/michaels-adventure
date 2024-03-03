@@ -233,20 +233,23 @@ public class EventManager {
      * Handles what logic should be run based on the selection the player made in a sub-menu.
      * If a valid sub-menu ID is not passed, the game state defaults to an explore state and nothing else happens.
      *
-     * @param subMenuId
-     * @param selectedIndex
+     * @param subMenuId ID of sub-menu being handled
+     * @param selectedIndex index of selected sub-menu option
      */
     public void handlePostSubMenu(int subMenuId, int selectedIndex) {
 
-        switch (subMenuId) {
-            case 0:
-                evt_subMenu000.run(selectedIndex);
-                break;
-            case 1:
-                evt_subMenu001.run(selectedIndex);
-                break;
-            default:
-                cleanupSubmenu(1);
+        if (!gp.getSubMenuH().getDisabledOptions().contains(selectedIndex)) {
+
+            switch (subMenuId) {
+                case 0:
+                    evt_subMenu000.run(selectedIndex);
+                    break;
+                case 1:
+                    evt_subMenu001.run(selectedIndex);
+                    break;
+                default:
+                    cleanupSubmenu(1);
+            }
         }
     }
 
