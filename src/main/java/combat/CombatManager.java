@@ -521,11 +521,17 @@ public class CombatManager {
      */
     private void handleRootSubMenuSelectionSkills() {
 
+        // TODO : Need to account for if enough SP is available to use a move.
+
         List<String> moveOptions = new ArrayList<>();
+
         for (MoveBase move : gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves()) {
+
             moveOptions.add(move.getName());
         }
+
         if (moveOptions.size() == 0) {
+
             moveOptions.add(defaultMove.getName());
         }
         moveOptions.add("Back");
@@ -568,7 +574,10 @@ public class CombatManager {
 
             for (int entityId : opposingEntities) {
 
-                targetOptions.add(gp.getEntityById(entityId).getName());
+                if (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT) {
+
+                    targetOptions.add(gp.getEntityById(entityId).getName());
+                }
             }
             targetOptions.add("Back");
             HashMap<Integer, Vector3f> colors = new HashMap<>();
@@ -583,27 +592,27 @@ public class CombatManager {
      */
     private void runTargetSelectSubMenuSelection() {
 
-        // TODO : If we add party members as selectable targets, this `if` statement directly below must be adjusted accordingly.
+        // TODO : If we add party members as selectable targets, the statements directly below must be adjusted accordingly.
 
-        if (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1) == opposingEntities.size()) {             // Determine whether the 'Back' option was selected or not.
+        LimitedArrayList<Integer> activeOpposingEntities = new LimitedArrayList<>(3);
+
+        for (int entityId : opposingEntities) {
+
+            if (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT) {
+
+                activeOpposingEntities.add(entityId);
+            }
+        }
+
+        if (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1) == activeOpposingEntities.size()) {       // Determine whether the 'Back' option was selected or not.
 
             handleRootSubMenuSelectionSkills();
         } else {
 
-            EntityBase targetEntity = null;
-            int currentIndex = 0;
-
-            for (int entityId : opposingEntities) {
-
-                if (currentIndex == selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1)) {
-
-                    targetEntity = gp.getEntityById(entityId);
-                    break;
-                } else {
-
-                    currentIndex++;
-                }
-            }
+            EntityBase targetEntity = gp.getEntityById(
+                    activeOpposingEntities.get(
+                            selectedSubMenuOptionLog.get(
+                                    selectedSubMenuOptionLog.size() - 1)));
             EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
             MoveBase move;
 

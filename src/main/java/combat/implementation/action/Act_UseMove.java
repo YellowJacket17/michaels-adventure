@@ -1,6 +1,7 @@
 package combat.implementation.action;
 
 import combat.ActionBase;
+import combat.ExitCombatTransitionType;
 import combat.MoveBase;
 import combat.MoveCategory;
 import core.GamePanel;
@@ -113,11 +114,13 @@ public class Act_UseMove extends ActionBase {
         }
         move.runEffects(sourceEntityId, targetEntityIds);
 
+        // TODO : Subtract appropriate amount of SP from attacker if relevant.
+
         // TODO : Additional logic would be added here for how to handle if an attacked entity faints, etc.
         //  For now, we'll just end the current entity's turn.
         //  Also, should fainting be polled before running effects as well?
 
-        pollFainted();
+        pollJustFainted();
         gp.getCombatM().addQueuedActionBack(new Act_EndEntityTurn(gp));
         gp.getCombatM().progressCombat();
     }
@@ -126,24 +129,41 @@ public class Act_UseMove extends ActionBase {
     /**
      * Polls whether any entities involved in this action have fainted since the last poll.
      */
-    private void pollFainted() {
+    private void pollJustFainted() {
 
-        checkEntityFainted(sourceEntityId);
+        checkJustFainted(sourceEntityId);
 
         for (int targetEntityId : targetEntityIds) {
 
-            checkEntityFainted(targetEntityId);
+            checkJustFainted(targetEntityId);
+        }
+
+        if (checkAllOpposingFainted()) {
+
+            String message = gp.getPlayer().getName() + " won the fight!";
+            gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+            gp.getCombatM().addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
+            gp.getCombatM().addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
+        }
+
+        if (checkAllPartyFainted()) {
+
+            String message = gp.getPlayer().getName() + " lost the fight.";
+            gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+            gp.getCombatM().addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
+            gp.getCombatM().addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
         }
     }
 
 
     /**
-     * Checks whether an entity has fainted.
+     * Checks whether an entity has just fainted in this action; in other words, if the entity has zero life but not a
+     * fainted status.
      * If it has, its status is changed and a message is queued to display.
      *
      * @param entityId ID of entity to check
      */
-    private void checkEntityFainted(int entityId) {
+    private void checkJustFainted(int entityId) {
 
         EntityBase targetEntity = gp.getEntityById(entityId);
 
@@ -153,15 +173,67 @@ public class Act_UseMove extends ActionBase {
             targetEntity.setStatus(EntityStatus.FAINT);
             String stagedName = "";
 
-            if (!targetEntity.getName().equals("")) {
+            if (targetEntity.getName().equals("")) {
 
                 stagedName = "???";
             } else {
 
-                targetEntity.getName();
+                stagedName = targetEntity.getName();
             }
             String message = stagedName + " has no energy left to fight!";
             gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+        }
+    }
+
+
+    /**
+     * Checks whether the entire party (including the player entity) has a fainted status.
+     *
+     * @return whether the entire party has fainted (true) or not (false)
+     */
+    private boolean checkAllPartyFainted() {
+
+        int allPartyCount = gp.getParty().size() + 1;
+        int faintedPartyCount = 0;
+
+        if (gp.getPlayer().getStatus() == EntityStatus.FAINT) {
+            faintedPartyCount++;
+        }
+
+        for (int entityId : gp.getParty().keySet()) {
+            if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+                faintedPartyCount++;
+            }
+        }
+
+        if (faintedPartyCount == allPartyCount) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * Checks whether the all opposing entities have a fainted status.
+     *
+     * @return whether all opposing entities have fainted (true) or not (false)
+     */
+    private boolean checkAllOpposingFainted() {
+
+        int allOpposingCount = gp.getCombatM().getOpposingEntities().size();
+        int faintedOpposingCount = 0;
+
+        for (int entityId : gp.getCombatM().getOpposingEntities()) {
+            if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+                faintedOpposingCount++;
+            }
+        }
+
+        if (faintedOpposingCount == allOpposingCount) {
+            return true;
+        } else {
+            return false;
         }
     }
 
