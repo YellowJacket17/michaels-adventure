@@ -92,12 +92,33 @@ public class Act_UseMove extends ActionBase {
     @Override
     public void run() {
 
+        calculateDamage();
+        gp.getEntityById(sourceEntityId).subtractSkillPoints(move.getSkillPoints());                                    // Subtract skill points used by this move.
+        move.runEffects(sourceEntityId, targetEntityIds);                                                               // Apply any additional affects that this move may have.
+
+        // TODO : Should fainting be polled before running effects as well?
+
+        // TODO : Think about at what point damaging status conditions would be applied.
+        //  These will likely be applied as the last thing in a turn.
+        //  Would these go in the action `endEntityTurn`?
+
+        pollFainting();
+        gp.getCombatM().addQueuedActionBack(new Act_EndEntityTurn(gp));
+        gp.getCombatM().progressCombat();
+    }
+
+
+    /**
+     * Calculates and applies damage to all entities targeted by this move.
+     */
+    private void calculateDamage() {
+
         // TODO : Is the list `allDamage` necessary?
         LimitedArrayList<Integer> allDamage = new LimitedArrayList<>(6);
         int sourceEntityAttack = gp.getEntityById(sourceEntityId).getAttack();
         int sourceEntityMagic = gp.getEntityById(sourceEntityId).getMagic();
         int targetDamage = 0;
-        boolean targetGuarding = false;
+        boolean targetGuarding;
 
         for (int targetEntityId : targetEntityIds) {                                                                    // Calculate and apply damage dealt to each target entity.
 
@@ -127,18 +148,7 @@ public class Act_UseMove extends ActionBase {
             }
             gp.getEntityById(targetEntityId).subtractLife(targetDamage);
         }
-        gp.getEntityById(sourceEntityId).subtractSkillPoints(move.getSkillPoints());                                    // Subtract skill points used by this move.
-        move.runEffects(sourceEntityId, targetEntityIds);                                                               // Apply any additional affects that this move may have.
 
-        // TODO : Should fainting be polled before running effects as well?
-
-        // TODO : Think about at what point damaging status conditions would be applied.
-        //  These will likely be applied as the last thing in a turn.
-        //  Would these go in the action `endEntityTurn`?
-
-        pollFainting();
-        gp.getCombatM().addQueuedActionBack(new Act_EndEntityTurn(gp));
-        gp.getCombatM().progressCombat();
     }
 
 

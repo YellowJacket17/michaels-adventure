@@ -416,27 +416,13 @@ public abstract class EntityBase extends Drawable {
 
             if (sprite != null) {
 
-                if (type.equals(EntityType.CHARACTER)) {
-
-                    int worldYAdjustment = 0;                                                                           // Amount in the y-direction that the character sprite needs to be adjusted when rendered.
-
-                    if (sprite.getNativeHeight() > GamePanel.NATIVE_TILE_SIZE) {
-
-                        worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE;
-                    }
-                    transform.position.x = worldX;
-                    transform.position.y = worldY + worldYAdjustment;                                                   // Y-coordinate of entities of type CHARACTER is modified slightly since they can be taller than a single tile; adjusted so the bottom of the sprite lines up with the bottom of the tile the entity is occupying when rendered.
-                    transform.scale.x = GamePanel.NATIVE_TILE_SIZE;                                                     // Entities must be as wide as the native tile size.
-                    transform.scale.y = sprite.getNativeHeight();
-                    renderer.addDrawable(this, ZIndex.THIRD_LAYER);
-                } else {
-
-                    transform.position.x = worldX;
-                    transform.position.y = worldY;                                                                      // Entities of type OBJECT will be rendered to only fill one tile space, regardless of actual size.
-                    transform.scale.x = sprite.getNativeWidth();                                                        // Entities must be as wide as the native tile size.
-                    transform.scale.y = sprite.getNativeHeight();                                                       // Entities of type OBJECT must be as tall as the native tile size.
-                    renderer.addDrawable(this, ZIndex.THIRD_LAYER);
-                }
+                int worldXAdjustment = (GamePanel.NATIVE_TILE_SIZE / 2) - (sprite.getNativeWidth() / 2);                // Amount in the x-direction that the sprite needs to be adjusted when rendered; ensures sprite is centered on occupied tile.
+                int worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE;                          // Amount in the y-direction that the sprite needs to be adjusted when rendered; ensures bottom of sprite touches bottom of occupied tile.
+                transform.position.x = worldX + worldXAdjustment;
+                transform.position.y = worldY + worldYAdjustment;
+                transform.scale.x = sprite.getNativeWidth();
+                transform.scale.y = sprite.getNativeHeight();
+                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
             } else if (!renderError) {
 
                 UtilityTool.logError("Failed to add entity "

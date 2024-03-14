@@ -3,6 +3,7 @@ package core;
 import ai.PathFinder;
 import animation.AnimationManager;
 import combat.CombatManager;
+import combat.TargetArrow;
 import cutscene.CutsceneManager;
 import dialogue.Conversation;
 import dialogue.DialogueArrow;
@@ -162,6 +163,13 @@ public class GamePanel {
     private SelectionArrow selectionA;
 
 
+    // COMBAT
+    /**
+     * Arrow that appears when the player is required to make a taret entity selection in combat.
+     */
+    private TargetArrow targetA;
+
+
     // GAME STATE
     /**
      * Variable to store which state the game is currently in (the game state controls what is updated each frame).
@@ -250,6 +258,7 @@ public class GamePanel {
         guiIconM = new GuiIconManager(this);
         dialogueA = new DialogueArrow(this);
         selectionA = new SelectionArrow(this);
+        targetA = new TargetArrow(this);
         player = new Player(this);
 
         // Initialize system settings.
@@ -1009,9 +1018,9 @@ public class GamePanel {
 
         // Miscellaneous spritesheet (spritesheet 6).
         filePath = "/spritesheets/miscellaneous.png";
-        widths = new int[] {6, 10};
-        heights = new int[] {10, 6};
-        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 2, widths, heights, 0));
+        widths = new int[] {6, 10, 12};
+        heights = new int[] {10, 6, 8};
+        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 3, widths, heights, 0));
     }
 
 
@@ -1134,6 +1143,10 @@ public class GamePanel {
 
     public SelectionArrow getSelectionA() {
         return selectionA;
+    }
+
+    public TargetArrow getTargetA() {
+        return targetA;
     }
 
     public GameState getGameState() {

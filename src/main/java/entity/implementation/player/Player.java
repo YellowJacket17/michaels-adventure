@@ -198,43 +198,6 @@ public class Player extends EntityBase {
 
 
     /**
-     * Adds the player entity to the render pipeline.
-     *
-     * @param renderer Renderer instance
-     */
-    public void addToRenderPipeline(Renderer renderer) {
-
-        if (!hidden) {
-
-            sprite = retrieveSprite();                                                                                  // Retrieve the sprite to be rendered.
-
-            if (sprite != null) {
-
-                int worldYAdjustment = 0;                                                                               // Amount in the y-direction that the player sprite needs to be adjusted when rendered.
-
-                if (sprite.getNativeHeight() > GamePanel.NATIVE_TILE_SIZE) {
-
-                    worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE;
-                }
-                transform.position.x = worldX;
-                transform.position.y = worldY + worldYAdjustment;                                                       // Y-coordinate of entities of type CHARACTER is modified slightly since they can be taller than a single tile; adjusted so the bottom of the sprite lines up with the bottom of the tile the entity is occupying when rendered.
-                transform.scale.x = GamePanel.NATIVE_TILE_SIZE;                                                         // Entities must be as wide as the native tile size.
-                transform.scale.y = sprite.getNativeHeight();
-                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
-            } else if (!renderError) {
-
-                UtilityTool.logError("Failed to add entity "
-                        + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
-                        + "with ID "
-                        + entityId
-                        + " to the render pipeline: sprites may not have been properly loaded upon entity initialization.");
-                renderError = true;
-            }
-        }
-    }
-
-
-    /**
      * Updates the player entity as part of transition type STEP_PORTAL.
      * Note that this type is where the player entity takes a step into a portal before initiating a transition to
      * another location according to the `warpTransition()` method in EventHandler.

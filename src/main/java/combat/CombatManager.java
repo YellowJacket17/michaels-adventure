@@ -107,6 +107,11 @@ public class CombatManager {
     private boolean combatUiVisible = false;
 
     /**
+     * Boolean to set whether the target selection arrow is rendered or not.
+     */
+    private boolean targetArrowVisible = false;
+
+    /**
      * Default combat move if an entity has no assigned moves.
      */
     private final MoveBase defaultMove;
@@ -402,7 +407,7 @@ public class CombatManager {
     /**
      * Removes the entity at the front of the turn order queue.
      * This will set the next entity in the queue to have its turn.
-     * If the queue is empty, the turn order will be regenerated.
+     * If the queue is empty, the turn order will be regenerated with all combating entities.
      */
     public void endEntityTurn() {
 
@@ -591,6 +596,7 @@ public class CombatManager {
 
         // TODO : If we add party members as selectable targets, the statements directly below must be adjusted accordingly.
 
+        targetArrowVisible = false;                                                                                     // Target selection has been completed.
         LimitedArrayList<Integer> activeOpposingEntities = new LimitedArrayList<>(3);
 
         for (int entityId : opposingEntities) {
@@ -883,6 +889,7 @@ public class CombatManager {
      */
     private void generateTargetSelectSubMenuAction() {
 
+        targetArrowVisible = true;                                                                                      // Target selection has been initiated.
         List<String> targetOptions = new ArrayList<>();
 
         for (int entityId : opposingEntities) {
@@ -996,7 +1003,6 @@ public class CombatManager {
     }
 
 
-    // TODO : Add appropriate getters/setters.
     // GETTERS
     public LinkedHashSet<Integer> getOpposingEntities() {
         return opposingEntities;
@@ -1004,6 +1010,10 @@ public class CombatManager {
 
     public boolean isCombatUiVisible() {
         return combatUiVisible;
+    }
+
+    public boolean isTargetArrowVisible() {
+        return targetArrowVisible;
     }
 
     public LinkedHashSet<Integer> getGuardingEntities() {

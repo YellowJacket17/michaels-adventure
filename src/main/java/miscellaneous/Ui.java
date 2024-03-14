@@ -2,6 +2,7 @@ package miscellaneous;
 
 import core.GamePanel;
 import entity.EntityBase;
+import entity.EntityStatus;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -10,7 +11,6 @@ import render.ZIndex;
 import render.drawable.Transform;
 
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * This class handles the drawing of all on-screen user interface (UI) elements.
@@ -798,32 +798,42 @@ public class Ui {
      */
     private void renderCombatScreen() {
 
-        if (gp.getCombatM().isCombatUiVisible()){
+        // Combat banners.
+        if (gp.getCombatM().isCombatUiVisible()) {
+            renderEntityCombatBanners();
+        }
 
-            // TODO : Clean this up + make actual status bars for each combating entity (includes name, life bar, etc.).
+        // Target arrow.
+        if (gp.getCombatM().isTargetArrowVisible()) {
+            renderCombatTargetArrow();
+        }
+    }
 
-            // Opposing entities.
-            float bannerScreenY = 0;
 
-            for (int entityId : gp.getCombatM().getOpposingEntities()) {
+    /**
+     * Adds entity combat banners (i.e., rectangle that contains name, health bar, etc. during combat) for all combating
+     * entities to the render pipeline.
+     */
+    private void renderEntityCombatBanners() {
 
-                EntityBase entity = gp.getEntityById(entityId);
-                renderEntityCombatBanner(entity.getEntityId(), 1 - 0.15f, bannerScreenY);
-                bannerScreenY += 0.08f;
-            }
-
-            // Player entity.
-            bannerScreenY = 0;
-            renderEntityCombatBanner(gp.getPlayer().getEntityId(), 0, 0);
+        // Opposing entities.
+        float bannerScreenY = 0;
+        for (int entityId : gp.getCombatM().getOpposingEntities()) {
+            EntityBase entity = gp.getEntityById(entityId);
+            renderEntityCombatBanner(entity.getEntityId(), 1 - 0.15f, bannerScreenY);
             bannerScreenY += 0.08f;
+        }
 
-            // Party members.
-            for (int entityId : gp.getParty().keySet()) {
+        // Player entity.
+        bannerScreenY = 0;
+        renderEntityCombatBanner(gp.getPlayer().getEntityId(), 0, 0);
+        bannerScreenY += 0.08f;
 
-                EntityBase entity = gp.getEntityById(entityId);
-                renderEntityCombatBanner(entity.getEntityId(), 0, bannerScreenY);
-                bannerScreenY += 0.08f;
-            }
+        // Party members.
+        for (int entityId : gp.getParty().keySet()) {
+            EntityBase entity = gp.getEntityById(entityId);
+            renderEntityCombatBanner(entity.getEntityId(), 0, bannerScreenY);
+            bannerScreenY += 0.08f;
         }
     }
 
@@ -865,6 +875,39 @@ public class Ui {
         Vector2f lifeLabelScreenCoords = new Vector2f(bannerScreenX, barScreenY);
         renderString("HP", lifeLabelScreenCoords, 0.11f, new Vector3f(190, 97, 104), "Arimo Bold");
         renderString(gp.getEntityById(entityId).getName(), nameScreenCoords, 0.11f, new Vector3f(0, 0, 0), "Arimo Bold");
+    }
+
+
+    /**
+     * Adds the combat target selection arrow to the render pipeline.
+     */
+    private void renderCombatTargetArrow() {
+
+        int i = 0;
+
+        for (int entityId : gp.getCombatM().getOpposingEntities()) {
+
+            if ((gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)
+                    && (i == gp.getSubMenuH().getIndexSelected())) {
+
+                float entityWorldX = gp.getEntityById(entityId).getWorldX();
+                float entityWorldY = gp.getEntityById(entityId).getWorldY();
+                float entitySpriteHeight = gp.getEntityById(entityId).getNativeSpriteHeight();
+                float targetArrowWorldX = entityWorldX + (GamePanel.NATIVE_TILE_SIZE / 2)
+                        - (gp.getTargetA().getNativeSpriteWidth() / 2);                                             // Render arrow centered horizontally above target entity sprite.
+                float targetArrowWorldY = entityWorldY + GamePanel.NATIVE_TILE_SIZE - entitySpriteHeight
+                        - gp.getTargetA().getNativeSpriteHeight() - 4;                                              // Render arrow slightly above target entity sprite.
+                Vector2f targetArrowWorldCoords = new Vector2f(
+                        targetArrowWorldX,
+                        targetArrowWorldY);
+                Vector2f targetArrowScreenCoords = gp.getCamera().worldCoordsToScreenCoords(targetArrowWorldCoords);
+                gp.getTargetA().addToRenderPipeline(renderer, targetArrowScreenCoords.x, targetArrowScreenCoords.y);
+                break;
+            } else {
+
+                i++;
+            }
+        }
     }
 
 
