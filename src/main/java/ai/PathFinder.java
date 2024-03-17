@@ -116,7 +116,7 @@ public class PathFinder {
 
     /**
      * Searches for a path for an entity to follow using the set node configurations.
-     * Note that the `setNodes` method in the PathFinder class should be called first.
+     * Note that the `setNodes()` method in the PathFinder class should be called first.
      *
      * @param entity entity that a path is being found for
      * @return whether a path was found (true) or not (false)

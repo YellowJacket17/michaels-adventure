@@ -51,11 +51,6 @@ public class LightManager {
      */
     private final int maxWorldSubRow;
 
-    /**
-     * Array to store the drawables associated with each possible node world position.
-     */
-    private final Drawable[][] drawables;
-
 
     // CONSTRUCTOR
     /**
@@ -70,9 +65,7 @@ public class LightManager {
         }
         maxWorldSubCol = GamePanel.MAX_WORLD_COL * (GamePanel.NATIVE_TILE_SIZE / nodeSize);
         maxWorldSubRow = GamePanel.MAX_WORLD_ROW * (GamePanel.NATIVE_TILE_SIZE / nodeSize);
-        drawables = new Drawable[maxWorldSubCol][maxWorldSubRow];
         instantiateNodes();
-        initializeDrawablesArray();
     }
 
 
@@ -82,6 +75,7 @@ public class LightManager {
      */
     public void update() {
 
+        // NOTE : Logic run in this 'update()' method consumes memory quickly when run each frame.
         resetNodes();
         // TODO : Perhaps an update only needs to occur if a light source changes location.
         //  This would save on computing resources.
@@ -334,18 +328,29 @@ public class LightManager {
 
         int subCol = 0;
         int subRow = 0;
+        int worldX;
+        int worldY;
+        Transform transform = new Transform(
+                new Vector2f(),
+                new Vector2f(nodeSize, nodeSize));
+        Vector4f color = new Vector4f(0, 0, 0, 255);
 
         while ((subCol < maxWorldSubCol)
                 && (subRow < maxWorldSubRow)) {                                                                         // Render each node from left to right for each sub-row, starting with the top row and working downwards.
 
-            // Only render light nodes in visible screen to greatly improve performance.
-            if ((drawables[subCol][subRow].transform.position.x >= gp.getCamera().getPositionMatrix().x - nodeSize)                                     // Left side of screen.
-                    && (drawables[subCol][subRow].transform.position.x <= gp.getCamera().getPositionMatrix().x + gp.getCamera().getScreenWidth())       // Right side of screen.
-                    && (drawables[subCol][subRow].transform.position.y >= gp.getCamera().getPositionMatrix().y - nodeSize)                              // Top side of screen.
-                    && (drawables[subCol][subRow].transform.position.y <= gp.getCamera().getPositionMatrix().y + gp.getCamera().getScreenHeight())) {   // Bottom side of screen.
+            worldX = subCol * nodeSize;
+            worldY = subRow * nodeSize;
 
-                drawables[subCol][subRow].setColor(new Vector4f(0, 0, 0, nodes[subCol][subRow].getAlpha()));
-                renderer.addDrawable(drawables[subCol][subRow], ZIndex.THIRD_LAYER);
+            // Only render light nodes in visible screen to greatly improve performance.
+            if ((worldX >= gp.getCamera().getPositionMatrix().x - nodeSize)                                             // Left side of screen.
+                    && (worldX <= gp.getCamera().getPositionMatrix().x + gp.getCamera().getScreenWidth())               // Right side of screen.
+                    && (worldY >= gp.getCamera().getPositionMatrix().y - nodeSize)                                      // Top side of screen.
+                    && (worldY <= gp.getCamera().getPositionMatrix().y + gp.getCamera().getScreenHeight())) {           // Bottom side of screen.
+
+                transform.position.x = worldX;
+                transform.position.y = worldY;
+                color.w = nodes[subCol][subRow].getAlpha();
+                renderer.addRectangle(color, transform, ZIndex.THIRD_LAYER);
             }
             subCol++;                                                                                                   // Iterate so that we can draw the next node.
 
@@ -406,35 +411,5 @@ public class LightManager {
             }
         }
         rays.clear();                                                                                                   // Purge all previously calculated rays of light.
-    }
-
-
-    /**
-     * Initializes the array of drawables.
-     */
-    private void initializeDrawablesArray() {
-
-        int subCol = 0;
-        int subRow = 0;
-
-        while ((subCol < maxWorldSubCol) && (subRow < maxWorldSubRow)) {
-
-            float worldX = subCol * nodeSize;
-            float worldY = subRow * nodeSize;
-            Drawable drawable = new Drawable(
-                    new Transform(
-                            new Vector2f(worldX, worldY),
-                            new Vector2f(nodeSize, nodeSize)),
-                    new Vector4f(0, 0, 0, 255));
-            drawables[subCol][subRow] = drawable;
-
-            subCol++;
-
-            if (subCol == maxWorldSubCol) {
-
-                subCol = 0;
-                subRow++;
-            }
-        }
     }
 }

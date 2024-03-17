@@ -35,7 +35,7 @@ public class Sprite {
 
     // CONSTRUCTORS
     /**
-     * Constructs a null Sprite instance.
+     * Constructs a placeholder Sprite instance.
      */
     public Sprite() {
         this.textureCoords = new Vector2f[] {
@@ -92,9 +92,16 @@ public class Sprite {
             return false;
         }
         Sprite oSprite = (Sprite)o;
-        return (oSprite.getTexture().equals(this.texture))
-                && (Arrays.equals(oSprite.getTextureCoords(), this.textureCoords))
-                && (oSprite.getNativeWidth() == this.nativeWidth)
-                && (oSprite.getNativeHeight() == this.nativeHeight);
+        if (oSprite.getTexture() != null) {
+            return (oSprite.getTexture().equals(this.texture))
+                    && (Arrays.equals(oSprite.getTextureCoords(), this.textureCoords))
+                    && (oSprite.getNativeWidth() == this.nativeWidth)
+                    && (oSprite.getNativeHeight() == this.nativeHeight);
+        } else {
+            return (this.texture == null)
+                    && (Arrays.equals(oSprite.getTextureCoords(), this.textureCoords))
+                    && (oSprite.getNativeWidth() == this.nativeWidth)
+                    && (oSprite.getNativeHeight() == this.nativeHeight);
+        }
     }
 }

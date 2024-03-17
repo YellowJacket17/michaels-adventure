@@ -4,6 +4,7 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import render.Shader;
+import render.Sprite;
 import render.ZIndex;
 import utility.AssetPool;
 
@@ -80,7 +81,13 @@ public class DrawableSingle {
     /**
      * Drawable to be rendered.
      */
-    private Drawable drawable;
+    private Drawable drawable = new Drawable();
+
+    /**
+     * Placeholder sprite to reset this drawable with.
+     * This allows the same sprite in memory to always be used to reset this drawable.
+     */
+    private final Sprite placeholderSprite = new Sprite();
 
     /**
      * Boolean indicating whether a drawable is occupying this single.
@@ -158,7 +165,7 @@ public class DrawableSingle {
      */
     public void setDrawable(Drawable drawable) {
 
-        this.drawable = drawable;
+        drawable.copy(this.drawable);
         loadVertexProperties();
         available = false;
     }
@@ -238,7 +245,15 @@ public class DrawableSingle {
     private void clear() {
 
         Arrays.fill(vertices, 0);
-        drawable = null;
+        drawable.transform.position.x = 0;
+        drawable.transform.position.y = 0;
+        drawable.transform.scale.x = 0;
+        drawable.transform.scale.y = 0;
+        drawable.getColor().x = 0;
+        drawable.getColor().y = 0;
+        drawable.getColor().z = 0;
+        drawable.getColor().y = 0;
+        drawable.setSprite(placeholderSprite);
         radius = 0;
         available = true;
     }

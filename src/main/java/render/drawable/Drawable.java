@@ -78,6 +78,36 @@ public class Drawable {
     }
 
 
+    /**
+     * Creates a deep copy of this drawable.
+     *
+     * @return deep copy of this drawable.
+     */
+    public Drawable copy() {
+
+        Drawable drawable = new Drawable();
+        drawable.transform.position.set(this.transform.position);
+        drawable.transform.scale.set(this.transform.scale);
+        drawable.setColor(this.color);
+        drawable.setSprite(this.sprite);
+        return drawable;
+    }
+
+
+    /**
+     * Deep copies this drawable to the drawable passed as argument.
+     *
+     * @param drawable drawable to deep copy to
+     */
+    public void copy(Drawable drawable) {
+
+        drawable.transform.position.set(this.transform.position);
+        drawable.transform.scale.set(this.transform.scale);
+        drawable.setColor(this.color);
+        drawable.setSprite(this.sprite);
+    }
+
+
     // GETTERS
     public Vector4f getColor() {
         return color;

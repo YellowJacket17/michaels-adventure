@@ -47,6 +47,14 @@ public class Renderer {
      */
     private final HashMap<String, CFont> fonts = new HashMap<>();
 
+    /**
+     * Drawable to use when rendering all rectangles requested by the `addRectangle()` and `addRoundRectangle()`
+     * methods.
+     * Working with this single drawable for all rectangles significantly improves memory usage/efficiency, especially when
+     * rendering large batches of rectangles each frame.
+     */
+    Drawable memoryRectangle = new Drawable();
+
 
     // CONSTRUCTOR
     /**
@@ -148,8 +156,8 @@ public class Renderer {
      */
     public void addRectangle(Vector4f color, Transform transform, ZIndex zIndex) {
 
-        Drawable rectangle = new Drawable(transform, color);
-        addDrawableToBatch(rectangle, zIndex);
+        updateMemoryRectangle(color, transform);
+        addDrawableToBatch(memoryRectangle, zIndex);
     }
 
 
@@ -164,8 +172,8 @@ public class Renderer {
      */
     public void addRoundRectangle(Vector4f color, Transform transform, ZIndex zIndex, float radius) {
 
-        Drawable rectangle = new Drawable(transform, color);
-        addDrawableToSingle(rectangle, zIndex, radius);
+        updateMemoryRectangle(color, transform);
+        addDrawableToSingle(memoryRectangle, zIndex, radius);
     }
 
 
@@ -248,6 +256,20 @@ public class Renderer {
             newBatch.addDrawable(drawable);
             drawableBatches.add(newBatch);
         }
+    }
+
+
+    /**
+     * Updates the drawable used when rendering all requested rectangles (both non-rounded and rounded).
+     *
+     * @param color color of updated rectangle (r, g, b, a)
+     * @param transform position (top-left coordinate) and scale (width and height) of updated rectangle
+     */
+    private void updateMemoryRectangle(Vector4f color, Transform transform) {
+
+        memoryRectangle.transform.position.set(transform.position);
+        memoryRectangle.transform.scale.set(transform.scale);
+        memoryRectangle.setColor(color);
     }
 
 

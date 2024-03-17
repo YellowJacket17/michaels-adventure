@@ -1,8 +1,0 @@
-12/29/2023 16:09:50:637  INFO     Application started.
-12/29/2023 16:09:50:874  ERROR    An unhandled exception has occurred.
-java.lang.IllegalStateException: There is no OpenGL context current in the current thread.
-	at org.lwjgl.opengl.GL.createCapabilities(GL.java:382)
-	at org.lwjgl.opengl.GL.createCapabilities(GL.java:311)
-	at org.lwjgl.opengl.GL.createCapabilities(GL.java:295)
-	at core.Window.initWindow(Window.java:199)
-	at core.App.main(App.java:18)

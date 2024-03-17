@@ -4,6 +4,7 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import render.Shader;
+import render.Sprite;
 import render.Texture;
 import render.ZIndex;
 import utility.AssetPool;
@@ -101,6 +102,12 @@ public class DrawableBatch {
     private final Drawable[] drawables = new Drawable[MAX_BATCH_SIZE];
 
     /**
+     * Placeholder sprite to reset drawables with.
+     * This allows the same sprite in memory to be used to reset all drawables.
+     */
+    private final Sprite placeholderSprite = new Sprite();
+
+    /**
      * Boolean indicating whether any more drawables can be added to this batch.
      */
     private boolean hasRoom = true;
@@ -159,6 +166,9 @@ public class DrawableBatch {
     public DrawableBatch(GamePanel gp) {
         this.gp = gp;
         this.shader = AssetPool.getShader("/shaders/default.glsl");
+        for (int i = 0; i < drawables.length; i++) {
+            drawables[i] = new Drawable();
+        }
         init();
     }
 
@@ -183,7 +193,7 @@ public class DrawableBatch {
 
         // Get index and add render object.
         int index = numDrawables;
-        drawables[index] = drawable;
+        drawable.copy(drawables[index]);
         numDrawables++;
 
         // Check if drawable has texture; if so, add to list if not already loaded.
@@ -264,7 +274,17 @@ public class DrawableBatch {
     private void clear() {
 
         Arrays.fill(vertices, 0);
-        Arrays.fill(drawables, null);
+        for (int i = 0; i < drawables.length; i++) {
+            drawables[i].transform.position.x = 0;
+            drawables[i].transform.position.y = 0;
+            drawables[i].transform.scale.x = 0;
+            drawables[i].transform.scale.y = 0;
+            drawables[i].getColor().x = 0;
+            drawables[i].getColor().y = 0;
+            drawables[i].getColor().z = 0;
+            drawables[i].getColor().y = 0;
+            drawables[i].setSprite(placeholderSprite);
+        }
         numDrawables = 0;
         textures.clear();
         hasRoom = true;

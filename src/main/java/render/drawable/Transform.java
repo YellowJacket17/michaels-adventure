@@ -43,9 +43,9 @@ public class Transform {
 
     // METHODS
     /**
-     * Creates a copy of this transform.
+     * Creates a deep copy of this transform.
      *
-     * @return copy of this transform
+     * @return deep copy of this transform
      */
     public Transform copy() {
 
@@ -54,9 +54,9 @@ public class Transform {
 
 
     /**
-     * Copies this transform to the transform passed as argument.
+     * Deep copies this transform to the transform passed as argument.
      *
-     * @param transform transform to copy to
+     * @param transform transform to deep copy to
      */
     public void copy(Transform transform) {
 
