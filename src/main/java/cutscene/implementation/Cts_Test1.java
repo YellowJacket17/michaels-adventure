@@ -26,7 +26,7 @@ public class Cts_Test1 extends CutsceneBase {
             switch (scenePhase) {
 
                 case 0:
-                    gp.getInteractionM().setEntityFollowPath(4, 27, 23);
+                    gp.getEventM().setEntityFollowPath(4, 27, 23);
                     scenePhase = 1;
                     break;
 
@@ -34,7 +34,7 @@ public class Cts_Test1 extends CutsceneBase {
                     if (!entity.isOnPath()) {
                         endCutscene(true);
                         gp.playSE(0);
-                        gp.getInteractionM().displayMessage("Cutscene test is complete!");
+                        gp.getEventM().displayMessage("Cutscene test is complete!");
                     }
                     break;
             }

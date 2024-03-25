@@ -27,6 +27,7 @@ import map.Map;
 import submenu.SubMenuHandler;
 import tile.TileManager;
 import utility.*;
+import utility.exceptions.EntityTransferException;
 
 import java.util.*;
 import java.util.List;
@@ -86,7 +87,7 @@ public class GamePanel {
     private final CutsceneManager cutsceneM = new CutsceneManager(this);
     private final AnimationManager animationM = new AnimationManager();
     private final CombatManager combatM = new CombatManager(this);
-    private final EventManager interactionM = new EventManager(this);
+    private final EventManager eventM = new EventManager(this);
     private final CameraSupport cameraS = new CameraSupport(this);
     private final WarpSupport warpS = new WarpSupport(this);
     private final SubMenuSupport subMenuS = new SubMenuSupport(this);
@@ -113,8 +114,10 @@ public class GamePanel {
 
     /**
      * Map to store party members loaded into the game; entity ID is the key, entity is the value.
+     * The number of entities at the front of the map (indices 0, 1, etc.) according to the `numActivePartyMembers` field are the active
+     * party members.
      */
-    private final LimitedLinkedHashMap<Integer, EntityBase> party = new LimitedLinkedHashMap<>(2);
+    private final LimitedLinkedHashMap<Integer, EntityBase> party = new LimitedLinkedHashMap<>(5);
 
     /**
      * Map to store entities loaded into the game but not currently available on the loaded map; entity ID is the key,
@@ -142,6 +145,13 @@ public class GamePanel {
      * is to disappear from the map).
      */
     private final HashSet<Integer> removedEntities = new HashSet<>();
+
+    /**
+     * Sets the number of active party members allowed at a time.
+     * Active party members are those that actively follow the player entity, actively participate in combat, etc.
+     * This is in contrast to reserve party members.
+     */
+    private final int numActivePartyMembers = 2;
 
 
     // DIALOGUE
@@ -178,6 +188,7 @@ public class GamePanel {
 
     /**
      * Boolean to set whether party members are rendered or not.
+     * Note that this is separate from and does not affect the `hidden` field of entities.
      */
     private boolean partyVisible = true;
 
@@ -371,8 +382,17 @@ public class GamePanel {
 
             Set<Integer> keySet = party.keySet();
             Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
+            int numRenderedPartyMembers;
 
-            for (int i = (keySet.size() - 1); i >= 0; i--) {                                                            // Add all party members in the current map to the list of entities; iterates backwards.
+            if (keySet.size() > numActivePartyMembers) {
+
+                numRenderedPartyMembers = numActivePartyMembers;
+            } else {
+
+                numRenderedPartyMembers = keySet.size();
+            }
+
+            for (int i = (numRenderedPartyMembers - 1); i >= 0; i--) {                                                  // Add active party members in the current map to the list of entities; iterates backwards.
 
                 if (party.get(keyArray[i]) != null) {
 
@@ -708,6 +728,7 @@ public class GamePanel {
      * @param source source entity map being transferred from
      * @param target target entity map being transferred to
      * @param entityId ID of the entity to be transferred
+     * @throws EntityTransferException if transferring an entity fails
      */
     public void transferEntity(LimitedLinkedHashMap<Integer, EntityBase> source,
                                LimitedLinkedHashMap<Integer, EntityBase> target,
@@ -723,20 +744,19 @@ public class GamePanel {
 
             } catch (IllegalStateException e) {
 
-                UtilityTool.logWarning("The target map is full: failed to transfer entity "
+                throw new EntityTransferException("Failed to transfer entity "
                         + (((entity.getName() != null) && (!entity.getName().equals("")))
-                            ? (entity.getName() + " ") : "")
+                        ? (entity.getName() + " ") : "")
                         + "with ID "
                         + entityId
-                        + " from the source map to the target map.");
-                return;
+                        + " from source map to target map - target map full");
             }
-
             source.remove(entityId);
         } else {
-            UtilityTool.logWarning("No matching entity was found loaded in the source map: failed to transfer entity with ID "
+
+            throw new EntityTransferException("Failed to transfer entity with ID "
                     + entityId
-                    + " from the source map to the target map.");
+                    + " from source map to target map - no such entity found in source map");
         }
     }
 
@@ -1077,8 +1097,8 @@ public class GamePanel {
         return combatM;
     }
 
-    public EventManager getInteractionM() {
-        return interactionM;
+    public EventManager getEventM() {
+        return eventM;
     }
 
     public CameraSupport getCameraS() {
@@ -1131,6 +1151,10 @@ public class GamePanel {
 
     public HashSet<Integer> getRemovedEntities() {
         return removedEntities;
+    }
+
+    public int getNumActivePartyMembers() {
+        return numActivePartyMembers;
     }
 
     public HashMap<Integer, Conversation> getConv() {

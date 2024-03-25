@@ -148,7 +148,7 @@ public class DialogueReader {
                         gp.getCombatM().progressCombat();
                 } else {
 
-                        gp.getInteractionM().handlePostConversation(currentConv.getConvId());
+                        gp.getEventM().handlePostConversation(currentConv.getConvId());
                     }
                 }
             }

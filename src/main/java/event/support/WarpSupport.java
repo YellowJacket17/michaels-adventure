@@ -2,7 +2,6 @@ package event.support;
 
 import core.GamePanel;
 import miscellaneous.GameState;
-import miscellaneous.TransitionPhase;
 import miscellaneous.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
@@ -85,7 +84,7 @@ public class WarpSupport {
 
         if (newMap) {                                                                                                   // If a new map is loaded, warp all party members to the player and have them follow the player.
 
-            gp.getInteractionM().breakFollowerChain(gp.getPlayer());                                                    // Reset the entities following the player.
+            gp.getEventM().breakFollowerChain(gp.getPlayer());                                                          // Reset the entities following the player.
 
             for (EntityBase entity : gp.getParty().values()) {
 
@@ -96,7 +95,7 @@ public class WarpSupport {
                     entity.setCol(col);
                     entity.setRow(row);
 
-                    gp.getInteractionM().setEntityFollowTarget(entity.getEntityId(), gp.getPlayer().getEntityId());     // Set the party member to follow the player.
+                    gp.getEventM().setEntityFollowTarget(entity.getEntityId(), gp.getPlayer().getEntityId());           // Set the party member to follow the player.
                 }
             }
         } else {                                                                                                        // If a new map is not loaded, warp any followers trailing the player along with the player.
@@ -198,7 +197,7 @@ public class WarpSupport {
         for (EntityBase entity : target.values()) {
 
             if ((entity != null)
-                    && (gp.getInteractionM().checkEntityChainUp(gp.getPlayer(), entity))) {
+                    && (gp.getEventM().checkEntityChainUp(gp.getPlayer(), entity))) {
 
                 entity.cancelAction();                                                                                  // Resets the number of pixels traversed from a cancelled movement.
                 entity.setDirectionCurrent(gp.getPlayer().getDirectionCurrent());                                       // Have the party member face the same direction as the player when warped.

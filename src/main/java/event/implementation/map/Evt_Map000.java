@@ -33,7 +33,7 @@ public class Evt_Map000 extends EventMapBase {
             case 5:
                 if ((type == EventType.CLICK) && (!target.isOnEntity())) {
 
-                    gp.getInteractionM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 1);                    // Initiate the conversation with the NPC.
+                    gp.getEventM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 1);                          // Initiate the conversation with the NPC.
                     return true;                                                                                        // An NPC is being interacted with.
                 }
                 break;
@@ -51,7 +51,7 @@ public class Evt_Map000 extends EventMapBase {
                         && (target.isOnEntity())
                         && (target.getOnEntityId() == gp.getPlayer().getEntityId())) {
 
-                    gp.getInteractionM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 2);                    // Initiate the conversation with the NPC.
+                    gp.getEventM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 2);                          // Initiate the conversation with the NPC.
                     return true;                                                                                        // A party member is being interacted with.
                 }
                 break;

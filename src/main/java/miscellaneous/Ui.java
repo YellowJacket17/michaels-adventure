@@ -830,10 +830,15 @@ public class Ui {
         bannerScreenY += 0.08f;
 
         // Party members.
-        for (int entityId : gp.getParty().keySet()) {
-            EntityBase entity = gp.getEntityById(entityId);
-            renderEntityCombatBanner(entity.getEntityId(), 0, bannerScreenY);
-            bannerScreenY += 0.08f;
+        int entityIndex = 0;
+        for (EntityBase entity : gp.getParty().values()) {                                                              // Only render banners for active party members.
+            if (entityIndex < gp.getNumActivePartyMembers()) {
+                renderEntityCombatBanner(entity.getEntityId(), 0, bannerScreenY);
+                bannerScreenY += 0.08f;
+                entityIndex++;
+            } else {
+                break;
+            }
         }
     }
 

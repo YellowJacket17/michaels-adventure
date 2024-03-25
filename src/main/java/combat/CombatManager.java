@@ -52,6 +52,12 @@ public class CombatManager {
     private final HashMap<Integer, EntityDirection> storedEntityDirections = new HashMap<>();
 
     /**
+     * Map to store the hidden status of all combating entities before combat was initiated; entity ID is the key,
+     * hidden (true or false) is the value.
+     */
+    private final HashMap<Integer, Boolean> storedEntityHidden = new HashMap<>();
+
+    /**
      * Set to store IDs of opposing entities involved in combat.
      * A set is used to avoid having the same entity entered twice or thrice.
      */
@@ -406,7 +412,7 @@ public class CombatManager {
 
     /**
      * Removes the entity at the front of the turn order queue.
-     * This will set the next entity in the queue to have its turn.
+     * This will set the next entity in the queue to have its turn if able.
      * If the queue is empty, the turn order will be regenerated with all combating entities.
      */
     public void endEntityTurn() {
@@ -426,6 +432,7 @@ public class CombatManager {
                     generateTurnOrderCalled = true;
                 } else {
 
+                    // TODO : Check if any reserve party members are available.
                     String message = "No combatants have any remaining energy to fight.";
                     addQueuedActionBack(new Act_ReadMessage(gp, message, true));
                     addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
@@ -433,7 +440,8 @@ public class CombatManager {
                 }
             }
 
-            if (gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getStatus() != EntityStatus.FAINT) {
+            if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getStatus() != EntityStatus.FAINT)
+                    || (!gp.getEntityById(queuedEntityTurnOrder.peekFirst()).isHidden())) {                             // If hidden, entity is not actively participating in combat (i.e., party member in reserve).
 
                 viableEntity = true;
 
@@ -444,6 +452,58 @@ public class CombatManager {
                     addQueuedActionBack(new Act_ReadMessage(gp, message, true));
                 }
             }
+        }
+    }
+
+
+    /**
+     * Checks whether the entire party (active and inactive, including the player entity) has a fainted status.
+     *
+     * @return whether the entire party has fainted (true) or not (false)
+     */
+    public boolean checkAllPartyFainted() {
+
+        int allPartyCount = gp.getParty().size() + 1;
+        int faintedPartyCount = 0;
+
+        if (gp.getPlayer().getStatus() == EntityStatus.FAINT) {
+            faintedPartyCount++;
+        }
+
+        for (int entityId : gp.getParty().keySet()) {
+            if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+                faintedPartyCount++;
+            }
+        }
+
+        if (faintedPartyCount == allPartyCount) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * Checks whether the all opposing entities have a fainted status.
+     *
+     * @return whether all opposing entities have fainted (true) or not (false)
+     */
+     public boolean checkAllOpposingFainted() {
+
+        int allOpposingCount = gp.getCombatM().getOpposingEntities().size();
+        int faintedOpposingCount = 0;
+
+        for (int entityId : gp.getCombatM().getOpposingEntities()) {
+            if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+                faintedOpposingCount++;
+            }
+        }
+
+        if (faintedOpposingCount == allOpposingCount) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -574,11 +634,6 @@ public class CombatManager {
 
         int numMoves = gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves().size();                           // Populate with number of moves of entity whose turn it is.
 
-        if (numMoves == 0) {
-
-            numMoves = 1;                                                                                               // Populate with default move since entity whose turn it is has no moves.
-        }
-
         if (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1) == numMoves) {                            // Determine whether the 'Back' option was selected or not.
 
             addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions));
@@ -678,9 +733,13 @@ public class CombatManager {
                 if (placedPartyMembers == 0) {
 
                     entity.setRow(fieldCenterRow - 2);
-                } else {
+                } else if (placedPartyMembers == 1) {
 
                     entity.setRow(fieldCenterRow + 2);
+                } else {
+
+                    // TODO : Do we need to store which entities were hidden before combat to restore it after?
+                    entity.setHidden(true);
                 }
                 placedPartyMembers++;
             }
@@ -757,6 +816,11 @@ public class CombatManager {
             }
         }
 
+        // Reset all combating entities back to pre-combat hidden state.
+        for (int entityId : storedEntityHidden.keySet()) {
+            gp.getEntityById(entityId).setHidden(storedEntityHidden.get(entityId));
+        }
+
         // Warp party members to player.
         gp.getWarpS().warpFollowersToPlayer(gp.getParty());
 
@@ -786,7 +850,9 @@ public class CombatManager {
         // Create a HashMap of combating entities, where entity ID is the key and agility is the value.
         HashMap<Integer, Integer> entitiesToPlace = new HashMap<>();
 
-        // Add all combating entities to the new list of combating entities
+        // Add all combating entities to the new list of combating entities, even if fainted or outside the first
+        // two party slots.
+
         for (int entityId : gp.getCombatingEntities()) {
 
             entitiesToPlace.put(entityId, gp.getEntityById(entityId).getAgility());
@@ -794,6 +860,11 @@ public class CombatManager {
 
         // Build the turn order based on entity agility attributes (higher agility moves sooner).
         // If two or more entities tie, then order for them will be randomly generated.
+        // All combating entities are included, even those fainted or outside first two party slots.
+        // If fainted, an entity's turn will be skipped.
+        // If outside the first two party slots, an entity will be hidden, which will tell the combat loop to skip
+        // its turn.
+        // This makes it easier to swap party members in and out of combat, since their turn order is already generated.
         while (entitiesToPlace.size() > 0) {
 
             int highestAgility = 0;
@@ -868,8 +939,14 @@ public class CombatManager {
 
         // Generate random target entity.
         EntityBase targetEntity;
-        i = random.nextInt(gp.getParty().size() + 1);                                                                   // Generate random number from 0 to number of party members (both inclusive)
-        if (i == gp.getParty().size()) {
+        int numTargetPartyMembers;
+        if (gp.getParty().size() > gp.getNumActivePartyMembers()) {
+            numTargetPartyMembers = gp.getNumActivePartyMembers();
+        } else {
+            numTargetPartyMembers = gp.getParty().size();
+        }
+        i = random.nextInt(numTargetPartyMembers + 1);                                                                  // Generate random number from 0 to number of active party members plus player entity (both inclusive)
+        if (i == numTargetPartyMembers) {
             targetEntity = gp.getPlayer();
         } else {
             targetEntity = gp.getParty().get(
@@ -921,6 +998,7 @@ public class CombatManager {
             storedEntityCols.put(target.getEntityId(), target.getCol());
             storedEntityRows.put(target.getEntityId(), target.getRow());
             storedEntityDirections.put(target.getEntityId(), target.getDirectionCurrent());
+            storedEntityHidden.put(target.getEntityId(), target.isHidden());
         }
     }
 
@@ -991,6 +1069,7 @@ public class CombatManager {
         storedEntityCols.clear();
         storedEntityRows.clear();
         storedEntityDirections.clear();
+        storedEntityHidden.clear();
         opposingEntities.clear();
         activeEnterCombatTransitionType = null;
         activeExitCombatTransitionType = null;

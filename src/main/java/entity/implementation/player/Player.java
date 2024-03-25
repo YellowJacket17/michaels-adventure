@@ -13,15 +13,10 @@ import item.implementation.Itm_Controller;
 import item.implementation.Itm_Key;
 import item.ItemBase;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
-import render.Renderer;
-import render.ZIndex;
 import utility.AssetPool;
 import utility.LimitedArrayList;
-import utility.UtilityTool;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -562,7 +557,7 @@ public class Player extends EntityBase {
                     interactionCountdown = 0.16;                                                                        // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another action, for example (prevents instantly progressing next action that appears).
                 } else {
 
-                    gp.getInteractionM().handlePostConversation(gp.getDialogueR().getCurrentConv().getConvId());        // Check to see if any events will be triggered once the conversation has finished.
+                    gp.getEventM().handlePostConversation(gp.getDialogueR().getCurrentConv().getConvId());              // Check to see if any events will be triggered once the conversation has finished.
                 }
             } else {
 
@@ -719,7 +714,7 @@ public class Player extends EntityBase {
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
-                gp.getInteractionM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected());
+                gp.getEventM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected());
                 interactionCountdown = 0.16;                                                                            // Wait for 0.16 seconds (~10 frames at 60 FPS).
             }
         }
@@ -857,21 +852,21 @@ public class Player extends EntityBase {
      */
     private boolean checkClickInteraction(double dt) {
 
-        boolean interaction = gp.getInteractionM().handleNpcInteraction(dt, EventType.CLICK);                           // Check in an NPC is being interacted with via a click.
+        boolean interaction = gp.getEventM().handleNpcInteraction(dt, EventType.CLICK);                                 // Check in an NPC is being interacted with via a click.
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handleObjectInteraction(dt, EventType.CLICK);                            // If an NPC isn't being interacted with, check if an object is being interacted with via a click.
+            interaction = gp.getEventM().handleObjectInteraction(dt, EventType.CLICK);                                  // If an NPC isn't being interacted with, check if an object is being interacted with via a click.
         }
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handlePartyInteraction(dt, EventType.CLICK);                             // If an object isn't being interacted with, check if a party member is being interacted with via a click.
+            interaction = gp.getEventM().handlePartyInteraction(dt, EventType.CLICK);                                   // If an object isn't being interacted with, check if a party member is being interacted with via a click.
         }
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handleTileInteraction(dt, EventType.CLICK);                              // If a party member isn't being interacted with, check to see if a tile is being interacted with via a click.
+            interaction = gp.getEventM().handleTileInteraction(dt, EventType.CLICK);                                    // If a party member isn't being interacted with, check to see if a tile is being interacted with via a click.
         }
 
         return interaction;
@@ -886,21 +881,21 @@ public class Player extends EntityBase {
      */
     private boolean checkStepInteraction(double dt) {
 
-        boolean interaction = gp.getInteractionM().handleNpcInteraction(dt, EventType.STEP);                            // Check in an NPC is being interacted with via a step.
+        boolean interaction = gp.getEventM().handleNpcInteraction(dt, EventType.STEP);                                  // Check in an NPC is being interacted with via a step.
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handleObjectInteraction(dt, EventType.STEP);                             // If an NPC isn't being interacted with, check if an object is being interacted with via a step..
+            interaction = gp.getEventM().handleObjectInteraction(dt, EventType.STEP);                                   // If an NPC isn't being interacted with, check if an object is being interacted with via a step..
         }
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handleTileInteraction(dt, EventType.STEP);                               // If an object isn't being interacted with, check if a tile is being interacted with via a step.
+            interaction = gp.getEventM().handleTileInteraction(dt, EventType.STEP);                                     // If an object isn't being interacted with, check if a tile is being interacted with via a step.
         }
 
         if (!interaction) {
 
-            interaction = gp.getInteractionM().handlePartyInteraction(dt, EventType.STEP);                              // If a tile isn't being interacted with, check to see if a party member is being interacted with via a step.
+            interaction = gp.getEventM().handlePartyInteraction(dt, EventType.STEP);                                    // If a tile isn't being interacted with, check to see if a party member is being interacted with via a step.
         }
 
         return interaction;

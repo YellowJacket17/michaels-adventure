@@ -28,7 +28,7 @@ public class Evt_Map001 extends EventMapBase {
             case 1:
                 if (type == EventType.CLICK) {
                     ItemBase item = new Itm_Controller(gp);
-                    boolean added = gp.getInteractionM().pickupItem(item);
+                    boolean added = gp.getEventM().pickupItem(item);
                     if (added) {
                         gp.removeEntity(gp.getObj(), target.getEntityId());                                             // Add the object to the array of removed entities so that it no longer gets loaded onto the map.
                     }
@@ -38,7 +38,7 @@ public class Evt_Map001 extends EventMapBase {
             case 2:
                 if (type == EventType.CLICK) {
                     ItemBase item = new Itm_Key(gp);
-                    boolean added = gp.getInteractionM().pickupItem(item);
+                    boolean added = gp.getEventM().pickupItem(item);
                     if (added) {
                         gp.removeEntity(gp.getObj(), target.getEntityId());
                     }
@@ -56,13 +56,13 @@ public class Evt_Map001 extends EventMapBase {
         switch (target.getEntityId()) {
             case 4:
                 if (type == EventType.CLICK) {
-                    gp.getInteractionM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 0);
+                    gp.getEventM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 0);
                     return true;
                 }
                 break;
             case 8:
                 if (type == EventType.STEP) {
-                    gp.getInteractionM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 4);
+                    gp.getEventM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 4);
                     return true;
                 }
                 break;
@@ -80,7 +80,7 @@ public class Evt_Map001 extends EventMapBase {
                         && (target.isOnEntity())
                         && (target.getOnEntityId() == gp.getPlayer().getEntityId())) {
 
-                    gp.getInteractionM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 3);
+                    gp.getEventM().talkToNpc(target, gp.getPlayer().getDirectionCurrent(), 3);
                     return true;
                 }
                 break;
@@ -95,7 +95,7 @@ public class Evt_Map001 extends EventMapBase {
         // Trigger a message.
         if ((type == EventType.CLICK) && (col == 22) && (row == 28)) {
 
-            gp.getInteractionM().displayMessage("Looks like something will happen if this tile is stepped on...");
+            gp.getEventM().displayMessage("Looks like something will happen if this tile is stepped on...");
             return true;
         }
 

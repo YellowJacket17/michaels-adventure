@@ -398,6 +398,9 @@ public abstract class EntityBase extends Drawable {
             return;
         }
 
+        // If entity is in player's party and not following/active, no update is necessary.
+        if (gp.getParty().get(entityId) != null) {}
+
         // Set other actions.
         setAction(dt);
     }
@@ -777,11 +780,11 @@ public abstract class EntityBase extends Drawable {
                 autoStep(EntityDirection.RIGHT);
 
             } else {                                                                                                    // The entity has arrived at the goal.
-                setStopFollowingPath();
+                stopFollowingPath();
             }
         } else {
 
-            setStopFollowingPath();                                                                                     // A path to the goal was not found, so exit this state.
+            stopFollowingPath();                                                                                     // A path to the goal was not found, so exit this state.
 
             if ((startCol != goalCol) && (startRow != goalRow)) {
 
@@ -1393,7 +1396,7 @@ public abstract class EntityBase extends Drawable {
         this.defaultIdle = defaultIdle;
     }
 
-    public void setStartFollowingPath(int goalCol, int goalRow) {
+    public void startFollowingPath(int goalCol, int goalRow) {
         if (!onEntity) {
             this.onPathGoalCol = goalCol;
             this.onPathGoalRow = goalRow;
@@ -1401,17 +1404,17 @@ public abstract class EntityBase extends Drawable {
         }
     }
 
-    public void setStopFollowingPath() {
+    public void stopFollowingPath() {
         onPathGoalCol = 0;
         onPathGoalRow = 0;
         onPath = false;
     }
 
-    public void setStartFollowingEntity(int entityId) {
+    public void startFollowingEntity(int entityId) {
         if (this.entityId != entityId) {                                                                                // Ensure that we're not trying to make the entity follow itself.
             EntityBase target = gp.getEntityById(entityId);
             if (target != null) {
-                EntityBase followed = gp.getEntityById(gp.getInteractionM().checkEntityChainDown(target));              // If a chain of followers is following the target entity, then this entity will be placed at the back of the chain (i.e., this entity will actually follow the entity at the end of the chain).
+                EntityBase followed = gp.getEntityById(gp.getEventM().checkEntityChainDown(target));                    // If a chain of followers is following the target entity, then this entity will be placed at the back of the chain (i.e., this entity will actually follow the entity at the end of the chain).
                 onEntityId = followed.getEntityId();
                 onEntity = true;
                 followed.setColLast(this.getCol());                                                                     // The follower will always find a path to the followed's last position; setting it this way prevents the follower from instantly moving once following begins.
@@ -1420,7 +1423,7 @@ public abstract class EntityBase extends Drawable {
         }
     }
 
-    public void setStopFollowingEntity() {
+    public void stopFollowingEntity() {
         onEntityId = -1;
         onEntity = false;
     }

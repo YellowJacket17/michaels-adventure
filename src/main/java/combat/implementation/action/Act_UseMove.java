@@ -102,6 +102,8 @@ public class Act_UseMove extends ActionBase {
         //  These will likely be applied as the last thing in a turn.
         //  Would these go in the action `endEntityTurn`?
 
+        // TODO : Handle what to do if all active party members have fainted but there are healthy reserve party members.
+
         pollFainting();
         gp.getCombatM().addQueuedActionBack(new Act_EndEntityTurn(gp));
         gp.getCombatM().progressCombat();
@@ -167,7 +169,7 @@ public class Act_UseMove extends ActionBase {
             checkJustFainted(targetEntityId);
         }
 
-        if (checkAllOpposingFainted()) {
+        if (gp.getCombatM().checkAllOpposingFainted()) {
 
             String message = gp.getPlayer().getName() + " won the fight!";
             gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
@@ -175,7 +177,7 @@ public class Act_UseMove extends ActionBase {
             gp.getCombatM().addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
         }
 
-        if (checkAllPartyFainted()) {
+        if (gp.getCombatM().checkAllPartyFainted()) {
 
             String message = gp.getPlayer().getName() + " lost the fight.";
             gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
@@ -211,58 +213,6 @@ public class Act_UseMove extends ActionBase {
             }
             String message = stagedName + " has no energy left to fight!";
             gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
-        }
-    }
-
-
-    /**
-     * Checks whether the entire party (including the player entity) has a fainted status.
-     *
-     * @return whether the entire party has fainted (true) or not (false)
-     */
-    private boolean checkAllPartyFainted() {
-
-        int allPartyCount = gp.getParty().size() + 1;
-        int faintedPartyCount = 0;
-
-        if (gp.getPlayer().getStatus() == EntityStatus.FAINT) {
-            faintedPartyCount++;
-        }
-
-        for (int entityId : gp.getParty().keySet()) {
-            if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
-                faintedPartyCount++;
-            }
-        }
-
-        if (faintedPartyCount == allPartyCount) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    /**
-     * Checks whether the all opposing entities have a fainted status.
-     *
-     * @return whether all opposing entities have fainted (true) or not (false)
-     */
-    private boolean checkAllOpposingFainted() {
-
-        int allOpposingCount = gp.getCombatM().getOpposingEntities().size();
-        int faintedOpposingCount = 0;
-
-        for (int entityId : gp.getCombatM().getOpposingEntities()) {
-            if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
-                faintedOpposingCount++;
-            }
-        }
-
-        if (faintedOpposingCount == allOpposingCount) {
-            return true;
-        } else {
-            return false;
         }
     }
 

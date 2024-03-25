@@ -296,10 +296,10 @@ public class CollisionInspector {
             if (((targetRow == targetRowStart) && (targetCol == targetColStart)) ||
                     ((targetRow == targetRowEnd) && (targetCol == targetColEnd))) {                                     // Check if the candidate entity occupies the targeted row and column.
 
-                if (candidate.hasCollision()) {                                                                         // Check if the candidate entity is solid (i.e., has collision) or not.
+                if (candidate.hasCollision() && !candidate.isHidden()) {                                                // Check if the candidate entity is solid (i.e., has collision) or not and visible.
 
-                    boolean followed = gp.getInteractionM().checkEntityChainUp(entity, candidate);                      // Check if the primary entity is being followed by the target entity (directly or in chain).
-                    boolean following = gp.getInteractionM().checkEntityChainUp(candidate, entity);                     // Check if the primary entity is following the target entity (directly or in chain).
+                    boolean followed = gp.getEventM().checkEntityChainUp(entity, candidate);                            // Check if the primary entity is being followed by the target entity (directly or in chain).
+                    boolean following = gp.getEventM().checkEntityChainUp(candidate, entity);                           // Check if the primary entity is following the target entity (directly or in chain).
 
                     if ((!followed) && (!following)) {                                                                  // If either condition is true, no collision will be set.
 
@@ -355,10 +355,10 @@ public class CollisionInspector {
                 if (((entityRow == targetRowStart) && (entityCol == targetColStart)) ||
                         ((entityRow == targetRowEnd) && (entityCol == targetColEnd))) {                                 // Check if the primary entity will step into the candidate entity.
 
-                    if (candidate.hasCollision()) {                                                                     // Check whether the candidate entity is solid (i.e., has collision) or not.
+                    if (candidate.hasCollision() && !candidate.isHidden()) {                                            // Check whether the candidate entity is solid (i.e., has collision) or not and visible.
 
-                        boolean followed = gp.getInteractionM().checkEntityChainUp(entity, candidate);                  // Check if the primary entity is being followed by the candidate entity (directly or in a chain).
-                        boolean following = gp.getInteractionM().checkEntityChainUp(candidate, entity);                 // Check if the primary entity is following the candidate entity (directly or in a chain).
+                        boolean followed = gp.getEventM().checkEntityChainUp(entity, candidate);                        // Check if the primary entity is being followed by the candidate entity (directly or in a chain).
+                        boolean following = gp.getEventM().checkEntityChainUp(candidate, entity);                       // Check if the primary entity is following the candidate entity (directly or in a chain).
 
                         if ((!followed) && (!following)) {                                                              // If either condition is true, no collision will be set.
 

@@ -19,15 +19,18 @@ public class Evt_Conv002 extends EventConvBase {
     @Override
     public void run() {
 
-        EntityBase entity = gp.getEntityById(5);
-
-        if ((entity.isOnEntity())
-                && (entity.getOnEntityId() == gp.getPlayer().getEntityId())) {
-
-            gp.getInteractionM().breakFollowerChain(gp.getPlayer());
-            gp.transferEntity(gp.getParty(), gp.getNpc(), entity.getEntityId());                                        // Remove an entity from the party.
-            gp.transferEntity(gp.getParty(), gp.getNpc(), 6);
-        }
-        gp.getInteractionM().cleanupConversation(1);
+//        if (gp.getParty().get(7) != null) {
+//            gp.getEventM().removeEntityFromParty(7, true);
+//        }
+//
+//        if (gp.getParty().get(6) != null) {
+//            gp.getEventM().removeEntityFromParty(6, false);
+//        }
+//
+//        if (gp.getParty().get(5) != null) {
+//            gp.getEventM().removeEntityFromParty(5, false);
+//        }
+        gp.getEventM().removeAllEntitiesFromParty(true);
+        gp.getEventM().cleanupConversation(1);
     }
 }

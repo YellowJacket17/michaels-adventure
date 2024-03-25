@@ -23,6 +23,6 @@ public class Evt_SubMenu000 extends EventSubMenuBase {
 
             gp.getCameraS().resetCameraSnap();
         }
-        gp.getInteractionM().cleanupSubmenu(1);
+        gp.getEventM().cleanupSubmenu(1);
     }
 }

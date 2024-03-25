@@ -20,7 +20,7 @@ public class Evt_SubMenu001 extends EventSubMenuBase {
     public void run(int selectedIndex) {
 
         gp.getCombatM().addLastSelectedSubMenuOption(selectedIndex);
-        gp.getInteractionM().cleanupSubmenu(3);
+        gp.getEventM().cleanupSubmenu(3);
         gp.getCombatM().progressCombat();
     }
 }
