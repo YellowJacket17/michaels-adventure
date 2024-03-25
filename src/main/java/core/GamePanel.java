@@ -8,6 +8,7 @@ import cutscene.CutsceneManager;
 import dialogue.Conversation;
 import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
+import event.support.PartySupport;
 import event.support.SubMenuSupport;
 import event.support.WarpSupport;
 import miscellaneous.*;
@@ -91,6 +92,7 @@ public class GamePanel {
     private final CameraSupport cameraS = new CameraSupport(this);
     private final WarpSupport warpS = new WarpSupport(this);
     private final SubMenuSupport subMenuS = new SubMenuSupport(this);
+    private final PartySupport partyS = new PartySupport(this);
     private final PathFinder pathF = new PathFinder(this);
     private final Sound audio = new Sound();
     private final Ui ui = new Ui(this);
@@ -185,12 +187,6 @@ public class GamePanel {
      * Variable to store which state the game is currently in (the game state controls what is updated each frame).
      */
     private GameState gameState;
-
-    /**
-     * Boolean to set whether party members are rendered or not.
-     * Note that this is separate from and does not affect the `hidden` field of entities.
-     */
-    private boolean partyVisible = true;
 
     /**
      * Boolean to set whether the game is in combat mode or not.
@@ -378,26 +374,23 @@ public class GamePanel {
             }
         }
 
-        if (partyVisible) {
+        Set<Integer> keySet = party.keySet();
+        Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
+        int numRenderedPartyMembers;
 
-            Set<Integer> keySet = party.keySet();
-            Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
-            int numRenderedPartyMembers;
+        if (keySet.size() > numActivePartyMembers) {
 
-            if (keySet.size() > numActivePartyMembers) {
+            numRenderedPartyMembers = numActivePartyMembers;
+        } else {
 
-                numRenderedPartyMembers = numActivePartyMembers;
-            } else {
+            numRenderedPartyMembers = keySet.size();
+        }
 
-                numRenderedPartyMembers = keySet.size();
-            }
+        for (int i = (numRenderedPartyMembers - 1); i >= 0; i--) {                                                      // Add active party members in the current map to the list of entities; iterates backwards.
 
-            for (int i = (numRenderedPartyMembers - 1); i >= 0; i--) {                                                  // Add active party members in the current map to the list of entities; iterates backwards.
+            if (party.get(keyArray[i]) != null) {
 
-                if (party.get(keyArray[i]) != null) {
-
-                    entityList.add(party.get(keyArray[i]));
-                }
+                entityList.add(party.get(keyArray[i]));
             }
         }
 
@@ -1113,6 +1106,10 @@ public class GamePanel {
         return subMenuS;
     }
 
+    public PartySupport getPartyS() {
+        return partyS;
+    }
+
     public PathFinder getPathF() {
         return pathF;
     }
@@ -1177,10 +1174,6 @@ public class GamePanel {
         return gameState;
     }
 
-    public boolean isPartyVisible() {
-        return partyVisible;
-    }
-
     public boolean isCombatActive() {
         return combatActive;
     }
@@ -1229,10 +1222,6 @@ public class GamePanel {
     public void setGameState(GameState gameState) {
         gameStateInitialization(this.gameState, gameState);
         this.gameState = gameState;
-    }
-
-    public void setPartyVisible(boolean partyVisible) {
-        this.partyVisible = partyVisible;
     }
 
     public void setCombatActive(boolean combatActive) {

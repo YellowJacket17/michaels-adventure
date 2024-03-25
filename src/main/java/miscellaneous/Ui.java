@@ -820,20 +820,26 @@ public class Ui {
         float bannerScreenY = 0;
         for (int entityId : gp.getCombatM().getOpposingEntities()) {
             EntityBase entity = gp.getEntityById(entityId);
-            renderEntityCombatBanner(entity.getEntityId(), 1 - 0.15f, bannerScreenY);
+            if (entity.getStatus() != EntityStatus.FAINT) {
+                renderEntityCombatBanner(entity.getEntityId(), 1 - 0.15f, bannerScreenY);
+            }
             bannerScreenY += 0.08f;
         }
 
         // Player entity.
         bannerScreenY = 0;
-        renderEntityCombatBanner(gp.getPlayer().getEntityId(), 0, 0);
+        if (gp.getPlayer().getStatus() != EntityStatus.FAINT) {
+            renderEntityCombatBanner(gp.getPlayer().getEntityId(), 0, 0);
+        }
         bannerScreenY += 0.08f;
 
         // Party members.
         int entityIndex = 0;
         for (EntityBase entity : gp.getParty().values()) {                                                              // Only render banners for active party members.
             if (entityIndex < gp.getNumActivePartyMembers()) {
-                renderEntityCombatBanner(entity.getEntityId(), 0, bannerScreenY);
+                if (entity.getStatus() != EntityStatus.FAINT) {
+                    renderEntityCombatBanner(entity.getEntityId(), 0, bannerScreenY);
+                }
                 bannerScreenY += 0.08f;
                 entityIndex++;
             } else {

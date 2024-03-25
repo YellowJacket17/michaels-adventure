@@ -630,10 +630,7 @@ public abstract class EntityBase extends Drawable {
         gp.getCollisionI().checkEntity(this, gp.getNpc());
 
         // Check party collision.
-        if (gp.isPartyVisible()) {
-
-            gp.getCollisionI().checkEntity(this, gp.getParty());
-        }
+        gp.getCollisionI().checkEntity(this, gp.getParty());
 
         // Check player collision.
         gp.getCollisionI().checkPlayer(this);

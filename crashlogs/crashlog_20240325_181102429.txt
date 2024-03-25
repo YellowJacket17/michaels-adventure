@@ -1,0 +1,7 @@
+03/25/2024 18:10:59:362  INFO     Application started.
+03/25/2024 18:11:02:418  ERROR    An unhandled exception has occurred.
+java.lang.NullPointerException: Cannot invoke "utility.LimitedLinkedHashMap.size()" because the return value of "core.GamePanel.getParty()" is null
+	at combat.CombatManager.<init>(CombatManager.java:146)
+	at core.GamePanel.<init>(GamePanel.java:90)
+	at core.Window.initGame(Window.java:211)
+	at core.App.main(App.java:19)

@@ -19,9 +19,9 @@ public class Evt_Conv001 extends EventConvBase {
     @Override
     public void run() {
 
-        gp.getEventM().addEntityToParty(5);
-        gp.getEventM().addEntityToParty(6);
-        gp.getEventM().addEntityToParty(7);
+        gp.getPartyS().addEntityToParty(5);
+        gp.getPartyS().addEntityToParty(6);
+        gp.getPartyS().addEntityToParty(7);
 //        gp.getEventM().setEntityFollowTarget(7, 0);
         gp.getEventM().cleanupConversation(1);
     }

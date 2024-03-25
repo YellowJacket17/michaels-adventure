@@ -20,17 +20,17 @@ public class Evt_Conv002 extends EventConvBase {
     public void run() {
 
 //        if (gp.getParty().get(7) != null) {
-//            gp.getEventM().removeEntityFromParty(7, true);
+//            gp.getPartyS().removeEntityFromParty(7, true);
 //        }
 //
 //        if (gp.getParty().get(6) != null) {
-//            gp.getEventM().removeEntityFromParty(6, false);
+//            gp.getPartyS().removeEntityFromParty(6, false);
 //        }
 //
 //        if (gp.getParty().get(5) != null) {
-//            gp.getEventM().removeEntityFromParty(5, false);
+//            gp.getPartyS().removeEntityFromParty(5, false);
 //        }
-        gp.getEventM().removeAllEntitiesFromParty(true);
+        gp.getPartyS().removeAllEntitiesFromParty(true);
         gp.getEventM().cleanupConversation(1);
     }
 }

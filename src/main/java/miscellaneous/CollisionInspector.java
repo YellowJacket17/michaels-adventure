@@ -277,11 +277,9 @@ public class CollisionInspector {
             }
         }
 
-        if (gp.isPartyVisible()) {
-            for (EntityBase candidate : gp.getParty().values()) {
-                if ((candidate != null) && (candidate.getEntityId() != entity.getEntityId())) {
-                    target.add(candidate);
-                }
+        for (EntityBase candidate : gp.getParty().values()) {
+            if ((candidate != null) && (candidate.getEntityId() != entity.getEntityId())) {
+                target.add(candidate);
             }
         }
 

@@ -58,6 +58,12 @@ public class CombatManager {
     private final HashMap<Integer, Boolean> storedEntityHidden = new HashMap<>();
 
     /**
+     * List to store the original party entity ordering before combat was initiated.
+     * The IDs of party members are stored in this list, with the front-most at index zero, etc.
+     */
+    private final ArrayList<Integer> partyOrdering = new ArrayList<>();
+
+    /**
      * Set to store IDs of opposing entities involved in combat.
      * A set is used to avoid having the same entity entered twice or thrice.
      */
@@ -441,7 +447,7 @@ public class CombatManager {
             }
 
             if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getStatus() != EntityStatus.FAINT)
-                    || (!gp.getEntityById(queuedEntityTurnOrder.peekFirst()).isHidden())) {                             // If hidden, entity is not actively participating in combat (i.e., party member in reserve).
+                    && (!gp.getEntityById(queuedEntityTurnOrder.peekFirst()).isHidden())) {                             // If hidden, entity is not actively participating in combat (ex. party member in reserve).
 
                 viableEntity = true;
 
@@ -708,6 +714,12 @@ public class CombatManager {
         // Override camera tracking (we'd like to manually position it for combat).
         gp.getCameraS().setOverrideEntityTracking(true);
 
+        // Store original party member ordering.
+        for (int entityId : gp.getParty().keySet()) {
+
+            partyOrdering.add(entityId);
+        }
+
         // Set the player entity as combating and store its pre-combat world position.
         setCombating(gp.getPlayer());
 
@@ -738,7 +750,6 @@ public class CombatManager {
                     entity.setRow(fieldCenterRow + 2);
                 } else {
 
-                    // TODO : Do we need to store which entities were hidden before combat to restore it after?
                     entity.setHidden(true);
                 }
                 placedPartyMembers++;
@@ -771,7 +782,6 @@ public class CombatManager {
                     opponent.setCol(fieldCenterCol + 5);
                     opponent.setRow(fieldCenterRow + 2);
                 }
-
                 placedOpponents++;
             } else {
 
@@ -819,6 +829,11 @@ public class CombatManager {
         // Reset all combating entities back to pre-combat hidden state.
         for (int entityId : storedEntityHidden.keySet()) {
             gp.getEntityById(entityId).setHidden(storedEntityHidden.get(entityId));
+        }
+
+        // Restore pre-combat ordering of party members.
+        for (int i = 0; i < partyOrdering.size(); i++) {
+            gp.getPartyS().swapEntityInParty(partyOrdering.get(i), i);
         }
 
         // Warp party members to player.
@@ -938,19 +953,26 @@ public class CombatManager {
         move = possibleMoves.get(i);
 
         // Generate random target entity.
-        EntityBase targetEntity;
+        // TODO : Throw exception here if, after a few loops, a valid target cannot be found?
+        EntityBase targetEntity = null;
         int numTargetPartyMembers;
-        if (gp.getParty().size() > gp.getNumActivePartyMembers()) {
-            numTargetPartyMembers = gp.getNumActivePartyMembers();
-        } else {
-            numTargetPartyMembers = gp.getParty().size();
-        }
-        i = random.nextInt(numTargetPartyMembers + 1);                                                                  // Generate random number from 0 to number of active party members plus player entity (both inclusive)
-        if (i == numTargetPartyMembers) {
-            targetEntity = gp.getPlayer();
-        } else {
-            targetEntity = gp.getParty().get(
-                    gp.getParty().keySet().toArray(new Integer[gp.getParty().size()])[i]);
+        boolean viableTarget = false;
+        while (!viableTarget) {
+            if (gp.getParty().size() > gp.getNumActivePartyMembers()) {
+                numTargetPartyMembers = gp.getNumActivePartyMembers();
+            } else {
+                numTargetPartyMembers = gp.getParty().size();
+            }
+            i = random.nextInt(numTargetPartyMembers + 1);                                                              // Generate random number from 0 to number of active party members plus player entity (both inclusive)
+            if (i == numTargetPartyMembers) {
+                targetEntity = gp.getPlayer();
+            } else {
+                targetEntity = gp.getParty().get(
+                        gp.getParty().keySet().toArray(new Integer[gp.getParty().size()])[i]);
+            }
+            if (targetEntity.getStatus() != EntityStatus.FAINT) {
+                viableTarget = true;
+            }
         }
 
         // Add move action.
@@ -1070,6 +1092,7 @@ public class CombatManager {
         storedEntityRows.clear();
         storedEntityDirections.clear();
         storedEntityHidden.clear();
+        partyOrdering.clear();
         opposingEntities.clear();
         activeEnterCombatTransitionType = null;
         activeExitCombatTransitionType = null;
