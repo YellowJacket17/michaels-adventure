@@ -985,11 +985,9 @@ public class CombatManager {
     private void generateTargetSelectSubMenuAction() {
 
         targetArrowVisible = true;                                                                                      // Target selection has been initiated.
-        ArrayList<String> targetOptions = new ArrayList<>();
         EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
         MoveBase move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1));
-        generateTargetOptions(move.getMoveTargets(), targetOptions, true);
-        refreshLastGeneratedTargetOptions(move.getMoveTargets());
+        ArrayList<String> targetOptions = generateTargetOptions(move.getMoveTargets());
         targetOptions.add("Back");
         HashMap<Integer, Vector3f> colors = new HashMap<>();
         colors.put(targetOptions.size() - 1, new Vector3f(255, 46, 102));
@@ -998,21 +996,7 @@ public class CombatManager {
 
 
     /**
-     * Refreshes the list of last generated selectable targets in combat.
-     * The list is re-generated based on the entity whose turn it currently is.
-     * Note that this assumes that said entity is an ally entity.
-     *
-     * @param moveTargets possible targets
-     */
-    private void refreshLastGeneratedTargetOptions(MoveTargets moveTargets) {
-
-        lastGeneratedTargetOptions.clear();
-        generateTargetOptions(moveTargets, lastGeneratedTargetOptions, false);
-    }
-
-
-    /**
-     * Generates a list of selectable targets in combat.
+     * Generates a list of names of selectable targets in combat.
      * This method is to be used to generate selectable targets when an ally entity is the entity whose turn it is.
      * This method will not properly generate a lit of selectable targets when an opposing entity is the entity
      * whose turn it is.
@@ -1020,98 +1004,94 @@ public class CombatManager {
      * Opposing refers to combating entities fighting against the player's side.
      * Allies refer to combating entities (including the player entity) fighting on the player's side.
      * Only non-fainted entities will be added to the list of selectable targets.
+     * The list of entity IDs of last generated selectable targets is also refreshed by this method (same ordering as
+     * generated list of names).
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
      * return a value.
      *
      * @param moveTargets possible targets
-     * @param targetOptions list to add viable target options to (of String or Integer type)
-     * @param entityNames whether entity names (true) or entity IDs (false) will be added to the list
+     * @return list of names of selectable targets
      */
-    private void generateTargetOptions(MoveTargets moveTargets, ArrayList targetOptions, boolean entityNames) {
+    private ArrayList<String> generateTargetOptions(MoveTargets moveTargets) {
+
+        ArrayList<String> targetOptions = new ArrayList<>();
+        lastGeneratedTargetOptions.clear();
 
         switch (moveTargets) {
             case OPPOSING:
-                addOpposingEntitiesToTargetOptions(targetOptions, entityNames);
+                addOpposingEntitiesToTargetOptions(targetOptions);
                 break;
             case ALLY:
-                addAllyEntitiesToTargetOptions(targetOptions, entityNames);
+                addAllyEntitiesToTargetOptions(targetOptions);
                 break;
             case SELF:
-                addSelfEntityToTargetOptions(targetOptions, entityNames);
+                addSelfEntityToTargetOptions(targetOptions);
                 break;
             case OPPOSING_ALLY:
-                addOpposingEntitiesToTargetOptions(targetOptions, entityNames);
-                addAllyEntitiesToTargetOptions(targetOptions, entityNames);
+                addOpposingEntitiesToTargetOptions(targetOptions);
+                addAllyEntitiesToTargetOptions(targetOptions);
                 break;
             case OPPOSING_SELF:
-                addOpposingEntitiesToTargetOptions(targetOptions, entityNames);
-                addSelfEntityToTargetOptions(targetOptions, entityNames);
+                addOpposingEntitiesToTargetOptions(targetOptions);
+                addSelfEntityToTargetOptions(targetOptions);
                 break;
             case ALLY_SELF:
-                addAllyEntitiesToTargetOptions(targetOptions, entityNames);
-                addSelfEntityToTargetOptions(targetOptions, entityNames);
+                addAllyEntitiesToTargetOptions(targetOptions);
+                addSelfEntityToTargetOptions(targetOptions);
                 break;
             case OPPOSING_ALLY_SELF:
-                addOpposingEntitiesToTargetOptions(targetOptions, entityNames);
-                addAllyEntitiesToTargetOptions(targetOptions, entityNames);
-                addSelfEntityToTargetOptions(targetOptions, entityNames);
+                addOpposingEntitiesToTargetOptions(targetOptions);
+                addAllyEntitiesToTargetOptions(targetOptions);
+                addSelfEntityToTargetOptions(targetOptions);
                 break;
         }
+        return targetOptions;
     }
 
 
-
     /**
-     * Adds opposing combating entities to the list of selectable targets.
+     * Adds opposing combating entity names to a list of selectable targets.
      * Opposing refers to combating entities fighting against the player's side.
      * Only non-fainted entities will be added.
+     * The IDs of all added entities will also be added to the list of last generated selectable targets in the same
+     * order.
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
      * return a value.
      *
      * @param targetOptions list to add viable target options to (of String or Integer type)
-     * @param entityNames whether entity names (true) or entity IDs (false) will be added to the list
      */
-    private void addOpposingEntitiesToTargetOptions(ArrayList targetOptions, boolean entityNames) {
+    private void addOpposingEntitiesToTargetOptions(ArrayList targetOptions) {
 
         for (int entityId : opposingEntities) {
 
             if (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT) {
 
-                if (entityNames) {
-
-                    targetOptions.add(gp.getEntityById(entityId).getName());
-                } else {
-
-                    targetOptions.add(entityId);
-                }
+                targetOptions.add(gp.getEntityById(entityId).getName());
+                lastGeneratedTargetOptions.add(entityId);
             }
         }
     }
 
 
     /**
-     * Adds ally combating entities to the list of selectable targets.
+     * Adds ally combating entity names to a list of selectable targets.
      * Allies refer to combating entities (including the player entity) fighting on the player's side.
      * Only non-fainted entities will be added.
      * Additionally, if an ally entity's turn is currently active, then said entity will not be added to the list.
+     * The IDs of all added entities will also be added to the list of last generated selectable targets in the same
+     * order.
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
      * return a value.
      *
      * @param targetOptions list to add viable target options to (of String or Integer type)
-     * @param entityNames whether entity names (true) or entity IDs (false) will be added to the list
      */
-    private void addAllyEntitiesToTargetOptions(ArrayList targetOptions, boolean entityNames) {
+    private void addAllyEntitiesToTargetOptions(ArrayList targetOptions) {
 
         if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != gp.getPlayer().getEntityId())
                 && (gp.getPlayer().getStatus() != EntityStatus.FAINT)) {
 
-            if (entityNames) {
-
-                targetOptions.add(gp.getPlayer().getName());
-            } else {
-
-                targetOptions.add(gp.getPlayer().getEntityId());
-            }
+            targetOptions.add(gp.getPlayer().getName());
+            lastGeneratedTargetOptions.add(gp.getPlayer().getEntityId());
         }
         int entityIndex = 0;
 
@@ -1122,13 +1102,8 @@ public class CombatManager {
                 if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
                         && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                    if (entityNames) {
-
-                        targetOptions.add(gp.getEntityById(entityId).getName());
-                    } else {
-
-                        targetOptions.add(entityId);
-                    }
+                    targetOptions.add(gp.getEntityById(entityId).getName());
+                    lastGeneratedTargetOptions.add(entityId);
                 }
             } else {
 
@@ -1140,27 +1115,22 @@ public class CombatManager {
 
 
     /**
-     * Adds the combating entity whose turn it is to the list of selectable targets.
-     * The entity added may be either the player entity or an ally entity.
+     * Adds the name of the combating entity whose turn it is to a list of selectable targets.
+     * The entity added may be either the player entity or a party member entity.
      * Only non-fainted entities will be added.
+     * The ID of the added entity will also be added to the list of last generated selectable targets.
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
      * return a value.
      *
      * @param targetOptions list to add viable target option to (of String or Integer type)
-     * @param entityNames whether entity names (true) or entity IDs (false) will be added to the list
      */
-    private void addSelfEntityToTargetOptions(ArrayList targetOptions, boolean entityNames) {
+    private void addSelfEntityToTargetOptions(ArrayList targetOptions) {
 
         if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == gp.getPlayer().getEntityId())
                 && (gp.getPlayer().getStatus() != EntityStatus.FAINT)) {
 
-            if (entityNames) {
-
-                targetOptions.add(gp.getPlayer().getName());
-            } else {
-
-                targetOptions.add(gp.getPlayer().getEntityId());
-            }
+            targetOptions.add(gp.getPlayer().getName());
+            lastGeneratedTargetOptions.add(gp.getPlayer().getEntityId());
             return;                                                                                                     // The single target entity has been added.
         }
         int entityIndex = 0;
@@ -1172,13 +1142,8 @@ public class CombatManager {
                 if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)
                         && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                    if (entityNames) {
-
-                        targetOptions.add(gp.getEntityById(entityId).getName());
-                    } else {
-
-                        targetOptions.add(entityId);
-                    }
+                    targetOptions.add(gp.getEntityById(entityId).getName());
+                    lastGeneratedTargetOptions.add(entityId);
                     return;                                                                                             // The single target entity has been added.
                 }
             } else {
