@@ -2,6 +2,7 @@ package combat.implementation.move;
 
 import combat.MoveBase;
 import combat.MoveCategory;
+import combat.MoveTargets;
 import core.GamePanel;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class Mve_Tackle extends MoveBase {
 
     // CONSTRUCTOR
     public Mve_Tackle(GamePanel gp) {
-        super(gp, mveId, MoveCategory.PHYSICAL);
+        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPOSING_ALLY);
         name = mveName;
         description = mveDescription;
         power = mvePower;

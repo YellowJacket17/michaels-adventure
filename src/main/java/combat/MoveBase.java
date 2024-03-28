@@ -20,6 +20,7 @@ public abstract class MoveBase {
     protected final GamePanel gp;
     protected final int moveId;
     protected final MoveCategory category;
+    protected final MoveTargets moveTargets;
     protected String name;
     protected String description;
     protected int power;
@@ -32,19 +33,18 @@ public abstract class MoveBase {
      *
      * @param gp GamePanel instance
      * @param moveId move ID
-     * @param category type of attack (PHYSICAL or MAGIC)
+     * @param category type of move (PHYSICAL or MAGIC)
+     * @param moveTargets combating entities that may be targeted by this move
      */
-    public MoveBase(GamePanel gp, int moveId, MoveCategory category) {
+    public MoveBase(GamePanel gp, int moveId, MoveCategory category, MoveTargets moveTargets) {
         this.gp = gp;
         this.moveId = moveId;
         this.category = category;
+        this.moveTargets = moveTargets;
     }
 
 
     // METHOD
-    // TODO : Perhaps have arguments to this method be everything we would need to apply move effects (steal HP, skip next turn, apply buffs, etc.).
-    //  This input could be the move user, the move target(s), and some additional information.
-    //  Also, should this method be called `runEffects()` or something else?
     /**
      * Runs move effect logic.
      */
@@ -58,6 +58,10 @@ public abstract class MoveBase {
 
     public MoveCategory getCategory() {
         return category;
+    }
+
+    public MoveTargets getMoveTargets() {
+        return moveTargets;
     }
 
     public String getName() {
@@ -78,12 +82,6 @@ public abstract class MoveBase {
 
 
     // Setters.
-    public void setPower(int power) {
-        if (power >= 0) {
-            this.power = power;
-        }
-    }
-
     public void setSkillPoints(int skillPoints) {
         if (skillPoints >= 0) {
             this.skillPoints = skillPoints;

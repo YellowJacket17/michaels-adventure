@@ -10,6 +10,7 @@ import render.Renderer;
 import render.ZIndex;
 import render.drawable.Transform;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -896,18 +897,17 @@ public class Ui {
 
         int i = 0;
 
-        for (int entityId : gp.getCombatM().getOpposingEntities()) {
+        for (int entityId : gp.getCombatM().getLastGeneratedTargetOptions()) {
 
-            if ((gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)
-                    && (i == gp.getSubMenuH().getIndexSelected())) {
+            if (i == gp.getSubMenuH().getIndexSelected()) {                                                             // If combating entity that's currently being considered to target.
 
                 float entityWorldX = gp.getEntityById(entityId).getWorldX();
                 float entityWorldY = gp.getEntityById(entityId).getWorldY();
                 float entitySpriteHeight = gp.getEntityById(entityId).getNativeSpriteHeight();
                 float targetArrowWorldX = entityWorldX + (GamePanel.NATIVE_TILE_SIZE / 2)
-                        - (gp.getTargetA().getNativeSpriteWidth() / 2);                                             // Render arrow centered horizontally above target entity sprite.
+                        - (gp.getTargetA().getNativeSpriteWidth() / 2);                                                 // Render arrow centered horizontally above target entity sprite.
                 float targetArrowWorldY = entityWorldY + GamePanel.NATIVE_TILE_SIZE - entitySpriteHeight
-                        - gp.getTargetA().getNativeSpriteHeight() - 4;                                              // Render arrow slightly above target entity sprite.
+                        - gp.getTargetA().getNativeSpriteHeight() - 4;                                                  // Render arrow slightly above target entity sprite.
                 Vector2f targetArrowWorldCoords = new Vector2f(
                         targetArrowWorldX,
                         targetArrowWorldY);
