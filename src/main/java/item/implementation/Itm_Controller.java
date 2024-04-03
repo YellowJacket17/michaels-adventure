@@ -27,9 +27,16 @@ public class Itm_Controller extends ItemBase {
     }
 
 
-    // METHOD
+    // METHODS
     @Override
-    public boolean use(EntityBase user) {
+    public boolean useField(EntityBase user) {
+
+        return false;
+    }
+
+
+    @Override
+    public boolean useCombat(EntityBase user) {
 
         return false;
     }

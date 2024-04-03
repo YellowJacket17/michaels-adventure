@@ -102,10 +102,7 @@ public class Act_UseMove extends ActionBase {
         //  These will likely be applied as the last thing in a turn.
         //  Would these go in the action `endEntityTurn`?
 
-        // TODO : Handle what to do if all active party members have fainted but there are healthy reserve party members.
-
         pollFainting();
-        gp.getCombatM().addQueuedActionBack(new Act_EndEntityTurn(gp));
         gp.getCombatM().progressCombat();
     }
 
@@ -150,7 +147,6 @@ public class Act_UseMove extends ActionBase {
             }
             gp.getEntityById(targetEntityId).subtractLife(targetDamage);
         }
-
     }
 
 
@@ -169,20 +165,20 @@ public class Act_UseMove extends ActionBase {
             checkJustFainted(targetEntityId);
         }
 
-        if (gp.getCombatM().checkAllOpposingFainted()) {
+        if (gp.getCombatM().checkAllOpposingFainted()) {                                                                // Combat is won if all opposing entities have fainted.
 
             String message = gp.getPlayer().getName() + " won the fight!";
-            gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
-            gp.getCombatM().addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
-            gp.getCombatM().addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
+            gp.getCombatM().addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
+            gp.getCombatM().addQueuedActionFront(new Act_ToggleCombatUi(gp, false));
+            gp.getCombatM().addQueuedActionFront(new Act_ReadMessage(gp, message, true));
         }
 
-        if (gp.getCombatM().checkAllPartyFainted()) {
+        if (gp.getCombatM().checkPlayerFainted()) {                                                                     // Combat is only lost if the player entity has fainted.
 
             String message = gp.getPlayer().getName() + " lost the fight.";
-            gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
-            gp.getCombatM().addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
-            gp.getCombatM().addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
+            gp.getCombatM().addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
+            gp.getCombatM().addQueuedActionFront(new Act_ToggleCombatUi(gp, false));
+            gp.getCombatM().addQueuedActionFront(new Act_ReadMessage(gp, message, true));
         }
     }
 
@@ -212,7 +208,7 @@ public class Act_UseMove extends ActionBase {
                 stagedName = targetEntity.getName();
             }
             String message = stagedName + " has no energy left to fight!";
-            gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+            gp.getCombatM().addQueuedActionFront(new Act_ReadMessage(gp, message, true));
         }
     }
 

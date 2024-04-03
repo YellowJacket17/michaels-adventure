@@ -25,6 +25,8 @@ public abstract class ActionBase {
     // METHOD
     /**
      * Runs action logic.
+     * Note that the `progressCombat()` method in CombatManager must be called somewhere through this method (typically
+     * the end) to progress combat to the next action.
      */
     public abstract void run();
 }

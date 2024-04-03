@@ -1,6 +1,7 @@
 package combat.implementation.action;
 
 import combat.ActionBase;
+import combat.SubMenuMemory;
 import combat.SubMenuType;
 import core.GamePanel;
 import miscellaneous.GameState;
@@ -107,7 +108,8 @@ public class Act_GenerateSubMenu extends ActionBase {
     @Override
     public void run() {
 
-        gp.getCombatM().addLastSubMenuType(type);
+        SubMenuMemory subMenuMemory = new SubMenuMemory(options, type);
+        gp.getCombatM().addSubMenuMemory(subMenuMemory);
         gp.getCombatM().setLastActionSubmenu(true);
         displaySubMenu();
     }

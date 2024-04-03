@@ -65,6 +65,7 @@ public class CombatManager {
 
     /**
      * Set to store IDs of opposing entities involved in combat.
+     * Opposing refers to combating entities fighting against the player's side.
      * A set is used to avoid having the same entity entered twice or thrice.
      */
     private final LinkedHashSet<Integer> opposingEntities = new LinkedHashSet<>();
@@ -96,20 +97,46 @@ public class CombatManager {
     private final List<String> rootCombatOptions;
 
     /**
-     * List to log the last ten sub-menu options selected.
-     * The values stored are the option indices.
-     * The oldest selection is at index 0, the latest is at the top (size of list minus one).
+     * List to log the last ten sub-menus generated in combat.
+     * The oldest sub-menu is at index 0, the latest is at the top (size of list minus one).
      */
-    private final LimitedArrayList<Integer> selectedSubMenuOptionLog = new LimitedArrayList<>(10);
+    private final LimitedArrayList<SubMenuMemory> subMenuLog = new LimitedArrayList<>(10);
 
     /**
-     * List to log the last ten sub-menu types actioned.
-     * The oldest selection is at index 0, the latest is at the top (size of list minus one).
+     * Store the last generated list of ally entity (active, inactive, and player entity) options in combat.
+     * The IDs of the ally entities are stored in this list.
+     * Allies refer to combating entities (including the player entity) fighting on the player's side.
      */
-    private final LimitedArrayList<SubMenuType> actionedSubMenuTypeLog = new LimitedArrayList<>(10);
+    private final ArrayList<Integer> lastGeneratedAllyOptions = new ArrayList<>();
 
     /**
-     * Boolean indicating whether the last action that was run was on to generate a sub-menu.
+     * Stores the last generated list of active ally entity (including the player entity) options in combat.
+     * The IDs of active entities are stored in this list.
+     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     */
+    private final ArrayList<Integer> lastGeneratedActiveAllyOptions = new ArrayList<>();
+
+    /**
+     * Stores the last generated list of inactive ally entity options in combat.
+     * The IDs of inactive entities are stored in this list.
+     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     */
+    private final ArrayList<Integer> lastGeneratedInactiveAllyOptions = new ArrayList<>();
+
+    /**
+     * Stores the last generated list of target options in combat.
+     * The IDs of viable entities are stored in this list.
+     */
+    private final ArrayList<Integer> lastGeneratedTargetOptions = new ArrayList<>();
+
+    /**
+     * Set to store IDs of entities currently in a guarding state.
+     * A set is used to avoid having the same entity entered twice or thrice.
+     */
+    private final LinkedHashSet<Integer> guardingEntities = new LinkedHashSet<>();
+
+    /**
+     * Boolean indicating whether the last action that was run was to generate a sub-menu.
      */
     private boolean lastActionSubmenu = false;
 
@@ -129,16 +156,14 @@ public class CombatManager {
     private final MoveBase defaultMove;
 
     /**
-     * Set to store IDs of entities currently in a guarding state.
-     * A set is used to avoid having the same entity entered twice or thrice.
+     * Color of the 'Back' option in combat sub-menus.
      */
-    private final LinkedHashSet<Integer> guardingEntities = new LinkedHashSet<>();
+    private final Vector3f backOptionColor = new Vector3f(255, 46, 102);
 
     /**
-     * Stores the last generated list of target options in combat.
-     * The IDs of viable entities are stored in this list.
+     * Color of a disabled option in combat sub-menus.
      */
-    private ArrayList<Integer> lastGeneratedTargetOptions = new ArrayList<>();
+    private final Vector3f disabledOptionColor = new Vector3f(112, 112, 112);
 
 
     // CONSTRUCTOR
@@ -180,7 +205,7 @@ public class CombatManager {
 
                 String message = buildRootMenuPrompt(gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName());
                 addQueuedActionBack(new Act_ReadMessage(gp, message, false));
-                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions));
+                generateRootSubMenuAction();
                 runNextQueuedAction();
             }
         }
@@ -426,6 +451,8 @@ public class CombatManager {
      * Removes the entity at the front of the turn order queue.
      * This will set the next entity in the queue to have its turn if able.
      * If the queue is empty, the turn order will be regenerated with all combating entities.
+     *
+     * @throws IllegalStateException if the turn order is generated with no available viable entities
      */
     public void endEntityTurn() {
 
@@ -444,12 +471,7 @@ public class CombatManager {
                     generateTurnOrderCalled = true;
                 } else {
 
-                    // TODO : Perhaps check if any reserve party members are available.
-                    //  Or, perhaps just crash the program.
-                    String message = "No combatants have any remaining energy to fight.";
-                    addQueuedActionBack(new Act_ReadMessage(gp, message, true));
-                    addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
-                    addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));                        // Precaution in case this loop is entered with no remaining viable entities.
+                    throw new IllegalStateException("Generated combat turn order with no available viable entities");
                 }
             }
 
@@ -470,35 +492,51 @@ public class CombatManager {
 
 
     /**
-     * Checks whether the entire party (active and inactive, including the player entity) has a fainted status.
+     * Checks whether the player entity has a fainted status or not.
      *
-     * @return whether the entire party has fainted (true) or not (false)
+     * @return whether the player entity has fainted (true) or not (false)
+     */
+    public boolean checkPlayerFainted() {
+
+        if (gp.getPlayer().getStatus() == EntityStatus.FAINT) {
+
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Checks whether all party member entities (active and inactive, excluding the player entity) have a fainted status
+     * or not.
+     *
+     * @return whether all party member entities have fainted (true) or not (false)
      */
     public boolean checkAllPartyFainted() {
 
-        int allPartyCount = gp.getParty().size() + 1;
+        int allPartyCount = gp.getParty().size();
         int faintedPartyCount = 0;
 
-        if (gp.getPlayer().getStatus() == EntityStatus.FAINT) {
-            faintedPartyCount++;
-        }
-
         for (int entityId : gp.getParty().keySet()) {
+
             if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+
                 faintedPartyCount++;
             }
         }
 
         if (faintedPartyCount == allPartyCount) {
+
             return true;
         } else {
+
             return false;
         }
     }
 
 
     /**
-     * Checks whether the all opposing entities have a fainted status.
+     * Checks whether all opposing entities have a fainted status or not.
      *
      * @return whether all opposing entities have fainted (true) or not (false)
      */
@@ -508,14 +546,18 @@ public class CombatManager {
         int faintedOpposingCount = 0;
 
         for (int entityId : gp.getCombatM().getOpposingEntities()) {
+
             if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+
                 faintedOpposingCount++;
             }
         }
 
         if (faintedOpposingCount == allOpposingCount) {
+
             return true;
         } else {
+
             return false;
         }
     }
@@ -542,7 +584,7 @@ public class CombatManager {
 
         lastActionSubmenu = false;
 
-        switch (actionedSubMenuTypeLog.get(actionedSubMenuTypeLog.size() - 1)) {
+        switch (getLatestSubMenuMemory().getType()) {
             case ROOT:
                 runRootSubMenuSelection();
                 break;
@@ -551,6 +593,15 @@ public class CombatManager {
                 break;
             case TARGET_SELECT:
                 runTargetSelectSubMenuSelection();
+                break;
+            case PARTY:
+                runPartySubMenuSelection();
+                break;
+            case ALLY_MANAGE:
+                runAllyManageSubMenuSelection();
+                break;
+            case ALLY_SWAP:
+                runAllySwapSubMenuSelection();
                 break;
         }
     }
@@ -561,22 +612,23 @@ public class CombatManager {
      */
     private void runRootSubMenuSelection() {
 
-        switch (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1)) {
+        switch (getLatestSubMenuMemory().getSelectedOption()) {
             case 0:
-                handleRootSubMenuSelectionGuard();
+                runRootSubMenuSelectionGuard();
                 break;
             case 1:
-                handleRootSubMenuSelectionAttack();
+                runRootSubMenuSelectionAttack();
                 break;
             case 2:
-                handleRootSubMenuSelectionSkill();
+                runRootSubMenuSelectionSkill();
                 break;
             case 3:
                 break;
             case 4:
+                runRootSubMenuSelectionParty();
                 break;
             case 5:
-                handleRootSubMenuSelectionFlee();
+                runRootSubMenuSelectionFlee();
                 break;
         }
     }
@@ -585,7 +637,7 @@ public class CombatManager {
     /**
      * Runs logic pertaining to the selection of the 'Guard' option in the root combat sub-menu.
      */
-    private void handleRootSubMenuSelectionGuard() {
+    private void runRootSubMenuSelectionGuard() {
 
         guardingEntities.add(queuedEntityTurnOrder.peekFirst());
         String message = gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName() + " assumed a defensive stance.";
@@ -597,7 +649,7 @@ public class CombatManager {
     /**
      * Runs logic pertaining to the selection of the 'Attack' option in the root combat sub-menu.
      */
-    private void handleRootSubMenuSelectionAttack() {
+    private void runRootSubMenuSelectionAttack() {
 
         generateTargetSelectSubMenuAction();
     }
@@ -606,7 +658,7 @@ public class CombatManager {
     /**
      * Runs logic pertaining to the selection of the 'Skill' option in the root combat sub-menu.
      */
-    private void handleRootSubMenuSelectionSkill() {
+    private void runRootSubMenuSelectionSkill() {
 
         ArrayList<String> moveOptions = new ArrayList<>();
         HashMap<Integer, Vector3f> colors = new HashMap<>();
@@ -618,20 +670,34 @@ public class CombatManager {
 
             if (move.getSkillPoints() > gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getSkillPoints()) {
 
-                colors.put(moveOptions.size() - 1, new Vector3f(112, 112, 112));
+                colors.put(moveOptions.size() - 1, disabledOptionColor);
                 disabledOptions.add(moveOptions.size() - 1);
             }
         }
         moveOptions.add("Back");
-        colors.put(moveOptions.size() - 1, new Vector3f(255, 46, 102));
+        colors.put(moveOptions.size() - 1, backOptionColor);
         addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.SKILL, moveOptions, colors, disabledOptions));
+    }
+
+
+    /**
+     * Runs logic pertaining to the selection of the 'Party' option in the root combat sub-menu.
+     */
+    private void runRootSubMenuSelectionParty() {
+
+        // TODO : Consider disabling fainted party members.
+        ArrayList<String> allyOptions = generateAllyOptions();
+        HashMap<Integer, Vector3f> colors = new HashMap<>();
+        allyOptions.add("Back");
+        colors.put(allyOptions.size() - 1, backOptionColor);
+        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PARTY, allyOptions, colors));
     }
 
 
     /**
      * Runs logic pertaining to the selection of the 'Flee' option in the root combat sub-menu.
      */
-    private void handleRootSubMenuSelectionFlee() {
+    private void runRootSubMenuSelectionFlee() {
 
         String message = "Fleeing the fight!";
         addQueuedActionBack(new Act_ReadMessage(gp, message, true));
@@ -645,14 +711,104 @@ public class CombatManager {
      */
     private void runSkillSubMenuSelection() {
 
-        int numMoves = gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves().size();                           // Populate with number of moves of entity whose turn it is.
+        if (getLatestSubMenuMemory().getSelectedOption() == (getLatestSubMenuMemory().getOptions().size() - 1)) {       // Determine whether the 'Back' option was selected or not.
 
-        if (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1) == numMoves) {                            // Determine whether the 'Back' option was selected or not.
-
-            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions));
+            revertSubMenuSelection();
         } else {
 
             generateTargetSelectSubMenuAction();
+        }
+    }
+
+
+    /**
+     * Runs logic based on the last option that was selected in the party combat sub-menu.
+     */
+    private void runPartySubMenuSelection() {
+
+        if (getLatestSubMenuMemory().getSelectedOption() == (getLatestSubMenuMemory().getOptions().size() - 1)) {       // Determine whether the 'Back' option was selected or not.
+
+            revertSubMenuSelection();
+        } else {
+
+            ArrayList<String> allyOptions = new ArrayList<>();
+            EntityBase entity = gp.getEntityById(lastGeneratedAllyOptions.get(getLatestSubMenuMemory().getSelectedOption()));
+
+            if (getLatestSubMenuMemory().getSelectedOption() <= gp.getNumActivePartyMembers()) {                        // Determine if the selected entity is the player entity or an active party member.
+
+                if (entity.getEntityId() != gp.getPlayer().getEntityId()) {
+
+                    // TODO : Consider disabling option is entity is fainted.
+                    allyOptions.add("Swap Out");
+                }
+            } else {
+
+                // TODO : Consider disabling option is entity is fainted.
+                allyOptions.add("Swap In");
+            }
+            allyOptions.add("Back");
+            HashMap<Integer, Vector3f> colors = new HashMap<>();
+            colors.put(allyOptions.size() - 1, backOptionColor);
+            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ALLY_MANAGE, allyOptions, colors));
+        }
+    }
+
+
+    /**
+     * Runs logic based on the last option that was selected in the ally manage combat sub-menu.
+     */
+    private void runAllyManageSubMenuSelection() {
+
+        if (getLatestSubMenuMemory().getSelectedOption() == (getLatestSubMenuMemory().getOptions().size() - 1)) {       // Determine whether the 'Back' option was selected or not.
+
+            revertSubMenuSelection();
+        } else {
+
+            String selectedSwapOption = getLatestSubMenuOptionSelection();
+
+            if (selectedSwapOption.equals("Swap In")) {
+
+                ArrayList<String> allyOptions = generateActiveAllyOptions();
+                allyOptions.add("Back");
+                HashMap<Integer, Vector3f> colors = new HashMap<>();
+                colors.put(allyOptions.size() - 1, backOptionColor);
+                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ALLY_SWAP, allyOptions, colors));
+            } else if (selectedSwapOption.equals("Swap Out")) {
+
+                ArrayList<String> allyOptions = generatedInactiveAllyOptions();
+                allyOptions.add("Back");
+                HashMap<Integer, Vector3f> colors = new HashMap<>();
+                colors.put(allyOptions.size() - 1, backOptionColor);
+                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ALLY_SWAP, allyOptions, colors));
+            }
+        }
+    }
+
+
+    /**
+     * Runs logic based on the last option that was selected in the ally swap combat sub-menu.
+     */
+    private void runAllySwapSubMenuSelection() {
+
+        if (getLatestSubMenuMemory().getSelectedOption() == (getLatestSubMenuMemory().getOptions().size() - 1)) {       // Determine whether the 'Back' option was selected or not.
+
+            revertSubMenuSelection();
+        } else {
+
+            int allyId1 = lastGeneratedAllyOptions.get(subMenuLog.get(subMenuLog.size() - 3).getSelectedOption());
+            int allyId2 = -1;                                                                                           // Default entity ID to force error if invalid option somehow selected.
+            String selectedSwapOption = subMenuLog.get(subMenuLog.size() - 2).getOptions().get(
+                    subMenuLog.get(subMenuLog.size() - 2).getSelectedOption());
+
+            if (selectedSwapOption.equals("Swap In")) {
+
+                allyId2 = lastGeneratedActiveAllyOptions.get(getLatestSubMenuMemory().getSelectedOption());
+            } else if (selectedSwapOption.equals("Swap Out")) {
+
+                allyId2 = lastGeneratedInactiveAllyOptions.get(getLatestSubMenuMemory().getSelectedOption());
+            }
+            addQueuedActionBack(new Act_SwapAlly(gp, allyId1, allyId2));
+            addQueuedActionBack(new Act_EndEntityTurn(gp));
         }
     }
 
@@ -663,39 +819,78 @@ public class CombatManager {
     private void runTargetSelectSubMenuSelection() {
 
         targetArrowVisible = false;                                                                                     // Target selection has been completed.
-        EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
-        MoveBase move = null;
 
-        switch (actionedSubMenuTypeLog.get(actionedSubMenuTypeLog.size() - 2)) {
-            case ROOT:                                                                                                  // A basic attack must have been selected (i.e., 'Attack' option in root combat sub-menu).
-                move = defaultMove;
-                break;
-            case SKILL:                                                                                                 // A skill move must have been selected (i.e., 'Skill' option in root combat sub-menu).
-                move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 2));
-                break;
-        }
+        if (getLatestSubMenuMemory().getSelectedOption() == (getLatestSubMenuMemory().getOptions().size() - 1)){        // Determine whether the 'Back' option was selected or not.
 
-        if (selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1) == lastGeneratedTargetOptions.size()) {   // Determine whether the 'Back' option was selected or not.
-
-            switch (actionedSubMenuTypeLog.get(actionedSubMenuTypeLog.size() - 2)) {
-                case ROOT:
-                    addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions));
-                    break;
-                case SKILL:
-                    handleRootSubMenuSelectionSkill();                                                                  // Return to the skill sub-menu.
-                    break;
-            }
+            revertSubMenuSelection();
         } else {                                                                                                        // Determine appropriate target entity that was selected.
 
+            EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
+            MoveBase move = null;
+
+            switch (subMenuLog.get(subMenuLog.size() - 2).getType()) {
+                case ROOT:                                                                                              // A basic attack must have been selected (i.e., 'Attack' option in root combat sub-menu).
+                    move = defaultMove;
+                    break;
+                case SKILL:                                                                                             // A skill move must have been selected (i.e., 'Skill' option in root combat sub-menu).
+                    move = sourceEntity.getMoves().get(subMenuLog.get(subMenuLog.size() - 2).getSelectedOption());
+                    break;
+            }
             EntityBase targetEntity = gp.getEntityById(
                     lastGeneratedTargetOptions.get(
-                            selectedSubMenuOptionLog.get(
-                                    selectedSubMenuOptionLog.size() - 1)));
+                            getLatestSubMenuMemory().getSelectedOption()));
             String message;
             message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
             addQueuedActionBack(new Act_ReadMessage(gp, message, true));
             addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
+            addQueuedActionBack(new Act_EndEntityTurn(gp));
+        }
+    }
 
+
+    /**
+     * Reverts (i.e., goes back) to the selection outcome of the third-to-latest SubMenuMemory instance in `subMenuLog`
+     * (if able).
+     * This method is intended to be used when the 'Back' option is selected in a combat sub-menu.
+     * It effectively returns to the sub-menu that was displayed before the sub-menu where the 'Back' option
+     * was selected.
+     * In other words, it "undoes" a sub-menu selection.
+     */
+    private void revertSubMenuSelection() {
+
+        subMenuLog.remove(subMenuLog.size() - 1);                                                                       // Remove memory of the sub-menu where the 'Back' option was selected.
+
+        if (subMenuLog.size() > 1) {
+
+            subMenuLog.remove(subMenuLog.size() - 1);                                                                   // Remove memory of the sub-menu that preceded the sub-menu where the 'Back' option was selected.
+
+            switch (getLatestSubMenuMemory().getType()) {                                                               // Return to the outcome of the sub-menu that generated the previous sub-menu IF within same turn.
+                case ROOT:
+                    runRootSubMenuSelection();
+                    break;
+                case SKILL:
+                    runSkillSubMenuSelection();
+                    break;
+                case TARGET_SELECT:
+                    generateRootSubMenuAction();                                                                        // End of its respective branch of sub-menus, so a new turn must have commenced since.
+                    break;
+                case PARTY:
+                    runPartySubMenuSelection();
+                    break;
+                case ALLY_MANAGE:
+                    runAllyManageSubMenuSelection();
+                    break;
+                case ALLY_SWAP:
+                    generateRootSubMenuAction();                                                                        // End of its respective branch of sub-menus, so a new turn must have commenced since.
+                    break;
+            }
+        } else {
+
+            if (subMenuLog.size() > 0) {
+
+                subMenuLog.remove(subMenuLog.size() - 1);                                                               // Remove memory of the sub-menu that preceded the sub-menu where the 'Back' option was selected.
+            }
+            generateRootSubMenuAction();                                                                                // Return to the root sub-menu since no previous sub-menu to were the 'Back' option was selected is recorded in memory.
         }
     }
 
@@ -947,34 +1142,110 @@ public class CombatManager {
         move = possibleMoves.get(i);
 
         // Generate random target entity.
-        // TODO : Throw exception here if, after a few loops, a valid target cannot be found?
-        // TODO : Handle OPPOSING, ALLY, or ALL in selected move when determining target.
-        EntityBase targetEntity = null;
-        int numTargetPartyMembers;
-        boolean viableTarget = false;
-        while (!viableTarget) {
-            if (gp.getParty().size() > gp.getNumActivePartyMembers()) {
-                numTargetPartyMembers = gp.getNumActivePartyMembers();
-            } else {
-                numTargetPartyMembers = gp.getParty().size();
-            }
-            i = random.nextInt(numTargetPartyMembers + 1);                                                              // Generate random number from 0 to number of active party members plus player entity (both inclusive)
-            if (i == numTargetPartyMembers) {
-                targetEntity = gp.getPlayer();
-            } else {
-                targetEntity = gp.getParty().get(
-                        gp.getParty().keySet().toArray(new Integer[gp.getParty().size()])[i]);
-            }
-            if (targetEntity.getStatus() != EntityStatus.FAINT) {
-                viableTarget = true;
-            }
-        }
+        generateOpposingTargetOptions(move.getMoveTargets());
+        i = random.nextInt(lastGeneratedTargetOptions.size());                                                          // Generate random number from 0 to number of selectable target entities (both inclusive)
+        EntityBase targetEntity = gp.getEntityById(lastGeneratedTargetOptions.get(i));
 
         // Add move action.
         String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
         addQueuedActionBack(new Act_ReadMessage(gp, message, true));
         addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
+        addQueuedActionBack(new Act_EndEntityTurn(gp));
         runNextQueuedAction();
+    }
+
+
+    /**
+     * Generates a list of names of all selectable ally entities (active, inactive, and player entity) in combat.
+     * The player entity is added to the list first, then all party member entities are added in same order as the party
+     * map.
+     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     *
+     * @return list of names of selectables allies
+     */
+    private ArrayList<String> generateAllyOptions() {
+
+        ArrayList<String> allies = new ArrayList<>();
+        lastGeneratedAllyOptions.clear();
+        allies.add(gp.getPlayer().getName());
+        lastGeneratedAllyOptions.add(gp.getPlayer().getEntityId());
+
+        for (EntityBase entity : gp.getParty().values()) {
+
+            allies.add(entity.getName());
+            lastGeneratedAllyOptions.add(entity.getEntityId());
+        }
+        return allies;
+    }
+
+
+    /**
+     * Generates a list of names of selectable active ally entities (including the player entity) in combat.
+     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     * The list of entity IDs of last generated selectable active ally entities ('lastGeneratedActiveAllyOptions') is
+     * also refreshed by this method (same ordering as generated list of names).
+     *
+     * @return list of names of selectable active allies
+     */
+    private ArrayList<String> generateActiveAllyOptions() {
+
+        ArrayList<String> activeAllies = new ArrayList<>();
+        lastGeneratedActiveAllyOptions.clear();
+        int entityIndex = 0;
+
+        for (EntityBase entity : gp.getParty().values()) {                                                              // Populate options with active party member entities.
+
+            if (entityIndex < gp.getNumActivePartyMembers()) {
+
+                activeAllies.add(entity.getName());
+                lastGeneratedActiveAllyOptions.add(entity.getEntityId());
+                entityIndex++;
+            } else {
+
+                break;
+            }
+        }
+        return activeAllies;
+    }
+
+
+    /**
+     * Generates a list of names of selectable inactive ally entities in combat.
+     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     * The list of entity IDs of last generated selectable inactive ally entities ('lastGeneratedActiveAllyOptions') is
+     * also refreshed by this method (same ordering as generated list of names).
+     *
+     * @return list of names of selectable inactive allies
+     */
+    private ArrayList<String> generatedInactiveAllyOptions() {
+
+        ArrayList<String> inactiveAllies = new ArrayList<>();
+        lastGeneratedInactiveAllyOptions.clear();
+        int entityIndex = 0;
+
+        for (EntityBase entity : gp.getParty().values()) {                                                              // Populate options with inactive party member entities.
+
+            if (entityIndex >= gp.getNumActivePartyMembers()) {
+
+                inactiveAllies.add(entity.getName());
+                lastGeneratedInactiveAllyOptions.add(entity.getEntityId());
+            }
+            entityIndex++;
+        }
+        return inactiveAllies;
+    }
+
+
+    /**
+     * Generates a sub-menu action for the root sub-menu and adds it to the back of the queue of actions.
+     */
+    private void generateRootSubMenuAction() {
+
+        HashSet<Integer> disabledOptions = new HashSet<>();
+        disabledOptions.add(3);                                                                                         // Disable the 'Inventory' option since it's not been developed yet.
+        HashMap<Integer, Vector3f> colors = new HashMap<>();
+        colors.put(3, disabledOptionColor);
+        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions, colors, disabledOptions));
     }
 
 
@@ -986,11 +1257,20 @@ public class CombatManager {
 
         targetArrowVisible = true;                                                                                      // Target selection has been initiated.
         EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
-        MoveBase move = sourceEntity.getMoves().get(selectedSubMenuOptionLog.get(selectedSubMenuOptionLog.size() - 1));
-        ArrayList<String> targetOptions = generateTargetOptions(move.getMoveTargets());
+        MoveTargets moveTargets = null;
+
+        switch (getLatestSubMenuMemory().getType()) {
+            case ROOT:                                                                                                  // A basic attack must have been selected (i.e., 'Attack' option in root combat sub-menu).
+                moveTargets = defaultMove.getMoveTargets();
+                break;
+            case SKILL:                                                                                                 // A skill move must have been selected (i.e., 'Skill' option in root combat sub-menu).
+                moveTargets = sourceEntity.getMoves().get(getLatestSubMenuMemory().getSelectedOption()).getMoveTargets();
+                break;
+        }
+        ArrayList<String> targetOptions = generateAllyTargetOptions(moveTargets);
         targetOptions.add("Back");
         HashMap<Integer, Vector3f> colors = new HashMap<>();
-        colors.put(targetOptions.size() - 1, new Vector3f(255, 46, 102));
+        colors.put(targetOptions.size() - 1, backOptionColor);
         addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.TARGET_SELECT, targetOptions, colors));
     }
 
@@ -998,21 +1278,19 @@ public class CombatManager {
     /**
      * Generates a list of names of selectable targets in combat.
      * This method is to be used to generate selectable targets when an ally entity is the entity whose turn it is.
-     * This method will not properly generate a lit of selectable targets when an opposing entity is the entity
-     * whose turn it is.
+     * This method will not properly generate a list of selectable targets when an opposing entity is the entity whose
+     * turn it is.
      * The "self" entity is that whose turn it currently is (may or may not be the player entity).
      * Opposing refers to combating entities fighting against the player's side.
      * Allies refer to combating entities (including the player entity) fighting on the player's side.
      * Only non-fainted entities will be added to the list of selectable targets.
-     * The list of entity IDs of last generated selectable targets is also refreshed by this method (same ordering as
-     * generated list of names).
-     * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
-     * return a value.
+     * The list of entity IDs of last generated selectable targets ('lastGeneratedTargetOptions') is also refreshed by
+     * this method (same ordering as generated list of names).
      *
      * @param moveTargets possible targets
      * @return list of names of selectable targets
      */
-    private ArrayList<String> generateTargetOptions(MoveTargets moveTargets) {
+    private ArrayList<String> generateAllyTargetOptions(MoveTargets moveTargets) {
 
         ArrayList<String> targetOptions = new ArrayList<>();
         lastGeneratedTargetOptions.clear();
@@ -1050,7 +1328,72 @@ public class CombatManager {
 
 
     /**
+     * Generates a list of names of selectable targets in combat.
+     * This method is to be used to generate selectable targets when an opposing entity is the entity whose turn it is.
+     * This method will not properly generate a lit of selectable targets when an ally entity is the entity whose turn
+     * it is.
+     * The "self" entity is that whose turn it currently is (may or may not be the player entity).
+     * Opposing refers to combating entities fighting against the player's side.
+     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     * Only non-fainted entities will be added to the list of selectable targets.
+     * The list of entity IDs of last generated selectable targets ('lastGeneratedTargetOptions') is also refreshed by
+     * this method (same ordering as generated list of names).
+     *
+     * @param moveTargets possible targets
+     * @return list of names of selectable targets
+     */
+    private ArrayList<String> generateOpposingTargetOptions(MoveTargets moveTargets) {
+
+        // IMPORTANT NOTE!
+        // The enum MoveTargets refers to OPPOSING, ALLY, and SELF.
+        // Throughout this program, OPPOSING is the language used to refer to combating entities not on the player's
+        // side, and ALLY is the language used to refer to combating entities on the player's side.
+        // That said, in this method only, the definitions of ALLY and OPPOSING are flipped.
+        // In other words, if a move targets OPPOSING entities, then entities on the player's side will be targeted
+        // since they are opposing to the entity using the move.
+        // If a move targets ALLY entities, then entities on the side of the entity using the move will be
+        // targeted since they are allies to the entity using the move.
+        // This is done so that this enum can be re-used in this method, which is meant for generating targets for an
+        // entity not on the player's side.
+
+        ArrayList<String> targetOptions = new ArrayList<>();
+        lastGeneratedTargetOptions.clear();
+
+        switch (moveTargets) {
+            case OPPOSING:
+                addAllyEntitiesToTargetOptions(targetOptions);
+                break;
+            case ALLY:
+                addOpposingEntitiesToTargetOptions(targetOptions);
+                break;
+            case SELF:
+                addSelfEntityToTargetOptions(targetOptions);
+                break;
+            case OPPOSING_ALLY:
+                addAllyEntitiesToTargetOptions(targetOptions);
+                addOpposingEntitiesToTargetOptions(targetOptions);
+                break;
+            case OPPOSING_SELF:
+                addAllyEntitiesToTargetOptions(targetOptions);
+                addSelfEntityToTargetOptions(targetOptions);
+                break;
+            case ALLY_SELF:
+                addOpposingEntitiesToTargetOptions(targetOptions);
+                addSelfEntityToTargetOptions(targetOptions);
+                break;
+            case OPPOSING_ALLY_SELF:
+                addAllyEntitiesToTargetOptions(targetOptions);
+                addOpposingEntitiesToTargetOptions(targetOptions);
+                addSelfEntityToTargetOptions(targetOptions);
+                break;
+        }
+        return targetOptions;
+    }
+
+
+    /**
      * Adds opposing combating entity names to a list of selectable targets.
+     * This method may be used for either an ally entity's turn or an opposing entity's turn.
      * Opposing refers to combating entities fighting against the player's side.
      * Only non-fainted entities will be added.
      * The IDs of all added entities will also be added to the list of last generated selectable targets in the same
@@ -1064,7 +1407,8 @@ public class CombatManager {
 
         for (int entityId : opposingEntities) {
 
-            if (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT) {
+            if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
+                    && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
                 targetOptions.add(gp.getEntityById(entityId).getName());
                 lastGeneratedTargetOptions.add(entityId);
@@ -1075,6 +1419,7 @@ public class CombatManager {
 
     /**
      * Adds ally combating entity names to a list of selectable targets.
+     * This method may be used for either an ally entity's turn or an opposing entity's turn.
      * Allies refer to combating entities (including the player entity) fighting on the player's side.
      * Only non-fainted entities will be added.
      * Additionally, if an ally entity's turn is currently active, then said entity will not be added to the list.
@@ -1116,6 +1461,7 @@ public class CombatManager {
 
     /**
      * Adds the name of the combating entity whose turn it is to a list of selectable targets.
+     * This method may be used for either an ally entity's turn or an opposing entity's turn.
      * The entity added may be either the player entity or a party member entity.
      * Only non-fainted entities will be added.
      * The ID of the added entity will also be added to the list of last generated selectable targets.
@@ -1126,7 +1472,7 @@ public class CombatManager {
      */
     private void addSelfEntityToTargetOptions(ArrayList targetOptions) {
 
-        if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == gp.getPlayer().getEntityId())
+        if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == gp.getPlayer().getEntityId())         // Check if player entity is the self.
                 && (gp.getPlayer().getStatus() != EntityStatus.FAINT)) {
 
             targetOptions.add(gp.getPlayer().getName());
@@ -1139,7 +1485,7 @@ public class CombatManager {
 
             if (entityIndex < gp.getNumActivePartyMembers()) {
 
-                if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)
+                if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)                     // Check if a party member entity is the self.
                         && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
                     targetOptions.add(gp.getEntityById(entityId).getName());
@@ -1151,6 +1497,17 @@ public class CombatManager {
                 break;
             }
             entityIndex++;
+        }
+
+        for (int entityId : opposingEntities) {
+
+            if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)                         // Check if an opposing entity is the self.
+                    && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
+
+                targetOptions.add(gp.getEntityById(entityId).getName());
+                lastGeneratedTargetOptions.add(entityId);
+                return;                                                                                                 // The single target entity has been added.
+            }
         }
     }
 
@@ -1230,6 +1587,34 @@ public class CombatManager {
 
 
     /**
+     * Retrieves the latest SubMenuMemory instance added to `subMenuLog`.
+     *
+     * @return latest SubMenuMemory instance
+     */
+    private SubMenuMemory getLatestSubMenuMemory() {
+
+        if (subMenuLog.size() > 0) {
+
+            return subMenuLog.get(subMenuLog.size() - 1);
+        } else {
+
+            return null;
+        }
+    }
+
+
+    /**
+     * Return the value (not the index) of the latest sub-menu selection.
+     *
+     * @return last selected option
+     */
+    private String getLatestSubMenuOptionSelection() {
+
+        return getLatestSubMenuMemory().getOptions().get(getLatestSubMenuMemory().getSelectedOption());
+    }
+
+
+    /**
      * Resets CombatManager back to its default state.
      * Intended to be called to clean up after combat has finished.
      */
@@ -1248,8 +1633,12 @@ public class CombatManager {
         activeExitCombatTransitionType = null;
         queuedEntityTurnOrder.clear();
         queuedActions.clear();
-        selectedSubMenuOptionLog.clear();
-        actionedSubMenuTypeLog.clear();
+        subMenuLog.clear();
+        lastGeneratedAllyOptions.clear();
+        lastGeneratedActiveAllyOptions.clear();
+        lastGeneratedInactiveAllyOptions.clear();
+        lastGeneratedTargetOptions.clear();
+        guardingEntities.clear();
         lastActionSubmenu = false;
         combatUiVisible = false;
     }
@@ -1278,18 +1667,15 @@ public class CombatManager {
 
 
     // SETTERS
-    public void addLastSelectedSubMenuOption(int lastSelectedSubMenuOption) {
-        if (selectedSubMenuOptionLog.size() == selectedSubMenuOptionLog.maxCapacity()) {
-            selectedSubMenuOptionLog.remove(0);
+    public void addSubMenuMemory(SubMenuMemory subMenuMemory) {
+        if (subMenuLog.size() == subMenuLog.maxCapacity()) {
+            subMenuLog.remove(0);
         }
-        selectedSubMenuOptionLog.add(lastSelectedSubMenuOption);
+        subMenuLog.add(subMenuMemory);
     }
 
-    public void addLastSubMenuType(SubMenuType lastSubMenuType) {
-        if (actionedSubMenuTypeLog.size() == actionedSubMenuTypeLog.maxCapacity()) {
-            actionedSubMenuTypeLog.remove(0);
-        }
-        actionedSubMenuTypeLog.add(lastSubMenuType);
+    public void setLatestSubMenuSelectedOption(int selectedOption) {
+        getLatestSubMenuMemory().setSelectedOption(selectedOption);
     }
 
     public void setLastActionSubmenu(boolean lastActionSubmenu) {

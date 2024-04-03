@@ -6,5 +6,8 @@ package combat;
 public enum SubMenuType {
     ROOT,
     SKILL,
-    TARGET_SELECT
+    TARGET_SELECT,
+    PARTY,
+    ALLY_MANAGE,
+    ALLY_SWAP
 }

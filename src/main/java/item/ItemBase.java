@@ -79,6 +79,7 @@ public abstract class ItemBase extends Drawable {
     }
 
 
+    // METHODS
     /**
      * Adds an item to the render pipeline.
      *
@@ -107,12 +108,21 @@ public abstract class ItemBase extends Drawable {
 
 
     /**
-     * Executes appropriate logic when an item is used.
+     * Executes appropriate logic when an item is used in the field.
      *
      * @param user entity using the item
      * @return whether the item was successfully used (true) or not (false)
      */
-    public abstract boolean use(EntityBase user);
+    public abstract boolean useField(EntityBase user);
+
+
+    /**
+     * Executes appropriate logic when an item is used in combat.
+     *
+     * @param user entity using the item
+     * @return whether the item was successfully used (true) or not (false)
+     */
+    public abstract boolean useCombat(EntityBase user);
 
 
     // GETTERS

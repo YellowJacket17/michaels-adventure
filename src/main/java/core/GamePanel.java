@@ -12,6 +12,7 @@ import event.support.PartySupport;
 import event.support.SubMenuSupport;
 import event.support.WarpSupport;
 import miscellaneous.*;
+import render.Camera;
 import render.Renderer;
 import render.Spritesheet;
 import submenu.SelectionArrow;
