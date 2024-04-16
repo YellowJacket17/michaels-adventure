@@ -64,11 +64,11 @@ public class CombatManager {
     private final ArrayList<Integer> partyOrdering = new ArrayList<>();
 
     /**
-     * Set to store IDs of opposing entities involved in combat.
-     * Opposing refers to combating entities fighting against the player's side.
+     * Set to store IDs of non-player-side entities involved in combat.
+     * Non-player-side entities refers to combating entities fighting against the player's side.
      * A set is used to avoid having the same entity entered twice or thrice.
      */
-    private final LinkedHashSet<Integer> opposingEntities = new LinkedHashSet<>();
+    private final LinkedHashSet<Integer> nonPlayerSideEntities = new LinkedHashSet<>();
 
     /**
      * Variable to store the current enter combat transition type being performed (null if none).
@@ -103,25 +103,25 @@ public class CombatManager {
     private final LimitedArrayList<SubMenuMemory> subMenuLog = new LimitedArrayList<>(10);
 
     /**
-     * Store the last generated list of ally entity (active, inactive, and player entity) options in combat.
-     * The IDs of the ally entities are stored in this list.
-     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     * Store the last generated list of player-side entity (active, inactive, and player entity) options in combat.
+     * The IDs of the player-side entities are stored in this list.
+     * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
      */
-    private final ArrayList<Integer> lastGeneratedAllyOptions = new ArrayList<>();
+    private final ArrayList<Integer> lastGeneratedPlayerSideOptions = new ArrayList<>();
 
     /**
-     * Stores the last generated list of active ally entity (including the player entity) options in combat.
+     * Stores the last generated list of active player-side entity (including the player entity) options in combat.
      * The IDs of active entities are stored in this list.
-     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
      */
-    private final ArrayList<Integer> lastGeneratedActiveAllyOptions = new ArrayList<>();
+    private final ArrayList<Integer> lastGeneratedActivePlayerSideOptions = new ArrayList<>();
 
     /**
-     * Stores the last generated list of inactive ally entity options in combat.
+     * Stores the last generated list of inactive player-side entity options in combat.
      * The IDs of inactive entities are stored in this list.
-     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
      */
-    private final ArrayList<Integer> lastGeneratedInactiveAllyOptions = new ArrayList<>();
+    private final ArrayList<Integer> lastGeneratedInactivePlayerSideOptions = new ArrayList<>();
 
     /**
      * Stores the last generated list of target options in combat.
@@ -198,7 +198,7 @@ public class CombatManager {
             runNextQueuedAction();
         } else {                                                                                                        // Begin the turn of the entity at the front of the turn order queue.
 
-            if (opposingEntities.contains(queuedEntityTurnOrder.peekFirst())) {                                         // If entity at the front of the turn order queue is an opposing entity.
+            if (nonPlayerSideEntities.contains(queuedEntityTurnOrder.peekFirst())) {                                    // If entity at the front of the turn order queue is a non-player-side entity.
 
                 generateNpcTurn();
             } else {                                                                                                    // If entity at the front of the turn order queue is a party member/player.
@@ -220,7 +220,7 @@ public class CombatManager {
      * @param row center row of combat field
      * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions of different types
      * @param trackIndex music track index in the `musicURL` array in the Sound class; input -1 if no music swap is desired
-     * @param opponent opposing entity to be fought
+     * @param opponent non-player-side entity to be fought
      */
     public void initiateCombat(int col, int row, EnterCombatTransitionType type, int trackIndex,
                                EntityBase opponent) {
@@ -236,8 +236,8 @@ public class CombatManager {
      * @param col center column of combat field
      * @param row center row of combat field
      * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions of different types
-     * @param opponent1 first opposing entity to be fought
-     * @param opponent2 second opposing entity to be fought
+     * @param opponent1 first non-player-side entity to be fought
+     * @param opponent2 second non-player-side entity to be fought
      */
     public void initiateCombat(int col, int row, EnterCombatTransitionType type, int trackIndex,
                                EntityBase opponent1, EntityBase opponent2) {
@@ -254,9 +254,9 @@ public class CombatManager {
      * @param row center row of combat field
      * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions of different types
      * @param trackIndex music track index in the `musicURL` array in the Sound class; input -1 if no music swap is desired
-     * @param opponent1 first opposing entity to be fought
-     * @param opponent2 second opposing entity to be fought
-     * @param opponent3 third opposing entity to be fought
+     * @param opponent1 first non-player-side entity to be fought
+     * @param opponent2 second non-player-side entity to be fought
+     * @param opponent3 third non-player-side entity to be fought
      */
     public void initiateCombat(int col, int row, EnterCombatTransitionType type, int trackIndex,
                                EntityBase opponent1, EntityBase opponent2, EntityBase opponent3) {
@@ -283,17 +283,17 @@ public class CombatManager {
             fieldCenterCol = col;
             fieldCenterRow = row;
 
-            // Store opposing entities to be called later.
+            // Store non-player-side entities to be called later.
             if (opponent1 != null) {
-                opposingEntities.add(opponent1.getEntityId());
+                nonPlayerSideEntities.add(opponent1.getEntityId());
             }
 
             if (opponent2 != null) {
-                opposingEntities.add(opponent2.getEntityId());
+                nonPlayerSideEntities.add(opponent2.getEntityId());
             }
 
             if (opponent3 != null) {
-                opposingEntities.add(opponent3.getEntityId());
+                nonPlayerSideEntities.add(opponent3.getEntityId());
             }
         } else {
 
@@ -349,7 +349,7 @@ public class CombatManager {
         String stagedName = "";
         int i = 0;
 
-        for (int entityId : opposingEntities) {
+        for (int entityId : nonPlayerSideEntities) {
 
             if ((gp.getEntityById(entityId) != null) && (!gp.getEntityById(entityId).getName().equals(""))) {
 
@@ -359,7 +359,7 @@ public class CombatManager {
                 stagedName = "???";
             }
 
-            if (i == (opposingEntities.size() - 1)) {
+            if (i == (nonPlayerSideEntities.size() - 1)) {
 
                 if (i > 0) {
 
@@ -370,7 +370,7 @@ public class CombatManager {
 
                 build += stagedName;
 
-                if (opposingEntities.size() > 2) {
+                if (nonPlayerSideEntities.size() > 2) {
 
                     build += ", ";
                 } else {
@@ -452,7 +452,7 @@ public class CombatManager {
      * This will set the next entity in the queue to have its turn if able.
      * If the queue is empty, the turn order will be regenerated with all combating entities.
      *
-     * @throws IllegalStateException if the turn order is generated with no available viable entities
+     * @throws IllegalStateException if the turn order is generated with no viable entities
      */
     public void endEntityTurn() {
 
@@ -471,7 +471,7 @@ public class CombatManager {
                     generateTurnOrderCalled = true;
                 } else {
 
-                    throw new IllegalStateException("Generated combat turn order with no available viable entities");
+                    throw new IllegalStateException("Generated combat turn order with no viable entities");
                 }
             }
 
@@ -483,7 +483,7 @@ public class CombatManager {
                 if (guardingEntities.remove(queuedEntityTurnOrder.peekFirst())) {                                       // If the entity was in a guarding state, end it.
 
                     String message = gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName()
-                            + " reverted their defensive stance.";
+                            + " reverted from a defensive stance.";
                     addQueuedActionBack(new Act_ReadMessage(gp, message, true));
                 }
             }
@@ -536,24 +536,24 @@ public class CombatManager {
 
 
     /**
-     * Checks whether all opposing entities have a fainted status or not.
+     * Checks whether all non-player-side entities have a fainted status or not.
      *
-     * @return whether all opposing entities have fainted (true) or not (false)
+     * @return whether all non-player-side entities have fainted (true) or not (false)
      */
-    public boolean checkAllOpposingFainted() {
+    public boolean checkAllNonPlayerSideFainted() {
 
-        int allOpposingCount = gp.getCombatM().getOpposingEntities().size();
-        int faintedOpposingCount = 0;
+        int allNonPlayerSideCount = gp.getCombatM().getNonPlayerSideEntities().size();
+        int faintedNonPlayerSideCount = 0;
 
-        for (int entityId : gp.getCombatM().getOpposingEntities()) {
+        for (int entityId : gp.getCombatM().getNonPlayerSideEntities()) {
 
             if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
 
-                faintedOpposingCount++;
+                faintedNonPlayerSideCount++;
             }
         }
 
-        if (faintedOpposingCount == allOpposingCount) {
+        if (faintedNonPlayerSideCount == allNonPlayerSideCount) {
 
             return true;
         } else {
@@ -597,11 +597,11 @@ public class CombatManager {
             case PARTY:
                 runPartySubMenuSelection();
                 break;
-            case ALLY_MANAGE:
-                runAllyManageSubMenuSelection();
+            case PLAYER_SIDE_MANAGE:
+                runPlayerSideManageSubMenuSelection();
                 break;
-            case ALLY_SWAP:
-                runAllySwapSubMenuSelection();
+            case PLAYER_SIDE_SWAP:
+                runPlayerSideSwapSubMenuSelection();
                 break;
         }
     }
@@ -686,11 +686,11 @@ public class CombatManager {
     private void runRootSubMenuSelectionParty() {
 
         // TODO : Consider disabling fainted party members.
-        ArrayList<String> allyOptions = generateAllyOptions();
+        ArrayList<String> playerSideOptions = generatePlayerSideOptions();
         HashMap<Integer, Vector3f> colors = new HashMap<>();
-        allyOptions.add("Back");
-        colors.put(allyOptions.size() - 1, backOptionColor);
-        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PARTY, allyOptions, colors));
+        playerSideOptions.add("Back");
+        colors.put(playerSideOptions.size() - 1, backOptionColor);
+        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PARTY, playerSideOptions, colors));
     }
 
 
@@ -731,33 +731,33 @@ public class CombatManager {
             revertSubMenuSelection();
         } else {
 
-            ArrayList<String> allyOptions = new ArrayList<>();
-            EntityBase entity = gp.getEntityById(lastGeneratedAllyOptions.get(getLatestSubMenuMemory().getSelectedOption()));
+            ArrayList<String> playerSideOptions = new ArrayList<>();
+            EntityBase entity = gp.getEntityById(lastGeneratedPlayerSideOptions.get(getLatestSubMenuMemory().getSelectedOption()));
 
             if (getLatestSubMenuMemory().getSelectedOption() <= gp.getNumActivePartyMembers()) {                        // Determine if the selected entity is the player entity or an active party member.
 
                 if (entity.getEntityId() != gp.getPlayer().getEntityId()) {
 
                     // TODO : Consider disabling option is entity is fainted.
-                    allyOptions.add("Swap Out");
+                    playerSideOptions.add("Swap Out");
                 }
             } else {
 
                 // TODO : Consider disabling option is entity is fainted.
-                allyOptions.add("Swap In");
+                playerSideOptions.add("Swap In");
             }
-            allyOptions.add("Back");
+            playerSideOptions.add("Back");
             HashMap<Integer, Vector3f> colors = new HashMap<>();
-            colors.put(allyOptions.size() - 1, backOptionColor);
-            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ALLY_MANAGE, allyOptions, colors));
+            colors.put(playerSideOptions.size() - 1, backOptionColor);
+            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PLAYER_SIDE_MANAGE, playerSideOptions, colors));
         }
     }
 
 
     /**
-     * Runs logic based on the last option that was selected in the ally manage combat sub-menu.
+     * Runs logic based on the last option that was selected in the player-side manage combat sub-menu.
      */
-    private void runAllyManageSubMenuSelection() {
+    private void runPlayerSideManageSubMenuSelection() {
 
         if (getLatestSubMenuMemory().getSelectedOption() == (getLatestSubMenuMemory().getOptions().size() - 1)) {       // Determine whether the 'Back' option was selected or not.
 
@@ -768,46 +768,46 @@ public class CombatManager {
 
             if (selectedSwapOption.equals("Swap In")) {
 
-                ArrayList<String> allyOptions = generateActiveAllyOptions();
-                allyOptions.add("Back");
+                ArrayList<String> playerSideOptions = generateActivePlayerSideOptions();
+                playerSideOptions.add("Back");
                 HashMap<Integer, Vector3f> colors = new HashMap<>();
-                colors.put(allyOptions.size() - 1, backOptionColor);
-                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ALLY_SWAP, allyOptions, colors));
+                colors.put(playerSideOptions.size() - 1, backOptionColor);
+                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PLAYER_SIDE_SWAP, playerSideOptions, colors));
             } else if (selectedSwapOption.equals("Swap Out")) {
 
-                ArrayList<String> allyOptions = generatedInactiveAllyOptions();
-                allyOptions.add("Back");
+                ArrayList<String> playerSideOptions = generatedInactivePlayerSideOptions();
+                playerSideOptions.add("Back");
                 HashMap<Integer, Vector3f> colors = new HashMap<>();
-                colors.put(allyOptions.size() - 1, backOptionColor);
-                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ALLY_SWAP, allyOptions, colors));
+                colors.put(playerSideOptions.size() - 1, backOptionColor);
+                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PLAYER_SIDE_SWAP, playerSideOptions, colors));
             }
         }
     }
 
 
     /**
-     * Runs logic based on the last option that was selected in the ally swap combat sub-menu.
+     * Runs logic based on the last option that was selected in the player-side swap combat sub-menu.
      */
-    private void runAllySwapSubMenuSelection() {
+    private void runPlayerSideSwapSubMenuSelection() {
 
         if (getLatestSubMenuMemory().getSelectedOption() == (getLatestSubMenuMemory().getOptions().size() - 1)) {       // Determine whether the 'Back' option was selected or not.
 
             revertSubMenuSelection();
         } else {
 
-            int allyId1 = lastGeneratedAllyOptions.get(subMenuLog.get(subMenuLog.size() - 3).getSelectedOption());
-            int allyId2 = -1;                                                                                           // Default entity ID to force error if invalid option somehow selected.
+            int playerSideId1 = lastGeneratedPlayerSideOptions.get(subMenuLog.get(subMenuLog.size() - 3).getSelectedOption());
+            int playerSideId2 = -1;                                                                                           // Default entity ID to force error if invalid option somehow selected.
             String selectedSwapOption = subMenuLog.get(subMenuLog.size() - 2).getOptions().get(
                     subMenuLog.get(subMenuLog.size() - 2).getSelectedOption());
 
             if (selectedSwapOption.equals("Swap In")) {
 
-                allyId2 = lastGeneratedActiveAllyOptions.get(getLatestSubMenuMemory().getSelectedOption());
+                playerSideId2 = lastGeneratedActivePlayerSideOptions.get(getLatestSubMenuMemory().getSelectedOption());
             } else if (selectedSwapOption.equals("Swap Out")) {
 
-                allyId2 = lastGeneratedInactiveAllyOptions.get(getLatestSubMenuMemory().getSelectedOption());
+                playerSideId2 = lastGeneratedInactivePlayerSideOptions.get(getLatestSubMenuMemory().getSelectedOption());
             }
-            addQueuedActionBack(new Act_SwapAlly(gp, allyId1, allyId2));
+            addQueuedActionBack(new Act_SwapPlayerSide(gp, playerSideId1, playerSideId2));
             addQueuedActionBack(new Act_EndEntityTurn(gp));
         }
     }
@@ -877,10 +877,10 @@ public class CombatManager {
                 case PARTY:
                     runPartySubMenuSelection();
                     break;
-                case ALLY_MANAGE:
-                    runAllyManageSubMenuSelection();
+                case PLAYER_SIDE_MANAGE:
+                    runPlayerSideManageSubMenuSelection();
                     break;
-                case ALLY_SWAP:
+                case PLAYER_SIDE_SWAP:
                     generateRootSubMenuAction();                                                                        // End of its respective branch of sub-menus, so a new turn must have commenced since.
                     break;
             }
@@ -945,11 +945,11 @@ public class CombatManager {
             }
         }
 
-        // Set opposing entities as combating and store their pre-combat world positions.
-        // Also set opponent positions and images on the combat field.
-        int placedOpponents = 0;
+        // Set non-player-side entities as combating and store their pre-combat world positions.
+        // Also set non-player-side entity positions and images on the combat field.
+        int placedNonPlayerSideEntities = 0;
 
-        for (int entityId : opposingEntities) {
+        for (int entityId : nonPlayerSideEntities) {
 
             if (gp.getParty().get(entityId) == null) {
 
@@ -958,11 +958,11 @@ public class CombatManager {
                 opponent.cancelAction();
                 opponent.setDirectionCurrent(EntityDirection.LEFT);
 
-                if (placedOpponents == 0) {
+                if (placedNonPlayerSideEntities == 0) {
 
                     opponent.setCol(fieldCenterCol + 4);
                     opponent.setRow(fieldCenterRow);
-                } else if (placedOpponents == 1) {
+                } else if (placedNonPlayerSideEntities == 1) {
 
                     opponent.setCol(fieldCenterCol + 5);
                     opponent.setRow(fieldCenterRow - 2);
@@ -971,10 +971,10 @@ public class CombatManager {
                     opponent.setCol(fieldCenterCol + 5);
                     opponent.setRow(fieldCenterRow + 2);
                 }
-                placedOpponents++;
+                placedNonPlayerSideEntities++;
             } else {
 
-                opposingEntities.remove(entityId);
+                nonPlayerSideEntities.remove(entityId);
             }
         }
 
@@ -1142,7 +1142,7 @@ public class CombatManager {
         move = possibleMoves.get(i);
 
         // Generate random target entity.
-        generateOpposingTargetOptions(move.getMoveTargets());
+        generateNonPlayerSideTargetOptions(move.getMoveTargets());
         i = random.nextInt(lastGeneratedTargetOptions.size());                                                          // Generate random number from 0 to number of selectable target entities (both inclusive)
         EntityBase targetEntity = gp.getEntityById(lastGeneratedTargetOptions.get(i));
 
@@ -1156,83 +1156,85 @@ public class CombatManager {
 
 
     /**
-     * Generates a list of names of all selectable ally entities (active, inactive, and player entity) in combat.
+     * Generates a list of names of all selectable player-side entities (active, inactive, and player entity) in combat.
      * The player entity is added to the list first, then all party member entities are added in same order as the party
      * map.
-     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
      *
-     * @return list of names of selectables allies
+     * @return list of names of selectables player-side entities
      */
-    private ArrayList<String> generateAllyOptions() {
+    private ArrayList<String> generatePlayerSideOptions() {
 
-        ArrayList<String> allies = new ArrayList<>();
-        lastGeneratedAllyOptions.clear();
-        allies.add(gp.getPlayer().getName());
-        lastGeneratedAllyOptions.add(gp.getPlayer().getEntityId());
+        ArrayList<String> playerSideOptions = new ArrayList<>();
+        lastGeneratedPlayerSideOptions.clear();
+        playerSideOptions.add(gp.getPlayer().getName());
+        lastGeneratedPlayerSideOptions.add(gp.getPlayer().getEntityId());
 
         for (EntityBase entity : gp.getParty().values()) {
 
-            allies.add(entity.getName());
-            lastGeneratedAllyOptions.add(entity.getEntityId());
+            playerSideOptions.add(entity.getName());
+            lastGeneratedPlayerSideOptions.add(entity.getEntityId());
         }
-        return allies;
+        return playerSideOptions;
     }
 
 
     /**
-     * Generates a list of names of selectable active ally entities (including the player entity) in combat.
-     * Allies refer to combating entities (including the player entity) fighting on the player's side.
-     * The list of entity IDs of last generated selectable active ally entities ('lastGeneratedActiveAllyOptions') is
-     * also refreshed by this method (same ordering as generated list of names).
+     * Generates a list of names of selectable active player-side entities (including the player entity) in combat.
+     * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
+     * The list of entity IDs of last generated selectable active player-side entities
+     * ('lastGeneratedActivePlayerSideOptions') is also refreshed by this method (same ordering as generated list of
+     * names).
      *
-     * @return list of names of selectable active allies
+     * @return list of names of selectable active player-side entities
      */
-    private ArrayList<String> generateActiveAllyOptions() {
+    private ArrayList<String> generateActivePlayerSideOptions() {
 
-        ArrayList<String> activeAllies = new ArrayList<>();
-        lastGeneratedActiveAllyOptions.clear();
+        ArrayList<String> activePlayerSideOptions = new ArrayList<>();
+        lastGeneratedActivePlayerSideOptions.clear();
         int entityIndex = 0;
 
         for (EntityBase entity : gp.getParty().values()) {                                                              // Populate options with active party member entities.
 
             if (entityIndex < gp.getNumActivePartyMembers()) {
 
-                activeAllies.add(entity.getName());
-                lastGeneratedActiveAllyOptions.add(entity.getEntityId());
+                activePlayerSideOptions.add(entity.getName());
+                lastGeneratedActivePlayerSideOptions.add(entity.getEntityId());
                 entityIndex++;
             } else {
 
                 break;
             }
         }
-        return activeAllies;
+        return activePlayerSideOptions;
     }
 
 
     /**
-     * Generates a list of names of selectable inactive ally entities in combat.
-     * Allies refer to combating entities (including the player entity) fighting on the player's side.
-     * The list of entity IDs of last generated selectable inactive ally entities ('lastGeneratedActiveAllyOptions') is
-     * also refreshed by this method (same ordering as generated list of names).
+     * Generates a list of names of selectable inactive player-side entities in combat.
+     * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
+     * The list of entity IDs of last generated selectable inactive player-side entities
+     * ('lastGeneratedActivePlayerSideOptions') is also refreshed by this method (same ordering as generated list of
+     * names).
      *
-     * @return list of names of selectable inactive allies
+     * @return list of names of selectable inactive player-side entities
      */
-    private ArrayList<String> generatedInactiveAllyOptions() {
+    private ArrayList<String> generatedInactivePlayerSideOptions() {
 
-        ArrayList<String> inactiveAllies = new ArrayList<>();
-        lastGeneratedInactiveAllyOptions.clear();
+        ArrayList<String> inactivePlayerSideOptions = new ArrayList<>();
+        lastGeneratedInactivePlayerSideOptions.clear();
         int entityIndex = 0;
 
         for (EntityBase entity : gp.getParty().values()) {                                                              // Populate options with inactive party member entities.
 
             if (entityIndex >= gp.getNumActivePartyMembers()) {
 
-                inactiveAllies.add(entity.getName());
-                lastGeneratedInactiveAllyOptions.add(entity.getEntityId());
+                inactivePlayerSideOptions.add(entity.getName());
+                lastGeneratedInactivePlayerSideOptions.add(entity.getEntityId());
             }
             entityIndex++;
         }
-        return inactiveAllies;
+        return inactivePlayerSideOptions;
     }
 
 
@@ -1267,7 +1269,7 @@ public class CombatManager {
                 moveTargets = sourceEntity.getMoves().get(getLatestSubMenuMemory().getSelectedOption()).getMoveTargets();
                 break;
         }
-        ArrayList<String> targetOptions = generateAllyTargetOptions(moveTargets);
+        ArrayList<String> targetOptions = generatePlayerSideTargetOptions(moveTargets);
         targetOptions.add("Back");
         HashMap<Integer, Vector3f> colors = new HashMap<>();
         colors.put(targetOptions.size() - 1, backOptionColor);
@@ -1277,12 +1279,13 @@ public class CombatManager {
 
     /**
      * Generates a list of names of selectable targets in combat.
-     * This method is to be used to generate selectable targets when an ally entity is the entity whose turn it is.
-     * This method will not properly generate a list of selectable targets when an opposing entity is the entity whose
+     * This method is to be used to generate selectable targets when a player-side entity is the entity whose turn it
+     * is.
+     * This method will not properly generate a list of selectable targets when a non-player-side entity is the entity whose
      * turn it is.
      * The "self" entity is that whose turn it currently is (may or may not be the player entity).
-     * Opposing refers to combating entities fighting against the player's side.
-     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     * Non-player-side entities refers to combating entities fighting against the player's side.
+     * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
      * Only non-fainted entities will be added to the list of selectable targets.
      * The list of entity IDs of last generated selectable targets ('lastGeneratedTargetOptions') is also refreshed by
      * this method (same ordering as generated list of names).
@@ -1290,36 +1293,36 @@ public class CombatManager {
      * @param moveTargets possible targets
      * @return list of names of selectable targets
      */
-    private ArrayList<String> generateAllyTargetOptions(MoveTargets moveTargets) {
+    private ArrayList<String> generatePlayerSideTargetOptions(MoveTargets moveTargets) {
 
         ArrayList<String> targetOptions = new ArrayList<>();
         lastGeneratedTargetOptions.clear();
 
         switch (moveTargets) {
-            case OPPOSING:
-                addOpposingEntitiesToTargetOptions(targetOptions);
+            case OPPONENT:
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
                 break;
             case ALLY:
-                addAllyEntitiesToTargetOptions(targetOptions);
+                addPlayerSideEntitiesToTargetOptions(targetOptions);
                 break;
             case SELF:
                 addSelfEntityToTargetOptions(targetOptions);
                 break;
-            case OPPOSING_ALLY:
-                addOpposingEntitiesToTargetOptions(targetOptions);
-                addAllyEntitiesToTargetOptions(targetOptions);
+            case OPPONENT_ALLY:
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
+                addPlayerSideEntitiesToTargetOptions(targetOptions);
                 break;
-            case OPPOSING_SELF:
-                addOpposingEntitiesToTargetOptions(targetOptions);
+            case OPPONENT_SELF:
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
                 addSelfEntityToTargetOptions(targetOptions);
                 break;
             case ALLY_SELF:
-                addAllyEntitiesToTargetOptions(targetOptions);
+                addPlayerSideEntitiesToTargetOptions(targetOptions);
                 addSelfEntityToTargetOptions(targetOptions);
                 break;
-            case OPPOSING_ALLY_SELF:
-                addOpposingEntitiesToTargetOptions(targetOptions);
-                addAllyEntitiesToTargetOptions(targetOptions);
+            case OPPONENT_ALLY_SELF:
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
+                addPlayerSideEntitiesToTargetOptions(targetOptions);
                 addSelfEntityToTargetOptions(targetOptions);
                 break;
         }
@@ -1329,12 +1332,13 @@ public class CombatManager {
 
     /**
      * Generates a list of names of selectable targets in combat.
-     * This method is to be used to generate selectable targets when an opposing entity is the entity whose turn it is.
-     * This method will not properly generate a lit of selectable targets when an ally entity is the entity whose turn
+     * This method is to be used to generate selectable targets when a non-player-side entity is the entity whose turn
      * it is.
+     * This method will not properly generate a lit of selectable targets when a player-side entity is the entity whose
+     * turn it is.
      * The "self" entity is that whose turn it currently is (may or may not be the player entity).
-     * Opposing refers to combating entities fighting against the player's side.
-     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     * Non-player-side entities refers to combating entities fighting against the player's side.
+     * Player-side-entities refer to combating entities (including the player entity) fighting on the player's side.
      * Only non-fainted entities will be added to the list of selectable targets.
      * The list of entity IDs of last generated selectable targets ('lastGeneratedTargetOptions') is also refreshed by
      * this method (same ordering as generated list of names).
@@ -1342,48 +1346,37 @@ public class CombatManager {
      * @param moveTargets possible targets
      * @return list of names of selectable targets
      */
-    private ArrayList<String> generateOpposingTargetOptions(MoveTargets moveTargets) {
+    private ArrayList<String> generateNonPlayerSideTargetOptions(MoveTargets moveTargets) {
 
-        // IMPORTANT NOTE!
-        // The enum MoveTargets refers to OPPOSING, ALLY, and SELF.
-        // Throughout this program, OPPOSING is the language used to refer to combating entities not on the player's
-        // side, and ALLY is the language used to refer to combating entities on the player's side.
-        // That said, in this method only, the definitions of ALLY and OPPOSING are flipped.
-        // In other words, if a move targets OPPOSING entities, then entities on the player's side will be targeted
-        // since they are opposing to the entity using the move.
-        // If a move targets ALLY entities, then entities on the side of the entity using the move will be
-        // targeted since they are allies to the entity using the move.
-        // This is done so that this enum can be re-used in this method, which is meant for generating targets for an
-        // entity not on the player's side.
 
         ArrayList<String> targetOptions = new ArrayList<>();
         lastGeneratedTargetOptions.clear();
 
         switch (moveTargets) {
-            case OPPOSING:
-                addAllyEntitiesToTargetOptions(targetOptions);
+            case OPPONENT:
+                addPlayerSideEntitiesToTargetOptions(targetOptions);
                 break;
             case ALLY:
-                addOpposingEntitiesToTargetOptions(targetOptions);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
                 break;
             case SELF:
                 addSelfEntityToTargetOptions(targetOptions);
                 break;
-            case OPPOSING_ALLY:
-                addAllyEntitiesToTargetOptions(targetOptions);
-                addOpposingEntitiesToTargetOptions(targetOptions);
+            case OPPONENT_ALLY:
+                addPlayerSideEntitiesToTargetOptions(targetOptions);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
                 break;
-            case OPPOSING_SELF:
-                addAllyEntitiesToTargetOptions(targetOptions);
+            case OPPONENT_SELF:
+                addPlayerSideEntitiesToTargetOptions(targetOptions);
                 addSelfEntityToTargetOptions(targetOptions);
                 break;
             case ALLY_SELF:
-                addOpposingEntitiesToTargetOptions(targetOptions);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
                 addSelfEntityToTargetOptions(targetOptions);
                 break;
-            case OPPOSING_ALLY_SELF:
-                addAllyEntitiesToTargetOptions(targetOptions);
-                addOpposingEntitiesToTargetOptions(targetOptions);
+            case OPPONENT_ALLY_SELF:
+                addPlayerSideEntitiesToTargetOptions(targetOptions);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
                 addSelfEntityToTargetOptions(targetOptions);
                 break;
         }
@@ -1392,9 +1385,9 @@ public class CombatManager {
 
 
     /**
-     * Adds opposing combating entity names to a list of selectable targets.
-     * This method may be used for either an ally entity's turn or an opposing entity's turn.
-     * Opposing refers to combating entities fighting against the player's side.
+     * Adds non-player-side combating entity names to a list of selectable targets.
+     * This method may be used for either a player-side entity's turn or a non-player-side entity's turn.
+     * Non-player-side entities refers to combating entities fighting against the player's side.
      * Only non-fainted entities will be added.
      * The IDs of all added entities will also be added to the list of last generated selectable targets in the same
      * order.
@@ -1403,9 +1396,9 @@ public class CombatManager {
      *
      * @param targetOptions list to add viable target options to (of String or Integer type)
      */
-    private void addOpposingEntitiesToTargetOptions(ArrayList targetOptions) {
+    private void addNonPlayerSideEntitiesToTargetOptions(ArrayList targetOptions) {
 
-        for (int entityId : opposingEntities) {
+        for (int entityId : nonPlayerSideEntities) {
 
             if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
                     && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
@@ -1418,11 +1411,11 @@ public class CombatManager {
 
 
     /**
-     * Adds ally combating entity names to a list of selectable targets.
-     * This method may be used for either an ally entity's turn or an opposing entity's turn.
-     * Allies refer to combating entities (including the player entity) fighting on the player's side.
+     * Adds player-side combating entity names to a list of selectable targets.
+     * This method may be used for either a player-side entity's turn or a non-player-side entity's turn.
+     * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
      * Only non-fainted entities will be added.
-     * Additionally, if an ally entity's turn is currently active, then said entity will not be added to the list.
+     * Additionally, if a player-side entity's turn is currently active, then said entity will not be added to the list.
      * The IDs of all added entities will also be added to the list of last generated selectable targets in the same
      * order.
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
@@ -1430,7 +1423,7 @@ public class CombatManager {
      *
      * @param targetOptions list to add viable target options to (of String or Integer type)
      */
-    private void addAllyEntitiesToTargetOptions(ArrayList targetOptions) {
+    private void addPlayerSideEntitiesToTargetOptions(ArrayList targetOptions) {
 
         if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != gp.getPlayer().getEntityId())
                 && (gp.getPlayer().getStatus() != EntityStatus.FAINT)) {
@@ -1461,7 +1454,7 @@ public class CombatManager {
 
     /**
      * Adds the name of the combating entity whose turn it is to a list of selectable targets.
-     * This method may be used for either an ally entity's turn or an opposing entity's turn.
+     * This method may be used for either a player-side entity's turn or a non-player-side entity's turn.
      * The entity added may be either the player entity or a party member entity.
      * Only non-fainted entities will be added.
      * The ID of the added entity will also be added to the list of last generated selectable targets.
@@ -1499,9 +1492,9 @@ public class CombatManager {
             entityIndex++;
         }
 
-        for (int entityId : opposingEntities) {
+        for (int entityId : nonPlayerSideEntities) {
 
-            if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)                         // Check if an opposing entity is the self.
+            if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)                         // Check if a non-player-side entity is the self.
                     && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
                 targetOptions.add(gp.getEntityById(entityId).getName());
@@ -1628,15 +1621,15 @@ public class CombatManager {
         storedEntityDirections.clear();
         storedEntityHidden.clear();
         partyOrdering.clear();
-        opposingEntities.clear();
+        nonPlayerSideEntities.clear();
         activeEnterCombatTransitionType = null;
         activeExitCombatTransitionType = null;
         queuedEntityTurnOrder.clear();
         queuedActions.clear();
         subMenuLog.clear();
-        lastGeneratedAllyOptions.clear();
-        lastGeneratedActiveAllyOptions.clear();
-        lastGeneratedInactiveAllyOptions.clear();
+        lastGeneratedPlayerSideOptions.clear();
+        lastGeneratedActivePlayerSideOptions.clear();
+        lastGeneratedInactivePlayerSideOptions.clear();
         lastGeneratedTargetOptions.clear();
         guardingEntities.clear();
         lastActionSubmenu = false;
@@ -1645,8 +1638,8 @@ public class CombatManager {
 
 
     // GETTERS
-    public LinkedHashSet<Integer> getOpposingEntities() {
-        return opposingEntities;
+    public LinkedHashSet<Integer> getNonPlayerSideEntities() {
+        return nonPlayerSideEntities;
     }
 
     public boolean isCombatUiVisible() {

@@ -5,11 +5,11 @@ package combat;
  */
 public enum MoveTargets {
 
-    OPPOSING,
+    OPPONENT,
     ALLY,
     SELF,
-    OPPOSING_ALLY,
-    OPPOSING_SELF,
+    OPPONENT_ALLY,
+    OPPONENT_SELF,
     ALLY_SELF,
-    OPPOSING_ALLY_SELF,
+    OPPONENT_ALLY_SELF,
 }

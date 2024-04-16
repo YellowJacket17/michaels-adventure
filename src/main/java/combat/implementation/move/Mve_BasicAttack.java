@@ -23,7 +23,7 @@ public class Mve_BasicAttack extends MoveBase {
 
     // CONSTRUCTOR
     public Mve_BasicAttack(GamePanel gp) {
-        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPOSING);
+        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT);
         name = mveName;
         description = mveDescription;
         power = mvePower;

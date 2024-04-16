@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * This class defines a combat action (use a combat move).
+ * Note that if any affected entities faint, further actions will be queued as applicable.
  */
 public class Act_UseMove extends ActionBase {
 
@@ -125,7 +126,7 @@ public class Act_UseMove extends ActionBase {
 
                 targetGuarding = true;
                 gp.getCombatM().getGuardingEntities().remove(targetEntityId);
-                String message = gp.getEntityById(targetEntityId).getName() + " reverted their defensive stance.";
+                String message = gp.getEntityById(targetEntityId).getName() + "'s defensive stance was broken!";
                 gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
             } else {
 
@@ -165,7 +166,7 @@ public class Act_UseMove extends ActionBase {
             checkJustFainted(targetEntityId);
         }
 
-        if (gp.getCombatM().checkAllOpposingFainted()) {                                                                // Combat is won if all opposing entities have fainted.
+        if (gp.getCombatM().checkAllNonPlayerSideFainted()) {                                                                // Combat is won if all opposing entities have fainted.
 
             String message = gp.getPlayer().getName() + " won the fight!";
             gp.getCombatM().addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));

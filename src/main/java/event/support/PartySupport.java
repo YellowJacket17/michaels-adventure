@@ -6,6 +6,8 @@ import entity.EntityDirection;
 import org.joml.Vector2i;
 import utility.LimitedArrayList;
 
+import java.util.jar.JarOutputStream;
+
 /**
  * This class contains methods to facilitate player party management.
  * The public methods in this class serve as primary endpoints to use when programming in-game events.
@@ -95,29 +97,43 @@ public class PartySupport {
      * Swaps the positions of two entities in the player's party.
      * Swapped party members will assume each other's world position, direction, and hidden state.
      *
-     * @param swapperEntityId ID of the primary entity to move
-     * @param swappeePosition position (index) to move primary entity to (i.e., location of secondary entity that
-     *                        primary entity will trade places with)
+     * @param primaryEntityId ID of the primary entity to move
+     * @param secondaryEntityId ID of the secondary entity to move
      */
-    public void swapEntityInParty(int swapperEntityId, int swappeePosition) {
+    public void swapEntityInParty(int primaryEntityId, int secondaryEntityId) {
 
-        LimitedArrayList<EntityBase> originalParty = new LimitedArrayList<>(gp.getParty().maxCapacity());               // Temporary list to store all party entities in party map, retaining original ordering.
-        int swapperPosition = 0;
-        int i = 0;                                                                                                      // Iterator to track which index of party map is currently being worked on.
+        if (primaryEntityId != secondaryEntityId) {                                                                     // No need to run further logic if attempting to swap a party entity with itself.
 
-        for (EntityBase entity : gp.getParty().values()) {                                                              // Store each party entity in the temporary list of party entities.
+            LimitedArrayList<EntityBase> originalParty = new LimitedArrayList<>(gp.getParty().maxCapacity());           // Temporary list to store all party entities in party map, retaining original ordering.
+            int primaryPosition = 0;
+            int secondaryPosition = 0;
+            boolean primaryEntityHidden = false;                                                                        // Store whether primary entity is initially hidden to assign it to secondary entity later.
+            boolean secondaryEntityHidden = false;                                                                      // Store whether secondary entity is initially hidden to assign it to primary entity later.
+            int entityIndex = 0;                                                                                        // Iterator to track which index of party map is currently being worked on.
 
-            originalParty.add(entity);
+            for (EntityBase entity : gp.getParty().values()) {                                                          // Store each party entity in the temporary list of party entities.
 
-            if (entity.getEntityId() == swapperEntityId) {
+                originalParty.add(entity);
 
-                swapperPosition = i;                                                                                    // Original position/index of primary entity being put into target/secondary position/index.
+                if (entity.getEntityId() == primaryEntityId) {
+
+                    primaryPosition = entityIndex;                                                                      // Original position/index of primary entity being put into secondary position/index.
+
+                    if (entity.isHidden()) {
+
+                        primaryEntityHidden = true;
+                    }
+                } else if (entity.getEntityId() == secondaryEntityId) {
+
+                    secondaryPosition = entityIndex;                                                                    // Original position/index of secondary entity being put into primary position/index.
+
+                    if (entity.isHidden()) {
+
+                        secondaryEntityHidden = true;
+                    }
+                }
+                entityIndex++;
             }
-            i++;
-        }
-
-        if (swapperPosition != swappeePosition) {                                                                       // No need to run further logic if attempting to swap a party entity with itself.
-
             LimitedArrayList<Vector2i> partyEntityTiles = new LimitedArrayList<>(gp.getParty().size());                 // List to store party entity world positions at each index in party map.
             LimitedArrayList<EntityDirection> partyEntityDirections = new LimitedArrayList<>(gp.getParty().size());     // List to store party entity directions at each index in party map.
 
@@ -131,20 +147,20 @@ public class PartySupport {
 
             for (int j = 0; j < originalParty.size(); j++) {                                                            // Add party entities back to party map in new ordering.
 
-                if (j == swapperPosition) {                                                                             // Position/index to move secondary entity to.
+                if (j == primaryPosition) {                                                                             // Position/index to move secondary entity to.
 
-                    gp.getParty().put(originalParty.get(swappeePosition).getEntityId(),
-                            originalParty.get(swappeePosition));
-                } else if (j == swappeePosition) {                                                                      // Position/index to move primary entity to.
+                    gp.getParty().put(originalParty.get(secondaryPosition).getEntityId(),
+                            originalParty.get(secondaryPosition));
+                } else if (j == secondaryPosition) {                                                                    // Position/index to move primary entity to.
 
-                    gp.getParty().put(originalParty.get(swapperPosition).getEntityId(),
-                            originalParty.get(swapperPosition));
+                    gp.getParty().put(originalParty.get(primaryPosition).getEntityId(),
+                            originalParty.get(primaryPosition));
                 } else {                                                                                                // Party entities other than primary and secondary retain original positions/indices.
 
                     gp.getParty().put(originalParty.get(j).getEntityId(), originalParty.get(j));
                 }
             }
-            int entityIndex = 0;                                                                                        // Iterator to track which index of new party map is currently being worked on.
+            entityIndex = 0;                                                                                            // Iterator to track which index of new party map is currently being worked on.
 
             for (EntityBase entity : gp.getParty().values()) {                                                          // Set party entity world positions and directions to match those of party entities originally at said index of party map.
 
@@ -155,10 +171,14 @@ public class PartySupport {
                 if (entityIndex < gp.getNumActivePartyMembers()) {
 
                     gp.getEventM().setEntityFollowTarget(entity.getEntityId(), gp.getPlayer().getEntityId());           // Set active party members as following player entity.
-                    entity.setHidden(false);                                                                            // Set active party members as visible.
-                } else {
+                }
 
-                    entity.setHidden(true);
+                if (entity.getEntityId() == primaryEntityId) {
+
+                    entity.setHidden(secondaryEntityHidden);
+                } else if (entity.getEntityId() == secondaryEntityId) {
+
+                    entity.setHidden(primaryEntityHidden);
                 }
                 entityIndex++;
             }

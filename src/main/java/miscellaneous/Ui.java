@@ -10,7 +10,6 @@ import render.Renderer;
 import render.ZIndex;
 import render.drawable.Transform;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -819,7 +818,7 @@ public class Ui {
 
         // Opposing entities.
         float bannerScreenY = 0;
-        for (int entityId : gp.getCombatM().getOpposingEntities()) {
+        for (int entityId : gp.getCombatM().getNonPlayerSideEntities()) {
             EntityBase entity = gp.getEntityById(entityId);
             if (entity.getStatus() != EntityStatus.FAINT) {
                 renderEntityCombatBanner(entity.getEntityId(), 1 - 0.15f, bannerScreenY);

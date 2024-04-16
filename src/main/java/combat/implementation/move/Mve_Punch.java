@@ -22,7 +22,7 @@ public class Mve_Punch extends MoveBase {
 
     // CONSTRUCTOR
     public Mve_Punch(GamePanel gp) {
-        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPOSING_ALLY_SELF);
+        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT_ALLY_SELF);
         name = mveName;
         description = mveDescription;
         power = mvePower;

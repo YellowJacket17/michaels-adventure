@@ -8,6 +8,6 @@ public enum SubMenuType {
     SKILL,
     TARGET_SELECT,
     PARTY,
-    ALLY_MANAGE,
-    ALLY_SWAP
+    PLAYER_SIDE_MANAGE,
+    PLAYER_SIDE_SWAP
 }

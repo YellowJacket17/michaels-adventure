@@ -43,6 +43,7 @@ public class Player extends EntityBase {
      * Essentially, this control the sensitivity of the cursor in menus.
      * The value of this variable will be set to `interactionCountdown` whenever a pause in menu interaction is needed.
      * This value will have a noticeable impact on the "feel" of the game while in menus.
+     * As a reference, note that 0.16 seconds is ~10 frames at 60 FPS.
      */
     private final double stagedMenuInteractionCountdown = 0.16;
 
@@ -63,6 +64,15 @@ public class Player extends EntityBase {
      * This variable may also be set by other classes via its setter.
      */
     private double interactionCountdown;
+
+    /**
+     * Variable to store the number of seconds that must pass before the player can press a key (same or different as
+     * previous) to toggle full screen mode.
+     * On each frame where appropriate update input methods are called, this variable is decremented by one if greater
+     * than zero.
+     * This variable may also be set by other classes via its setter.
+     */
+    private double fullScreenCountdown;
 
     /**
      * Variable to store whether the menu (i.e., main menu containing party, inventory, and settings) has already been
@@ -106,23 +116,38 @@ public class Player extends EntityBase {
      */
     public void updatePlayerInput(double dt) {
 
+        if (moveCountdown > 0) {
+            moveCountdown -= dt;                                                                                        // Decrease move frame countdown by one each time a new frame is drawn.
+        }
+
         if (interactionCountdown > 0) {                                                                                 // Decrease interaction frame countdown by one each time a new frame is drawn.
             interactionCountdown -= dt;
         }
 
-        if (moveCountdown > 0) {
-            moveCountdown -= dt;                                                                                        // Decrease move frame countdown by one each time a new frame is drawn.
+        if (fullScreenCountdown > 0) {                                                                                  // Decrease full screen mode frame countdown by one each time a new frame is drawn.
+            fullScreenCountdown -= dt;
         }
 
         if ((menuActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_SPACE))) {
             menuActioned = false;                                                                                       // Enable the ability of the player to open/close the menu (party, inventory, settings) by pressing the Space key.
         }
 
-        if ((gp.getSystemSetting(3).getActiveOption() == 1) && (KeyListener.isKeyPressed((GLFW_KEY_ESCAPE)))) {
+        if ((fullScreenCountdown <= 0)
+                && (gp.getSystemSetting(3).getActiveOption() == 0)
+                && (KeyListener.isKeyPressed(GLFW_KEY_F11))) {
+            gp.getSystemSetting(3).setActiveOption(1);                                                                  // Enter full screen mode if disabled.
+            if (gp.getUi().getSystemSettingSelected() == 3) {
+                gp.getUi().setSystemOptionSelected(1);
+            }
+            fullScreenCountdown = stagedMenuInteractionCountdown;
+        } else if ((fullScreenCountdown <= 0)
+                && (gp.getSystemSetting(3).getActiveOption() == 1)
+                && (KeyListener.isKeyPressed(GLFW_KEY_ESCAPE) || KeyListener.isKeyPressed(GLFW_KEY_F11))) {
             gp.getSystemSetting(3).setActiveOption(0);                                                                  // Exit full screen mode if enabled.
             if (gp.getUi().getSystemSettingSelected() == 3) {
                 gp.getUi().setSystemOptionSelected(0);
             }
+            fullScreenCountdown = stagedMenuInteractionCountdown;
         }
 
         switch (gp.getGameState()) {
@@ -554,7 +579,7 @@ public class Player extends EntityBase {
                 if (gp.getDialogueR().getCurrentConv().getConvId() == -3) {
 
                     gp.getCombatM().progressCombat();                                                                   // The conversation was an interactive combat message and has finished; check what logic to run next in combat.
-                    interactionCountdown = 0.16;                                                                        // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another action, for example (prevents instantly progressing next action that appears).
+                    interactionCountdown = stagedMenuInteractionCountdown;                                              // Player must wait before interacting with another action, for example (prevents instantly progressing next action that appears).
                 } else {
 
                     gp.getEventM().handlePostConversation(gp.getDialogueR().getCurrentConv().getConvId());              // Check to see if any events will be triggered once the conversation has finished.
@@ -715,7 +740,7 @@ public class Player extends EntityBase {
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
                 gp.getEventM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected());
-                interactionCountdown = 0.16;                                                                            // Wait for 0.16 seconds (~10 frames at 60 FPS).
+                interactionCountdown = stagedMenuInteractionCountdown;
             }
         }
     }

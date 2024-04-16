@@ -22,7 +22,7 @@ public class Mve_Tackle extends MoveBase {
 
     // CONSTRUCTOR
     public Mve_Tackle(GamePanel gp) {
-        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPOSING_ALLY);
+        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT_ALLY);
         name = mveName;
         description = mveDescription;
         power = mvePower;
