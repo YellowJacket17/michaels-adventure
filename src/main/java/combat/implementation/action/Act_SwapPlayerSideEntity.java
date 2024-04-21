@@ -7,7 +7,7 @@ import core.GamePanel;
  * This class defines a combat action (swap player side entities).
  * Note that any swapped entities in a guarding state will exit said state.
  */
-public class Act_SwapPlayerSide extends ActionBase {
+public class Act_SwapPlayerSideEntity extends ActionBase {
 
     // FIELDS
     /**
@@ -17,7 +17,7 @@ public class Act_SwapPlayerSide extends ActionBase {
 
 
     // CONSTRUCTOR
-    public Act_SwapPlayerSide(GamePanel gp, int entityId1, int entityId2) {
+    public Act_SwapPlayerSideEntity(GamePanel gp, int entityId1, int entityId2) {
         super(gp);
         this.entityId1 = entityId1;
         this.entityId2 = entityId2;

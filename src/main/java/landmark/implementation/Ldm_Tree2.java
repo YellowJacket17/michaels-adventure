@@ -2,7 +2,7 @@ package landmark.implementation;
 
 import core.GamePanel;
 import landmark.LandmarkBase;
-import utility.AssetPool;
+import asset.AssetPool;
 
 /**
  * This class defines a landmark (Tree2).

@@ -1,5 +1,6 @@
 package render;
 
+import asset.Texture;
 import core.GamePanel;
 import render.drawable.Transform;
 import org.joml.Vector3f;

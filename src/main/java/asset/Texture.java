@@ -1,4 +1,4 @@
-package render;
+package asset;
 
 import org.lwjgl.BufferUtils;
 import utility.UtilityTool;
@@ -43,6 +43,7 @@ public class Texture {
      * The texture at the provided file path is loaded and uploaded to the GPU upon construction.
      * Note that as many textures as desired can be uploaded to the GPU as long as memory permits.
      * This should not be confused with the number of slots available for binding on the GPU for texture sampling.
+     * Textures should be PNG file format.
      *
      * @param filePath file path of texture from resources directory
      */
@@ -91,7 +92,7 @@ public class Texture {
     /**
      * Loads this texture from file and uploads it to the GPU.
      *
-     * @throws RuntimeException
+     * @throws AssetLoadException
      */
     private void load() {
 
@@ -124,12 +125,12 @@ public class Texture {
                         0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
             } else {
                 throw new AssetLoadException("Unexpected number of channels (" + bufferChannels.get(0)
-                        + ") in image for texture loaded from " + filePath);
+                        + ") in image for texture loaded from resources '" + filePath + "'");
             }
             nativeWidth = bufferWidth.get(0);
             nativeHeight = bufferHeight.get(0);
         } else {
-            throw new AssetLoadException("Failed to load texture from " + filePath);
+            throw new AssetLoadException("Failed to load texture from resources '" + filePath + "'");
         }
 
         // Free memory.

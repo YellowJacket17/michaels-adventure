@@ -2,24 +2,22 @@ package core;
 
 import ai.PathFinder;
 import animation.AnimationManager;
+import asset.AssetPool;
 import combat.CombatManager;
 import combat.TargetArrow;
 import cutscene.CutsceneManager;
 import dialogue.Conversation;
 import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
-import event.support.PartySupport;
-import event.support.SubMenuSupport;
-import event.support.WarpSupport;
+import event.support.*;
 import miscellaneous.*;
 import render.Camera;
 import render.Renderer;
-import render.Spritesheet;
+import asset.Spritesheet;
 import submenu.SelectionArrow;
 import entity.EntityBase;
 import entity.implementation.player.Player;
 import environment.EnvironmentManager;
-import event.support.CameraSupport;
 import icon.EntityIconManager;
 import icon.GuiIconManager;
 import event.EventManager;
@@ -33,7 +31,6 @@ import utility.exceptions.EntityTransferException;
 
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Core class for the game that houses essential functions and configurations.
@@ -94,9 +91,9 @@ public class GamePanel {
     private final WarpSupport warpS = new WarpSupport(this);
     private final SubMenuSupport subMenuS = new SubMenuSupport(this);
     private final PartySupport partyS = new PartySupport(this);
+    private final SoundSupport soundS = new SoundSupport(this);
     private final PathFinder pathF = new PathFinder(this);
-    private final Sound audio = new Sound();
-    private final Ui ui = new Ui(this);
+    private final UserInterface ui = new UserInterface(this);
 
 
     // ENTITY (PLAYER, NPC, OBJECT)
@@ -302,7 +299,7 @@ public class GamePanel {
 
         // Other setup.
         environmentM.setup();
-        playMusic(0);
+        soundS.playTrack("sound/tracks/testTrack1.ogg");
     }
 
 
@@ -440,145 +437,6 @@ public class GamePanel {
         // Flush the render pipeline to draw the frame.
         renderer.render();
 
-    }
-
-
-    /**
-     * Plays a music track.
-     *
-     * @param trackIndex music track index in the `musicURL` array of the Sound class
-     */
-    public void playMusic(int trackIndex) {
-
-
-        if (audio.isMusicFading()) {                                                                                    // If a fade is currently in progress, this track will be staged as the next to play (does nothing if the fade is to completely stop music from playing instead of transitioning between tracks).
-
-            audio.setStagedMusicOverwrite(trackIndex);                                                                  // Force this new track to be played after the current fade is complete.
-
-        } else if (!audio.isAdditionalThreadRunning()) {                                                                // Only run if there isn't already an additional thread running.
-
-            CompletableFuture.runAsync(() -> {                                                                          // Music file is set and played asynchronously to prevent program stutter.
-                audio.setAdditionalThreadRunning(true);                                                                 // Indicate that an additional thread has been created; ensure another additional can't be created until this one is complete.
-                if ((!audio.isMusicClipNull()) && (audio.isMusicPlaying())) {                                           // Only stop if a music track is currently staged and playing.
-                    audio.stopMusicTrack(false);
-                }
-                audio.setMusicTrackFile(trackIndex);                                                                    // Only stage the track if we haven't overwritten the original one meant to be staged from a current fade.
-                if ((!audio.isMusicClipNull()) && (!audio.isStagingMusicFailed())) {                                    // Only attempt to play and loop a track if there is one currently staged.
-                    audio.playMusicTrack();
-                    audio.loopMusicTrack();
-                }
-                if (audio.isStagingMusicFailed()) {
-                    audio.setStagingMusicFailed(false);                                                                 // We no longer need to worry about if that last staging attempt was successful or not.
-                }
-                audio.setAdditionalThreadRunning(false);                                                                // Indicate that the additional thread is being closed.
-            });
-        }
-    }
-
-
-    /**
-     * Stops the current music track from playing.
-     *
-     * @param fade determines whether the music track instantly stops (false) or fades out (true)
-     */
-    public void stopMusic(boolean fade) {
-
-        if ((audio.isMusicPlaying()) && (!audio.isMusicFading())) {                                                     // Only stop if there is currently something playing AND if fade is not currently in effect.
-
-            if (fade) {
-
-                if (!audio.isAdditionalThreadRunning()) {
-
-                    CompletableFuture.runAsync(() -> {                                                                  // Music is faded asynchronously so that it does not halt the entire program.
-                        audio.setAdditionalThreadRunning(true);
-                        audio.stopMusicTrack(true);
-                        audio.setAdditionalThreadRunning(false);
-                    });
-                }
-            } else {
-
-                audio.stopMusicTrack(false);
-            }
-        }
-    }
-
-
-    // TODO : Possibly add method to resume a stopped piece of music.
-
-
-    // TODO : Possibly add a method to change the volume of the music.
-
-
-    /**
-     * Transitions the music track that's currently playing out for a new one.
-     *
-     * @param trackIndex index in the `musicURL` array of the Sound class of the new music track to be transitioned in
-     */
-    public void swapMusic(int trackIndex) {
-
-        if (audio.isMusicPlaying()) {
-
-            if (!audio.isMusicFading()) {
-
-                if (!audio.isAdditionalThreadRunning()) {
-
-                    CompletableFuture.runAsync(() -> {                                                                  // Music is swapped asynchronously so that fade does not halt entire program; setting and playing new file asynchronously prevents program stutter.
-                        audio.setAdditionalThreadRunning(true);
-                        audio.setStagedMusicOverwrite(trackIndex);
-                        audio.stopMusicTrack(true);
-                        audio.setMusicTrackFile(trackIndex);
-                        if ((!audio.isMusicClipNull()) && (!audio.isStagingMusicFailed())) {
-                            audio.playMusicTrack();
-                            audio.loopMusicTrack();
-                        }
-                        if (audio.isStagingMusicFailed()) {
-                            audio.setStagingMusicFailed(false);
-                        }
-                        audio.setAdditionalThreadRunning(false);
-                    });
-                }
-            } else {
-
-                audio.setStagedMusicOverwrite(trackIndex);                                                              // Force this new track to be played after the current fade is complete.
-            }
-        } else {                                                                                                        // There is currently nothing playing to transition out of, so we'll just start playing the new track as normal.
-
-            playMusic(trackIndex);
-        }
-    }
-
-
-    /**
-     * Retrieves the music track that's currently loaded/staged to play.
-     * If a fading effect is current in effect, the music track staged to play after the fade will be retrieved instead.
-     *
-     * @return index in the `musicURL` array of the Sound class of the staged music track
-     */
-    public int getStagedMusic() {
-
-        if (audio.isMusicFading()) {
-
-            return audio.getStagedMusicOverwrite();
-        } else {
-
-            return audio.getStagedMusic();
-        }
-    }
-
-
-    /**
-     * Plays a sound effect.
-     *
-     * @param effectIndex sound effect index of the `effectURL` array in the Sound class
-     */
-    public void playSE(int effectIndex) {
-
-        int effectChannel = audio.setSoundEffectFile(effectIndex);
-
-        if (effectChannel != -1) {
-
-            audio.playSoundEffect(effectChannel);
-        }
     }
 
 
@@ -1035,6 +893,12 @@ public class GamePanel {
         widths = new int[] {6, 10, 12};
         heights = new int[] {10, 6, 8};
         AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 3, widths, heights, 0));
+
+        // Sounds.
+        AssetPool.addSound("sound/tracks/testTrack1.ogg", true);
+        AssetPool.addSound("sound/tracks/testTrack2.ogg", true);
+        AssetPool.addSound("sound/tracks/testTrack4.ogg", true);
+        AssetPool.addSound("sound/effects/testEffect1.ogg", false);
     }
 
 
@@ -1111,11 +975,15 @@ public class GamePanel {
         return partyS;
     }
 
+    public SoundSupport getSoundS() {
+        return soundS;
+    }
+
     public PathFinder getPathF() {
         return pathF;
     }
 
-    public Ui getUi() {
+    public UserInterface getUi() {
         return ui;
     }
 

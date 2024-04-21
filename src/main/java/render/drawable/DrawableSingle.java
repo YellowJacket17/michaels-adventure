@@ -3,10 +3,10 @@ package render.drawable;
 import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-import render.Shader;
-import render.Sprite;
+import asset.Shader;
+import asset.Sprite;
 import render.ZIndex;
-import utility.AssetPool;
+import asset.AssetPool;
 
 import java.util.Arrays;
 

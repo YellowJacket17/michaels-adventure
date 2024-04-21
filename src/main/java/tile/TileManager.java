@@ -3,11 +3,11 @@ package tile;
 import core.GamePanel;
 import org.joml.Vector2f;
 import render.Renderer;
-import render.Sprite;
+import asset.Sprite;
 import render.ZIndex;
 import render.drawable.Drawable;
 import render.drawable.Transform;
-import utility.AssetPool;
+import asset.AssetPool;
 import utility.UtilityTool;
 import utility.exceptions.AssetLoadException;
 
@@ -183,7 +183,7 @@ public class TileManager {
 
         } catch (Exception e) {
 
-            throw new AssetLoadException("Could not load tile data for map with ID " + mapId + " from " + completeFilePath);
+            throw new AssetLoadException("Could not load tile data for map with ID " + mapId + " from '" + completeFilePath + "'");
         }
         return mapTileNum;
     }

@@ -1,6 +1,6 @@
 package icon;
 
-import render.Sprite;
+import asset.Sprite;
 import render.drawable.Drawable;
 
 /**

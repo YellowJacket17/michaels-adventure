@@ -1,8 +1,5 @@
-package utility;
+package asset;
 
-import render.Shader;
-import render.Spritesheet;
-import render.Texture;
 import utility.exceptions.AssetLoadException;
 
 import java.util.ArrayList;
@@ -29,6 +26,11 @@ public class AssetPool {
      * Map to store all spritesheets loaded into the game.
      */
     private static final ArrayList<Spritesheet> SPRITESHEETS = new ArrayList<>();
+
+    /**
+     * Map to store all sounds loaded into the game.
+     */
+    private static final HashMap<String, Sound> SOUNDS = new HashMap<>();
 
 
     // METHODS
@@ -102,12 +104,11 @@ public class AssetPool {
 
     /**
      * Returns a spritesheet loaded into memory.
-     * If the specified spritesheet is not yet loaded, then an exception will occur.
      *
      * @param spritesheet index of spritesheet to retrieve (0, 1, 2, etc.); note that spritesheets are indexed in the
      *                    order in which they are loaded into memory
      * @return spritesheet
-     * @throws RuntimeException
+     * @throws AssetLoadException if the specified spritesheet is not yet loaded
      */
     public static Spritesheet getSpritesheet(int spritesheet) {
 
@@ -118,6 +119,52 @@ public class AssetPool {
         } catch (IndexOutOfBoundsException e) {
 
             throw new AssetLoadException("Attempted to access an unloaded spritesheet");
+        }
+    }
+
+
+    /**
+     * Loads a sound into memory from file.
+     * If the specified sound is already loaded, then nothing will occur.
+     *
+     * @param resourceName file path of sound from root directory
+     * @param loops whether the sound will loop (true) or not (false) upon play
+     */
+    public static void addSound(String resourceName, boolean loops) {
+
+        boolean repeat = false;
+
+        for (String loaded : SOUNDS.keySet()) {
+
+            if (loaded.equals(resourceName)) {
+
+                repeat = true;
+                break;
+            }
+        }
+
+        if (!repeat) {
+
+            Sound sound = new Sound(resourceName, loops);
+            SOUNDS.put(resourceName, sound);
+        }
+    }
+
+
+    /**
+     * Returns a sound loaded into memory.
+     *
+     * @param resourceName file path of sound from root directory
+     * @throws AssetLoadException if the specified sound is not yet loaded
+     */
+    public static Sound getSound(String resourceName) {
+
+        if (SOUNDS.containsKey(resourceName)) {
+
+            return SOUNDS.get(resourceName);
+        } else {
+
+            throw new AssetLoadException("Attempted to access an unloaded sound");
         }
     }
 }

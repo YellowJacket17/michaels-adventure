@@ -96,7 +96,7 @@ public class LandmarkManager {
 
         } catch (Exception e) {
 
-            throw new AssetLoadException("Could not load landmark data for map with ID " + mapId + " from " + completeFilePath);
+            throw new AssetLoadException("Could not load landmark data for map with ID " + mapId + " from resources '" + completeFilePath + "'");
         }
         return mapLandmarks;
     }

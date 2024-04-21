@@ -23,10 +23,10 @@ public class WarpSupport {
     private int stagedMapId, stagedCol, stagedRow;
 
     /**
-     * Stored music track to swap in during a transition.
-     * A value of -1 means the current music track will continue playing.
+     * Stored track to swap in during a transition.
+     * An empty string means the current music track will continue playing.
      */
-    private int stagedTrackIndex = -1;
+    private String stagedTrackFilePath;
 
     /**
      * Variable to store the current warp transition type being performed (null if none).
@@ -118,25 +118,18 @@ public class WarpSupport {
      * @param row row that the player entity will be warped to
      * @param type type of warp transition; see comments in the WarpTransitionType enum for definitions of different types
      * @param loadDirection direction that the player entity will be facing once the transition completes
-     * @param trackIndex music track index in the `musicURL` array in the Sound class; input -1 if no music swap is desired
+     * @param trackFilePath file path of track to be played during combat from root directory (SoundSupport.NO_TRACK
+     *                      to swap to no track playing, SoundSupport.RETAIN_TRACK to retain current track playing)
      */
     public void initiateWarp(double dt, int mapId, int col, int row, WarpTransitionType type,
-                             EntityDirection loadDirection, int trackIndex) {
+                             EntityDirection loadDirection, String trackFilePath) {
 
         gp.initiateTransition(TransitionType.WARP);
         activeWarpTransitionType = type;                                                                                // Set the warp current transition type being used.
-
         stagedMapId = mapId;                                                                                            // Store the requested map.
         stagedCol = col;                                                                                                // Store the requested player position (x).
         stagedRow = row;                                                                                                // Store the requested player position (y).
-
-        if (trackIndex >= 0) {
-
-            stagedTrackIndex = trackIndex;                                                                              // Set the music track to be swapped in during the transition.
-        } else {
-
-            stagedTrackIndex = -1;                                                                                      // A value less than zero means that the music track will not swap out during the transition.
-        }
+        stagedTrackFilePath = trackFilePath;                                                                            // Set the track to swap in during transition.
 
         switch (type) {
             case BASIC:
@@ -168,9 +161,12 @@ public class WarpSupport {
                 break;
         }
 
-        if (stagedTrackIndex >= 0) {                                                                                    // Check to see if music is set to be swapped during the transition.
+        if (stagedTrackFilePath.equals(SoundSupport.NO_TRACK)) {
 
-            gp.swapMusic(stagedTrackIndex);                                                                             // Swap music.
+            gp.getSoundS().stopTrack(true);
+        } else if (!stagedTrackFilePath.equals(SoundSupport.RETAIN_TRACK)) {
+
+            gp.getSoundS().swapTrack(stagedTrackFilePath, true);
         }
     }
 
@@ -218,28 +214,6 @@ public class WarpSupport {
         stagedCol = 0;
         stagedRow = 0;
         activeWarpTransitionType = null;
-        stagedTrackIndex = -1;
-    }
-
-
-    // GETTERS
-    public int getStagedMapId() {
-        return stagedMapId;
-    }
-
-    public int getStagedCol() {
-        return stagedCol;
-    }
-
-    public int getStagedRow() {
-        return stagedRow;
-    }
-
-    public int getStagedTrackIndex() {
-        return stagedTrackIndex;
-    }
-
-    public WarpTransitionType getActiveWarpTransitionType() {
-        return activeWarpTransitionType;
+        stagedTrackFilePath = "";
     }
 }

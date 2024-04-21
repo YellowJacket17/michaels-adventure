@@ -1,6 +1,7 @@
 package utility;
 
 import org.lwjgl.BufferUtils;
+import utility.exceptions.AssetLoadException;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -230,8 +231,7 @@ public class UtilityTool {
 
         } catch (Exception e) {
 
-            // TODO : Replace with AssetLoadException.
-            throw new RuntimeException("Failed to load resource from " + filePath);
+            throw new AssetLoadException("Failed to load resource from resources '" + filePath + "'");
         }
         buffer.flip();
         return buffer;

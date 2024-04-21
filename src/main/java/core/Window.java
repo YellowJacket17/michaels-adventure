@@ -1,6 +1,6 @@
 package core;
 
-import jdk.jshell.execution.Util;
+import miscellaneous.KeyListener;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
@@ -9,6 +9,10 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowPosCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
 import utility.UtilityTool;
 
@@ -21,6 +25,7 @@ import java.util.HashMap;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11C.glClearColor;
 import static org.lwjgl.stb.STBImage.*;
@@ -36,6 +41,16 @@ public class Window {
      * Memory address of GLFW window in memory space.
      */
     private long glfwWindow;
+
+    /**
+     * Audio context for OpenAL.
+     */
+    private long audioContext;
+
+    /**
+     * Audio device for OpenAL.
+     */
+    private long audioDevice;
 
     /**
      * GamePanel instance.
@@ -192,14 +207,26 @@ public class Window {
         // Make window visible.
         glfwShowWindow(glfwWindow);
 
-        // Create capabilities.
+        // Initialize audio device.
+        String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
+        audioDevice = alcOpenDevice(defaultDeviceName);
+
+        // Setup audio context.
+        int[] attributes = {0};
+        audioContext = alcCreateContext(audioDevice, attributes);
+        alcMakeContextCurrent(audioContext);
+
+        // Create OpenAL capabilities.
+        ALCCapabilities alcCapabilities = ALC.createCapabilities(audioDevice);
+        ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+        if (!alCapabilities.OpenAL10) {
+            UtilityTool.logError("Audio library not supported.");
+        }
+
+        // Create OpenGL capabilities.
         // This is critical for LWJGL's interpolation with GLFW's OpenGL context.
         // This makes OpenGL bindings available for use.
         GL.createCapabilities();
-
-        // Enable blending (alpha values).
-//        glEnable(GL_BLEND);
-//        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     }
 
 
@@ -253,13 +280,13 @@ public class Window {
                 lastLoopTime = glfwGetTime();
             }
 
-            // Poll for frame rate limit changes.
+            // Poll for frame rate limit setting changes.
             pollFrameRateLimit();
 
-            // Poll for tether game speed changes.
+            // Poll for tether game speed setting changes.
             pollTetherGamedSpeed();
 
-            // Poll for full screen changes.
+            // Poll for full screen setting changes.
             pollFullScreen();
 
             // Set target frame pace.
@@ -302,6 +329,8 @@ public class Window {
         }
 
         // Free memory.
+        alcDestroyContext(audioContext);
+        alcCloseDevice(audioDevice);
         glfwFreeCallbacks(glfwWindow);
         glfwDestroyWindow(glfwWindow);
 

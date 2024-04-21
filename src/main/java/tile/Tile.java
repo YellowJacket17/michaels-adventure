@@ -1,6 +1,6 @@
 package tile;
 
-import render.Sprite;
+import asset.Sprite;
 
 import java.util.ArrayList;
 

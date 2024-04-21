@@ -5,7 +5,7 @@ import org.joml.Vector2f;
 import render.Renderer;
 import render.ZIndex;
 import render.drawable.Drawable;
-import utility.AssetPool;
+import asset.AssetPool;
 import utility.UtilityTool;
 
 /**

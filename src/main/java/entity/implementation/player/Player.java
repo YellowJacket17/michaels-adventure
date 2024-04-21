@@ -3,7 +3,7 @@ package entity.implementation.player;
 import combat.implementation.move.Mve_Punch;
 import combat.implementation.move.Mve_Tackle;
 import miscellaneous.GameState;
-import core.KeyListener;
+import miscellaneous.KeyListener;
 import entity.EntityBase;
 import entity.EntityDirection;
 import entity.EntityType;
@@ -13,7 +13,7 @@ import item.implementation.Itm_Controller;
 import item.implementation.Itm_Key;
 import item.ItemBase;
 import org.joml.Vector2f;
-import utility.AssetPool;
+import asset.AssetPool;
 import utility.LimitedArrayList;
 
 import java.util.ArrayList;

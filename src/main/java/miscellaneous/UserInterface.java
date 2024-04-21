@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * This class handles the drawing of all on-screen user interface (UI) elements.
  */
-public class Ui {
+public class UserInterface {
 
     // FIELDS
     private final GamePanel gp;
@@ -100,7 +100,7 @@ public class Ui {
      *
      * @param gp GamePanel instance
      */
-    public Ui(GamePanel gp) {
+    public UserInterface(GamePanel gp) {
         this.gp = gp;
         occupiedItemSlots = new boolean[maxNumItemRow][maxNumItemCol];
     }

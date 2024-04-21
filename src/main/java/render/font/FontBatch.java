@@ -2,9 +2,8 @@ package render.font;
 
 import core.GamePanel;
 import org.joml.Vector3f;
-import render.Shader;
-import render.ZIndex;
-import utility.AssetPool;
+import asset.Shader;
+import asset.AssetPool;
 import utility.UtilityTool;
 
 import java.util.Arrays;

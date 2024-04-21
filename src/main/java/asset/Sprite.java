@@ -1,4 +1,4 @@
-package render;
+package asset;
 
 import org.joml.Vector2f;
 

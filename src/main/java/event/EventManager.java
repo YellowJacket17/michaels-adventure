@@ -650,7 +650,7 @@ public class EventManager {
 
         if (added) {
 
-            gp.playSE(0);
+            gp.getSoundS().playEffect("sound/effects/testEffect1.ogg");
 
             if ((gp.getPlayer().getName() != null) && (!gp.getPlayer().getName().equals(""))) {
 

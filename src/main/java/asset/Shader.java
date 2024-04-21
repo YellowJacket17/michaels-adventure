@@ -1,4 +1,4 @@
-package render;
+package asset;
 
 import org.joml.*;
 import org.lwjgl.BufferUtils;
@@ -220,7 +220,7 @@ public class Shader {
     /**
      * Loads this shader from file.
      *
-     * @throws RuntimeException
+     * @throws AssetLoadException
      */
     private void load() {
 
@@ -246,7 +246,7 @@ public class Shader {
             } else if (firstPattern.equals("fragment")) {
                 fragmentSource = splitString[1];
             } else {
-                throw new IOException("Unexpected token '" + firstPattern + "' in " + filePath);
+                throw new IOException("Unexpected token '" + firstPattern + "' in '" + filePath + "'");
             }
 
             // Set second source with parsed data.
@@ -255,7 +255,7 @@ public class Shader {
             } else if (secondPattern.equals("fragment")) {
                 fragmentSource = splitString[2];
             } else {
-                throw new IOException("Unexpected token '" + secondPattern + "' in " + filePath);
+                throw new IOException("Unexpected token '" + secondPattern + "' in '" + filePath + "'");
             }
 
         } catch (Exception e) {
@@ -267,7 +267,7 @@ public class Shader {
     /**
      * Compiles and links this shader.
      *
-     * @throws RuntimeException
+     * @throws AssetLoadException
      */
     private void compileAndLink() {
 
@@ -282,7 +282,7 @@ public class Shader {
             for (String error : errors) {
                 UtilityTool.logError(error);
             }
-            throw new AssetLoadException("Failed to compile vertex shader from " + filePath);
+            throw new AssetLoadException("Failed to compile vertex shader from resources '" + filePath + "'");
         }
 
         // Compile fragment shaders.
@@ -296,7 +296,7 @@ public class Shader {
             for (String error : errors) {
                 UtilityTool.logError(error);
             }
-            throw new AssetLoadException("Failed to compile fragment shader from " + filePath);
+            throw new AssetLoadException("Failed to compile fragment shader from resources '" + filePath + "'");
         }
 
         // Link shaders.
@@ -311,7 +311,7 @@ public class Shader {
             for (String error : errors) {
                 UtilityTool.logError(error);
             }
-            throw new AssetLoadException("Failed to link shaders from " + filePath);
+            throw new AssetLoadException("Failed to link shaders from resources '" + filePath + "'");
         }
     }
 
@@ -321,7 +321,7 @@ public class Shader {
      *
      * @param inputStream file input stream
      * @return file contents
-     * @throws RuntimeException
+     * @throws AssetLoadException
      */
     private String readFromInputStream(InputStream inputStream) {
 
@@ -338,7 +338,7 @@ public class Shader {
 
         } catch (Exception e) {
 
-            throw new AssetLoadException("Failed to load shader from " + filePath);
+            throw new AssetLoadException("Failed to load shader from resources '" + filePath + "'");
         }
         return resultStringBuilder.toString();
     }

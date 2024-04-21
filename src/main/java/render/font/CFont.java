@@ -209,7 +209,7 @@ public class CFont {
 
         } catch (Exception e) {
 
-            throw new AssetLoadException("Failed to register font from " + filePath);
+            throw new AssetLoadException("Failed to register font from resources '" + filePath +"'");
         }
     }
 

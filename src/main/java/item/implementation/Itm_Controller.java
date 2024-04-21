@@ -3,7 +3,7 @@ package item.implementation;
 import core.GamePanel;
 import entity.EntityBase;
 import item.ItemBase;
-import utility.AssetPool;
+import asset.AssetPool;
 
 /**
  * This class defines an item (Controller).

@@ -4,15 +4,10 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import render.Renderer;
-import render.Sprite;
 import render.ZIndex;
-import render.drawable.Drawable;
 import render.drawable.Transform;
-import utility.AssetPool;
 
 import java.util.ArrayList;
-
-import static java.lang.Float.compare;
 
 /**
  * This class handles operations for the lighting system.

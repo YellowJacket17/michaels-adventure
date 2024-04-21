@@ -1,0 +1,10 @@
+04/19/2024 14:52:51:232  INFO     Application started.
+04/19/2024 14:52:58:049  ERROR    An unhandled exception has occurred.
+utility.exceptions.AssetLoadException: Failed to load sound from '/sound/tracks/testTrack1.ogg'
+	at core.Sound.load(Sound.java:125)
+	at core.Sound.<init>(Sound.java:55)
+	at utility.AssetPool.addSound(AssetPool.java:152)
+	at core.GamePanel.loadResources(GamePanel.java:1040)
+	at core.GamePanel.init(GamePanel.java:261)
+	at core.Window.initGame(Window.java:239)
+	at core.App.main(App.java:19)

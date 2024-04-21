@@ -3,7 +3,7 @@ package entity;
 import combat.MoveBase;
 import core.GamePanel;
 import render.Renderer;
-import render.Sprite;
+import asset.Sprite;
 import render.ZIndex;
 import render.drawable.Drawable;
 import utility.LimitedArrayList;

@@ -33,7 +33,7 @@ public class Cts_Test1 extends CutsceneBase {
                 case 1:
                     if (!entity.isOnPath()) {
                         endCutscene(true);
-                        gp.playSE(0);
+                        gp.getSoundS().playEffect("sound/effects/testEffect1.ogg");
                         gp.getEventM().displayMessage("Cutscene test is complete!");
                     }
                     break;

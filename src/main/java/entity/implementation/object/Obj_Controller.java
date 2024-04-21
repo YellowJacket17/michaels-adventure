@@ -3,7 +3,7 @@ package entity.implementation.object;
 import entity.EntityBase;
 import entity.EntityType;
 import core.GamePanel;
-import utility.AssetPool;
+import asset.AssetPool;
 
 /**
  * This class defines an object entity (Controller).

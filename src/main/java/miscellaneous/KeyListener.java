@@ -1,4 +1,4 @@
-package core;
+package miscellaneous;
 
 import utility.UtilityTool;
 

@@ -2,8 +2,8 @@ package render.drawable;
 
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-import render.Sprite;
-import render.Texture;
+import asset.Sprite;
+import asset.Texture;
 
 /**
  * This class represents a game object that can be rendered to the screen.

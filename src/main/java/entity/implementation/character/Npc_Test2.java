@@ -3,7 +3,7 @@ package entity.implementation.character;
 import entity.EntityBase;
 import entity.EntityType;
 import core.GamePanel;
-import utility.AssetPool;
+import asset.AssetPool;
 
 /**
  * This class defines a character entity (Test2).

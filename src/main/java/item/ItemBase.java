@@ -4,7 +4,7 @@ import core.GamePanel;
 import entity.EntityBase;
 import org.joml.Vector2f;
 import render.Renderer;
-import render.Sprite;
+import asset.Sprite;
 import render.ZIndex;
 import render.drawable.Drawable;
 import utility.UtilityTool;
