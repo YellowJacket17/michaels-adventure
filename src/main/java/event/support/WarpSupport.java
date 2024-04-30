@@ -1,5 +1,6 @@
 package event.support;
 
+import asset.Sound;
 import core.GamePanel;
 import miscellaneous.GameState;
 import miscellaneous.TransitionType;
@@ -24,9 +25,8 @@ public class WarpSupport {
 
     /**
      * Stored track to swap in during a transition.
-     * An empty string means the current music track will continue playing.
      */
-    private String stagedTrackFilePath;
+    private String stagedTrackName = Sound.NO_TRACK;
 
     /**
      * Variable to store the current warp transition type being performed (null if none).
@@ -116,20 +116,20 @@ public class WarpSupport {
      * @param mapId ID of the map that the player entity will be warped to
      * @param col column that the player entity will be warped to
      * @param row row that the player entity will be warped to
-     * @param type type of warp transition; see comments in the WarpTransitionType enum for definitions of different types
+     * @param type type of warp transition
      * @param loadDirection direction that the player entity will be facing once the transition completes
-     * @param trackFilePath file path of track to be played during combat from root directory (SoundSupport.NO_TRACK
-     *                      to swap to no track playing, SoundSupport.RETAIN_TRACK to retain current track playing)
+     * @param trackName name/title of track to be swapped in during transition (Sound.NO_TRACK to swap to no track
+     *                  playing, Sound.RETAIN_TRACK to retain current track playing)
      */
     public void initiateWarp(double dt, int mapId, int col, int row, WarpTransitionType type,
-                             EntityDirection loadDirection, String trackFilePath) {
+                             EntityDirection loadDirection, String trackName) {
 
         gp.initiateTransition(TransitionType.WARP);
         activeWarpTransitionType = type;                                                                                // Set the warp current transition type being used.
         stagedMapId = mapId;                                                                                            // Store the requested map.
         stagedCol = col;                                                                                                // Store the requested player position (x).
         stagedRow = row;                                                                                                // Store the requested player position (y).
-        stagedTrackFilePath = trackFilePath;                                                                            // Set the track to swap in during transition.
+        stagedTrackName = trackName;                                                                                    // Set the track to swap in during transition.
 
         switch (type) {
             case BASIC:
@@ -161,12 +161,12 @@ public class WarpSupport {
                 break;
         }
 
-        if (stagedTrackFilePath.equals(SoundSupport.NO_TRACK)) {
+        if (stagedTrackName.equals(Sound.NO_TRACK)) {
 
             gp.getSoundS().stopTrack(true);
-        } else if (!stagedTrackFilePath.equals(SoundSupport.RETAIN_TRACK)) {
+        } else if (!stagedTrackName.equals(Sound.RETAIN_TRACK)) {
 
-            gp.getSoundS().swapTrack(stagedTrackFilePath, true);
+            gp.getSoundS().swapTrack(stagedTrackName, true);
         }
     }
 
@@ -214,6 +214,6 @@ public class WarpSupport {
         stagedCol = 0;
         stagedRow = 0;
         activeWarpTransitionType = null;
-        stagedTrackFilePath = "";
+        stagedTrackName = Sound.NO_TRACK;
     }
 }

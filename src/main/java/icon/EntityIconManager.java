@@ -111,9 +111,9 @@ public class EntityIconManager {
                 renderer.addDrawable(entityIcon, ZIndex.FIRST_LAYER);
             } else if (!renderErrors.contains(entityId)) {
 
-                UtilityTool.logError("Failed to draw entity icon with entity ID "
+                UtilityTool.logError("Failed to draw entity icon with entity ID '"
                         + entityId
-                        + " to the render pipeline: the entity icon may not have been loaded properly or may not exist.");
+                        + "' to the render pipeline: the entity icon may not have been loaded properly or may not exist.");
                 renderErrors.add(entityId);
             }
         }
@@ -174,9 +174,9 @@ public class EntityIconManager {
             entityIcons.put(entity.getEntityId(), entityIcon);
         } else {
 
-            UtilityTool.logWarning("Attempted to create an icon for an entity with ID "
+            UtilityTool.logWarning("Attempted to create an icon for an entity with ID '"
                     + entityId
-                    + " that does not exist.");
+                    + "' that does not exist.");
         }
     }
 
@@ -193,9 +193,9 @@ public class EntityIconManager {
 
         if (entityIcon == null) {
 
-            UtilityTool.logWarning("Attempted to retrieve an entity icon with entity ID "
+            UtilityTool.logWarning("Attempted to retrieve an entity icon with entity ID '"
                     + entityId
-                    + " that does not exist.");
+                    + "' that does not exist.");
 
             entityIcon = new EntityIcon(-1);                                                                            // Return a placeholder entity icon to prevent the program from hitting an unhandled exception.
         }

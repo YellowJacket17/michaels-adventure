@@ -145,7 +145,7 @@ public abstract class LandmarkBase extends Drawable {
         } else if (!renderError) {
 
             UtilityTool.logError("Failed to add landmark "
-                    + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
+                    + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
                     + "with ID "
                     + landmarkId
                     + " to the render pipeline: sprites may not have been properly loaded upon landmark initialization.");

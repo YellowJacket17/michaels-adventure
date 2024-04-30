@@ -39,7 +39,7 @@ public class Ldm_Tree1 extends LandmarkBase {
      */
     private void setupSprite() {
 
-        sprites.add(AssetPool.getSpritesheet(3).getSprite(1));
+        sprites.add(AssetPool.getSpritesheet("landmarks").getSprite(1));
 
         sprite = sprites.get(0);
         transform.scale.x = sprite.getNativeWidth();

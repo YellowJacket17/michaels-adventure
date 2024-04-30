@@ -299,7 +299,7 @@ public class GamePanel {
 
         // Other setup.
         environmentM.setup();
-        soundS.playTrack("sound/tracks/testTrack1.ogg");
+        soundS.playTrack("testTrack1");
     }
 
 
@@ -340,6 +340,9 @@ public class GamePanel {
 
         // Camera.
         cameraS.update(dt);
+
+        // Sound
+        soundS.update(dt);
     }
 
 
@@ -598,17 +601,17 @@ public class GamePanel {
 
                 throw new EntityTransferException("Failed to transfer entity "
                         + (((entity.getName() != null) && (!entity.getName().equals("")))
-                        ? (entity.getName() + " ") : "")
+                        ? "'" + (entity.getName() + "' ") : "")
                         + "with ID "
                         + entityId
-                        + " from source map to target map - target map full");
+                        + " from source map to target map: target map full");
             }
             source.remove(entityId);
         } else {
 
-            throw new EntityTransferException("Failed to transfer entity with ID "
+            throw new EntityTransferException("Failed to transfer entity with ID '"
                     + entityId
-                    + " from source map to target map - no such entity found in source map");
+                    + "' from source map to target map - no such entity found in source map");
         }
     }
 
@@ -862,43 +865,43 @@ public class GamePanel {
 
         // Tiles spritesheet (spritesheet 0).
         String filePath = "/spritesheets/tiles.png";
-        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 10, 32, 32, 1));
+        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 10, 32, 32, 1));
 
         // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";
-        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 36, 32, 48, 0));
+        AssetPool.addSpritesheet("characters", new Spritesheet(AssetPool.getTexture(filePath), 36, 32, 48, 0));
 
         // Objects spritesheet (spritesheet 2).
         filePath = "/spritesheets/objects.png";
-        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 3, 32, 32, 0));
+        AssetPool.addSpritesheet("objects", new Spritesheet(AssetPool.getTexture(filePath), 3, 32, 32, 0));
 
         // Landmarks spritesheet (spritesheet 3).
         filePath = "/spritesheets/landmarks.png";
         int[] widths = new int[] {62, 32};
         int[] heights = new int[] {90, 70};
-        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 2, widths, heights, 1));
+        AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 2, widths, heights, 1));
 
         // Items spritesheet (spritesheet 4).
         filePath = "/spritesheets/items.png";
-        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 2, 32, 32, 0));
+        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 2, 32, 32, 0));
 
         // Icons spritesheet (spritesheet 5).
         filePath = "/spritesheets/icons.png";
         widths = new int[] {152, 152, 40, 36, 36, 28, 28, 28, 28, 28, 28, 6, 6, 6, 6};
         heights = new int[] {56, 56, 40, 36, 36, 28, 28, 28, 28, 28, 28, 10, 10, 10, 10};
-        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 15, widths, heights, 0));
+        AssetPool.addSpritesheet("icons", new Spritesheet(AssetPool.getTexture(filePath), 15, widths, heights, 0));
 
         // Miscellaneous spritesheet (spritesheet 6).
         filePath = "/spritesheets/miscellaneous.png";
         widths = new int[] {6, 10, 12};
         heights = new int[] {10, 6, 8};
-        AssetPool.addSpritesheet(new Spritesheet(AssetPool.getTexture(filePath), 3, widths, heights, 0));
+        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 3, widths, heights, 0));
 
         // Sounds.
-        AssetPool.addSound("sound/tracks/testTrack1.ogg", true);
-        AssetPool.addSound("sound/tracks/testTrack2.ogg", true);
-        AssetPool.addSound("sound/tracks/testTrack4.ogg", true);
-        AssetPool.addSound("sound/effects/testEffect1.ogg", false);
+        AssetPool.addSound("testTrack1", "sound/effects/testEffect1.ogg", "sound/tracks/testTrack1.ogg");
+        AssetPool.addSound("testTrack2", "sound/effects/testEffect1.ogg", "sound/tracks/testTrack2.ogg");
+        AssetPool.addSound("testTrack4", "sound/effects/testEffect1.ogg", "sound/tracks/testTrack4.ogg");
+        AssetPool.addSound("testEffect1", "sound/effects/testEffect1.ogg");
     }
 
 

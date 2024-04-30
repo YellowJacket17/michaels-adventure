@@ -19,6 +19,6 @@ public class Evt_Conv004 extends EventConvBase {
     @Override
     public void run() {
 
-        gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, "sound/tracks/testTrack4.ogg", gp.getEntityById(8));
+        gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, "testTrack4", gp.getEntityById(8));
     }
 }

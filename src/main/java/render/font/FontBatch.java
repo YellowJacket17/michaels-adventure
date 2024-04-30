@@ -156,7 +156,7 @@ public class FontBatch {
 
             if (charInfo.getWidth() == 0) {
 
-                UtilityTool.logError("Attempted to render a character (" + c + ") with zero width.");
+                UtilityTool.logError("Attempted to render a character '" + c + "' with zero width.");
             }
             addCharacter(x, y, scale, charInfo, color);                                                                 // Add character to batch.                                                    // Adds character to batch.
             x += charInfo.getWidth() * scale;                                                                           // Prepare for next character in string.

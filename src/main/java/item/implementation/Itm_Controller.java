@@ -21,7 +21,7 @@ public class Itm_Controller extends ItemBase {
         super(gp, itmId, false);
         name = itmName;
         description = itmDescription;
-        sprite = AssetPool.getSpritesheet(4).getSprite(1);
+        sprite = AssetPool.getSpritesheet("items").getSprite(1);
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
     }

@@ -98,10 +98,10 @@ public abstract class ItemBase extends Drawable {
         } else if (!renderError) {
 
             UtilityTool.logError("Failed to add item "
-                    + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
-                    + "with ID "
+                    + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
+                    + "with ID '"
                     + itemId
-                    + " to the render pipeline: sprite may not have been properly loaded upon item initialization.");
+                    + "' to the render pipeline: sprite may not have been properly loaded upon item initialization.");
             renderError = true;
         }
     }

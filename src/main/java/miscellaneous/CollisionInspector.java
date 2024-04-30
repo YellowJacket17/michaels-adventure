@@ -68,10 +68,10 @@ public class CollisionInspector {
 
             UtilityTool.logWarning("Entity "
                     + (((entity.getName() != null) && (!entity.getName().equals("")))
-                        ? (entity.getName() + " ") : "")
-                    + "with ID "
+                        ? ("'" + entity.getName() + "' ") : "")
+                    + "with ID '"
                     + entity.getEntityId()
-                    + " attempted to exceed the bounds of the world.");
+                    + "' attempted to exceed the bounds of the world.");
             entity.setColliding(true);
         }
     }

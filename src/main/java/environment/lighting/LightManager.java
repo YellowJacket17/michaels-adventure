@@ -56,7 +56,7 @@ public class LightManager {
     public LightManager(GamePanel gp) {
         this.gp = gp;
         if ((GamePanel.NATIVE_TILE_SIZE % nodeSize) != 0) {
-            throw new IllegalStateException("Tile size must be evenly divisible by light node size.");
+            throw new IllegalStateException("Tile size must be evenly divisible by light node size");
         }
         maxWorldSubCol = GamePanel.MAX_WORLD_COL * (GamePanel.NATIVE_TILE_SIZE / nodeSize);
         maxWorldSubRow = GamePanel.MAX_WORLD_ROW * (GamePanel.NATIVE_TILE_SIZE / nodeSize);

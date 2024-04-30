@@ -1,0 +1,11 @@
+04/28/2024 16:50:57:389  INFO     Application started.
+04/28/2024 16:51:01:193  ERROR    An unhandled exception has occurred.
+utility.exceptions.AssetLoadException: Failed to load sound from root 'testEffect1'
+	at asset.Sound.loadBuffer(Sound.java:246)
+	at asset.Sound.load(Sound.java:214)
+	at asset.Sound.<init>(Sound.java:89)
+	at asset.AssetPool.addSound(AssetPool.java:136)
+	at core.GamePanel.loadResources(GamePanel.java:901)
+	at core.GamePanel.init(GamePanel.java:258)
+	at core.Window.initGame(Window.java:239)
+	at core.App.main(App.java:19)

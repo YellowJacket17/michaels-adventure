@@ -420,21 +420,21 @@ public class Player extends EntityBase {
      */
     private void setupSprite() {
 
-        down1 = AssetPool.getSpritesheet(1).getSprite(24);
-        down2 = AssetPool.getSpritesheet(1).getSprite(25);
-        down3 = AssetPool.getSpritesheet(1).getSprite(26);
+        down1 = AssetPool.getSpritesheet("characters").getSprite(24);
+        down2 = AssetPool.getSpritesheet("characters").getSprite(25);
+        down3 = AssetPool.getSpritesheet("characters").getSprite(26);
 
-        up1 = AssetPool.getSpritesheet(1).getSprite(27);
-        up2 = AssetPool.getSpritesheet(1).getSprite(28);
-        up3 = AssetPool.getSpritesheet(1).getSprite(29);
+        up1 = AssetPool.getSpritesheet("characters").getSprite(27);
+        up2 = AssetPool.getSpritesheet("characters").getSprite(28);
+        up3 = AssetPool.getSpritesheet("characters").getSprite(29);
 
-        left1 = AssetPool.getSpritesheet(1).getSprite(30);
-        left2 = AssetPool.getSpritesheet(1).getSprite(31);
-        left3 = AssetPool.getSpritesheet(1).getSprite(32);
+        left1 = AssetPool.getSpritesheet("characters").getSprite(30);
+        left2 = AssetPool.getSpritesheet("characters").getSprite(31);
+        left3 = AssetPool.getSpritesheet("characters").getSprite(32);
 
-        right1 = AssetPool.getSpritesheet(1).getSprite(33);
-        right2 = AssetPool.getSpritesheet(1).getSprite(34);
-        right3 = AssetPool.getSpritesheet(1).getSprite(35);
+        right1 = AssetPool.getSpritesheet("characters").getSprite(33);
+        right2 = AssetPool.getSpritesheet("characters").getSprite(34);
+        right3 = AssetPool.getSpritesheet("characters").getSprite(35);
 
         sprite = down1;
         transform.scale.x = sprite.getNativeWidth();

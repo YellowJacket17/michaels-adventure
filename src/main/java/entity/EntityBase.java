@@ -429,10 +429,10 @@ public abstract class EntityBase extends Drawable {
             } else if (!renderError) {
 
                 UtilityTool.logError("Failed to add entity "
-                        + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
-                        + "with ID "
+                        + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
+                        + "with ID '"
                         + entityId
-                        + " to the render pipeline: sprites may not have been properly loaded upon entity initialization.");
+                        + "' to the render pipeline: sprites may not have been properly loaded upon entity initialization.");
                 renderError = true;
             }
         }
@@ -787,17 +787,17 @@ public abstract class EntityBase extends Drawable {
 
                 onEntity = false;                                                                                       // A path to the target entity was not found, so exit this state.
                 onEntityId = 0;                                                                                         // Reset the target entity.
-                UtilityTool.logWarning("Entity"
-                        + (((name != null) && (!name.equals(""))) ? (name + " ") : "")
-                        + " with ID "
+                UtilityTool.logError("Entity"
+                        + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
+                        + " with ID '"
                         + entityId
-                        + " was not able to find a path to the following destination: row "
+                        + "' was not able to find a path to the following destination: row '"
                         + goalRow
-                        + ", column "
+                        + "', column '"
                         + goalCol
-                        + ", map ID "
+                        + "', map ID '"
                         + gp.getLoadedMap().getMapId()
-                        + ".");
+                        + "'.");
             }
         }
     }
@@ -822,9 +822,9 @@ public abstract class EntityBase extends Drawable {
 
             onEntity = false;                                                                                           // Entity to follow does not exist, so exit this state.
 
-            UtilityTool.logWarning("Target entity with ID "
+            UtilityTool.logError("Target entity with ID '"
                     + entityId
-                    + " does not exist, so a path to follow the target was not generated.");
+                    + "' does not exist: a path to follow the target could not be generated.");
         }
     }
 

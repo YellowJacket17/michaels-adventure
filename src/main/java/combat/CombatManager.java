@@ -1,10 +1,10 @@
 package combat;
 
+import asset.Sound;
 import combat.implementation.action.*;
 import combat.implementation.move.Mve_BasicAttack;
 import core.GamePanel;
 import entity.EntityStatus;
-import event.support.SoundSupport;
 import miscellaneous.GameState;
 import miscellaneous.TransitionType;
 import entity.EntityBase;
@@ -30,9 +30,8 @@ public class CombatManager {
 
     /**
      * Stored track that was playing when combat was initiated.
-     * An empty string means that no track was playing.
      */
-    private String storedTrackFilePath = SoundSupport.NO_TRACK;
+    private String storedTrackName = Sound.NO_TRACK;
 
     /**
      * Map to store the column (i.e., world position) that all combating entities occupied before combat was initiated;
@@ -219,15 +218,17 @@ public class CombatManager {
      *
      * @param col center column of combat field
      * @param row center row of combat field
-     * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions of different types
-     * @param trackFilePath file path of track to be played during combat from root directory (SoundSupport.NO_TRACK
-     *                      to swap to no track playing, SoundSupport.RETAIN_TRACK to retain current track playing)
+     * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions
+     *             of different types
+     * @param trackName name/title of track to be played during combat (Sound.NO_TRACK to swap to no track playing,
+     *                  Sound.RETAIN_TRACK to retain current track playing)
      * @param opponent non-player-side entity to be fought
+     * @throws IllegalArgumentException if no non-null opponents are available
      */
-    public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackFilePath,
+    public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackName,
                                EntityBase opponent) {
 
-        initiateCombat(col, row, type, trackFilePath, opponent, null, null);
+        initiateCombat(col, row, type, trackName, opponent, null, null);
     }
 
 
@@ -237,16 +238,18 @@ public class CombatManager {
      *
      * @param col center column of combat field
      * @param row center row of combat field
-     * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions of different types
-     * @param trackFilePath file path of track to be played during combat from root directory (SoundSupport.NO_TRACK
-     *                      to swap to no track playing, SoundSupport.RETAIN_TRACK to retain current track playing)
+     * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions
+     *             of different types
+     * @param trackName name/title of track to be played during combat (Sound.NO_TRACK to swap to no track playing,
+     *                  Sound.RETAIN_TRACK to retain current track playing)
      * @param opponent1 first non-player-side entity to be fought
      * @param opponent2 second non-player-side entity to be fought
+     * @throws IllegalArgumentException if no non-null opponents are available
      */
-    public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackFilePath,
+    public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackName,
                                EntityBase opponent1, EntityBase opponent2) {
 
-        initiateCombat(col, row, type, trackFilePath, opponent1, opponent2, null);
+        initiateCombat(col, row, type, trackName, opponent1, opponent2, null);
     }
 
 
@@ -256,31 +259,33 @@ public class CombatManager {
      *
      * @param col center column of combat field
      * @param row center row of combat field
-     * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions of different types
-     * @param trackFilePath file path of track to be played during combat from root directory (SoundSupport.NO_TRACK
-     *                      to swap to no track playing, SoundSupport.RETAIN_TRACK to retain current track playing)
+     * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions
+     *             of different types
+     * @param trackName name/title of track to be played during combat (Sound.NO_TRACK to swap to no track playing,
+     *                  Sound.RETAIN_TRACK to retain current track playing)
      * @param opponent1 first non-player-side entity to be fought
      * @param opponent2 second non-player-side entity to be fought
      * @param opponent3 third non-player-side entity to be fought
+     * @throws IllegalArgumentException if no non-null opponents are available
      */
-    public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackFilePath,
+    public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackName,
                                EntityBase opponent1, EntityBase opponent2, EntityBase opponent3) {
 
-        if (((opponent1 == null) && (opponent2 == null) && (opponent3 == null)) || (type != null)) {
+        if ((opponent1 == null) && (opponent2 == null) && (opponent3 == null)) {
 
             // Clear any conversing entities.
             gp.clearConversingEntities();
 
             // Store music that was staged before initiating combat.
-            storedTrackFilePath = gp.getSoundS().getPlayingTrackFilePath();
+            storedTrackName = gp.getSoundS().getPlayingTrackName();
 
             // Play combat music.
-            if (trackFilePath.equals(SoundSupport.NO_TRACK)) {
+            if (trackName.equals(Sound.NO_TRACK)) {
 
                 gp.getSoundS().stopTrack(false);
-            } else if (!trackFilePath.equals(SoundSupport.RETAIN_TRACK)) {
+            } else if (!trackName.equals(Sound.RETAIN_TRACK)) {
 
-                gp.getSoundS().swapTrack(trackFilePath, false);
+                gp.getSoundS().swapTrack(trackName, false);
             }
 
             // Set the game state.
@@ -308,10 +313,7 @@ public class CombatManager {
 
             if ((opponent1 == null) && (opponent2 == null) && (opponent3 == null)) {
 
-                UtilityTool.logWarning("Attempted to initiate combat with no opponents.");
-            } else {
-
-                UtilityTool.logWarning("Attempted to initiate combat with a null enter combat transition type.");
+                throw new IllegalArgumentException("Attempted to initiate combat with no opponents");
             }
         }
     }
@@ -1038,9 +1040,9 @@ public class CombatManager {
         gp.getWarpS().warpFollowersToPlayer(gp.getParty());
 
         // Swap music.
-        if (!storedTrackFilePath.equals(gp.getSoundS().getPlayingTrackFilePath())) {
+        if (!storedTrackName.equals(gp.getSoundS().getPlayingTrackName())) {
 
-            gp.getSoundS().swapTrack(storedTrackFilePath, true);
+            gp.getSoundS().swapTrack(storedTrackName, true);
         }
     }
 
@@ -1625,7 +1627,7 @@ public class CombatManager {
 
         fieldCenterCol = 0;
         fieldCenterRow = 0;
-        storedTrackFilePath = SoundSupport.NO_TRACK;
+        storedTrackName = Sound.NO_TRACK;
         storedEntityCols.clear();
         storedEntityRows.clear();
         storedEntityDirections.clear();

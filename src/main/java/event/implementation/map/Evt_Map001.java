@@ -102,8 +102,8 @@ public class Evt_Map001 extends EventMapBase {
         // Warp to map 0.
         if ((type == EventType.STEP) && (col == 25) && (row == 25)) {
 
-            gp.getWarpS().initiateWarp(dt, 0, 1, 1, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, "sound/tracks/testTrack2.ogg");
-            gp.getSoundS().playEffect("sound/effects/testEffect1.ogg");
+            gp.getWarpS().initiateWarp(dt, 0, 1, 1, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, "testTrack2");
+            gp.getSoundS().playEffect("testEffect1");
             return true;
         }
 
@@ -118,7 +118,7 @@ public class Evt_Map001 extends EventMapBase {
         // Trigger combat.
         if ((type == EventType.STEP) && (col == 25) && (row == 28)) {
 
-            gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, "sound/tracks/testTrack4.ogg", gp.getEntityById(4), gp.getEntityById(8));
+            gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, "testTrack4", gp.getEntityById(4), gp.getEntityById(8));
             return true;
         }
 

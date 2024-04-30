@@ -33,7 +33,7 @@ public class SelectionArrow extends Drawable {
     public SelectionArrow(GamePanel gp) {
         super();
         this.gp = gp;
-        this.sprite = AssetPool.getSpritesheet(6).getSprite(0);
+        this.sprite = AssetPool.getSpritesheet("miscellaneous").getSprite(0);
         this.transform.scale.x = this.sprite.getNativeWidth();
         this.transform.scale.y = this.sprite.getNativeHeight();
     }

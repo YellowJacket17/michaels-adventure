@@ -272,9 +272,9 @@ public class DialogueReader {
             nextDialogueIndex++;                                                                                        // Iterate the variable tracking which piece of dialogue to read next.
         } else {
 
-            throw new ConversationNotFoundException("Conversation with ID "
+            throw new ConversationNotFoundException("Conversation with ID '"
                     + convId
-                    + " is not loaded");
+                    + "' is not loaded");
         }
     }
 

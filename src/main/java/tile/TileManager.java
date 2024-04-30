@@ -103,9 +103,9 @@ public class TileManager {
                 renderer.addDrawable(drawables[worldRow][worldCol], ZIndex.THIRD_LAYER);
 
             } else if (!renderErrors.contains(tileNum)) {
-                    UtilityTool.logError("Failed to add tile at index "
+                    UtilityTool.logError("Failed to add tile at index '"
                             + tileNum
-                            + " to the render pipeline: the map may contain a tile that does not exist or a tile may"
+                            + "' to the render pipeline: the map may contain a tile that does not exist or a tile may"
                             + " have been assigned to the incorrect animation group.");
                     renderErrors.add(tileNum);
             }
@@ -183,7 +183,7 @@ public class TileManager {
 
         } catch (Exception e) {
 
-            throw new AssetLoadException("Could not load tile data for map with ID " + mapId + " from '" + completeFilePath + "'");
+            throw new AssetLoadException("Could not load tile data for map with ID '" + mapId + "' from '" + completeFilePath + "'");
         }
         return mapTileNum;
     }
@@ -195,25 +195,25 @@ public class TileManager {
      */
     private void getTileImage() {
 
-        setup(0, AssetPool.getSpritesheet(0).getSprite(0), true);                                                       // Default.
+        setup(0, AssetPool.getSpritesheet("tiles").getSprite(0), true);                                                       // Default.
 
-        setup(1, AssetPool.getSpritesheet(0).getSprite(1), false);                                                      // Grass.
+        setup(1, AssetPool.getSpritesheet("tiles").getSprite(1), false);                                                      // Grass.
 
-        setup(2, AssetPool.getSpritesheet(0).getSprite(2), true);                                                       // Non-animated water.
+        setup(2, AssetPool.getSpritesheet("tiles").getSprite(2), true);                                                       // Non-animated water.
 
-        setup(3, AssetPool.getSpritesheet(0).getSprite(3), true, 0);                                                    // Animated water (1).
+        setup(3, AssetPool.getSpritesheet("tiles").getSprite(3), true, 0);                                                    // Animated water (1).
 
-            addSprite(3, AssetPool.getSpritesheet(0).getSprite(4));                                                     // Animated water (2).
+            addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(4));                                                     // Animated water (2).
 
-            addSprite(3, AssetPool.getSpritesheet(0).getSprite(5));                                                     // Animated water (3).
+            addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(5));                                                     // Animated water (3).
 
-            addSprite(3, AssetPool.getSpritesheet(0).getSprite(6));                                                     // Animated water (4).
+            addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(6));                                                     // Animated water (4).
 
-        setup(4, AssetPool.getSpritesheet(0).getSprite(7), true);                                                       // Rock.
+        setup(4, AssetPool.getSpritesheet("tiles").getSprite(7), true);                                                       // Rock.
 
-        setup(5, AssetPool.getSpritesheet(0).getSprite(8), false);                                                      // Portal.
+        setup(5, AssetPool.getSpritesheet("tiles").getSprite(8), false);                                                      // Portal.
 
-        setup(6, AssetPool.getSpritesheet(0).getSprite(9), false);                                                      // Dirt.
+        setup(6, AssetPool.getSpritesheet("tiles").getSprite(9), false);                                                      // Dirt.
     }
 
 

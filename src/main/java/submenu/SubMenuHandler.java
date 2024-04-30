@@ -226,9 +226,9 @@ public class SubMenuHandler {
             this.subMenuId = subMenuId;
         } else {
 
-            throw new IllegalArgumentException("Attempted to set a sub-menu with a number of options ("
+            throw new IllegalArgumentException("Attempted to set a sub-menu with a number of options '"
                     + options.size()
-                    + ") outside of bounds 1 - 8 (both inclusive)");
+                    + "' outside of bounds 1 - 8 (both inclusive)");
         }
     }
 

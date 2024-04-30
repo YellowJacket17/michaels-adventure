@@ -124,8 +124,8 @@ public class Texture {
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bufferWidth.get(0), bufferHeight.get(0),                        // Upload image to GPU.
                         0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
             } else {
-                throw new AssetLoadException("Unexpected number of channels (" + bufferChannels.get(0)
-                        + ") in image for texture loaded from resources '" + filePath + "'");
+                throw new AssetLoadException("Unexpected number of channels '" + bufferChannels.get(0)
+                        + "' in image for texture loaded from resources '" + filePath + "'");
             }
             nativeWidth = bufferWidth.get(0);
             nativeHeight = bufferHeight.get(0);
@@ -186,9 +186,9 @@ public class Texture {
             return false;
         }
         Texture oTexture = (Texture)o;
-        return (oTexture.getNativeWidth() == this.nativeWidth)
-                && (oTexture.getNativeHeight() == this.nativeHeight)
+        return (oTexture.getFilePath().equals(this.filePath))
                 && (oTexture.getTextureId() == this.textureId)
-                && (oTexture.getFilePath().equals(this.filePath));
+                && (oTexture.getNativeHeight() == this.nativeHeight)
+                && (oTexture.getNativeWidth() == this.nativeWidth);
     }
 }

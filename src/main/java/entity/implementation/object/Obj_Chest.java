@@ -28,7 +28,7 @@ public class Obj_Chest extends EntityBase {
      */
     private void setupSprite() {
 
-        down1 = AssetPool.getSpritesheet(2).getSprite(1);
+        down1 = AssetPool.getSpritesheet("objects").getSprite(1);
 
         sprite = down1;
         transform.scale.x = sprite.getNativeWidth();

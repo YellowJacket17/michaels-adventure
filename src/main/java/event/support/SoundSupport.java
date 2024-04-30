@@ -1,7 +1,8 @@
 package event.support;
 
-import core.GamePanel;
 import asset.Sound;
+import asset.SoundType;
+import core.GamePanel;
 import asset.AssetPool;
 import utility.UtilityTool;
 
@@ -24,24 +25,14 @@ public class SoundSupport {
     private boolean trackFadingOut = false;
 
     /**
-     * File path of staged track to play after a fade out of a previous track is complete.
+     * Name/title of staged track to play after a fade out of a previous track is complete.
      */
-    private String stagedTrackFilePath = NO_TRACK;
+    private String stagedTrackName = Sound.NO_TRACK;
 
     /**
-     * File path of track that is currently playing.
+     * Name/title of track that is currently playing.
      */
-    private String playingTrackFilePath = NO_TRACK;
-
-    /**
-     * Argument to be passed when no track will play.
-     */
-    public static final String NO_TRACK = "600a7daa-1abc-4708-86c2-f742a93f23b8";
-
-    /**
-     * Argument to be passed when no track swap will occur.
-     */
-    public static final String RETAIN_TRACK = "8daa0d6a-8d80-4337-b3fa-6eb7f081acdd";
+    private String playingTrackName = Sound.NO_TRACK;
 
 
     // CONSTRUCTOR
@@ -57,13 +48,34 @@ public class SoundSupport {
 
     // METHODS
     /**
+     * Updates the state of the playing track by one frame, if applicable.
+     */
+    public void update(double dt) {
+
+        // Update playing track.
+        if (!playingTrackName.equals(Sound.NO_TRACK)) {
+
+            AssetPool.getSound(playingTrackName).update();
+        }
+    }
+
+
+    /**
      * Plays a new effect.
      *
-     * @param newEffectFilePath file path of new effect to play from root directory.
+     * @param resourceName name/title of loaded effect
      */
-    public void playEffect(String newEffectFilePath) {
+    public void playEffect(String resourceName) {
 
-        AssetPool.getSound(newEffectFilePath).play();
+        Sound sound = AssetPool.getSound(resourceName);
+
+        if (sound.getType() == SoundType.EFFECT) {
+
+            sound.play();
+        } else {
+
+            throw new IllegalArgumentException("Attempted to play sound named '" + resourceName + "' as an effect");
+        }
     }
 
 
@@ -74,18 +86,26 @@ public class SoundSupport {
      * If there is already a playing track that is not fading out, then the playing track will be instantly stopped
      * before the new track is played.
      *
-     * @param newTrackFilePath file path of new track to play from root directory
+     * @param resourceName name/title of loaded track
      */
-    public void playTrack(String newTrackFilePath) {
+    public void playTrack(String resourceName) {
 
-        if (!trackFadingOut) {
+        Sound sound = AssetPool.getSound(resourceName);
 
-            stopTrack(false);
-            AssetPool.getSound(newTrackFilePath).play();
-            playingTrackFilePath = newTrackFilePath;
+        if (sound.getType() == SoundType.TRACK) {
+
+            if (!trackFadingOut) {
+
+                stopTrack(false);
+                AssetPool.getSound(resourceName).play();
+                playingTrackName = resourceName;
+            } else {
+
+                stagedTrackName = resourceName;
+            }
         } else {
 
-            stagedTrackFilePath = newTrackFilePath;
+            throw new IllegalArgumentException("Attempted to play sound named '" + resourceName + "' as a track");
         }
     }
 
@@ -99,9 +119,9 @@ public class SoundSupport {
      */
     public void stopTrack(boolean fadeOut) {
 
-        if ((!playingTrackFilePath.equals(NO_TRACK)) && (AssetPool.getSound(playingTrackFilePath).isPlaying())) {
+        if ((!playingTrackName.equals(Sound.NO_TRACK)) && (AssetPool.getSound(playingTrackName).isPlaying())) {
 
-            swapTrack(NO_TRACK, fadeOut);
+            swapTrack(Sound.NO_TRACK, fadeOut);
         }
     }
 
@@ -112,15 +132,15 @@ public class SoundSupport {
      * If the playing track is already fading out when this method is called, then the new track will not play until the
      * fade out is complete, regardless of the value of the `fadeOut` parameter.
      *
-     * @param newTrackFilePath file path of new track to play from root directory (SoundSupport.NO_TRACK to swap to no
-     *                         track playing)
+     * @param resourceName name/title of new track to play from root directory (Sound.NO_TRACK to swap to no track
+     *                         playing)
      * @param fadeOut whether the playing track will fade out (true) or not (false)
      */
-    public void swapTrack(String newTrackFilePath, boolean fadeOut) {
+    public void swapTrack(String resourceName, boolean fadeOut) {
 
-        stagedTrackFilePath = newTrackFilePath;
+        stagedTrackName = resourceName;
 
-        if ((!playingTrackFilePath.equals(NO_TRACK)) && (AssetPool.getSound(playingTrackFilePath).isPlaying())) {
+        if ((!playingTrackName.equals(Sound.NO_TRACK)) && (AssetPool.getSound(playingTrackName).isPlaying())) {
 
             if (!trackFadingOut) {
 
@@ -130,52 +150,52 @@ public class SoundSupport {
 
                     CompletableFuture.runAsync(() -> {                                                                  // Track is faded out asynchronously so that process does not halt entire program.
 
-                        Sound oldSound = AssetPool.getSound(playingTrackFilePath);
+                        Sound oldSound = AssetPool.getSound(playingTrackName);
 
                         while (oldSound.getGain() > 0.001f) {                                                           // Fade until the old track is too quiet to hear.
 
-                            AssetPool.getSound(playingTrackFilePath).adjustGain(-0.0007f);                              // This argument, combined with the argument in the succeeding line, controls fade out intensity.
+                            AssetPool.getSound(playingTrackName).adjustGain(-0.0007f);                                  // This argument, combined with the argument in the succeeding line, controls fade out intensity.
                             UtilityTool.wait(1);
                         }
                         oldSound.stop();
 
-                        if (!playingTrackFilePath.equals(NO_TRACK)) {
+                        if (!playingTrackName.equals(Sound.NO_TRACK)) {
 
-                            if (!stagedTrackFilePath.equals(NO_TRACK)) {
+                            if (!stagedTrackName.equals(Sound.NO_TRACK)) {
 
-                                AssetPool.getSound(stagedTrackFilePath).play();                                         // Play the new track.
+                                AssetPool.getSound(stagedTrackName).play();                                             // Play the new track.
                             }
-                            playingTrackFilePath = stagedTrackFilePath;
+                            playingTrackName = stagedTrackName;
                         }
                         trackFadingOut = false;                                                                         // Fade process of old track is complete.
                     });
                 } else {
 
-                    AssetPool.getSound(playingTrackFilePath).stop();
+                    AssetPool.getSound(playingTrackName).stop();
 
-                    if (!playingTrackFilePath.equals(NO_TRACK)) {
+                    if (!playingTrackName.equals(Sound.NO_TRACK)) {
 
-                        if (!stagedTrackFilePath.equals(NO_TRACK)) {
+                        if (!stagedTrackName.equals(Sound.NO_TRACK)) {
 
-                            AssetPool.getSound(stagedTrackFilePath).play();
+                            AssetPool.getSound(stagedTrackName).play();
                         }
-                        playingTrackFilePath = stagedTrackFilePath;
+                        playingTrackName = stagedTrackName;
                     }
                 }
             }
         } else {
 
-            if (!stagedTrackFilePath.equals(NO_TRACK)) {
+            if (!stagedTrackName.equals(Sound.NO_TRACK)) {
 
-                AssetPool.getSound(stagedTrackFilePath).play();
+                AssetPool.getSound(stagedTrackName).play();
             }
-            playingTrackFilePath = stagedTrackFilePath;
+            playingTrackName = stagedTrackName;
         }
     }
 
 
     // GETTER
-    public String getPlayingTrackFilePath() {
-        return playingTrackFilePath;
+    public String getPlayingTrackName() {
+        return playingTrackName;
     }
 }

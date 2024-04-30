@@ -87,10 +87,9 @@ public class GuiIconManager {
                 renderer.addDrawable(guiIcon, ZIndex.FIRST_LAYER);
             } else if (!renderErrors.contains(iconId)) {
 
-                UtilityTool.logError("Failed to add GUI icon"
-                        + " with ID "
+                UtilityTool.logError("Failed to add GUI icon with ID '"
                         + iconId
-                        + " to the render pipeline: sprites may not have been properly loaded upon icon initialization.");
+                        + "' to the render pipeline: sprites may not have been properly loaded upon icon initialization.");
                 renderErrors.add(iconId);
             }
         }
@@ -109,9 +108,9 @@ public class GuiIconManager {
 
         if (guiIcon == null) {
 
-            UtilityTool.logWarning("Attempted to retrieve an icon with ID "
+            UtilityTool.logWarning("Attempted to retrieve an icon with ID '"
                     + iconId
-                    + " that does not exist.");
+                    + "' that does not exist.");
 
             guiIcon = new GuiIcon(-1);                                                                                  // Return a placeholder icon to prevent the program from hitting an unhandled exception.
         }
@@ -130,75 +129,75 @@ public class GuiIconManager {
         // Party menu icon - Icon ID 0.
         guiIcon = new GuiIcon(0);
         guiIcon.setName("Party menu");
-        guiIcon.setActive(AssetPool.getSpritesheet(5).getSprite(5));
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(6));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(5));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(6));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Inventory menu icon - Icon ID 1.
         guiIcon = new GuiIcon(1);
         guiIcon.setName("Inventory menu");
-        guiIcon.setActive(AssetPool.getSpritesheet(5).getSprite(7));
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(8));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(7));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(8));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Settings menu icon - Icon ID 2.
         guiIcon = new GuiIcon(2);
         guiIcon.setName("Settings menu");
-        guiIcon.setActive(AssetPool.getSpritesheet(5).getSprite(9));
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(10));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(9));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(10));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Character summary icon 1 - Icon ID 3.
         guiIcon = new GuiIcon(3);
         guiIcon.setName("Character summary 1");
-        guiIcon.setActive(AssetPool.getSpritesheet(5).getSprite(0));
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(1));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(0));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(1));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Character summary icon 2 - Icon ID 4.
         guiIcon = new GuiIcon(4);
         guiIcon.setName("Character summary 2");
-        guiIcon.setActive(AssetPool.getSpritesheet(5).getSprite(0));
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(1));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(0));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(1));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Character summary icon 3 - Icon ID 5.
         guiIcon = new GuiIcon(5);
         guiIcon.setName("Character summary 3");
-        guiIcon.setActive(AssetPool.getSpritesheet(5).getSprite(0));
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(1));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(0));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(1));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Stackable item menu backdrop - Icon ID 6.
         guiIcon = new GuiIcon(6);
         guiIcon.setName("Item menu stackable backdrop");
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(3));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(3));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Non-stackable item menu backdrop - Icon ID 7.
         guiIcon = new GuiIcon(7);
         guiIcon.setName("Item menu non-stackable backdrop");
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(4));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(4));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Item menu selector - Icon ID 8.
         guiIcon = new GuiIcon(8);
         guiIcon.setName("Item menu selector");
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(2));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(2));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Leftward scroll arrow - Icon ID 9.
         guiIcon = new GuiIcon(9);
         guiIcon.setName("Leftward scroll arrow");
-        guiIcon.setActive(AssetPool.getSpritesheet(5).getSprite(13));
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(14));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(13));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(14));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Rightward scroll arrow - Icon ID 10.
         guiIcon = new GuiIcon(10);
         guiIcon.setName("Rightward scroll arrow");
-        guiIcon.setActive(AssetPool.getSpritesheet(5).getSprite(11));
-        guiIcon.setInactive(AssetPool.getSpritesheet(5).getSprite(12));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(11));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(12));
         icons.put(guiIcon.getIconId(), guiIcon);
     }
 }

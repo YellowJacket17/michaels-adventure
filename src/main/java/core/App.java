@@ -22,7 +22,7 @@ public class App {
 
         } catch (Exception e) {
 
-            UtilityTool.logError("An unhandled exception has occurred.");
+            UtilityTool.logError("An unhandled exception has occurred!");
             UtilityTool.logStackTrace(e);
             UtilityTool.writeCrashLog();
             window.terminate();

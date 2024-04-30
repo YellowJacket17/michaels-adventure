@@ -78,9 +78,9 @@ public class KeyListener {
         } catch (ArrayIndexOutOfBoundsException e) {
 
             if (!keyErrors.contains(key)) {
-                UtilityTool.logWarning("Unrecognized key with code "
+                UtilityTool.logWarning("Unrecognized key with code '"
                         + key
-                        + " was detected.");
+                        + "' was detected.");
                 keyErrors.add(key);
             }
         }

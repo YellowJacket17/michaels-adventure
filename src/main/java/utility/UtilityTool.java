@@ -32,7 +32,7 @@ public class UtilityTool {
     private static final SimpleDateFormat FILE_NAME_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmssSSS");
 
     /**
-     * Temporary log file location and name.
+     * Temporary log file path from root directory.
      */
     private static final String TEMP_LOG_FILE_PATH = "./templog.txt";
 
@@ -56,9 +56,9 @@ public class UtilityTool {
 
 
     /**
-     * Prints an error message to the console.
+     * Prints an informational message to the console and temporary log file.
      *
-     * @param message error message to be printed
+     * @param message informational message to be printed
      */
     public static void logInfo(String message) {
 
@@ -81,7 +81,7 @@ public class UtilityTool {
 
 
     /**
-     * Prints an error message to the console.
+     * Prints an error message to the console and temporary log file.
      *
      * @param message error message to be printed
      */
@@ -106,7 +106,7 @@ public class UtilityTool {
 
 
     /**
-     * Prints a warning message to the console.
+     * Prints a warning message to the console and temporary log file.
      *
      * @param message warning message to be printed
      */
@@ -131,7 +131,7 @@ public class UtilityTool {
 
 
     /**
-     * Prints a file path to the console.
+     * Prints a file path to the console and temporary log file.
      *
      * @param filePath file path message to be printed
      */
@@ -156,7 +156,7 @@ public class UtilityTool {
 
 
     /**
-     * Prints an exception's stack trace to the console.
+     * Prints an exception's stack trace to the console and temporary log file.
      * @param exception exception whose stack trace is to be printed
      */
     public static void logStackTrace(Exception exception) {

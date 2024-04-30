@@ -65,8 +65,8 @@ public class Evt_Map000 extends EventMapBase {
 
         // Warp to map 1.
         if ((type == EventType.STEP) && ((col == 1) || (col == 2)) && (row == 0) && (direction == EntityDirection.UP)) {
-            gp.getWarpS().initiateWarp(dt, 1, 25, 25, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, "sound/tracks/testTrack1.ogg");
-            gp.getSoundS().playEffect("sound/effects/testEffect1.ogg");
+            gp.getWarpS().initiateWarp(dt, 1, 25, 25, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, "testTrack1");
+            gp.getSoundS().playEffect("testEffect1");
             return true;
         }
 

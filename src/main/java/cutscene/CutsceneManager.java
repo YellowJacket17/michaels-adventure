@@ -69,7 +69,7 @@ public class CutsceneManager {
                     }
                     break;
                 default:
-                    UtilityTool.logWarning("Attempted to play a cutscene that does not exist; setting the game back to an explore state.");
+                    UtilityTool.logWarning("Attempted to play a cutscene that does not exist: setting the game back to an explore state.");
                     gp.setGameState(GameState.EXPLORE);
             }
         }
