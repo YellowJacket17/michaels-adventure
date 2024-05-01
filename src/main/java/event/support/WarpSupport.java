@@ -21,12 +21,17 @@ public class WarpSupport {
     /**
      * Stored location to warp to.
      */
-    private int stagedMapId, stagedCol, stagedRow;
+    private int stagedMapId, stagedMapState, stagedCol, stagedRow;
 
     /**
-     * Stored track to swap in during a transition.
+     * Stored track to swap in during a transition if map track is not overridden.
      */
     private String stagedTrackName = Sound.NO_TRACK;
+
+    /**
+     * Boolean indicating whether the track specified by a map is overridden (true) or not (false) during a transition.
+     */
+    private boolean overrideMapTrack = false;
 
     /**
      * Variable to store the current warp transition type being performed (null if none).
@@ -50,17 +55,18 @@ public class WarpSupport {
      * Warps the player to a new location.
      *
      * @param mapId ID of the map that the player entity will be warped to
+     * @param mapState state of the map that the player entity will be warped to
      * @param col column that the player entity will be warped to
      * @param row row that the player entity will be warped to
      */
-    public void initiateWarp(int mapId, int col, int row) {
+    public void initiateWarp(int mapId, int mapState, int col, int row) {
 
         boolean newMap = false;                                                                                         // Track whether we're warping to a new map (true) or a new point on the current map (false).
 
         if (mapId != gp.getLoadedMap().getMapId()) {                                                                    // Only load the map if it's different from the one the player is warping from.
 
             newMap = true;
-            gp.loadMap(mapId);                                                                                          // Set the map the player is on.
+            gp.loadMap(mapId, mapState, !overrideMapTrack);                                                             // Set the map the player is on.
         }
         gp.getPlayer().setCol(col);                                                                                     // Set the player's position in the world (x)
         gp.getPlayer().setRow(row);                                                                                     // Set the player's position in the world (y).
@@ -110,10 +116,12 @@ public class WarpSupport {
     /**
      * Warps the player to a new location.
      * The warp is dressed with a fade-to-black transition.
+     * The track specified by the map being warped to will not automatically play.
      * The game state is set to transition.
      *
      * @param dt time since last frame (seconds)
      * @param mapId ID of the map that the player entity will be warped to
+     * @param mapState state of the map that the player entity will be warped to
      * @param col column that the player entity will be warped to
      * @param row row that the player entity will be warped to
      * @param type type of warp transition
@@ -121,15 +129,53 @@ public class WarpSupport {
      * @param trackName name/title of track to be swapped in during transition (Sound.NO_TRACK to swap to no track
      *                  playing, Sound.RETAIN_TRACK to retain current track playing)
      */
-    public void initiateWarp(double dt, int mapId, int col, int row, WarpTransitionType type,
+    public void initiateWarp(double dt, int mapId, int mapState, int col, int row, WarpTransitionType type,
                              EntityDirection loadDirection, String trackName) {
 
         gp.initiateTransition(TransitionType.WARP);
         activeWarpTransitionType = type;                                                                                // Set the warp current transition type being used.
         stagedMapId = mapId;                                                                                            // Store the requested map.
+        stagedMapState = mapState;                                                                                      // Store the requested map state.
         stagedCol = col;                                                                                                // Store the requested player position (x).
         stagedRow = row;                                                                                                // Store the requested player position (y).
         stagedTrackName = trackName;                                                                                    // Set the track to swap in during transition.
+        overrideMapTrack = true;                                                                                        // Set to ensure that, when `gp.loadMap()` is called, the loaded map's track is not automatically swapped in.
+
+        switch (type) {
+            case BASIC:
+                gp.getPlayer().cancelAction();                                                                          // Cancel the player action that triggered the transition (for example, walking into a trigger tile).
+                break;
+            case STEP_PORTAL:
+                gp.getPlayer().updateWarpTransitionStepPortal(dt);                                                      // Initiate the first phase of this transition type for the player entity.
+                gp.getPlayer().setDirectionCandidate(loadDirection);                                                    // Set the direction that the player entity will be facing when loaded into the new map.
+                break;
+        }
+    }
+
+
+    /**
+     * Warps the player to a new location.
+     * The warp is dressed with a fade-to-black transition.
+     * The track specified by the map being warped to will automatically play.
+     * The game state is set to transition.
+     *
+     * @param dt time since last frame (seconds)
+     * @param mapId ID of the map that the player entity will be warped to
+     * @param mapState state of the map that the player entity will be warped to
+     * @param col column that the player entity will be warped to
+     * @param row row that the player entity will be warped to
+     * @param type type of warp transition
+     * @param loadDirection direction that the player entity will be facing once the transition completes
+     */
+    public void initiateWarp(double dt, int mapId, int mapState, int col, int row, WarpTransitionType type,
+                             EntityDirection loadDirection) {
+
+        gp.initiateTransition(TransitionType.WARP);
+        activeWarpTransitionType = type;                                                                                // Set the warp current transition type being used.
+        stagedMapId = mapId;                                                                                            // Store the requested map.
+        stagedMapState = mapState;                                                                                      // Store the requested map state.
+        stagedCol = col;                                                                                                // Store the requested player position (x).
+        stagedRow = row;                                                                                                // Store the requested player position (y).
 
         switch (type) {
             case BASIC:
@@ -150,7 +196,7 @@ public class WarpSupport {
      */
     public void handleWarpTransitionLoading(double dt) {
 
-        initiateWarp(stagedMapId, stagedCol, stagedRow);
+        initiateWarp(stagedMapId, stagedMapState, stagedCol, stagedRow);
 
         switch (activeWarpTransitionType) {
             case BASIC:
@@ -161,12 +207,15 @@ public class WarpSupport {
                 break;
         }
 
-        if (stagedTrackName.equals(Sound.NO_TRACK)) {
+        if (overrideMapTrack) {
 
-            gp.getSoundS().stopTrack(true);
-        } else if (!stagedTrackName.equals(Sound.RETAIN_TRACK)) {
+            if (stagedTrackName.equals(Sound.NO_TRACK)) {
 
-            gp.getSoundS().swapTrack(stagedTrackName, true);
+                gp.getSoundS().stopTrack(true);
+            } else if (!stagedTrackName.equals(Sound.RETAIN_TRACK)) {
+
+                gp.getSoundS().swapTrack(stagedTrackName, true);
+            }
         }
     }
 
@@ -211,9 +260,11 @@ public class WarpSupport {
     private void reset() {
 
         stagedMapId = 0;
+        stagedMapState = 0;
         stagedCol = 0;
         stagedRow = 0;
         activeWarpTransitionType = null;
         stagedTrackName = Sound.NO_TRACK;
+        overrideMapTrack = false;
     }
 }

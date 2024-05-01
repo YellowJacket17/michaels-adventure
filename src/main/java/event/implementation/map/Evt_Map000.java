@@ -65,14 +65,14 @@ public class Evt_Map000 extends EventMapBase {
 
         // Warp to map 1.
         if ((type == EventType.STEP) && ((col == 1) || (col == 2)) && (row == 0) && (direction == EntityDirection.UP)) {
-            gp.getWarpS().initiateWarp(dt, 1, 25, 25, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, "testTrack1");
+            gp.getWarpS().initiateWarp(dt, 1, 0, 25, 25, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
             gp.getSoundS().playEffect("testEffect1");
             return true;
         }
 
         // Test basic warp,
         if ((type == EventType.STEP) && (col == 14) && (row == 1) && (direction == EntityDirection.RIGHT)) {
-            gp.getWarpS().initiateWarp(0, 1, 1);
+            gp.getWarpS().initiateWarp(0, 0, 1, 1);
             return true;
         }
 

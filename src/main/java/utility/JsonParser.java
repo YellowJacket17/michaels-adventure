@@ -1,5 +1,6 @@
 package utility;
 
+import asset.Sound;
 import combat.MoveBase;
 import combat.implementation.move.Mve_Tackle;
 import dialogue.Conversation;
@@ -48,9 +49,18 @@ public class JsonParser {
 
             Map map = new Map(gp, mapId);
 
-            boolean dayNightCycle = (boolean)mapJson.get("dayNightCycle");
-            map.setDayNightCycle(dayNightCycle);
+            JSONObject tracksJson = (JSONObject)mapJson.get("tracks");
 
+            for (int i = 0; i < tracksJson.size(); i++) {
+
+                String track = (String)tracksJson.get(Integer.toString(i));                                             // Retrieve next track, regardless of its index in the JSON file.
+
+                if (track.equals("NO_TRACK")) {
+
+                    track = Sound.NO_TRACK;
+                }
+                map.getTracks().add(track);                                                                             // Add track to next index in list.
+            }
             return map;
 
         } catch (Exception e) {
@@ -412,7 +422,7 @@ public class JsonParser {
 
                     for (int j = 0; j < allDialogueJson.size(); j++) {
 
-                        JSONObject dialogueJson = (JSONObject)allDialogueJson.get(Integer.toString(j));
+                        JSONObject dialogueJson = (JSONObject)allDialogueJson.get(Integer.toString(j));                 // Retrieve next piece of dialogue, regardless of its index in the JSON file.
 
                         Dialogue dialogue = new Dialogue();
 
@@ -421,7 +431,7 @@ public class JsonParser {
                         dialogue.setEntityName(speakerName);
                         dialogue.setText(text);
 
-                        conversation.getDialogueList().add(dialogue);
+                        conversation.getDialogueList().add(dialogue);                                                   // Add dialogue to next index in list.
                     }
                     gp.getConv().put(conversation.getConvId(), conversation);
                 }

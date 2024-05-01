@@ -102,7 +102,7 @@ public class Evt_Map001 extends EventMapBase {
         // Warp to map 0.
         if ((type == EventType.STEP) && (col == 25) && (row == 25)) {
 
-            gp.getWarpS().initiateWarp(dt, 0, 1, 1, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN, "testTrack2");
+            gp.getWarpS().initiateWarp(dt, 0, 0, 1, 1, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
             gp.getSoundS().playEffect("testEffect1");
             return true;
         }

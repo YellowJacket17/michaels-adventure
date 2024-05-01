@@ -3,6 +3,7 @@ package core;
 import ai.PathFinder;
 import animation.AnimationManager;
 import asset.AssetPool;
+import asset.Sound;
 import combat.CombatManager;
 import combat.TargetArrow;
 import cutscene.CutsceneManager;
@@ -286,7 +287,7 @@ public class GamePanel {
         systemSettings.add(fullScreenSetting);
 
         // Load map along with associated entities and dialogue.
-        loadMap(1);
+        loadMap(1, 0, true);
 
         // Set camera to track player entity.
         cameraS.setTrackedEntity(player);
@@ -447,11 +448,16 @@ public class GamePanel {
      * Loads a new map and sets it as the current map being rendered.
      *
      * @param mapId ID of the map being loaded
+     * @param mapState state in which to load map
+     * @param swapTrack whether to swap to play the track specified by the map being loaded (true) or not (false)
      */
-    public void loadMap(int mapId) {
+    public void loadMap(int mapId, int mapState, boolean swapTrack) {
 
         // Set new map.
         loadedMap = JsonParser.loadMapJson(this, mapId);
+
+        // Set map state.
+        loadedMap.setMapState(mapState);
 
         // Clear conversing and combating entity lists.
         clearConversingEntities();
@@ -469,6 +475,11 @@ public class GamePanel {
 
         // Load dialogue associated with new map.
         JsonParser.loadDialogueJson(this, mapId);
+
+        // Swap track, if applicable.
+        if (swapTrack) {
+            soundS.swapTrack(loadedMap.getTracks().get(mapState), true);
+        }
     }
 
 
@@ -900,7 +911,7 @@ public class GamePanel {
         // Sounds.
         AssetPool.addSound("testTrack1", "sound/effects/testEffect1.ogg", "sound/tracks/testTrack1.ogg");
         AssetPool.addSound("testTrack2", "sound/effects/testEffect1.ogg", "sound/tracks/testTrack2.ogg");
-        AssetPool.addSound("testTrack4", "sound/effects/testEffect1.ogg", "sound/tracks/testTrack4.ogg");
+        AssetPool.addSound("testTrack4", "sound/tracks/testTrack4.ogg", "sound/tracks/testTrack4.ogg");
         AssetPool.addSound("testEffect1", "sound/effects/testEffect1.ogg");
     }
 

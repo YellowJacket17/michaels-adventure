@@ -1,3 +1,2 @@
-04/29/2024 18:29:57:835  INFO     Application started.
-04/29/2024 18:30:02:039  INFO     Starting game loop.
-04/29/2024 18:30:04:535  WARNING  Unrecognized key with code '-1' was detected.
+04/30/2024 18:33:46:727  INFO     Application started.
+04/30/2024 18:33:51:019  INFO     Starting game loop.

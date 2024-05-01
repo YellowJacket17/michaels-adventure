@@ -10,6 +10,14 @@ import java.util.ArrayList;
  */
 public class Map {
 
+    /*
+     * Maps may have different states (0, 1, 2, ...).
+     * Map states are intended to control how a map looks and acts based on which state is active.
+     * For example, changing map state may change what track plays upon loading the map, what entities are present, or
+     * what environmental effects are applied.
+     * It is recommended that the most common (base/default) map state be zero.
+     */
+
     // FIELDS
     /**
      * Unique map ID.
@@ -32,12 +40,13 @@ public class Map {
     /**
      * Map state.
      */
-    private int state;
+    private int mapState = 0;
 
     /**
-     * Boolean setting whether this map has a day/night cycle.
+     * Array of names/titles of tracks to play at specified map states.
+     * Array indices correspond to map states.
      */
-    private boolean dayNightCycle;
+    private final ArrayList<String> tracks = new ArrayList<>();
 
 
     // CONSTRUCTOR
@@ -67,21 +76,16 @@ public class Map {
         return mapLandmarks;
     }
 
-    public int getState() {
-        return state;
+    public int getMapState() {
+        return mapState;
     }
 
-    public boolean hasDayNightCycle() {
-        return dayNightCycle;
+    public ArrayList<String> getTracks() {
+        return tracks;
     }
 
-
-    // SETTERS
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public void setDayNightCycle(boolean dayNightCycle) {
-        this.dayNightCycle = dayNightCycle;
+    // SETTER
+    public void setMapState(int mapState) {
+        this.mapState = mapState;
     }
 }

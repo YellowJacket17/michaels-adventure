@@ -1,8 +1,0 @@
-04/29/2024 18:27:13:704  INFO     Application started.
-04/29/2024 18:27:18:311  ERROR    An unhandled exception has occurred!
-utility.exceptions.AssetLoadException: Attempted to load a duplicate sound into memory
-	at asset.AssetPool.addSound(AssetPool.java:187)
-	at core.GamePanel.loadResources(GamePanel.java:904)
-	at core.GamePanel.init(GamePanel.java:258)
-	at core.Window.initGame(Window.java:239)
-	at core.App.main(App.java:19)

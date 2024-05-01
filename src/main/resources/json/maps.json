@@ -1,9 +1,13 @@
 {
     "0": {
-        "dayNightCycle": true
+        "tracks": {
+            "0": "testTrack2"
+        }
     },    
 
     "1": {
-        "dayNightCycle": false
+        "tracks": {
+            "0": "testTrack1"
+        }
     }
 }

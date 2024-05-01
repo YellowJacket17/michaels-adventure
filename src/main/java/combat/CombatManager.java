@@ -11,7 +11,6 @@ import entity.EntityBase;
 import entity.EntityDirection;
 import org.joml.Vector3f;
 import utility.LimitedArrayList;
-import utility.UtilityTool;
 
 import java.util.*;
 
@@ -20,6 +19,15 @@ import java.util.*;
  */
 public class CombatManager {
 
+    /*
+     * Please note the following about tracks:
+     *    - When initiating combat, the playing track prior to combat will be swapped out and replaced with the track
+     *      passed as argument to the `initiateCombat()` method.
+     *    - Upon exiting combat, the track tied to the loaded map will be swapped back in, according to map state.
+     *    - If Sound.RETAIN_TRACK is passed as argument to the `initiateCombat()` method, then the playing track prior
+     *      to combat will keep playing during and after combat without interruption.
+     */
+
     // FIELDS
     private final GamePanel gp;
 
@@ -27,11 +35,6 @@ public class CombatManager {
      * Location of the center of the combat field.
      */
     private int fieldCenterCol, fieldCenterRow;
-
-    /**
-     * Stored track that was playing when combat was initiated.
-     */
-    private String storedTrackName = Sound.NO_TRACK;
 
     /**
      * Map to store the column (i.e., world position) that all combating entities occupied before combat was initiated;
@@ -69,6 +72,12 @@ public class CombatManager {
      * A set is used to avoid having the same entity entered twice or thrice.
      */
     private final LinkedHashSet<Integer> nonPlayerSideEntities = new LinkedHashSet<>();
+
+    /**
+     * Boolean indicating whether the track playing before combat was retained (true) or not (false) when entering
+     * combat.
+     */
+    private boolean retainPreCombatTrack = false;
 
     /**
      * Variable to store the current enter combat transition type being performed (null if none).
@@ -221,7 +230,7 @@ public class CombatManager {
      * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions
      *             of different types
      * @param trackName name/title of track to be played during combat (Sound.NO_TRACK to swap to no track playing,
-     *                  Sound.RETAIN_TRACK to retain current track playing)
+     *                  Sound.RETAIN_TRACK to retain current track playing upon entering and exiting combat)
      * @param opponent non-player-side entity to be fought
      * @throws IllegalArgumentException if no non-null opponents are available
      */
@@ -241,7 +250,7 @@ public class CombatManager {
      * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions
      *             of different types
      * @param trackName name/title of track to be played during combat (Sound.NO_TRACK to swap to no track playing,
-     *                  Sound.RETAIN_TRACK to retain current track playing)
+     *                  Sound.RETAIN_TRACK to retain current track playing upon entering and exiting combat)
      * @param opponent1 first non-player-side entity to be fought
      * @param opponent2 second non-player-side entity to be fought
      * @throws IllegalArgumentException if no non-null opponents are available
@@ -262,7 +271,7 @@ public class CombatManager {
      * @param type type of enter combat transition; see comments in the EnterCombatTransitionType enum for definitions
      *             of different types
      * @param trackName name/title of track to be played during combat (Sound.NO_TRACK to swap to no track playing,
-     *                  Sound.RETAIN_TRACK to retain current track playing)
+     *                  Sound.RETAIN_TRACK to retain current track playing upon entering and exiting combat)
      * @param opponent1 first non-player-side entity to be fought
      * @param opponent2 second non-player-side entity to be fought
      * @param opponent3 third non-player-side entity to be fought
@@ -271,19 +280,19 @@ public class CombatManager {
     public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackName,
                                EntityBase opponent1, EntityBase opponent2, EntityBase opponent3) {
 
-        if ((opponent1 == null) && (opponent2 == null) && (opponent3 == null)) {
+        if (!((opponent1 == null) && (opponent2 == null) && (opponent3 == null))) {
 
             // Clear any conversing entities.
             gp.clearConversingEntities();
-
-            // Store music that was staged before initiating combat.
-            storedTrackName = gp.getSoundS().getPlayingTrackName();
 
             // Play combat music.
             if (trackName.equals(Sound.NO_TRACK)) {
 
                 gp.getSoundS().stopTrack(false);
-            } else if (!trackName.equals(Sound.RETAIN_TRACK)) {
+            } else if (trackName.equals(Sound.RETAIN_TRACK)) {
+
+                retainPreCombatTrack = true;
+            } else {
 
                 gp.getSoundS().swapTrack(trackName, false);
             }
@@ -1039,10 +1048,9 @@ public class CombatManager {
         // Warp party members to player.
         gp.getWarpS().warpFollowersToPlayer(gp.getParty());
 
-        // Swap music.
-        if (!storedTrackName.equals(gp.getSoundS().getPlayingTrackName())) {
-
-            gp.getSoundS().swapTrack(storedTrackName, true);
+        // Swap music, if applicable.
+        if (!retainPreCombatTrack) {
+            gp.getSoundS().swapTrack(gp.getLoadedMap().getTracks().get(gp.getLoadedMap().getMapState()), true);
         }
     }
 
@@ -1627,13 +1635,13 @@ public class CombatManager {
 
         fieldCenterCol = 0;
         fieldCenterRow = 0;
-        storedTrackName = Sound.NO_TRACK;
         storedEntityCols.clear();
         storedEntityRows.clear();
         storedEntityDirections.clear();
         storedEntityHidden.clear();
         partyOrdering.clear();
         nonPlayerSideEntities.clear();
+        retainPreCombatTrack = false;
         activeEnterCombatTransitionType = null;
         activeExitCombatTransitionType = null;
         queuedEntityTurnOrder.clear();
