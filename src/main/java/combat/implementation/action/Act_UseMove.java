@@ -103,7 +103,7 @@ public class Act_UseMove extends ActionBase {
         //  These will likely be applied as the last thing in a turn.
         //  Would these go in the action `endEntityTurn`?
 
-        pollFainting();
+        gp.getCombatM().pollFainting();
         gp.getCombatM().progressCombat();
     }
 
@@ -147,69 +147,6 @@ public class Act_UseMove extends ActionBase {
                 allDamage.add(targetDamage);
             }
             gp.getEntityById(targetEntityId).subtractLife(targetDamage);
-        }
-    }
-
-
-    /**
-     * Polls whether any entities involved in this action have just fainted; in other words, if any entities have zero
-     * life but not a fainted status.
-     * If one or more have and that causes either all party entities to be fainted or all opposing entities to be
-     * fainted, then combat will be exited.
-     */
-    private void pollFainting() {
-
-        checkJustFainted(sourceEntityId);
-
-        for (int targetEntityId : targetEntityIds) {
-
-            checkJustFainted(targetEntityId);
-        }
-
-        if (gp.getCombatM().checkAllNonPlayerSideFainted()) {                                                                // Combat is won if all opposing entities have fainted.
-
-            String message = gp.getPlayer().getName() + " won the fight!";
-            gp.getCombatM().addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
-            gp.getCombatM().addQueuedActionFront(new Act_ToggleCombatUi(gp, false));
-            gp.getCombatM().addQueuedActionFront(new Act_ReadMessage(gp, message, true));
-        }
-
-        if (gp.getCombatM().checkPlayerFainted()) {                                                                     // Combat is only lost if the player entity has fainted.
-
-            String message = gp.getPlayer().getName() + " lost the fight.";
-            gp.getCombatM().addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
-            gp.getCombatM().addQueuedActionFront(new Act_ToggleCombatUi(gp, false));
-            gp.getCombatM().addQueuedActionFront(new Act_ReadMessage(gp, message, true));
-        }
-    }
-
-
-    /**
-     * Checks whether an entity has just fainted in this action; in other words, if the entity has zero life but not a
-     * fainted status.
-     * If it has, its status is changed and a message is queued to display.
-     *
-     * @param entityId ID of entity to check
-     */
-    private void checkJustFainted(int entityId) {
-
-        EntityBase targetEntity = gp.getEntityById(entityId);
-
-        if ((targetEntity.getLife() <= 0)
-                && (targetEntity.getStatus() != EntityStatus.FAINT)) {
-
-            targetEntity.setStatus(EntityStatus.FAINT);
-            String stagedName = "";
-
-            if (targetEntity.getName().equals("")) {
-
-                stagedName = "???";
-            } else {
-
-                stagedName = targetEntity.getName();
-            }
-            String message = stagedName + " has no energy left to fight!";
-            gp.getCombatM().addQueuedActionFront(new Act_ReadMessage(gp, message, true));
         }
     }
 

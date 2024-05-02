@@ -22,6 +22,8 @@
 
 **Space:** Open/close the main menu.
 
+**F11:** Enter full screen mode when full screen mode is disabled.
+
 **Esc:** Exit full screen mode when full screen mode is enabled.
 
 **1:** Switch to the party section of the main menu.
@@ -41,11 +43,9 @@
 **Right arrow:** Rightward camera movement if debug mode is enabled.
 
 ## Audio
-All `.wav` files are omitted from the remote repository due to file size.
-These files belong in the `src/main/resources/sound/` directory.
-The application will run with them missing, but some warnings and errors will be printed to console.
-In the `src/main/resources/sound/tracks/` directory, the application expects files named `testTrack2.wav`, `testTrack3.wav`, and `testTrack4.wav`.
-In the `src/main/resources/sound/effects/` directory, the application expects a file named `testEffect1.wav`.
+All `.ogg` files are omitted from the remote repository due to file size.
+These files belong in the `sound` directory in the project root.
+The application will not run without being able to load them.
 
 ## Notes ##
 Able to compile with Windows x64, macOS x64, and macOS arm64 natives.

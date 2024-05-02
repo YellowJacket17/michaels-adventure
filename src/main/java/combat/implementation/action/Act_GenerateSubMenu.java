@@ -18,12 +18,41 @@ import java.util.List;
 public class Act_GenerateSubMenu extends ActionBase {
 
     // FIELDS
+    /**
+     * Sub-menu type.
+     */
     private final SubMenuType type;
+
+    /**
+     * List of stored sub-menu options to display. The default list is empty
+     */
     private final List<String> options = new ArrayList<>();
-    private final float subMenuScreenX;
-    private final float subMenuScreenY;
+
+    /**
+     * Sub-menu's screen position, normalized between 0 and 1.
+     * This is the coordinate of the top-left corner of the sub-menu window currently being displayed.
+     * The default value is zero.
+     */
+    private final float subMenuScreenX, subMenuScreenY;
+
+    /**
+     * Boolean indicating whether the sub-menu window will be rendered at the default screen position or a custom screen
+     * position.
+     * If this is marked as true, then the values of `subMenuScreenX` and `subMenuScreenY` will be ignored.
+     * The default value is true.
+     */
     private final boolean subMenuDefaultPosition;
+
+    /**
+     * Map of stored colors for each sub-menu option; option index is the key, color (r, g, b) is the value.
+     * The default map is empty.
+     */
     private final HashMap<Integer, Vector3f> colors = new HashMap<>();
+
+    /**
+     * Set to store the indices of any disabled sub-menu options.
+     * The default set is empty.
+     */
     private final HashSet<Integer> disabledOptions = new HashSet<>();
 
 

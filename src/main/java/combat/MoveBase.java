@@ -18,12 +18,45 @@ public abstract class MoveBase {
 
     // FIELDS
     protected final GamePanel gp;
+
+    /**
+     * Move ID.
+     * To be clear, this ID is NOT unique for each MoveBase instance.
+     * Each MoveBase subclass has its own unique ID, and all instances of that subclass share that ID.
+     */
     protected final int moveId;
+
+    /**
+     * Defines which attributes this move will use from both the source and target entities when calculating damage
+     * and/or affects.
+     * The role that this move plays in combat is also defined: is this move primarily meant for attacking, or is it
+     * primarily meant to boost/deplete attributes of other combating entities?
+     */
     protected final MoveCategory category;
+
+    /**
+     * Entities that this move can target in respect to the source entity (i.e., the user).
+     */
     protected final MoveTargets moveTargets;
+
+    /**
+     * Move name.
+     */
     protected String name;
+
+    /**
+     * Move description.
+     */
     protected String description;
+
+    /**
+     * Move base power.
+     */
     protected int power;
+
+    /**
+     * Skill points required to use this move.
+     */
     protected int skillPoints;
 
 
@@ -78,13 +111,5 @@ public abstract class MoveBase {
 
     public int getSkillPoints() {
         return skillPoints;
-    }
-
-
-    // Setters.
-    public void setSkillPoints(int skillPoints) {
-        if (skillPoints >= 0) {
-            this.skillPoints = skillPoints;
-        }
     }
 }
