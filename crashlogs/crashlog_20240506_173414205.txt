@@ -1,0 +1,17 @@
+05/06/2024 17:33:53:452  INFO     Application started.
+05/06/2024 17:33:59:310  INFO     Starting game loop.
+05/06/2024 17:34:14:203  ERROR    An unhandled exception has occurred!
+java.util.ConcurrentModificationException
+	at java.base/java.util.ArrayList$Itr.checkForComodification(ArrayList.java:1013)
+	at java.base/java.util.ArrayList$Itr.next(ArrayList.java:967)
+	at combat.CombatManager.initiateCombat(CombatManager.java:319)
+	at combat.CombatManager.initiateCombat(CombatManager.java:269)
+	at event.implementation.map.Evt_Map001.tileInteraction(Evt_Map001.java:121)
+	at event.EventManager.handleTileInteraction(EventManager.java:201)
+	at entity.implementation.player.Player.checkStepInteraction(Player.java:918)
+	at entity.implementation.player.Player.updateExploreInput(Player.java:550)
+	at entity.implementation.player.Player.updatePlayerInput(Player.java:155)
+	at core.GamePanel.update(GamePanel.java:316)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:303)
+	at core.App.main(App.java:21)

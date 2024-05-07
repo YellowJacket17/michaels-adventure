@@ -13,12 +13,18 @@ public class Map {
     /*
      * Maps may have different states (0, 1, 2, ...).
      * Map states are intended to control how a map looks and acts based on which state is active.
-     * For example, changing map state may change what track plays upon loading the map, what entities are present, or
-     * what environmental effects are applied.
+     * For example, map state may be used to determine what track will play, what entities will be present, or which
+     * environmental effects will be applied.
+     * In other words, the map state may be referenced by various events in the game to determine what logic to run.
      * It is recommended that the most common (base/default) map state be zero.
+     *
+     * Note that maps have tracks tied to them for various states.
+     * If a map state is changed via the setter in this class, then the track will automatically change accordingly.
      */
 
     // FIELDS
+    private final GamePanel gp;
+
     /**
      * Unique map ID.
      * To be clear, this ID is unique for each Map instance across the entire game.
@@ -57,6 +63,7 @@ public class Map {
      * @param mapId unique map ID
      */
     public Map(GamePanel gp, int mapId) {
+        this.gp = gp;
         this.mapId = mapId;
         mapTileNum = gp.getTileM().loadMapTileData(mapId);                                                              // Load tile data from file.
         mapLandmarks = gp.getLandmarkM().loadMapLandmarkData(mapId);                                                    // Load landmark data from file.
@@ -85,7 +92,10 @@ public class Map {
     }
 
     // SETTER
-    public void setMapState(int mapState) {
+    public void setMapState(int mapState, boolean swapTrack) {
         this.mapState = mapState;
+        if (swapTrack) {
+            gp.getSoundS().swapTrack(tracks.get(mapState), true);
+        }
     }
 }

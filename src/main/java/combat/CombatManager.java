@@ -61,6 +61,12 @@ public class CombatManager {
     private final HashMap<Integer, Boolean> storedEntityHidden = new HashMap<>();
 
     /**
+     * List to store all non-party, non-combating followers of the player entity before combat was initiated.
+     * The IDs of the followers are stored in this list with their original ordering retained.
+     */
+    private final ArrayList<Integer> storedNonCombatingFollowers = new ArrayList<>();
+
+    /**
      * List to store the original party entity ordering before combat was initiated.
      * The IDs of party members are stored in this list, with the front-most at index zero, etc.
      */
@@ -232,7 +238,8 @@ public class CombatManager {
      * @param trackName name/title of track to be played during combat (Sound.NO_TRACK to swap to no track playing,
      *                  Sound.RETAIN_TRACK to retain current track playing upon entering and exiting combat)
      * @param opponent non-player-side entity to be fought
-     * @throws IllegalArgumentException if no non-null opponents are available
+     * @throws IllegalArgumentException if no non-null opponents are available, if a party member is passed as an
+     * opponent, or if the player entity is passed as an opponent
      */
     public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackName,
                                EntityBase opponent) {
@@ -253,7 +260,8 @@ public class CombatManager {
      *                  Sound.RETAIN_TRACK to retain current track playing upon entering and exiting combat)
      * @param opponent1 first non-player-side entity to be fought
      * @param opponent2 second non-player-side entity to be fought
-     * @throws IllegalArgumentException if no non-null opponents are available
+     * @throws IllegalArgumentException if no non-null opponents are available, if a party member is passed as an
+     * opponent, or if the player entity is passed as an opponent
      */
     public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackName,
                                EntityBase opponent1, EntityBase opponent2) {
@@ -275,12 +283,64 @@ public class CombatManager {
      * @param opponent1 first non-player-side entity to be fought
      * @param opponent2 second non-player-side entity to be fought
      * @param opponent3 third non-player-side entity to be fought
-     * @throws IllegalArgumentException if no non-null opponents are available
+     * @throws IllegalArgumentException if no non-null opponents are available, if a party member is passed as an
+     * opponent, or if the player entity is passed as an opponent
      */
     public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackName,
                                EntityBase opponent1, EntityBase opponent2, EntityBase opponent3) {
 
-        if (!((opponent1 == null) && (opponent2 == null) && (opponent3 == null))) {
+        boolean playerOpponent = false;
+        boolean partyOpponent1 = false;
+        boolean partyOpponent2 = false;
+        boolean partyOpponent3 = false;
+
+        if (opponent1 != null) {
+
+            playerOpponent = (opponent1.getEntityId() == gp.getPlayer().getEntityId());
+            partyOpponent1 = (gp.getParty().get(opponent1.getEntityId()) != null);
+        }
+
+        if (opponent2 != null) {
+
+            if (!playerOpponent) {
+
+                playerOpponent = (opponent2.getEntityId() == gp.getPlayer().getEntityId());
+            }
+            partyOpponent2 = (gp.getParty().get(opponent2.getEntityId()) != null);
+        }
+
+        if (opponent3 != null) {
+
+            if (playerOpponent) {
+
+                playerOpponent = (opponent3.getEntityId() == gp.getPlayer().getEntityId());
+            }
+            partyOpponent3 = (gp.getParty().get(opponent3.getEntityId()) != null);
+        }
+
+        if (!((opponent1 == null) && (opponent2 == null) && (opponent3 == null))
+                && (!playerOpponent) && (!partyOpponent1) && (!partyOpponent2) && (!partyOpponent3)) {
+
+            // Identify non-party followers of player entity.
+            ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekNonPartyFollowers(gp.getPlayer());
+
+            for (int entityId : nonPartyFollowers) {
+
+                if ((opponent1 != null ? opponent1.getEntityId() != entityId : true)                                    // If opponent1 is not a non-party follower, and
+                        && (opponent2 != null ? opponent2.getEntityId() != entityId : true)                             // if opponent2 is not a non-party follower, and
+                        && (opponent3 != null ? opponent3.getEntityId() != entityId : true)) {                          // if opponent3 is not a non-party follower.
+
+                    switch (gp.getEntityById(entityId).getType()) {
+                        case OBJECT:
+                            gp.transferEntity(gp.getObj(), gp.getStandby(), entityId);                                  // Store as standby entity during combat.
+                            break;
+                        case CHARACTER:
+                            gp.transferEntity(gp.getNpc(), gp.getStandby(), entityId);                                  // Store as standby entity during combat.
+                            break;
+                    }
+                    storedNonCombatingFollowers.add(entityId);
+                }
+            }
 
             // Clear any conversing entities.
             gp.clearConversingEntities();
@@ -323,6 +383,12 @@ public class CombatManager {
             if ((opponent1 == null) && (opponent2 == null) && (opponent3 == null)) {
 
                 throw new IllegalArgumentException("Attempted to initiate combat with no opponents");
+            } else if (playerOpponent) {
+
+                throw new IllegalArgumentException("Attempted to initiate combat with the player entity as an opponent");
+            } else {
+
+                throw new IllegalArgumentException("Attempted to initiate combat with a party member as an opponent");
             }
         }
     }
@@ -978,6 +1044,7 @@ public class CombatManager {
 
         // Set party member entities as combating and store their pre-combat world positions.
         // Also set party member positions and images on the combat field.
+        // Any non-active party members will be hidden.
         int placedPartyMembers = 0;
 
         for (EntityBase entity : gp.getParty().values()) {
@@ -992,9 +1059,11 @@ public class CombatManager {
                 if (placedPartyMembers == 0) {
 
                     entity.setRow(fieldCenterRow - 2);
+                    entity.setHidden(false);
                 } else if (placedPartyMembers == 1) {
 
                     entity.setRow(fieldCenterRow + 2);
+                    entity.setHidden(false);
                 } else {
 
                     entity.setHidden(true);
@@ -1029,6 +1098,7 @@ public class CombatManager {
                     opponent.setCol(fieldCenterCol + 5);
                     opponent.setRow(fieldCenterRow + 2);
                 }
+                opponent.setHidden(false);
                 placedNonPlayerSideEntities++;
             } else {
 
@@ -1054,12 +1124,12 @@ public class CombatManager {
         gp.getCameraS().resetCameraSnap();
 
         // Reset all non-party member combating entities back to pre-combat positions.
+        // Note that this includes the player entity.
         for (int entityId : storedEntityCols.keySet()) {
             if (!gp.getParty().containsKey(entityId)) {
                 gp.getEntityById(entityId).setCol(storedEntityCols.get(entityId));
             }
         }
-
         for (int entityId : storedEntityRows.keySet()) {
             if (!gp.getParty().containsKey(entityId)) {
                 gp.getEntityById(entityId).setRow(storedEntityRows.get(entityId));
@@ -1067,24 +1137,48 @@ public class CombatManager {
         }
 
         // Reset all non-party member combating entities back to pre-combat directions.
+        // Note that this includes the player entity.
         for (int entityId : storedEntityDirections.keySet()) {
             if (!gp.getParty().containsKey(entityId)) {
                 gp.getEntityById(entityId).setDirectionCurrent(storedEntityDirections.get(entityId));
             }
         }
 
+        // Transfer non-party, non-combating followers of the player entity back from the standby entity map.
+        for (int entityId : storedNonCombatingFollowers) {
+            switch (gp.getStandby().get(entityId).getType()) {
+                case OBJECT:
+                    gp.transferEntity(gp.getStandby(), gp.getObj(), entityId);
+                    break;
+                case CHARACTER:
+                    gp.transferEntity(gp.getStandby(), gp.getNpc(), entityId);
+                    break;
+            }
+        }
+
+        // Warp party members to player entity.
+        // Must run before restoring pre-combat party ordering, or active party may automatically walk away from player
+        // entity towards combat location after transition is complete.
+        // This is because, when the follower chain is rebuilt in `swapEntityInParty()`, the last tile position of the
+        // followed is set to the follower's combat position since the warp to player hasn't happened yet, causing this
+        // issue.
+        gp.getWarpS().warpFollowersToPlayer(gp.getParty());
+
+        // Warp non-party member followers to the player entity.
+        gp.getWarpS().warpFollowersToPlayer(gp.getNpc());
+        gp.getWarpS().warpFollowersToPlayer(gp.getObj());
+
+        // Restore pre-combat ordering of party members (run before restoring pre-combat party hidden states).
+        for (int i = 0; i < partyOrdering.size(); i++) {
+            gp.getPartyS().swapEntityInParty(partyOrdering.get(i), (int)gp.getParty().keySet().toArray()[i]);
+        }
+
         // Reset all combating entities back to pre-combat hidden state.
+        // Must run after restoring pre-combat party ordering, or party members may have incorrect hidden status after
+        // transition is complete.
         for (int entityId : storedEntityHidden.keySet()) {
             gp.getEntityById(entityId).setHidden(storedEntityHidden.get(entityId));
         }
-
-        // Restore pre-combat ordering of party members.
-        for (int i = 0; i < partyOrdering.size(); i++) {
-            gp.getPartyS().swapEntityInParty(partyOrdering.get(i), i);
-        }
-
-        // Warp party members to player.
-        gp.getWarpS().warpFollowersToPlayer(gp.getParty());
 
         // Swap music, if applicable.
         if (!retainPreCombatTrack) {
@@ -1707,6 +1801,7 @@ public class CombatManager {
         storedEntityRows.clear();
         storedEntityDirections.clear();
         storedEntityHidden.clear();
+        storedNonCombatingFollowers.clear();
         partyOrdering.clear();
         nonPlayerSideEntities.clear();
         retainPreCombatTrack = false;

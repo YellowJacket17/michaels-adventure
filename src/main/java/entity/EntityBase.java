@@ -12,14 +12,14 @@ import utility.UtilityTool;
 import java.util.Random;
 
 /**
- * This abstract class defines base logic for the player, character, and object classes.
+ * This abstract class defines base logic for all entities, including the player, characters, and objects.
  */
 public abstract class EntityBase extends Drawable {
 
     /*
      * An entity can be one of two types:
-     *    - CHARACTER (NPC, party member, or player)
-     *    - OBJECT
+     *    - Character (NPC, party member, or player)
+     *    - Object (ex. a pickup item in the overworld)
      *
      * A character is an NPC, party member, or the player.  Essentially, these are people.
      * An object is meant to be something static that is not a person (an item such a key, etc.).
@@ -32,32 +32,20 @@ public abstract class EntityBase extends Drawable {
      * The distinction between the two types is largely for organizational purposes.
      * Mainly, the types determine whether the entity is placed in the NPC, party, or object map in GamePanel.
      *
-     * New Entity instances of both types are loaded from JSON data via the JsonParser class.
-     * Each Entity instance is assigned a unique ID, determined by the order in the JSON file.
+     * New EntityBase instances of both types are loaded from JSON data via the JsonParser class.
+     * Each EntityBase instance is assigned a unique ID, determined by ordering in the JSON file.
      * This unique ID can be used to set logic for a specific entity for things like interactions, etc.
      *
      * When creating new character classes that extend this class, model them after the classes in the `npc` package.
      * When creating new object classes that extend this class, model them after the classes in the `object` package.
      *
-     * Note that there's an adjustment to the `worldY` coordinate when rendering an entity of type CHARACTER.
-     * Since an entity's `worldY` represents the bottom-left tile it occupies, we need to effectively move the entity
-     * sprite "up" slightly (in the negative y-direction) when rendering since rendering is done in respect to the
-     * top-left coordinate of a sprite.
-     * In other words, if a character is taller than a tile, the y-position needs to adjusted when rendering.
-     * If this adjustment were to not happen, then the top-left corner of a character's sprite would be in the same
-     * position as the top-left corner of the bottom-left tile it's meant to occupy.
-     * This would cause the entire character sprite to render "lower" on the map (in the position y-direction) than it
-     * should.
-     * This is not an issue for entities of type OBJECT since their heights are forced to be the same as the native tile
-     * size.
-     *
+     * In the `update()` method, the actions at the top take precedent over all other actions, in their order of
+     * importance.
+     * If one of these actions is triggered, then no further actions will be checked.
+     * For example, if an entity is in combat, then no pathfinding logic will run, either for following an entity or
+     * following a path to a specified tile.
      *
      * Please note the following:
-     *    - Entities are solid/have collision by default unless changed during or after instantiation.
-     *    - An entity's `speed` is not required for instantiation and will be zero (Java default) unless defined.
-     *      If a character OR object that can move class is made, define a value for `speed` on instantiation.
-     *    - An entity is not required to have a `name` (it's not required as part of the Entity class's constructor).
-     *      To give a default `name` to an entity, define it in that entity's class.
      *    - An entity has two states for following a path: `onPath` and `onEntity`.
      *      `onPath` is set to true when the entity is finding a path to an arbitrary world position.
      *      `onEntity` is set to true when the entity is finding a path to follow a target entity.
@@ -80,7 +68,7 @@ public abstract class EntityBase extends Drawable {
     protected final int entityId;
 
     /**
-     * Type of entity (CHARACTER or OBJECT).
+     * Type of entity (character or object).
      */
     protected final EntityType type;
 
@@ -182,6 +170,7 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Boolean to set whether this entity is rendered on screen or not.
+     * Hidden entities cannot be interacted with (no collision detection, etc.).
      */
     protected boolean hidden = false;
 
@@ -204,15 +193,14 @@ public abstract class EntityBase extends Drawable {
     protected int onPathGoalCol, onPathGoalRow;
 
     /**
-     * Boolean setting whether this entity is following another entity.
+     * ID of the entity that this entity is following.
      */
-    protected boolean onEntity = false;
+    protected int onEntityId = NO_ENTITY_FOLLOWED;
 
     /**
-     * ID of the entity that this entity is following.
-     * A value of -1 means that no entity is being followed.
+     * Argument to be passed when this entity is not following another entity.
      */
-    protected int onEntityId = -1;
+    protected static final int NO_ENTITY_FOLLOWED = 33712339;
 
 
     // BUFFERS
@@ -389,7 +377,16 @@ public abstract class EntityBase extends Drawable {
     public void update(double dt) {
 
         // These are core actions that take precedent over all others.
-        if (onEntity) {
+        if (gp.getCombatingEntities().contains(entityId)) {
+            // TODO : Add combat-specific logic here.
+            return;
+        }
+
+        if (gp.getConversingEntities().contains(entityId)) {
+            return;
+        }
+
+        if (isOnEntity()) {
             actionFollowEntity(dt, onEntityId);
             return;
         }
@@ -399,7 +396,7 @@ public abstract class EntityBase extends Drawable {
         }
 
         // If entity is in player's party and not following/active, no update is necessary.
-        if (gp.getParty().get(entityId) != null) {}
+        if (gp.getParty().get(entityId) != null) {return;}
 
         // Set other actions.
         setAction(dt);
@@ -624,16 +621,16 @@ public abstract class EntityBase extends Drawable {
         gp.getCollisionI().checkLandmark(this);
 
         // Check object collision.
-        gp.getCollisionI().checkEntity(this, gp.getObj());
+        gp.getCollisionI().checkEntity(this, gp.getObj(), true);
 
         // Check NPC collision.
-        gp.getCollisionI().checkEntity(this, gp.getNpc());
+        gp.getCollisionI().checkEntity(this, gp.getNpc(), true);
 
         // Check party collision.
-        gp.getCollisionI().checkEntity(this, gp.getParty());
+        gp.getCollisionI().checkEntity(this, gp.getParty(), true);
 
         // Check player collision.
-        gp.getCollisionI().checkPlayer(this);
+        gp.getCollisionI().checkPlayer(this, true);
     }
 
 
@@ -781,12 +778,12 @@ public abstract class EntityBase extends Drawable {
             }
         } else {
 
-            stopFollowingPath();                                                                                     // A path to the goal was not found, so exit this state.
+            stopFollowingPath();                                                                                        // A path to the goal was not found, so exit this state.
 
             if ((startCol != goalCol) && (startRow != goalRow)) {
 
-                onEntity = false;                                                                                       // A path to the target entity was not found, so exit this state.
-                onEntityId = 0;                                                                                         // Reset the target entity.
+                onEntityId = NO_ENTITY_FOLLOWED;                                                                        // Reset the target entity.
+
                 UtilityTool.logError("Entity"
                         + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
                         + " with ID '"
@@ -820,7 +817,7 @@ public abstract class EntityBase extends Drawable {
             actionPath(dt, goalCol, goalRow);                                                                           // Initiate a pathfinding operation.
         } else {
 
-            onEntity = false;                                                                                           // Entity to follow does not exist, so exit this state.
+            onEntityId = NO_ENTITY_FOLLOWED;
 
             UtilityTool.logError("Target entity with ID '"
                     + entityId
@@ -1211,7 +1208,7 @@ public abstract class EntityBase extends Drawable {
     }
 
     public boolean isOnEntity() {
-        return onEntity;
+        return onEntityId != NO_ENTITY_FOLLOWED;
     }
 
     public int getOnEntityId() {
@@ -1394,7 +1391,7 @@ public abstract class EntityBase extends Drawable {
     }
 
     public void startFollowingPath(int goalCol, int goalRow) {
-        if (!onEntity) {
+        if (!isOnEntity()) {
             this.onPathGoalCol = goalCol;
             this.onPathGoalRow = goalRow;
             this.onPath = true;
@@ -1413,16 +1410,14 @@ public abstract class EntityBase extends Drawable {
             if (target != null) {
                 EntityBase followed = gp.getEntityById(gp.getEventM().checkEntityChainDown(target));                    // If a chain of followers is following the target entity, then this entity will be placed at the back of the chain (i.e., this entity will actually follow the entity at the end of the chain).
                 onEntityId = followed.getEntityId();
-                onEntity = true;
                 followed.setColLast(this.getCol());                                                                     // The follower will always find a path to the followed's last position; setting it this way prevents the follower from instantly moving once following begins.
-                followed.setRowLast(this.getRow());                                                                     // Same as previous comment.
+                followed.setRowLast(this.getRow());                                                                     // ^^^
             }
         }
     }
 
     public void stopFollowingEntity() {
-        onEntityId = -1;
-        onEntity = false;
+        onEntityId = NO_ENTITY_FOLLOWED;
     }
 
     public void setName(String name) {

@@ -13,8 +13,13 @@ import java.util.ArrayList;
  */
 public class CollisionInspector {
 
-    // FIELD
+    // FIELDS
     private final GamePanel gp;
+
+    /**
+     * Argument to be passed when no collision has occurred.
+     */
+    public static final int NO_COLLISION = 68761926;
 
 
     // CONSTRUCTOR
@@ -79,6 +84,7 @@ public class CollisionInspector {
 
     /**
      * Checks if an entity is colliding with a landmark.
+     * If so, the entity being check for collision with a landmark is set as colliding.
      *
      * @param entity interacting entity
      */
@@ -144,22 +150,26 @@ public class CollisionInspector {
 
 
     /**
-     * Checks to see if a solid entity or landmark occupies a node; used as part of node collision check for A* pathfinding.
+     * Checks to see if a solid entity or landmark occupies a node; used as part of node collision check for A*
+     * pathfinding.
+     * Hidden entities are not counted.
      *
      * @param targetRow row of the tile/node being checked
      * @param targetCol column of the tile/node being checked
      * @param goalRow row of the final goal tile/node for the pathfinding operation
      * @param goalCol column of the final goal tile/node for the pathfinding operation
      * @param entity entity following the path
+     * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
+     *                        (false)
      * @return whether a solid entity or landmark occupies the target tile/node (true) or not (false)
      */
-    public boolean checkNode(int targetRow, int targetCol, int goalRow, int goalCol, EntityBase entity) {
+    public boolean checkNode(int targetRow, int targetCol, int goalRow, int goalCol, EntityBase entity, boolean ignoreFollowers) {
 
         // Only check entities if the row/column we're checking isn't the same as the goal row/column for the pathfinding operation.
         // This is because a random entity occupying the goal row/column will automatically cause the entire pathfinding operation to fail.
         // However, we don't want the operation to fail if, say, an NPC walks into the goal row/column and then walks away.
         if ((targetRow != goalRow) || (targetCol != goalCol)) {
-            if (calculateNodeEntity(targetRow, targetCol, entity)) {
+            if (calculateNodeEntity(targetRow, targetCol, entity, ignoreFollowers)) {
                 return true;
             }
         }
@@ -173,27 +183,35 @@ public class CollisionInspector {
 
     /**
      * Checks if an entity (primary) is colliding with another entity (target).
+     * If so, the primary entity is set as colliding.
+     * Hidden entities are not counted.
      *
      * @param entity primary entity
      * @param target target entity map to be checked for colliding entities
-     * @return ID of the colliding entity; will return -1 if no collision was found
+     * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
+     *                        (false)
+     * @return ID of the colliding entity; will return CollisionInspector.NO_COLLISION if no collision was found
      */
-    public int checkEntity(EntityBase entity, LimitedLinkedHashMap<Integer, EntityBase> target) {
+    public int checkEntity(EntityBase entity, LimitedLinkedHashMap<Integer, EntityBase> target, boolean ignoreFollowers) {
 
-        return calculateEntityCollision(entity, target);
+        return calculateEntityCollision(entity, target, ignoreFollowers);
     }
 
 
     /**
      * Checks if an entity is colliding with the player entity.
+     * If so, the entity being check for collision with the player entity is set as colliding.
+     * Hidden entities are not counted.
      *
      * @param entity entity being checked for collision with player entity
+     * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
+     *                        (false)
      */
-    public void checkPlayer(EntityBase entity) {
+    public void checkPlayer(EntityBase entity, boolean ignoreFollowers) {
 
         LimitedLinkedHashMap<Integer, EntityBase> target = new LimitedLinkedHashMap<>(1);                               // Create a target map that only contains the player entity; this is so we can use the `calculateEntityCollision()` method.
         target.put(gp.getPlayer().getEntityId(), gp.getPlayer());
-        calculateEntityCollision(entity, target);
+        calculateEntityCollision(entity, target, ignoreFollowers);
     }
 
 
@@ -251,13 +269,16 @@ public class CollisionInspector {
 
     /**
      * Calculates whether a solid entity occupies a node; used as part of node collision check for A* pathfinding.
+     * Hidden entities are not counted.
      *
      * @param targetRow row of the tile/node being checked
      * @param targetCol column of the tile/node being checked
      * @param entity entity following the path
+     * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
+     *                        (false)
      * @return whether a solid entity occupies the target tile/node (true) or not (false)
      */
-    private boolean calculateNodeEntity(int targetRow, int targetCol, EntityBase entity) {
+    private boolean calculateNodeEntity(int targetRow, int targetCol, EntityBase entity, boolean ignoreFollowers) {
 
         ArrayList<EntityBase> target = new ArrayList<>();                                                               // Generate a single list of all non-null entities; excludes the entity we're finding a path for.
 
@@ -296,12 +317,18 @@ public class CollisionInspector {
 
                 if (candidate.hasCollision() && !candidate.isHidden()) {                                                // Check if the candidate entity is solid (i.e., has collision) or not and visible.
 
-                    boolean followed = gp.getEventM().checkEntityChainUp(entity, candidate);                            // Check if the primary entity is being followed by the target entity (directly or in chain).
-                    boolean following = gp.getEventM().checkEntityChainUp(candidate, entity);                           // Check if the primary entity is following the target entity (directly or in chain).
+                    if (ignoreFollowers) {
 
-                    if ((!followed) && (!following)) {                                                                  // If either condition is true, no collision will be set.
+                        boolean followed = gp.getEventM().checkEntityChainUp(entity, candidate);                        // Check if the primary entity is being followed by the target entity (directly or in chain).
+                        boolean following = gp.getEventM().checkEntityChainUp(candidate, entity);                       // Check if the primary entity is following the target entity (directly or in chain).
 
-                        return true;                                                                                    // A solid entity occupies this tile.
+                        if ((!followed) && (!following)) {                                                              // If either condition is true, no collision will be set.
+
+                            return true;                                                                                // A solid entity occupies this tile.
+                        }
+                    } else {
+
+                        return true;
                     }
                 }
             }
@@ -312,14 +339,18 @@ public class CollisionInspector {
 
     /**
      * Calculates if an entity (primary) is colliding with another entity (target).
+     * If so, the primary entity is set as colliding.
+     * Hidden entities are not counted.
      *
      * @param entity primary entity
      * @param target target entity map to be checked for colliding entities
-     * @return ID of the colliding entity; will return -1 if no collision was found
+     * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
+     *                        (false)
+     * @return ID of the colliding entity; will return CollisionInspector.NO_COLLISION if no collision was found
      */
-    private int calculateEntityCollision(EntityBase entity, LimitedLinkedHashMap<Integer, EntityBase> target) {
+    private int calculateEntityCollision(EntityBase entity, LimitedLinkedHashMap<Integer, EntityBase> target, boolean ignoreFollowers) {
 
-        int collidingEntityId = -1;                                                                                     // Initialize with a default value; note that -1 is somewhat arbitrary, as long as it's guaranteed to not be a valid entity ID.
+        int collidingEntityId = NO_COLLISION;                                                                           // Initialize with a default value.
 
         int entityCol = entity.getCol();                                                                                // Initialize variable with primary entity's current tile position.
         int entityRow = entity.getRow();                                                                                // ^^^
@@ -355,16 +386,22 @@ public class CollisionInspector {
 
                     if (candidate.hasCollision() && !candidate.isHidden()) {                                            // Check whether the candidate entity is solid (i.e., has collision) or not and visible.
 
-                        boolean followed = gp.getEventM().checkEntityChainUp(entity, candidate);                        // Check if the primary entity is being followed by the candidate entity (directly or in a chain).
-                        boolean following = gp.getEventM().checkEntityChainUp(candidate, entity);                       // Check if the primary entity is following the candidate entity (directly or in a chain).
+                        if (ignoreFollowers) {
 
-                        if ((!followed) && (!following)) {                                                              // If either condition is true, no collision will be set.
+                            boolean followed = gp.getEventM().checkEntityChainUp(entity, candidate);                    // Check if the primary entity is being followed by the candidate entity (directly or in a chain).
+                            boolean following = gp.getEventM().checkEntityChainUp(candidate, entity);                   // Check if the primary entity is following the candidate entity (directly or in a chain).
+
+                            if ((!followed) && (!following)) {                                                          // If either condition is true, no collision will be set.
+
+                                entity.setColliding(true);
+                                collidingEntityId = candidate.getEntityId();
+                            }
+                        } else {
 
                             entity.setColliding(true);
+                            collidingEntityId = candidate.getEntityId();
                         }
                     }
-
-                    collidingEntityId = candidate.getEntityId();                                                        // Regardless of whether the candidate entity has collision or not, return its ID.
                 }
             }
         }

@@ -59,7 +59,7 @@
             "defaultRow": 25
         },
         "moves": {
-            "slot1": 1
+            "1": 1
         }
     },
 
@@ -89,7 +89,7 @@
             "defaultRow": 8
         },
         "moves": {
-            "slot1": 1
+            "1": 1
         }
     },
 
@@ -146,7 +146,7 @@
             "defaultRow": 1
         },
         "moves": {
-            "slot1": 1
+            "1": 1
         }
     },
 

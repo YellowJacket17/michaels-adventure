@@ -9,6 +9,9 @@ import entity.EntityDirection;
 import event.WarpTransitionType;
 import utility.LimitedLinkedHashMap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * This class contains methods to facilitate warping.
  * The public methods in this class serve as primary endpoints to use when programming in-game events.
@@ -53,6 +56,9 @@ public class WarpSupport {
     // METHODS
     /**
      * Warps the player to a new location.
+     * Any followers (both party and non-party) will be warped as well.
+     * Any additional entities in the `npc` and `obj` (hash)maps will be purged if warping to a new map.
+     * To retain these additional entities, they should first be transferred to the `standby` (hash)map.
      *
      * @param mapId ID of the map that the player entity will be warped to
      * @param mapState state of the map that the player entity will be warped to
@@ -61,17 +67,37 @@ public class WarpSupport {
      */
     public void initiateWarp(int mapId, int mapState, int col, int row) {
 
-        boolean newMap = false;                                                                                         // Track whether we're warping to a new map (true) or a new point on the current map (false).
+        HashMap<Integer, Integer> nonPartyFollowers = new HashMap<>();                                                  // Key is entity ID of non-party player entity follower, value is source map (0 for `npc`, 1 for `obj`).
+
+        boolean newMap = false;
 
         if (mapId != gp.getLoadedMap().getMapId()) {                                                                    // Only load the map if it's different from the one the player is warping from.
 
             newMap = true;
-            gp.loadMap(mapId, mapState, !overrideMapTrack);                                                             // Set the map the player is on.
-        }
-        gp.getPlayer().setCol(col);                                                                                     // Set the player's position in the world (x)
-        gp.getPlayer().setRow(row);                                                                                     // Set the player's position in the world (y).
 
-        if (gp.getPlayer().isMoving()) {                                                                                // If the player is moving, adjust the ending position to be correct.
+            for (EntityBase entity : gp.getNpc().values()) {                                                            // Transfer any non-party NPC player entity followers to `standby` map.
+
+                if (gp.getEventM().checkEntityChainUp(gp.getPlayer(), entity)) {
+
+                    gp.transferEntity(gp.getNpc(), gp.getStandby(), entity.getEntityId());
+                    nonPartyFollowers.put(entity.getEntityId(), 0);
+                }
+            }
+
+            for (EntityBase entity : gp.getObj().values()) {                                                            // Transfer any non-party object player entity followers to `standby` map.
+
+                if (gp.getEventM().checkEntityChainUp(gp.getPlayer(), entity)) {
+
+                    gp.transferEntity(gp.getObj(), gp.getStandby(), entity.getEntityId());
+                    nonPartyFollowers.put(entity.getEntityId(), 1);
+                }
+            }
+            gp.loadMap(mapId, mapState, !overrideMapTrack);                                                             // Load new map now that any non-party player entity followers have been transferred to `standby` map.
+        }
+        gp.getPlayer().setCol(col);                                                                                     // Set the player entity's position in the world (x)
+        gp.getPlayer().setRow(row);                                                                                     // Set the player entity's position in the world (y).
+
+        if (gp.getPlayer().isMoving()) {                                                                                // If the player entity is moving, adjust the ending position to be correct.
             switch (gp.getPlayer().getDirectionCandidate()) {
                 case UP:
                     gp.getPlayer().setRowEnd(gp.getPlayer().getRowEnd() - 1);
@@ -87,28 +113,30 @@ public class WarpSupport {
                     break;
             }
         }
+        warpFollowersToPlayer(gp.getParty());                                                                           // Check party members.
 
         if (newMap) {                                                                                                   // If a new map is loaded, warp all party members to the player and have them follow the player.
 
-            gp.getEventM().breakFollowerChain(gp.getPlayer());                                                          // Reset the entities following the player.
+            warpFollowersToPlayer(gp.getStandby());                                                                     // Check standby entities, since non-party followers were transferred here.
+        } else {
 
-            for (EntityBase entity : gp.getParty().values()) {
-
-                if (entity != null) {
-
-                    entity.cancelAction();                                                                              // Resets the number of pixels traversed from a cancelled movement.
-                    entity.setDirectionCurrent(gp.getPlayer().getDirectionCandidate());                                 // Have the party member face the same direction as the player when warped.
-                    entity.setCol(col);
-                    entity.setRow(row);
-
-                    gp.getEventM().setEntityFollowTarget(entity.getEntityId(), gp.getPlayer().getEntityId());           // Set the party member to follow the player.
-                }
-            }
-        } else {                                                                                                        // If a new map is not loaded, warp any followers trailing the player along with the player.
-
-            warpFollowersToPlayer(gp.getParty());                                                                       // Check party members.
             warpFollowersToPlayer(gp.getNpc());                                                                         // Check NPCs.
             warpFollowersToPlayer(gp.getObj());                                                                         // Check objects (just in case).
+        }
+
+        if (newMap) {
+
+            for (int entityId : nonPartyFollowers.keySet()) {                                                           // Transfer non-party player entity followers back from `standby` map now that loading is complete.
+
+                switch (nonPartyFollowers.get(entityId)) {
+                    case 0:
+                        gp.transferEntity(gp.getStandby(), gp.getNpc(), entityId);
+                        break;
+                    case 1:
+                        gp.transferEntity(gp.getStandby(), gp.getObj(), entityId);
+                        break;
+                }
+            }
         }
     }
 
@@ -117,6 +145,8 @@ public class WarpSupport {
      * Warps the player to a new location.
      * The warp is dressed with a fade-to-black transition.
      * The track specified by the map being warped to will not automatically play.
+     * Any additional entities in the `npc` and `obj` (hash)maps will be purged if warping to a new map.
+     * To retain these additional entities, they should first be transferred to the `standby` (hash)map.
      * The game state is set to transition.
      *
      * @param dt time since last frame (seconds)
@@ -157,6 +187,8 @@ public class WarpSupport {
      * Warps the player to a new location.
      * The warp is dressed with a fade-to-black transition.
      * The track specified by the map being warped to will automatically play.
+     * Any additional entities in the `npc` and `obj` (hash)maps will be purged if warping to a new map.
+     * To retain these additional entities, they should first be transferred to the `standby` (hash)map.
      * The game state is set to transition.
      *
      * @param dt time since last frame (seconds)
@@ -233,7 +265,7 @@ public class WarpSupport {
 
 
     /**
-     * Warps followers to the player entity.
+     * Warps all player entity followers in the specified entity map to the player entity's position.
      *
      * @param target entity map to be checked for entities following the player entity
      */
@@ -245,7 +277,7 @@ public class WarpSupport {
                     && (gp.getEventM().checkEntityChainUp(gp.getPlayer(), entity))) {
 
                 entity.cancelAction();                                                                                  // Resets the number of pixels traversed from a cancelled movement.
-                entity.setDirectionCurrent(gp.getPlayer().getDirectionCurrent());                                       // Have the party member face the same direction as the player when warped.
+                entity.setDirectionCurrent(gp.getPlayer().getDirectionCurrent());                                       // Have follower face the same direction as the player entity when warped.
                 entity.setCol(gp.getPlayer().getCol());
                 entity.setRow(gp.getPlayer().getRow());
             }

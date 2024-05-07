@@ -182,7 +182,16 @@ public class Player extends EntityBase {
     public void update(double dt) {
 
         // These are core actions that take precedent over all others.
-        if (onEntity) {
+        if (gp.getCombatingEntities().contains(entityId)) {
+            // TODO : Add combat-specific logic here.
+            return;
+        }
+
+        if (gp.getConversingEntities().contains(entityId)) {
+            return;
+        }
+
+        if (isOnEntity()) {
             actionFollowEntity(dt, onEntityId);
             return;
         }

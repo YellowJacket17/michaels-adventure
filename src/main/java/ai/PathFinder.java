@@ -259,7 +259,7 @@ public class PathFinder {
                 && (!node.isChecked())
                 && (!node.isSolid())
                 && (!gp.getCollisionI().checkNode(node.getRow(), node.getCol(),
-                goalNode.getRow(), goalNode.getCol(), entity))) {
+                goalNode.getRow(), goalNode.getCol(), entity, true))) {
 
             node.setOpen(true);
             node.setParent(currentNode);

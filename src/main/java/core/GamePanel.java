@@ -121,8 +121,10 @@ public class GamePanel {
     private final LimitedLinkedHashMap<Integer, EntityBase> party = new LimitedLinkedHashMap<>(5);
 
     /**
-     * Map to store entities loaded into the game but not currently available on the loaded map; entity ID is the key,
+     * Map to store entities loaded into the game but not currently available; entity ID is the key,
      * entity is the value.
+     * Note that entities in this map are neither updated nor rendered.
+     * Entities in this map may be of either entity type.
      */
     private final LimitedLinkedHashMap<Integer, EntityBase> standby = new LimitedLinkedHashMap<>(50);
 
@@ -445,9 +447,13 @@ public class GamePanel {
 
 
     /**
-     * Loads a new map and sets it as the current map being rendered.
+     * Loads a new map into memory and sets it as the current map to render.
+     * The following will be purged before loading the new map: prior loaded map, prior NPCs in `npc` (hash)map, prior
+     * objects in `obj` (hash)map, and prior conversations in `conv` (hash)map.
+     * New NPCs, objects, and conversations will be loaded with the new map.
+     * To retain an NPC or object between map loads, it should first be transferred to the `standby` (hash)map.
      *
-     * @param mapId ID of the map being loaded
+     * @param mapId ID of map to load
      * @param mapState state in which to load map
      * @param swapTrack whether to swap to play the track specified by the map being loaded (true) or not (false)
      */
@@ -456,30 +462,37 @@ public class GamePanel {
         // Set new map.
         loadedMap = JsonParser.loadMapJson(this, mapId);
 
-        // Set map state.
-        loadedMap.setMapState(mapState);
+        // Set map state and swap track, if applicable.
+        loadedMap.setMapState(mapState, swapTrack);
 
         // Clear conversing and combating entity lists.
         clearConversingEntities();
         clearCombatingEntities();
 
-        // Purge `npc` and `obj` arrays.
+        // Purge `npc` and `obj` (hash)maps.
         npc.clear();
         obj.clear();
 
         // Load entities on new map.
         JsonParser.loadEntitiesJson(this, mapId);
 
-        // Purge `conv` array.
+        // Purge `conv` (hash)map.
         conv.clear();
 
         // Load dialogue associated with new map.
         JsonParser.loadDialogueJson(this, mapId);
+    }
 
-        // Swap track, if applicable.
-        if (swapTrack) {
-            soundS.swapTrack(loadedMap.getTracks().get(mapState), true);
-        }
+
+    /**
+     * Loads any new entity into memory, regardless of whether it's tied to the loaded map or not.
+     * If the entity is already loaded, nothing will happen.
+     *
+     * @param entityId ID of entity to load
+     */
+    public void loadEntity(int entityId) {
+
+        JsonParser.loadEntityJson(this, entityId);
     }
 
 
@@ -665,27 +678,21 @@ public class GamePanel {
 
         // Object.
         for (EntityBase entity : obj.values()) {
-            if ((entity != null)
-                    && (!conversingEntities.contains(entity.getEntityId()))
-                    && (!combatingEntities.contains(entity.getEntityId()))) {                                           // Only update objects neither in a conversation nor in combat.
+            if (entity != null) {
                 entity.update(dt);
             }
         }
 
         // NPC.
         for (EntityBase entity : npc.values()) {
-            if ((entity != null)
-                    && (!conversingEntities.contains(entity.getEntityId()))
-                    && (!combatingEntities.contains(entity.getEntityId()))) {                                           // Only update NPCs neither in a conversation nor in combat.
+            if (entity != null) {
                 entity.update(dt);
             }
         }
 
         // Party.
         for (EntityBase entity : party.values()) {
-            if ((entity != null)
-                    && (!conversingEntities.contains(entity.getEntityId()))
-                    && (!combatingEntities.contains(entity.getEntityId()))) {                                           // Only update party members neither in a conversation nor in combat.
+            if (entity != null) {
                 entity.update(dt);
             }
         }

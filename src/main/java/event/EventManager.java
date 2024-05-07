@@ -1,5 +1,6 @@
 package event;
 
+import miscellaneous.CollisionInspector;
 import miscellaneous.GameState;
 import entity.EntityBase;
 import core.GamePanel;
@@ -14,6 +15,7 @@ import event.implementation.submenu.Evt_SubMenu001;
 import item.ItemBase;
 import utility.UtilityTool;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,8 +24,13 @@ import java.util.List;
  */
 public class EventManager {
 
-    // BASIC FIELD
+    // BASIC FIELDS
     private final GamePanel gp;
+
+    /**
+     * Argument to be passed when more than 15 entities were found when checking an entity chain.
+     */
+    public static final int ENTITY_CHAIN_OVERFLOW = 90775748;
 
 
     // MAP EVENT FIELDS
@@ -73,9 +80,9 @@ public class EventManager {
      */
     public boolean handleObjectInteraction(double dt, EventType type) {
 
-        int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getObj());                                     // If there's collision with an object (i.e., object in front of player entity), retrieve the entity ID of the object.
+        int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getObj(), false);                              // If there's collision with an object (i.e., object in front of player entity), retrieve the entity ID of the object.
 
-        if (entityId != -1) {                                                                                           // If the entity ID passed in as the default -1, that means there are no objects in front of the player character.
+        if (entityId != CollisionInspector.NO_COLLISION) {
 
             EntityBase target = gp.getObj().get(entityId);                                                              // Retrieve the entity corresponding with the returned entity ID.
 
@@ -102,9 +109,9 @@ public class EventManager {
      */
     public boolean handleNpcInteraction(double dt, EventType type) {
 
-        int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getNpc());                                     // If there's collision with an NPC (i.e., NPC in front of player), retrieve the entity ID of the NPC.
+        int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getNpc(), false);                              // If there's collision with an NPC (i.e., NPC in front of player), retrieve the entity ID of the NPC.
 
-        if (entityId != -1) {                                                                                           // If the entity ID passed in as the default -1, that means there are no NPCs in front of the player character.
+        if (entityId != CollisionInspector.NO_COLLISION) {
 
             EntityBase target = gp.getNpc().get(entityId);                                                              // Retrieve the entity corresponding with the returned entity ID.
 
@@ -131,9 +138,9 @@ public class EventManager {
      */
     public boolean handlePartyInteraction(double dt, EventType type) {
 
-        int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getParty());                                   // If there's collision with a party member (i.e., party member in front of player entity), retrieve the entity ID of the party member.
+        int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getParty(), false);                            // If there's collision with a party member (i.e., party member in front of player entity), retrieve the entity ID of the party member.
 
-        if (entityId != -1) {                                                                                           // If the entity ID passed in as the default -1, that means there are no party members in front of the player character.
+        if (entityId != CollisionInspector.NO_COLLISION) {
 
             EntityBase target = gp.getParty().get(entityId);                                                            // Retrieve the entity corresponding with the returned entity ID.
 
@@ -185,9 +192,10 @@ public class EventManager {
                 break;
         }
 
-        if ((type == EventType.STEP)                                                                              // If interaction type is step.
-                && ((gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getNpc()) != -1)                                 // Ensure tile is not already occupied by an NPC (ignore party members since no collision).
-                || (gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getObj()) != -1))) {                              // Ensure tile is not already occupied by an object.
+        if ((type == EventType.STEP)                                                                                                // If interaction type is step.
+                && ((gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getNpc(), true) != CollisionInspector.NO_COLLISION)          // Ensure tile is not already occupied by a solid, non-follower/followed, visible NPC.
+                    || (gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getObj(), true) != CollisionInspector.NO_COLLISION)       // Ensure tile is not already occupied by a solid, non-follower/followed, visible object.
+                    || (gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getParty(), true) != CollisionInspector.NO_COLLISION))) { // Ensure title is not already occupied by a solid, non-follower/followed, visible party member.
 
             return false;
         }
@@ -521,7 +529,8 @@ public class EventManager {
      * Retrieves the ID of the last entity in the chain of followers behind the target entity (target).
      *
      * @param target entity whose last follower is being retrieved
-     * @return ID of the last entity in the chain; returns -1 if more than 15 followers exist behind the target entity
+     * @return ID of the last entity in the chain; returns EventManager.ENTITY_CHAIN_OVERFLOW if more than 15 followers
+     * exist behind the target entity
      */
     public int checkEntityChainDown(EntityBase target) {
 
@@ -556,7 +565,7 @@ public class EventManager {
                 return entityId;                                                                                        // No follower was found, meaning the entity being checked in the current iteration is the last in the chain.
             }
         }
-        return -1;                                                                                                      // Return -1 to signal that we ran out of iterations.
+        return ENTITY_CHAIN_OVERFLOW;                                                                                   // Signal that we ran out of iterations.
     }
 
 
@@ -698,5 +707,71 @@ public class EventManager {
 
         gp.setGameState(GameState.DIALOGUE);
         gp.getDialogueR().initiateStandardMessage(message, showArrow);
+    }
+
+
+    /**
+     * Sets all non-party followers of the player entity as visible.
+     */
+    public void showAllNonPartyFollowers() {
+
+        ArrayList<Integer> nonPartyFollowers = seekNonPartyFollowers(gp.getPlayer());
+
+        for (int entityId : nonPartyFollowers) {
+
+            gp.getEntityById(entityId).setHidden(false);
+        }
+    }
+
+
+    /**
+     * Sets all non-party followers of the player entity as hidden.
+     */
+    public void hideAllNonPartyFollowers() {
+
+        ArrayList<Integer> nonPartyFollowers = seekNonPartyFollowers(gp.getPlayer());
+
+        for (int entityId : nonPartyFollowers) {
+
+            gp.getEntityById(entityId).setHidden(true);
+        }
+    }
+
+
+    /**
+     * Generates a list of (almost) all entities following the followed entity, either directly or in a chain.
+     * Note that only the `npc`, `obj`, and `standby` entity maps are checked (i.e., not the `party` entity map).
+     *
+     * @param followed followed entity
+     * @return list of entity IDs of followers
+     */
+    public ArrayList<Integer> seekNonPartyFollowers(EntityBase followed) {
+
+        ArrayList<Integer> followers = new ArrayList<>();                                                               // List to store IDs of all followers of the target entity to use when rebuilding chain.
+
+        for (EntityBase candidate : gp.getNpc().values()) {                                                             // Record any NPC followers.
+
+            if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
+
+                followers.add(candidate.getEntityId());
+            }
+        }
+
+        for (EntityBase candidate : gp.getObj().values()) {                                                             // Record any object followers.
+
+            if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
+
+                followers.add(candidate.getEntityId());
+            }
+        }
+
+        for (EntityBase candidate : gp.getStandby().values()) {                                                         // Record any standby followers.
+
+            if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
+
+                followers.add(candidate.getEntityId());
+            }
+        }
+        return followers;
     }
 }

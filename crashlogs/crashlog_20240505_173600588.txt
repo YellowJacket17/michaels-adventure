@@ -1,0 +1,16 @@
+05/05/2024 17:35:41:798  INFO     Application started.
+05/05/2024 17:35:49:197  INFO     Starting game loop.
+05/05/2024 17:35:49:202  WARNING  Unrecognized key with code '-1' was detected.
+05/05/2024 17:36:00:586  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "entity.EntityBase.getEntityId()" because "opponent3" is null
+	at combat.CombatManager.initiateCombat(CombatManager.java:288)
+	at combat.CombatManager.initiateCombat(CombatManager.java:261)
+	at event.implementation.map.Evt_Map001.tileInteraction(Evt_Map001.java:121)
+	at event.EventManager.handleTileInteraction(EventManager.java:201)
+	at entity.implementation.player.Player.checkStepInteraction(Player.java:918)
+	at entity.implementation.player.Player.updateExploreInput(Player.java:550)
+	at entity.implementation.player.Player.updatePlayerInput(Player.java:155)
+	at core.GamePanel.update(GamePanel.java:316)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:303)
+	at core.App.main(App.java:21)

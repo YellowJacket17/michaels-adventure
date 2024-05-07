@@ -1,8 +1,8 @@
-05/07/2024 17:57:18:154  INFO     Application started.
-05/07/2024 17:57:24:461  INFO     Starting game loop.
-05/07/2024 17:57:34:941  ERROR    An unhandled exception has occurred!
-java.lang.IllegalArgumentException: Attempted to initiate combat with the player entity as an opponent
-	at combat.CombatManager.initiateCombat(CombatManager.java:388)
+05/07/2024 17:56:36:994  INFO     Application started.
+05/07/2024 17:56:43:492  INFO     Starting game loop.
+05/07/2024 17:57:01:318  ERROR    An unhandled exception has occurred!
+java.lang.IllegalArgumentException: Attempted to initiate combat with a party member as an opponent
+	at combat.CombatManager.initiateCombat(CombatManager.java:391)
 	at combat.CombatManager.initiateCombat(CombatManager.java:269)
 	at event.implementation.map.Evt_Map001.tileInteraction(Evt_Map001.java:121)
 	at event.EventManager.handleTileInteraction(EventManager.java:207)
