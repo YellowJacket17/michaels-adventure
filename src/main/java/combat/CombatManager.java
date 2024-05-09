@@ -61,8 +61,8 @@ public class CombatManager {
     private final HashMap<Integer, Boolean> storedEntityHidden = new HashMap<>();
 
     /**
-     * List to store all non-party, non-combating followers of the player entity before combat was initiated.
-     * The IDs of the followers are stored in this list with their original ordering retained.
+     * List to store all non-party, non-combating followers of any combating entity (including the player entity) before
+     * combat was initiated.
      */
     private final ArrayList<Integer> storedNonCombatingFollowers = new ArrayList<>();
 
@@ -320,27 +320,6 @@ public class CombatManager {
 
         if (!((opponent1 == null) && (opponent2 == null) && (opponent3 == null))
                 && (!playerOpponent) && (!partyOpponent1) && (!partyOpponent2) && (!partyOpponent3)) {
-
-            // Identify non-party followers of player entity.
-            ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekNonPartyFollowers(gp.getPlayer());
-
-            for (int entityId : nonPartyFollowers) {
-
-                if ((opponent1 != null ? opponent1.getEntityId() != entityId : true)                                    // If opponent1 is not a non-party follower, and
-                        && (opponent2 != null ? opponent2.getEntityId() != entityId : true)                             // if opponent2 is not a non-party follower, and
-                        && (opponent3 != null ? opponent3.getEntityId() != entityId : true)) {                          // if opponent3 is not a non-party follower.
-
-                    switch (gp.getEntityById(entityId).getType()) {
-                        case OBJECT:
-                            gp.transferEntity(gp.getObj(), gp.getStandby(), entityId);                                  // Store as standby entity during combat.
-                            break;
-                        case CHARACTER:
-                            gp.transferEntity(gp.getNpc(), gp.getStandby(), entityId);                                  // Store as standby entity during combat.
-                            break;
-                    }
-                    storedNonCombatingFollowers.add(entityId);
-                }
-            }
 
             // Clear any conversing entities.
             gp.clearConversingEntities();
@@ -1027,84 +1006,9 @@ public class CombatManager {
         // Override camera tracking (we'd like to manually position it for combat).
         gp.getCameraS().setOverrideEntityTracking(true);
 
-        // Store original party member ordering.
-        for (int entityId : gp.getParty().keySet()) {
-
-            partyOrdering.add(entityId);
-        }
-
-        // Set the player entity as combating and store its pre-combat world position.
-        setCombating(gp.getPlayer());
-
-        // Set the player's position and image on the combat field.
-        gp.getPlayer().setCol(fieldCenterCol - 4);
-        gp.getPlayer().setRow(fieldCenterRow);
-        gp.getPlayer().cancelAction();
-        gp.getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
-
-        // Set party member entities as combating and store their pre-combat world positions.
-        // Also set party member positions and images on the combat field.
-        // Any non-active party members will be hidden.
-        int placedPartyMembers = 0;
-
-        for (EntityBase entity : gp.getParty().values()) {
-
-            if (entity != null) {
-
-                setCombating(entity);
-                entity.cancelAction();
-                entity.setDirectionCurrent(EntityDirection.RIGHT);
-                entity.setCol(fieldCenterCol - 5);
-
-                if (placedPartyMembers == 0) {
-
-                    entity.setRow(fieldCenterRow - 2);
-                    entity.setHidden(false);
-                } else if (placedPartyMembers == 1) {
-
-                    entity.setRow(fieldCenterRow + 2);
-                    entity.setHidden(false);
-                } else {
-
-                    entity.setHidden(true);
-                }
-                placedPartyMembers++;
-            }
-        }
-
-        // Set non-player-side entities as combating and store their pre-combat world positions.
-        // Also set non-player-side entity positions and images on the combat field.
-        int placedNonPlayerSideEntities = 0;
-
-        for (int entityId : nonPlayerSideEntities) {
-
-            if (gp.getParty().get(entityId) == null) {
-
-                EntityBase opponent = gp.getEntityById(entityId);
-                setCombating(opponent);
-                opponent.cancelAction();
-                opponent.setDirectionCurrent(EntityDirection.LEFT);
-
-                if (placedNonPlayerSideEntities == 0) {
-
-                    opponent.setCol(fieldCenterCol + 4);
-                    opponent.setRow(fieldCenterRow);
-                } else if (placedNonPlayerSideEntities == 1) {
-
-                    opponent.setCol(fieldCenterCol + 5);
-                    opponent.setRow(fieldCenterRow - 2);
-                } else {
-
-                    opponent.setCol(fieldCenterCol + 5);
-                    opponent.setRow(fieldCenterRow + 2);
-                }
-                opponent.setHidden(false);
-                placedNonPlayerSideEntities++;
-            } else {
-
-                nonPlayerSideEntities.remove(entityId);
-            }
-        }
+        // Prepare entities for combat.
+        preparePlayerSideEntities();
+        prepareNonPlayerSideEntities();
 
         // Generate turn order.
         generateTurnOrder();
@@ -1144,7 +1048,7 @@ public class CombatManager {
             }
         }
 
-        // Transfer non-party, non-combating followers of the player entity back from the standby entity map.
+        // Transfer non-combating followers of all combating entities back from the standby entity map.
         for (int entityId : storedNonCombatingFollowers) {
             switch (gp.getStandby().get(entityId).getType()) {
                 case OBJECT:
@@ -1162,11 +1066,13 @@ public class CombatManager {
         // This is because, when the follower chain is rebuilt in `swapEntityInParty()`, the last tile position of the
         // followed is set to the follower's combat position since the warp to player hasn't happened yet, causing this
         // issue.
-        gp.getWarpS().warpFollowersToPlayer(gp.getParty());
+        gp.getWarpS().warpFollowersToFollowed(gp.getPlayer(), gp.getParty());
 
         // Warp non-party member followers to the player entity.
-        gp.getWarpS().warpFollowersToPlayer(gp.getNpc());
-        gp.getWarpS().warpFollowersToPlayer(gp.getObj());
+        // Note that followers of all other combating entities are NOT warped to their followers and will be left at
+        // their pre-combat positions.
+        gp.getWarpS().warpFollowersToFollowed(gp.getPlayer(), gp.getNpc());
+        gp.getWarpS().warpFollowersToFollowed(gp.getPlayer(), gp.getObj());
 
         // Restore pre-combat ordering of party members (run before restoring pre-combat party hidden states).
         for (int i = 0; i < partyOrdering.size(); i++) {
@@ -1199,6 +1105,104 @@ public class CombatManager {
 
 
     /**
+     * Prepares player-side entities (including the player entity) for combat.
+     * This includes setting entities as combating, setting their combat sprites, and storing their pre-combat world
+     * positions.
+     */
+    private void preparePlayerSideEntities() {
+
+        for (int entityId : gp.getParty().keySet()) {                                                                   // Store original party member ordering.
+
+            partyOrdering.add(entityId);
+        }
+        handleNonCombatingFollowers(gp.getPlayer());
+
+        for (EntityBase partyEntityId : gp.getParty().values()) {
+
+            handleNonCombatingFollowers(partyEntityId);
+        }
+        setCombating(gp.getPlayer());
+        gp.getPlayer().setCol(fieldCenterCol - 4);
+        gp.getPlayer().setRow(fieldCenterRow);
+        gp.getPlayer().cancelAction();
+        gp.getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
+
+        int placedPartyMembers = 0;
+
+        for (EntityBase entity : gp.getParty().values()) {
+
+            if (entity != null) {
+
+                setCombating(entity);
+                entity.cancelAction();
+                entity.setDirectionCurrent(EntityDirection.RIGHT);
+                entity.setCol(fieldCenterCol - 5);
+
+                if (placedPartyMembers == 0) {
+
+                    entity.setRow(fieldCenterRow - 2);
+                    entity.setHidden(false);
+                } else if (placedPartyMembers == 1) {
+
+                    entity.setRow(fieldCenterRow + 2);
+                    entity.setHidden(false);
+                } else {
+
+                    entity.setHidden(true);                                                                             // Set inactive party members as hidden.
+                }
+                placedPartyMembers++;
+            }
+        }
+    }
+
+
+    /**
+     * Prepares non-player-side entities for combat.
+     * This includes setting entities as combating, setting their combat sprites, and storing their pre-combat world
+     * positions.
+     */
+    private void prepareNonPlayerSideEntities() {
+
+
+        for (int nonPlayerSideEntityId : nonPlayerSideEntities) {
+
+            handleNonCombatingFollowers(gp.getEntityById(nonPlayerSideEntityId));
+        }
+        int placedNonPlayerSideEntities = 0;
+
+        for (int entityId : nonPlayerSideEntities) {
+
+            if (gp.getParty().get(entityId) == null) {
+
+                EntityBase opponent = gp.getEntityById(entityId);
+                setCombating(opponent);
+                opponent.cancelAction();
+                opponent.setDirectionCurrent(EntityDirection.LEFT);
+
+                if (placedNonPlayerSideEntities == 0) {
+
+                    opponent.setCol(fieldCenterCol + 4);
+                    opponent.setRow(fieldCenterRow);
+                } else if (placedNonPlayerSideEntities == 1) {
+
+                    opponent.setCol(fieldCenterCol + 5);
+                    opponent.setRow(fieldCenterRow - 2);
+                } else {
+
+                    opponent.setCol(fieldCenterCol + 5);
+                    opponent.setRow(fieldCenterRow + 2);
+                }
+                opponent.setHidden(false);
+                placedNonPlayerSideEntities++;
+            } else {
+
+                nonPlayerSideEntities.remove(entityId);
+            }
+        }
+    }
+
+
+    /**
      * Generates the order in which combating entities will take their turns.
      */
     private void generateTurnOrder() {
@@ -1208,7 +1212,6 @@ public class CombatManager {
 
         // Add all combating entities to the new list of combating entities, even if fainted or outside the first
         // two party slots.
-
         for (int entityId : gp.getCombatingEntities()) {
 
             entitiesToPlace.put(entityId, gp.getEntityById(entityId).getAgility());
@@ -1703,6 +1706,48 @@ public class CombatManager {
             storedEntityRows.put(target.getEntityId(), target.getRow());
             storedEntityDirections.put(target.getEntityId(), target.getDirectionCurrent());
             storedEntityHidden.put(target.getEntityId(), target.isHidden());
+        }
+    }
+
+
+
+    /**
+     * Checks if a combating entity has any followers that are not participating in combat.
+     * If any of said followers are not participating, then they are temporarily transferred to the `standby` entity map
+     * during combat to avoid any combat interference (walking towards the followed entity during combat, etc.).
+     *
+     * @param followed combating entity to check
+     */
+    private void handleNonCombatingFollowers(EntityBase followed) {
+
+        ArrayList<Integer> followers = gp.getEventM().seekFollowers(followed, true, true, false, false);
+        boolean match;
+
+        for (int followerId : followers) {                                                                              // Check each follower of the followed entity.
+
+            match = false;
+
+            for (int nonPlayerSideEntityId : nonPlayerSideEntities) {                                                   // Check each non-player-side combating entity against the current follower.
+
+                if (followerId == nonPlayerSideEntityId) {
+
+                    match = true;                                                                                       // The follower is a non-player-side combating entity.
+                    break;                                                                                              // No need to check against any further non-player-side entities against the current follower.
+                }
+            }
+
+            if (!match) {                                                                                                // If the follower was not found to be a non-player-side combating entity, then handle it.
+
+                switch (gp.getEntityById(followerId).getType()) {
+                    case OBJECT:
+                        gp.transferEntity(gp.getObj(), gp.getStandby(), followerId);                                    // Store as standby entity during combat to prevent interference (walking towards combatant, etc.).
+                        break;
+                    case CHARACTER:
+                        gp.transferEntity(gp.getNpc(), gp.getStandby(), followerId);                                    // Store as standby entity during combat to prevent interference (walking towards combatant, etc.)..
+                        break;
+                }
+                storedNonCombatingFollowers.add(followerId);
+            }
         }
     }
 

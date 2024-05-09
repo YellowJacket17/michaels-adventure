@@ -7,8 +7,6 @@ import org.joml.Vector2i;
 import utility.LimitedArrayList;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.jar.JarOutputStream;
 
 /**
  * This class contains methods to facilitate player party management.
@@ -38,7 +36,7 @@ public class PartySupport {
      */
     public void addEntityToParty(int entityId) {
 
-        ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekNonPartyFollowers();
+        ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekFollowers(gp.getPlayer(), true, true, false, false);
         gp.getEventM().breakFollowerChain(gp.getPlayer());                                                              // Break chain of all entities following player entity (will rebuild later).
         gp.transferEntity(gp.getNpc(), gp.getParty(), entityId);                                                        // Add target entity to party map.
         int entityIndex = 0;                                                                                            // Iterator to track which index of new party map is currently being worked on.
@@ -74,7 +72,7 @@ public class PartySupport {
      */
     public void removeEntityFromParty(int entityId, boolean show) {
 
-        ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekNonPartyFollowers();
+        ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekFollowers(gp.getPlayer(), true, true, false, false);
         LimitedArrayList<Vector2i> partyEntityTiles = new LimitedArrayList<>(gp.getParty().size());                     // List to store party entity world positions at each index in party map.
         LimitedArrayList<EntityDirection> partyEntityDirections = new LimitedArrayList<>(gp.getParty().size());         // List to store party entity directions at each index in party map.
 
@@ -127,7 +125,7 @@ public class PartySupport {
 
         if (primaryEntityId != secondaryEntityId) {                                                                     // No need to run further logic if attempting to swap a party entity with itself.
 
-            ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekNonPartyFollowers();
+            ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekFollowers(gp.getPlayer(), true, true, false, false);
             LimitedArrayList<EntityBase> originalParty = new LimitedArrayList<>(gp.getParty().maxCapacity());           // Temporary list to store all party entities in party map, retaining original ordering.
             int primaryPosition = 0;
             int secondaryPosition = 0;
@@ -225,7 +223,7 @@ public class PartySupport {
      */
     public void removeAllEntitiesFromParty(boolean showAll) {
 
-        ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekNonPartyFollowers();
+        ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekFollowers(gp.getPlayer(), true, true, false, false);
         gp.getEventM().breakFollowerChain(gp.getPlayer());
         LimitedArrayList<Integer> fullParty = new LimitedArrayList<>(gp.getParty().size());
 

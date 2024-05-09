@@ -963,7 +963,6 @@ public abstract class EntityBase extends Drawable {
                         worldYEnd = worldY;
                         break;
                 }
-
                 moving = true;                                                                                          // If the entity isn't going to collide with anything, allow it to move.
                 worldXStart = worldX;                                                                                   // Record current position before moving (x).
                 worldYStart = worldY;                                                                                   // Record current position before moving (y).

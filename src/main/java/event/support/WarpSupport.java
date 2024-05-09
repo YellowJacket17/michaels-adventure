@@ -9,7 +9,6 @@ import entity.EntityDirection;
 import event.WarpTransitionType;
 import utility.LimitedLinkedHashMap;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -113,15 +112,15 @@ public class WarpSupport {
                     break;
             }
         }
-        warpFollowersToPlayer(gp.getParty());                                                                           // Check party members.
+        warpFollowersToFollowed(gp.getPlayer(), gp.getParty());                                                                           // Check party members.
 
         if (newMap) {                                                                                                   // If a new map is loaded, warp all party members to the player and have them follow the player.
 
-            warpFollowersToPlayer(gp.getStandby());                                                                     // Check standby entities, since non-party followers were transferred here.
+            warpFollowersToFollowed(gp.getPlayer(), gp.getStandby());                                                                     // Check standby entities, since non-party followers were transferred here.
         } else {
 
-            warpFollowersToPlayer(gp.getNpc());                                                                         // Check NPCs.
-            warpFollowersToPlayer(gp.getObj());                                                                         // Check objects (just in case).
+            warpFollowersToFollowed(gp.getPlayer(), gp.getNpc());                                                                         // Check NPCs.
+            warpFollowersToFollowed(gp.getPlayer(), gp.getObj());                                                                         // Check objects (just in case).
         }
 
         if (newMap) {
@@ -265,21 +264,24 @@ public class WarpSupport {
 
 
     /**
-     * Warps all player entity followers in the specified entity map to the player entity's position.
+     * Warps all followers in the specified entity map to the followed entity's position.
+     * Warped followers will be placed on the same tile as the followed, facing the same direction as the followed.
+     * Any action that the followed were performing will be cancelled.
      *
-     * @param target entity map to be checked for entities following the player entity
+     * @param followed followed entity to warp followers to
+     * @param entityMap entity map to be checked for entities following the player entity
      */
-    public void warpFollowersToPlayer(LimitedLinkedHashMap<Integer, EntityBase> target) {
+    public void warpFollowersToFollowed(EntityBase followed, LimitedLinkedHashMap<Integer, EntityBase> entityMap) {
 
-        for (EntityBase entity : target.values()) {
+        for (EntityBase entity : entityMap.values()) {
 
             if ((entity != null)
-                    && (gp.getEventM().checkEntityChainUp(gp.getPlayer(), entity))) {
+                    && (gp.getEventM().checkEntityChainUp(followed, entity))) {
 
                 entity.cancelAction();                                                                                  // Resets the number of pixels traversed from a cancelled movement.
-                entity.setDirectionCurrent(gp.getPlayer().getDirectionCurrent());                                       // Have follower face the same direction as the player entity when warped.
-                entity.setCol(gp.getPlayer().getCol());
-                entity.setRow(gp.getPlayer().getRow());
+                entity.setDirectionCurrent(followed.getDirectionCurrent());
+                entity.setCol(followed.getCol());
+                entity.setRow(followed.getRow());
             }
         }
     }

@@ -715,7 +715,7 @@ public class EventManager {
      */
     public void showAllNonPartyFollowers() {
 
-        ArrayList<Integer> nonPartyFollowers = seekNonPartyFollowers(gp.getPlayer());
+        ArrayList<Integer> nonPartyFollowers = seekFollowers(gp.getPlayer(), true, true, false, false);
 
         for (int entityId : nonPartyFollowers) {
 
@@ -729,7 +729,7 @@ public class EventManager {
      */
     public void hideAllNonPartyFollowers() {
 
-        ArrayList<Integer> nonPartyFollowers = seekNonPartyFollowers(gp.getPlayer());
+        ArrayList<Integer> nonPartyFollowers = seekFollowers(gp.getPlayer(), true, true, false, false);
 
         for (int entityId : nonPartyFollowers) {
 
@@ -739,37 +739,63 @@ public class EventManager {
 
 
     /**
-     * Generates a list of (almost) all entities following the followed entity, either directly or in a chain.
-     * Note that only the `npc`, `obj`, and `standby` entity maps are checked (i.e., not the `party` entity map).
+     * Generates a list of entities following the followed entity, either directly or in a chain.
+     * Note that only the specified entity maps will be polled for followers.
      *
      * @param followed followed entity
+     * @param npc whether to poll the `npc` entity map (true) or not (false)
+     * @param obj whether to poll the `obj` entity map (true) or not (false)
+     * @param party whether to poll the `party` entity map (true) or not (false)
+     * @param standby whether to poll the `standby` entity map (true) or not (false)
      * @return list of entity IDs of followers
      */
-    public ArrayList<Integer> seekNonPartyFollowers(EntityBase followed) {
+    public ArrayList<Integer> seekFollowers(EntityBase followed,
+                                            boolean npc, boolean obj, boolean party, boolean standby) {
 
         ArrayList<Integer> followers = new ArrayList<>();                                                               // List to store IDs of all followers of the target entity to use when rebuilding chain.
 
-        for (EntityBase candidate : gp.getNpc().values()) {                                                             // Record any NPC followers.
+        if (npc) {
 
-            if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
+            for (EntityBase candidate : gp.getNpc().values()) {                                                         // Record any NPC followers.
 
-                followers.add(candidate.getEntityId());
+                if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
+
+                    followers.add(candidate.getEntityId());
+                }
             }
         }
 
-        for (EntityBase candidate : gp.getObj().values()) {                                                             // Record any object followers.
 
-            if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
+        if (obj) {
 
-                followers.add(candidate.getEntityId());
+            for (EntityBase candidate : gp.getObj().values()) {                                                         // Record any object followers.
+
+                if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
+
+                    followers.add(candidate.getEntityId());
+                }
             }
         }
 
-        for (EntityBase candidate : gp.getStandby().values()) {                                                         // Record any standby followers.
+        if (party) {
 
-            if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
+            for (EntityBase candidate : gp.getParty().values()) {                                                       // Record any standby followers.
 
-                followers.add(candidate.getEntityId());
+                if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
+
+                    followers.add(candidate.getEntityId());
+                }
+            }
+        }
+
+        if (standby) {
+
+            for (EntityBase candidate : gp.getStandby().values()) {                                                     // Record any standby followers.
+
+                if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
+
+                    followers.add(candidate.getEntityId());
+                }
             }
         }
         return followers;
