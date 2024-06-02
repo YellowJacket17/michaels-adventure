@@ -521,6 +521,10 @@ public class CombatManager {
      */
     public void endEntityTurn() {
 
+        if (getLatestSubMenuMemory() != null) {
+
+            getLatestSubMenuMemory().setLastOfTurn(true);                                                               // Flag the last sub-menu memory as the last sub-menu to appear during the previous entity's turn.
+        }
         boolean viableEntity = false;                                                                                   // A viable entity is a non-fainted one.
         boolean generateTurnOrderCalled = false;                                                                        // Boolean tracking whether the turn order has already been re-generated.
 
@@ -958,6 +962,7 @@ public class CombatManager {
      * It effectively returns to the sub-menu that was displayed before the sub-menu where the 'Back' option
      * was selected.
      * In other words, it "undoes" a sub-menu selection.
+     * However, sub-menus will only be reverted to those that displayed within the current entity's turn.
      */
     private void revertSubMenuSelection() {
 
@@ -967,25 +972,31 @@ public class CombatManager {
 
             subMenuLog.remove(subMenuLog.size() - 1);                                                                   // Remove memory of the sub-menu that preceded the sub-menu where the 'Back' option was selected.
 
-            switch (getLatestSubMenuMemory().getType()) {                                                               // Return to the outcome of the sub-menu that generated the previous sub-menu IF within same turn.
-                case ROOT:
-                    runRootSubMenuSelection();
-                    break;
-                case SKILL:
-                    runSkillSubMenuSelection();
-                    break;
-                case TARGET_SELECT:
-                    generateRootSubMenuAction();                                                                        // End of its respective branch of sub-menus, so a new turn must have commenced since.
-                    break;
-                case PARTY:
-                    runPartySubMenuSelection();
-                    break;
-                case PLAYER_SIDE_MANAGE:
-                    runPlayerSideManageSubMenuSelection();
-                    break;
-                case PLAYER_SIDE_SWAP:
-                    generateRootSubMenuAction();                                                                        // End of its respective branch of sub-menus, so a new turn must have commenced since.
-                    break;
+            if (getLatestSubMenuMemory().isLastOfTurn()) {
+
+                generateRootSubMenuAction();                                                                            // Cannot go back further due to entity turn change, so return to root sub-menu.
+            } else {
+
+                switch (getLatestSubMenuMemory().getType()) {                                                           // Return to the outcome of the sub-menu that generated the previous sub-menu IF within same entity turn.
+                    case ROOT:
+                        runRootSubMenuSelection();
+                        break;
+                    case SKILL:
+                        runSkillSubMenuSelection();
+                        break;
+                    case TARGET_SELECT:
+                        runTargetSelectSubMenuSelection();
+                        break;
+                    case PARTY:
+                        runPartySubMenuSelection();
+                        break;
+                    case PLAYER_SIDE_MANAGE:
+                        runPlayerSideManageSubMenuSelection();
+                        break;
+                    case PLAYER_SIDE_SWAP:
+                        runPlayerSideSwapSubMenuSelection();
+                        break;
+                }
             }
         } else {
 
@@ -993,7 +1004,7 @@ public class CombatManager {
 
                 subMenuLog.remove(subMenuLog.size() - 1);                                                               // Remove memory of the sub-menu that preceded the sub-menu where the 'Back' option was selected.
             }
-            generateRootSubMenuAction();                                                                                // Return to the root sub-menu since no previous sub-menu to were the 'Back' option was selected is recorded in memory.
+            generateRootSubMenuAction();                                                                                // Return to the root sub-menu since no previous sub-menu to where the 'Back' option was selected is recorded in memory.
         }
     }
 

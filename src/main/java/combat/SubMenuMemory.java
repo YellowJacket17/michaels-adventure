@@ -25,6 +25,12 @@ public class SubMenuMemory {
      */
     private int selectedOption = -1;
 
+    /**
+     * Boolean indicating whether the sub-menu in this memory was the last to appear during a combating entity's turn.
+     * It is false by default.
+     */
+    private boolean lastOfTurn = false;
+
 
     // CONSTRUCTORS
     /**
@@ -66,13 +72,21 @@ public class SubMenuMemory {
         return selectedOption;
     }
 
+    public boolean isLastOfTurn() {
+        return lastOfTurn;
+    }
 
-    // SETTER
+
+    // SETTERS
     public void setSelectedOption(int selectedOption) {
         if ((selectedOption < 0) || (selectedOption >= options.size())) {
             this.selectedOption = -1;
         } else {
             this.selectedOption = selectedOption;
         }
+    }
+
+    public void setLastOfTurn(boolean lastOfTurn) {
+        this.lastOfTurn = lastOfTurn;
     }
 }

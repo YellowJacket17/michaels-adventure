@@ -1,0 +1,8 @@
+05/14/2024 18:45:53:537  INFO     Application started.
+05/14/2024 18:45:57:141  ERROR    An unhandled exception has occurred!
+utility.exceptions.AssetLoadException: Attempted to load a duplicate spritesheet into memory
+	at asset.AssetPool.addSpritesheet(AssetPool.java:103)
+	at core.GamePanel.loadResources(GamePanel.java:922)
+	at core.GamePanel.init(GamePanel.java:261)
+	at core.Window.initGame(Window.java:239)
+	at core.App.main(App.java:19)

@@ -5,7 +5,7 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Michael",
+                "speakerName": "Mary",
                 "text": "Hi there!"
             },
             "1": {
@@ -13,7 +13,7 @@
                 "text": "Hello! What are you doing here?"
             },
             "2": {
-                "speakerName": "Michael",
+                "speakerName": "Mary",
                 "text": "I'm testing different components of the game world. What are you up to?"
             },
             "3": {
@@ -21,7 +21,7 @@
                 "text": "Oh, nothing much. I'm just a test NPC, but maybe one day I'll become something more! At least, that's what the creator told me. It's so great to be alive, wouldn't you agree?"
             },
             "4": {
-                "speakerName": "Michael",
+                "speakerName": "Mary",
                 "text": "Ah, well, good luck with that..."
             },
             "5": {
@@ -63,7 +63,7 @@
                 "text": "Alright, that's enough for now."
             },
             "1": {
-                "speakerName": "Michael",
+                "speakerName": "Mary",
                 "text": "Who are you again...?"
             }
         }
@@ -78,7 +78,7 @@
                 "text": "Would you mind taking us back to where you found us?"
             },
             "1": {
-                "speakerName": "Michael",
+                "speakerName": "Mary",
                 "text": "So whiny..."
             }
         }

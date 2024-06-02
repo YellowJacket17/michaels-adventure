@@ -62,6 +62,7 @@ public class SoundSupport {
 
     /**
      * Plays a new effect.
+     * If the effect passed as argument is already playing, it will be stopped and restarted from the beginning.
      *
      * @param resourceName name/title of loaded effect
      */
@@ -71,6 +72,10 @@ public class SoundSupport {
 
         if (sound.getType() == SoundType.EFFECT) {
 
+            if (sound.isPlaying()) {
+
+                sound.stop();
+            }
             sound.play();
         } else {
 
@@ -85,6 +90,7 @@ public class SoundSupport {
      * fade out is complete.
      * If there is already a playing track that is not fading out, then the playing track will be instantly stopped
      * before the new track is played.
+     * If the track passed as argument is already playing, it will be stopped and restarted from the beginning.
      *
      * @param resourceName name/title of loaded track
      */

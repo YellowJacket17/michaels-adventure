@@ -23,21 +23,21 @@ public class Npc_Test1 extends EntityBase {
      */
     private void setupSprite() {
 
-        down1 = AssetPool.getSpritesheet("characters").getSprite(12);
-        down2 = AssetPool.getSpritesheet("characters").getSprite(13);
-        down3 = AssetPool.getSpritesheet("characters").getSprite(14);
+        down1 = AssetPool.getSpritesheet("characters").getSprite(90);
+        down2 = AssetPool.getSpritesheet("characters").getSprite(91);
+        down3 = AssetPool.getSpritesheet("characters").getSprite(92);
 
-        up1 = AssetPool.getSpritesheet("characters").getSprite(15);
-        up2 = AssetPool.getSpritesheet("characters").getSprite(16);
-        up3 = AssetPool.getSpritesheet("characters").getSprite(17);
+        up1 = AssetPool.getSpritesheet("characters").getSprite(93);
+        up2 = AssetPool.getSpritesheet("characters").getSprite(94);
+        up3 = AssetPool.getSpritesheet("characters").getSprite(95);
 
-        left1 = AssetPool.getSpritesheet("characters").getSprite(18);
-        left2 = AssetPool.getSpritesheet("characters").getSprite(19);
-        left3 = AssetPool.getSpritesheet("characters").getSprite(20);
+        left1 = AssetPool.getSpritesheet("characters").getSprite(96);
+        left2 = AssetPool.getSpritesheet("characters").getSprite(97);
+        left3 = AssetPool.getSpritesheet("characters").getSprite(98);
 
-        right1 = AssetPool.getSpritesheet("characters").getSprite(21);
-        right2 = AssetPool.getSpritesheet("characters").getSprite(22);
-        right3 = AssetPool.getSpritesheet("characters").getSprite(23);
+        right1 = AssetPool.getSpritesheet("characters").getSprite(99);
+        right2 = AssetPool.getSpritesheet("characters").getSprite(100);
+        right3 = AssetPool.getSpritesheet("characters").getSprite(101);
 
         sprite = down1;
         transform.scale.x = sprite.getNativeWidth();

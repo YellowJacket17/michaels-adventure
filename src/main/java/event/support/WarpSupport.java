@@ -227,8 +227,6 @@ public class WarpSupport {
      */
     public void handleWarpTransitionLoading(double dt) {
 
-        initiateWarp(stagedMapId, stagedMapState, stagedCol, stagedRow);
-
         switch (activeWarpTransitionType) {
             case BASIC:
                 // Nothing here.
@@ -237,6 +235,7 @@ public class WarpSupport {
                 gp.getPlayer().updateWarpTransitionStepPortal(dt);                                                      // Initiate the second phase of this transition type for the player entity.
                 break;
         }
+        initiateWarp(stagedMapId, stagedMapState, stagedCol, stagedRow);
 
         if (overrideMapTrack) {
 

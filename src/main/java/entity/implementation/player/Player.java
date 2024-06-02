@@ -429,21 +429,21 @@ public class Player extends EntityBase {
      */
     private void setupSprite() {
 
-        down1 = AssetPool.getSpritesheet("characters").getSprite(24);
-        down2 = AssetPool.getSpritesheet("characters").getSprite(25);
-        down3 = AssetPool.getSpritesheet("characters").getSprite(26);
+        down1 = AssetPool.getSpritesheet("characters").getSprite(0);
+        down2 = AssetPool.getSpritesheet("characters").getSprite(1);
+        down3 = AssetPool.getSpritesheet("characters").getSprite(2);
 
-        up1 = AssetPool.getSpritesheet("characters").getSprite(27);
-        up2 = AssetPool.getSpritesheet("characters").getSprite(28);
-        up3 = AssetPool.getSpritesheet("characters").getSprite(29);
+        up1 = AssetPool.getSpritesheet("characters").getSprite(3);
+        up2 = AssetPool.getSpritesheet("characters").getSprite(4);
+        up3 = AssetPool.getSpritesheet("characters").getSprite(5);
 
-        left1 = AssetPool.getSpritesheet("characters").getSprite(30);
-        left2 = AssetPool.getSpritesheet("characters").getSprite(31);
-        left3 = AssetPool.getSpritesheet("characters").getSprite(32);
+        left1 = AssetPool.getSpritesheet("characters").getSprite(6);
+        left2 = AssetPool.getSpritesheet("characters").getSprite(7);
+        left3 = AssetPool.getSpritesheet("characters").getSprite(8);
 
-        right1 = AssetPool.getSpritesheet("characters").getSprite(33);
-        right2 = AssetPool.getSpritesheet("characters").getSprite(34);
-        right3 = AssetPool.getSpritesheet("characters").getSprite(35);
+        right1 = AssetPool.getSpritesheet("characters").getSprite(9);
+        right2 = AssetPool.getSpritesheet("characters").getSprite(10);
+        right3 = AssetPool.getSpritesheet("characters").getSprite(11);
 
         sprite = down1;
         transform.scale.x = sprite.getNativeWidth();
@@ -461,7 +461,7 @@ public class Player extends EntityBase {
         setRow(25);                                                                                                     // Initial y position on map.  25  22
 
         // Basic attributes.
-        setName("Player");
+        setName("Mary");
         setSpeed(120);
 
         // Combat attributes.
