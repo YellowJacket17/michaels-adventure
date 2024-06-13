@@ -1,4 +1,4 @@
-package event;
+package event.support;
 
 /**
  * This enum defines transition types to be used when fading the screen to black for loading.

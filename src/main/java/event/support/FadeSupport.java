@@ -1,7 +1,6 @@
 package event.support;
 
 import core.GamePanel;
-import event.FadeState;
 import org.joml.Vector3f;
 
 /**
@@ -185,6 +184,7 @@ public class FadeSupport {
 
     /**
      * Resets FadeSupport back to its default state.
+     * Intended to be called to clean up after a fade/flash effect has completed.
      * If a fade/flash effect is active, nothing will happen.
      */
     public void reset() {

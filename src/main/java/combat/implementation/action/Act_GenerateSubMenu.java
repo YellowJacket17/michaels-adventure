@@ -147,14 +147,14 @@ public class Act_GenerateSubMenu extends ActionBase {
     /**
      * Stages and initiates a sub-menu to appear during combat.
      * The sub-menu ID is set to 1 to indicate that this is a combat sub-menu.
-     * The primary game state is set to sub-menu.
      */
     private void displaySubMenu() {
 
-        gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         if (subMenuDefaultPosition) {
+
             gp.getSubMenuH().generateSubMenu(options, 1, colors, disabledOptions);
         } else {
+
             gp.getSubMenuH().generateSubMenu(options, 1, subMenuScreenX, subMenuScreenY, colors, disabledOptions);
         }
     }

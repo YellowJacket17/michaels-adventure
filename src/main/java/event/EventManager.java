@@ -287,7 +287,6 @@ public class EventManager {
 
     /**
      * Initiates a player conversation with a target entity.
-     * The primary game state is set to dialogue.
      *
      * @param target ID of the entity entering a conversation with the player entity
      * @param playerDirection direction the player entity is currently facing (used to make the target entity face the player entity)
@@ -311,8 +310,6 @@ public class EventManager {
                 target.setDirectionCurrent(EntityDirection.LEFT);
                 break;
         }
-
-        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);                                                              // Enter into a dialogue state.
         gp.getDialogueR().initiateConversation(convId);                                                                 // Trigger the appropriate conversation with the NPC.
     }
 
@@ -694,27 +691,23 @@ public class EventManager {
 
     /**
      * Initiates a single message to display on the screen.
-     * The primary game state is set to dialogue.
      *
      * @param message text to be displayed
      */
     public void displayMessage(String message) {
 
-        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         gp.getDialogueR().initiateStandardMessage(message);
     }
 
 
     /**
      * Initiates a single message to display on the screen.
-     * The primary game state is set to dialogue.
      *
      * @param message text to be displayed
      * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false)
      */
     public void displayMessage(String message, boolean showArrow) {
 
-        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         gp.getDialogueR().initiateStandardMessage(message, showArrow);
     }
 

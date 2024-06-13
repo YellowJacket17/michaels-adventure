@@ -39,11 +39,8 @@ public class Act_ReadMessage extends ActionBase {
 
     /**
      * Stages and initiates a single message to be read to the dialogue screen during combat.
-     * The primary game state is set to dialogue.
      */
     public void displayMessage() {
-
-        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
 
         if (interactive) {
 

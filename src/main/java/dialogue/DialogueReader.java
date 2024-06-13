@@ -125,6 +125,11 @@ public class DialogueReader {
 
 
     // CONSTRUCTOR
+    /**
+     * Constructs a DialogueReader instance.
+     *
+     * @param gp GamePanel instance
+     */
     public DialogueReader(GamePanel gp) {
         this.gp = gp;
     }
@@ -166,6 +171,7 @@ public class DialogueReader {
     /**
      * Stages and initiates a single message to be read to the dialogue screen.
      * The temporary conversation this message is placed in is given an ID of -1.
+     * The primary game state is set to dialogue.
      *
      * @param message text to be read
      */
@@ -178,12 +184,14 @@ public class DialogueReader {
     /**
      * Stages and initiates a single message to be read to the dialogue screen.
      * The temporary conversation this message is placed in is given an ID of -1.
+     * The primary game state is set to dialogue.
      *
      * @param message text to be read
      * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false)
      */
     public void initiateStandardMessage(String message, boolean showArrow) {
 
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -1);                                                                                      // Instantiate a temporary conversation with an ID of -1 to indicate that this is a message.
         alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
     }
@@ -192,11 +200,13 @@ public class DialogueReader {
     /**
      * Stages and initiates a single message to be read before the appearance of a corresponding sub-menu.
      * The temporary conversation this message is placed in is given an ID of -2.
+     * The primary game state is set to dialogue.
      *
      * @param message text to be read
      */
     public void initiateSubMenuMessage(String message) {
 
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -2);                                                                                      // Instantiate a temporary conversation with an ID of -2 to indicate that this is a sub-menu prompt.
         activeConv.setPlayerInputToEnd(false);                                                                          // This is so the sub-menu appears instantly once the dialogue has finished being read without player input.
         alwaysShowArrow = false;                                                                                        // Ensure that the dialogue arrow is not shown each time user input is required.
@@ -206,6 +216,7 @@ public class DialogueReader {
     /**
      * Stages and initiates a single message to be read to the dialogue screen during combat.
      * The temporary conversation this message is placed in is given an ID of -3.
+     * The primary game state is set to dialogue.
      *
      * @param message text to be read
      */
@@ -218,12 +229,14 @@ public class DialogueReader {
     /**
      * Stages and initiates a single message to be read to the dialogue screen during combat.
      * The temporary conversation this message is placed in is given an ID of -3.
+     * The primary game state is set to dialogue.
      *
      * @param message text to be read
      * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false)
      */
     public void initiateInteractiveCombatMessage(String message, boolean showArrow) {
 
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -3);                                                                                      // Instantiate a temporary conversation with an ID of -3 to indicate that this is an interactive combat message.
         alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
     }
@@ -233,6 +246,7 @@ public class DialogueReader {
      * Stages and initiates a single message to be read to the dialogue screen during combat.
      * This message cannot be manually progressed by the player.
      * The temporary conversation this message is placed in is given an ID of -4.
+     * The primary game state is set to dialogue.
      *
      * @param message text to be read
      */
@@ -246,12 +260,14 @@ public class DialogueReader {
      * Stages and initiates a single message to be read to the dialogue screen during combat.
      * This message cannot be manually progressed by the player.
      * The temporary conversation this message is placed in is given an ID of -4.
+     * The primary game state is set to dialogue.
      *
      * @param message text to be read
      * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false)
      */
     public void initiateNoninteractiveCombatMessage(String message, boolean showArrow) {
 
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -4);                                                                                      // Instantiate a temporary conversation with an ID of -4 to indicate that this is a noninteractive combat message.
         activeConv.setPlayerInputToEnd(false);                                                                          // This is so logic following the dialogue once it has finished being read is run immediately without player input.
         alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
@@ -260,12 +276,14 @@ public class DialogueReader {
 
     /**
      * Stages and initiates a new conversation.
+     * The primary game state is set to dialogue.
      *
      * @param convId ID of the conversation to be read
      * @throws ConversationNotFoundException if a conversation with the passed ID fails to be found
      */
     public void initiateConversation(int convId) {
 
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         alwaysShowArrow = false;                                                                                        // Ensure the dialogue arrow is not shown each time user input is required.
         activeConv = conv.get(convId);                                                                                  // Retrieve the appropriate conversation and stage it.
 

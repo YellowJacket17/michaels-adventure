@@ -6,7 +6,7 @@ import combat.implementation.move.Mve_BasicAttack;
 import core.GamePanel;
 import entity.EntityStatus;
 import core.PrimaryGameState;
-import event.TransitionType;
+import event.support.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
 import org.joml.Vector3f;

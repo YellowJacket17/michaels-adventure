@@ -4,8 +4,6 @@ import asset.Sound;
 import core.GamePanel;
 import entity.EntityBase;
 import entity.EntityDirection;
-import event.TransitionType;
-import event.WarpTransitionType;
 import utility.LimitedLinkedHashMap;
 
 import java.util.HashMap;

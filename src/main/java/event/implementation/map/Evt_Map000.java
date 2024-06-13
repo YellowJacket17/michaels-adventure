@@ -5,7 +5,7 @@ import entity.EntityBase;
 import entity.EntityDirection;
 import event.EventMapBase;
 import event.EventType;
-import event.WarpTransitionType;
+import event.support.WarpTransitionType;
 
 /**
  * This class implements event logic for map with ID 0.

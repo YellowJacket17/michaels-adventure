@@ -5,6 +5,7 @@ import core.GamePanel;
 import entity.EntityBase;
 import entity.EntityDirection;
 import event.*;
+import event.support.WarpTransitionType;
 import item.implementation.Itm_Controller;
 import item.implementation.Itm_Key;
 import item.ItemBase;

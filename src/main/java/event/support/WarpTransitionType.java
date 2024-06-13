@@ -1,4 +1,4 @@
-package event;
+package event.support;
 
 /**
  * This enum defines the specific transition types to be used with a warp transition.

@@ -3,7 +3,7 @@ package miscellaneous;
 import core.GamePanel;
 import entity.EntityBase;
 import entity.EntityStatus;
-import event.FadeState;
+import event.support.FadeState;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -368,7 +368,7 @@ public class UserInterface {
 
         // Prepare entity icon and status information text positions to render on top of respective slot icons.
         float entityIconScreenX = slotIconScreenX + 0.01f;
-        float entityIconScreenY = bottomSlotIconScreenY + 0.012f;
+        float entityIconScreenY = bottomSlotIconScreenY - 0.013f;
         float statusInfoTextScreenX = slotIconScreenX + 0.07f;
         float statusInfoTextScreenY = bottomSlotIconScreenY + 0.01f;
 
@@ -379,7 +379,6 @@ public class UserInterface {
             renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[1]),
                     statusInfoTextScreenX, statusInfoTextScreenY);
         }
-
 
         // Render entity icon 1.
         entityIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
