@@ -19,7 +19,7 @@ public class Cts_Test1 extends CutsceneBase {
     @Override
     public void run(double dt) {
 
-        EntityBase entity = gp.getEntityById(4);
+        EntityBase entity = gp.getEntityM().getEntityById(4);
 
         if (entity != null) {                                                                                           // Ensure the target entity continues to exist, otherwise the cutscene will automatically end as a precaution.
 
@@ -32,15 +32,17 @@ public class Cts_Test1 extends CutsceneBase {
 
                 case 1:
                     if (!entity.isOnPath()) {
-                        endCutscene(true);
                         gp.getSoundS().playEffect("testEffect1");
                         gp.getEventM().displayMessage("Cutscene test is complete!");
+                        exitCutscene();
+                        resetCutscene();
                     }
                     break;
             }
         } else {
 
-            endCutscene(false);
+            exitCutscene();
+            resetCutscene();
         }
     }
 }

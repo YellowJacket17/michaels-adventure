@@ -126,10 +126,10 @@ public class EntityIconManager {
     public void createPartyEntityIcons() {
 
         // Create an entity icon of the player.
-        addEntityIcon(gp.getPlayer().getEntityId());
+        addEntityIcon(gp.getEntityM().getPlayer().getEntityId());
 
         // Create an entity icon for each part member.
-        for (EntityBase entity : gp.getParty().values()) {
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {
             if (entity != null) {
                 addEntityIcon(entity.getEntityId());
             }
@@ -146,7 +146,7 @@ public class EntityIconManager {
 
         // TODO : Possibly add error (try/catch) if an entity has a null `down1` image.
 
-        EntityBase entity = gp.getEntityById(entityId);
+        EntityBase entity = gp.getEntityM().getEntityById(entityId);
 
         if (entity != null) {
 

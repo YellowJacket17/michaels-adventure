@@ -36,25 +36,26 @@ public class PartySupport {
      */
     public void addEntityToParty(int entityId) {
 
-        ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekFollowers(gp.getPlayer(), true, true, false, false);
-        gp.getEventM().breakFollowerChain(gp.getPlayer());                                                              // Break chain of all entities following player entity (will rebuild later).
-        gp.transferEntity(gp.getNpc(), gp.getParty(), entityId);                                                        // Add target entity to party map.
+        ArrayList<Integer> nonPartyFollowers = gp.getEventM()
+                .seekFollowers(gp.getEntityM().getPlayer(), true, true, false, false);
+        gp.getEventM().breakFollowerChain(gp.getEntityM().getPlayer());                                                 // Break chain of all entities following player entity (will rebuild later).
+        gp.getEntityM().transferEntity(gp.getEntityM().getNpc(), gp.getEntityM().getParty(), entityId);                 // Add target entity to party map.
         int entityIndex = 0;                                                                                            // Iterator to track which index of new party map is currently being worked on.
 
-        for (EntityBase entity : gp.getParty().values()) {                                                              // Set party entity world positions and directions to match those of party entities originally at said index of party map.
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {                                                 // Set party entity world positions and directions to match those of party entities originally at said index of party map.
 
-            if (entityIndex < gp.getNumActivePartyMembers()) {
+            if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
-                gp.getEventM().setEntityFollowTarget(entity.getEntityId(), gp.getPlayer().getEntityId());               // Set active party members as following player entity.
+                gp.getEventM().setEntityFollowTarget(entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId());  // Set active party members as following player entity.
             } else if (entity.getEntityId() == entityId) {
 
-                gp.getParty().get(entityId).setHidden(true);                                                            // New entity is in reserve party, so hide.
+                gp.getEntityM().getParty().get(entityId).setHidden(true);                                               // New entity is in reserve party, so hide.
             }
         }
 
         for (int nonPartyId : nonPartyFollowers) {                                                                      // Set non-party followers to follow player entity again.
 
-            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getPlayer().getEntityId());
+            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
         }
     }
 
@@ -72,33 +73,35 @@ public class PartySupport {
      */
     public void removeEntityFromParty(int entityId, boolean show) {
 
-        ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekFollowers(gp.getPlayer(), true, true, false, false);
-        LimitedArrayList<Vector2i> partyEntityTiles = new LimitedArrayList<>(gp.getParty().size());                     // List to store party entity world positions at each index in party map.
-        LimitedArrayList<EntityDirection> partyEntityDirections = new LimitedArrayList<>(gp.getParty().size());         // List to store party entity directions at each index in party map.
+        ArrayList<Integer> nonPartyFollowers = gp.getEventM()
+                .seekFollowers(gp.getEntityM().getPlayer(), true, true, false, false);
+        LimitedArrayList<Vector2i> partyEntityTiles = new LimitedArrayList<>(gp.getEntityM().getParty().size());        // List to store party entity world positions at each index in party map.
+        LimitedArrayList<EntityDirection> partyEntityDirections = new LimitedArrayList<>(
+                gp.getEntityM().getParty().size());                                                                     // List to store party entity directions at each index in party map.
 
-        for (EntityBase entity : gp.getParty().values()) {                                                              // Store entity world positions and directions at each index in party map.
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {                                                 // Store entity world positions and directions at each index in party map.
 
             partyEntityTiles.add(new Vector2i(entity.getCol(), entity.getRow()));
             partyEntityDirections.add(entity.getDirectionCurrent());
         }
-        gp.getEventM().breakFollowerChain(gp.getPlayer());                                                              // Break chain of all entities following player entity (will rebuild later).
-        gp.transferEntity(gp.getParty(), gp.getNpc(), entityId);                                                        // Remove target entity from party map.
+        gp.getEventM().breakFollowerChain(gp.getEntityM().getPlayer());                                                 // Break chain of all entities following player entity (will rebuild later).
+        gp.getEntityM().transferEntity(gp.getEntityM().getParty(), gp.getEntityM().getNpc(), entityId);                 // Remove target entity from party map.
 
         if (show) {
 
-            gp.getNpc().get(entityId).setHidden(false);
+            gp.getEntityM().getNpc().get(entityId).setHidden(false);
         }
         int entityIndex = 0;                                                                                            // Iterator to track which index of party map is currently being worked on.
 
-        for (EntityBase entity : gp.getParty().values()) {
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
             entity.setCol(partyEntityTiles.get(entityIndex).x);                                                         // Set entity to the same tile as entity previously in its position/index.
             entity.setRow(partyEntityTiles.get(entityIndex).y);                                                         // ^^^
             entity.setDirectionCurrent(partyEntityDirections.get(entityIndex));                                         // Set entity to face the same direction as entity previously in its position/index.
 
-            if (entityIndex < gp.getNumActivePartyMembers()) {
+            if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
-                gp.getEventM().setEntityFollowTarget(entity.getEntityId(), gp.getPlayer().getEntityId());               // Set active party members as following player entity.
+                gp.getEventM().setEntityFollowTarget(entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId());  // Set active party members as following player entity.
                 entity.setHidden(false);                                                                                // Set active party members as visible.
             } else {
 
@@ -109,7 +112,7 @@ public class PartySupport {
 
         for (int nonPartyId : nonPartyFollowers) {                                                                      // Set non-party followers to follow player entity again.
 
-            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getPlayer().getEntityId());
+            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
         }
     }
 
@@ -125,15 +128,17 @@ public class PartySupport {
 
         if (primaryEntityId != secondaryEntityId) {                                                                     // No need to run further logic if attempting to swap a party entity with itself.
 
-            ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekFollowers(gp.getPlayer(), true, true, false, false);
-            LimitedArrayList<EntityBase> originalParty = new LimitedArrayList<>(gp.getParty().maxCapacity());           // Temporary list to store all party entities in party map, retaining original ordering.
+            ArrayList<Integer> nonPartyFollowers = gp.getEventM()
+                    .seekFollowers(gp.getEntityM().getPlayer(), true, true, false, false);
+            LimitedArrayList<EntityBase> originalParty = new LimitedArrayList<>(
+                    gp.getEntityM().getParty().maxCapacity());                                                          // Temporary list to store all party entities in party map, retaining original ordering.
             int primaryPosition = 0;
             int secondaryPosition = 0;
             boolean primaryEntityHidden = false;                                                                        // Store whether primary entity is initially hidden to assign it to secondary entity later.
             boolean secondaryEntityHidden = false;                                                                      // Store whether secondary entity is initially hidden to assign it to primary entity later.
             int entityIndex = 0;                                                                                        // Iterator to track which index of party map is currently being worked on.
 
-            for (EntityBase entity : gp.getParty().values()) {                                                          // Store each party entity in the temporary list of party entities.
+            for (EntityBase entity : gp.getEntityM().getParty().values()) {                                             // Store each party entity in the temporary list of party entities.
 
                 originalParty.add(entity);
 
@@ -156,43 +161,45 @@ public class PartySupport {
                 }
                 entityIndex++;
             }
-            LimitedArrayList<Vector2i> partyEntityTiles = new LimitedArrayList<>(gp.getParty().size());                 // List to store party entity world positions at each index in party map.
-            LimitedArrayList<EntityDirection> partyEntityDirections = new LimitedArrayList<>(gp.getParty().size());     // List to store party entity directions at each index in party map.
+            LimitedArrayList<Vector2i> partyEntityTiles = new LimitedArrayList<>(gp.getEntityM().getParty().size());    // List to store party entity world positions at each index in party map.
+            LimitedArrayList<EntityDirection> partyEntityDirections = new LimitedArrayList<>(
+                    gp.getEntityM().getParty().size());                                                                 // List to store party entity directions at each index in party map.
 
-            for (EntityBase entity : gp.getParty().values()) {                                                          // Store entity world positions and directions at each index in party map.
+            for (EntityBase entity : gp.getEntityM().getParty().values()) {                                             // Store entity world positions and directions at each index in party map.
 
                 partyEntityTiles.add(new Vector2i(entity.getCol(), entity.getRow()));
                 partyEntityDirections.add(entity.getDirectionCurrent());
             }
-            gp.getEventM().breakFollowerChain(gp.getPlayer());                                                          // Break chain of all entities following player entity (will rebuild later).
-            gp.getParty().clear();                                                                                      // Clear party map to re-add party entities in new ordering.
+            gp.getEventM().breakFollowerChain(gp.getEntityM().getPlayer());                                             // Break chain of all entities following player entity (will rebuild later).
+            gp.getEntityM().getParty().clear();                                                                         // Clear party map to re-add party entities in new ordering.
 
             for (int j = 0; j < originalParty.size(); j++) {                                                            // Add party entities back to party map in new ordering.
 
                 if (j == primaryPosition) {                                                                             // Position/index to move secondary entity to.
 
-                    gp.getParty().put(originalParty.get(secondaryPosition).getEntityId(),
+                    gp.getEntityM().getParty().put(originalParty.get(secondaryPosition).getEntityId(),
                             originalParty.get(secondaryPosition));
                 } else if (j == secondaryPosition) {                                                                    // Position/index to move primary entity to.
 
-                    gp.getParty().put(originalParty.get(primaryPosition).getEntityId(),
+                    gp.getEntityM().getParty().put(originalParty.get(primaryPosition).getEntityId(),
                             originalParty.get(primaryPosition));
                 } else {                                                                                                // Party entities other than primary and secondary retain original positions/indices.
 
-                    gp.getParty().put(originalParty.get(j).getEntityId(), originalParty.get(j));
+                    gp.getEntityM().getParty().put(originalParty.get(j).getEntityId(), originalParty.get(j));
                 }
             }
             entityIndex = 0;                                                                                            // Iterator to track which index of new party map is currently being worked on.
 
-            for (EntityBase entity : gp.getParty().values()) {
+            for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
                 entity.setCol(partyEntityTiles.get(entityIndex).x);                                                     // Set entity to the same tile as entity previously in its position/index.
                 entity.setRow(partyEntityTiles.get(entityIndex).y);                                                     // ^^^
                 entity.setDirectionCurrent(partyEntityDirections.get(entityIndex));                                     // Set entity to face the same direction as entity previously in its position/index.
 
-                if (entityIndex < gp.getNumActivePartyMembers()) {
+                if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
-                    gp.getEventM().setEntityFollowTarget(entity.getEntityId(), gp.getPlayer().getEntityId());           // Set active party members as following player entity.
+                    gp.getEventM().setEntityFollowTarget(
+                            entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId());                           // Set active party members as following player entity.
                 }
 
                 if (entity.getEntityId() == primaryEntityId) {
@@ -207,7 +214,7 @@ public class PartySupport {
 
             for (int nonPartyId : nonPartyFollowers) {                                                                  // Set non-party followers to follow player entity again.
 
-                gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getPlayer().getEntityId());
+                gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
             }
         }
     }
@@ -223,28 +230,29 @@ public class PartySupport {
      */
     public void removeAllEntitiesFromParty(boolean showAll) {
 
-        ArrayList<Integer> nonPartyFollowers = gp.getEventM().seekFollowers(gp.getPlayer(), true, true, false, false);
-        gp.getEventM().breakFollowerChain(gp.getPlayer());
-        LimitedArrayList<Integer> fullParty = new LimitedArrayList<>(gp.getParty().size());
+        ArrayList<Integer> nonPartyFollowers = gp.getEventM()
+                .seekFollowers(gp.getEntityM().getPlayer(), true, true, false, false);
+        gp.getEventM().breakFollowerChain(gp.getEntityM().getPlayer());
+        LimitedArrayList<Integer> fullParty = new LimitedArrayList<>(gp.getEntityM().getParty().size());
 
-        for (Integer entityId : gp.getParty().keySet()) {
+        for (Integer entityId : gp.getEntityM().getParty().keySet()) {
 
             fullParty.add(entityId);
         }
 
         for (int entityId : fullParty) {
 
-            gp.transferEntity(gp.getParty(), gp.getNpc(), entityId);
+            gp.getEntityM().transferEntity(gp.getEntityM().getParty(), gp.getEntityM().getNpc(), entityId);
 
             if (showAll) {
 
-                gp.getNpc().get(entityId).setHidden(false);
+                gp.getEntityM().getNpc().get(entityId).setHidden(false);
             }
         }
 
         for (int nonPartyId : nonPartyFollowers) {                                                                      // Set non-party followers to follow player entity again.
 
-            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getPlayer().getEntityId());
+            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
         }
     }
 
@@ -254,7 +262,7 @@ public class PartySupport {
      */
     public void showAllPartyMembers() {
 
-        for (EntityBase entity : gp.getParty().values()) {
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
             entity.setHidden(false);
         }
@@ -268,9 +276,9 @@ public class PartySupport {
 
         int entityIndex = 0;
 
-        for (EntityBase entity : gp.getParty().values()) {
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
-            if (entityIndex < gp.getNumActivePartyMembers()) {
+            if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
                 entity.setHidden(false);
                 entityIndex++;
@@ -287,7 +295,7 @@ public class PartySupport {
      */
     public void hideAllPartyMembers() {
 
-        for (EntityBase entity : gp.getParty().values()) {
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
             entity.setHidden(true);
         }
@@ -301,9 +309,9 @@ public class PartySupport {
 
         int entityIndex = 0;
 
-        for (EntityBase entity : gp.getParty().values()) {
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
-            if (entityIndex >= gp.getNumActivePartyMembers()) {
+            if (entityIndex >= gp.getEntityM().getNumActivePartyMembers()) {
 
                 entity.setHidden(true);
             }

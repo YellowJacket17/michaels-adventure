@@ -5,8 +5,8 @@ import combat.implementation.action.*;
 import combat.implementation.move.Mve_BasicAttack;
 import core.GamePanel;
 import entity.EntityStatus;
-import miscellaneous.GameState;
-import miscellaneous.TransitionType;
+import core.PrimaryGameState;
+import event.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
 import org.joml.Vector3f;
@@ -30,6 +30,11 @@ public class CombatManager {
 
     // FIELDS
     private final GamePanel gp;
+
+    /**
+     * Boolean to set whether the game is in combat mode (true) or not (false).
+     */
+    private boolean combatActive = false;
 
     /**
      * Location of the center of the combat field.
@@ -218,7 +223,8 @@ public class CombatManager {
                 generateNpcTurn();
             } else {                                                                                                    // If entity at the front of the turn order queue is a party member/player.
 
-                String message = buildRootMenuPrompt(gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName());
+                String message = buildRootMenuPrompt(
+                        gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getName());
                 addQueuedActionBack(new Act_ReadMessage(gp, message, false));
                 generateRootSubMenuAction();
                 runNextQueuedAction();
@@ -229,7 +235,6 @@ public class CombatManager {
 
     /**
      * Initiates combat fade-to-black transition and performs necessary loading.
-     * The game state is set to transition.
      *
      * @param col center column of combat field
      * @param row center row of combat field
@@ -250,7 +255,6 @@ public class CombatManager {
 
     /**
      * Initiates entering combat with a fade-to-black transition and performs necessary loading.
-     * The game state is set to transition.
      *
      * @param col center column of combat field
      * @param row center row of combat field
@@ -272,7 +276,6 @@ public class CombatManager {
 
     /**
      * Initiates combat with a fade-to-black transition.
-     * The game state is set to transition.
      *
      * @param col center column of combat field
      * @param row center row of combat field
@@ -296,33 +299,36 @@ public class CombatManager {
 
         if (opponent1 != null) {
 
-            playerOpponent = (opponent1.getEntityId() == gp.getPlayer().getEntityId());
-            partyOpponent1 = (gp.getParty().get(opponent1.getEntityId()) != null);
+            playerOpponent = (opponent1.getEntityId() == gp.getEntityM().getPlayer().getEntityId());
+            partyOpponent1 = (gp.getEntityM().getParty().get(opponent1.getEntityId()) != null);
         }
 
         if (opponent2 != null) {
 
             if (!playerOpponent) {
 
-                playerOpponent = (opponent2.getEntityId() == gp.getPlayer().getEntityId());
+                playerOpponent = (opponent2.getEntityId() == gp.getEntityM().getPlayer().getEntityId());
             }
-            partyOpponent2 = (gp.getParty().get(opponent2.getEntityId()) != null);
+            partyOpponent2 = (gp.getEntityM().getParty().get(opponent2.getEntityId()) != null);
         }
 
         if (opponent3 != null) {
 
             if (playerOpponent) {
 
-                playerOpponent = (opponent3.getEntityId() == gp.getPlayer().getEntityId());
+                playerOpponent = (opponent3.getEntityId() == gp.getEntityM().getPlayer().getEntityId());
             }
-            partyOpponent3 = (gp.getParty().get(opponent3.getEntityId()) != null);
+            partyOpponent3 = (gp.getEntityM().getParty().get(opponent3.getEntityId()) != null);
         }
 
         if (!((opponent1 == null) && (opponent2 == null) && (opponent3 == null))
                 && (!playerOpponent) && (!partyOpponent1) && (!partyOpponent2) && (!partyOpponent3)) {
 
+            // Set combat as active.
+            combatActive = true;
+
             // Clear any conversing entities.
-            gp.clearConversingEntities();
+            gp.getEntityM().clearConversingEntities();
 
             // Play combat music.
             if (trackName.equals(Sound.NO_TRACK)) {
@@ -336,9 +342,8 @@ public class CombatManager {
                 gp.getSoundS().swapTrack(trackName, false);
             }
 
-            // Set the game state.
-            gp.setCombatActive(true);                                                                                   // Set combat mode as active.
-            gp.initiateTransition(TransitionType.ENTER_COMBAT);
+            // Initiate transition into combat.
+            gp.getTransitionS().initiateTransition(TransitionType.ENTER_COMBAT);
             activeEnterCombatTransitionType = type;                                                                     // Set the current enter combat transition type being used.
 
             // Set the center tile (column/row) of the combat field.
@@ -376,11 +381,12 @@ public class CombatManager {
     /**
      * Initiates exiting combat with a fade-to-black transition and performs necessary loading.
      *
-     * @param type type of exit combat transition; see comments in the ExitCombatTransitionType enum for definitions of different types
+     * @param type type of exit combat transition; see comments in the ExitCombatTransitionType enum for definitions of
+     *             different types
      */
     public void exitCombat(ExitCombatTransitionType type) {
 
-        gp.initiateTransition(TransitionType.EXIT_COMBAT);
+        gp.getTransitionS().initiateTransition(TransitionType.EXIT_COMBAT);
         activeExitCombatTransitionType = type;                                                                          // Set the current exit combat transition type being used.
     }
 
@@ -402,7 +408,7 @@ public class CombatManager {
     /**
      * Closes out an enter combat transition that has completed all of its phases (i.e., tidies up any variables).
      * This is to be run once an enter combat transition has fully completed.
-     * The game state is set to dialogue to introduce the combat.
+     * The primary game state is set to dialogue to introduce the combat.
      */
     public void concludeEnterCombatTransition() {
 
@@ -416,9 +422,10 @@ public class CombatManager {
 
         for (int entityId : nonPlayerSideEntities) {
 
-            if ((gp.getEntityById(entityId) != null) && (!gp.getEntityById(entityId).getName().equals(""))) {
+            if ((gp.getEntityM().getEntityById(entityId) != null)
+                    && (!gp.getEntityM().getEntityById(entityId).getName().equals(""))) {
 
-                stagedName = gp.getEntityById(entityId).getName();
+                stagedName = gp.getEntityM().getEntityById(entityId).getName();
             } else {
 
                 stagedName = "???";
@@ -473,7 +480,7 @@ public class CombatManager {
     /**
      * Closes out an exit combat transition that has completed all of its phases (i.e., tidies up any variables).
      * This is to be run once an exit combat transition has fully completed.
-     * The game state is set depending on the type of exit combat transition that was used.
+     * The primary game state is set depending on the type of exit combat transition that was used.
      */
     public void concludeExitCombatTransition() {
 
@@ -484,9 +491,9 @@ public class CombatManager {
         }
         reset();
         resetAllCombatingEntityStats();
-        gp.clearCombatingEntities();
+        gp.getEntityM().clearCombatingEntities();
         gp.getDialogueR().reset();
-        gp.setCombatActive(false);
+        combatActive = false;
     }
 
 
@@ -544,14 +551,14 @@ public class CombatManager {
                 }
             }
 
-            if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getStatus() != EntityStatus.FAINT)
-                    && (!gp.getEntityById(queuedEntityTurnOrder.peekFirst()).isHidden())) {                             // If hidden, entity is not actively participating in combat (ex. party member in reserve).
+            if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getStatus() != EntityStatus.FAINT)
+                    && (!gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).isHidden())) {                             // If hidden, entity is not actively participating in combat (ex. party member in reserve).
 
                 viableEntity = true;
 
                 if (guardingEntities.remove(queuedEntityTurnOrder.peekFirst())) {                                       // If the entity was in a guarding state, end it.
 
-                    String message = gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName()
+                    String message = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getName()
                             + " reverted from a defensive stance.";
                     addQueuedActionBack(new Act_ReadMessage(gp, message, true));
                 }
@@ -568,9 +575,9 @@ public class CombatManager {
      */
     public void pollFainting() {
 
-        checkJustFainted(gp.getPlayer().getEntityId());
+        checkJustFainted(gp.getEntityM().getPlayer().getEntityId());
 
-        for (int entityId : gp.getParty().keySet()) {
+        for (int entityId : gp.getEntityM().getParty().keySet()) {
 
             checkJustFainted(entityId);
         }
@@ -580,17 +587,17 @@ public class CombatManager {
             checkJustFainted(entityId);
         }
 
-        if (checkAllNonPlayerSideFainted()) {                                                           // Combat is won if all non-player-side entities have fainted.
+        if (checkAllNonPlayerSideFainted()) {                                                                           // Combat is won if all non-player-side entities have fainted.
 
-            String message = gp.getPlayer().getName() + " won the fight!";
+            String message = gp.getEntityM().getPlayer().getName() + " won the fight!";
             addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
             addQueuedActionFront(new Act_ToggleCombatUi(gp, false));
             addQueuedActionFront(new Act_ReadMessage(gp, message, true));
         }
 
-        if (checkPlayerFainted()) {                                                                     // Combat is only lost if the player entity has fainted.
+        if (checkPlayerFainted()) {                                                                                     // Combat is only lost if the player entity has fainted.
 
-            String message = gp.getPlayer().getName() + " lost the fight.";
+            String message = gp.getEntityM().getPlayer().getName() + " lost the fight.";
             addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
             addQueuedActionFront(new Act_ToggleCombatUi(gp, false));
             addQueuedActionFront(new Act_ReadMessage(gp, message, true));
@@ -605,7 +612,7 @@ public class CombatManager {
      */
     public boolean checkPlayerFainted() {
 
-        if (gp.getPlayer().getStatus() == EntityStatus.FAINT) {
+        if (gp.getEntityM().getPlayer().getStatus() == EntityStatus.FAINT) {
 
             return true;
         }
@@ -621,12 +628,12 @@ public class CombatManager {
      */
     public boolean checkAllPartyFainted() {
 
-        int allPartyCount = gp.getParty().size();
+        int allPartyCount = gp.getEntityM().getParty().size();
         int faintedPartyCount = 0;
 
-        for (int entityId : gp.getParty().keySet()) {
+        for (int entityId : gp.getEntityM().getParty().keySet()) {
 
-            if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+            if (gp.getEntityM().getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
 
                 faintedPartyCount++;
             }
@@ -654,7 +661,7 @@ public class CombatManager {
 
         for (int entityId : gp.getCombatM().getNonPlayerSideEntities()) {
 
-            if (gp.getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+            if (gp.getEntityM().getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
 
                 faintedNonPlayerSideCount++;
             }
@@ -747,7 +754,8 @@ public class CombatManager {
     private void runRootSubMenuSelectionGuard() {
 
         guardingEntities.add(queuedEntityTurnOrder.peekFirst());
-        String message = gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getName() + " assumed a defensive stance.";
+        String message = gp.getEntityM()
+                .getEntityById(queuedEntityTurnOrder.peekFirst()).getName() + " assumed a defensive stance.";
         addQueuedActionBack(new Act_ReadMessage(gp, message, true));
         addQueuedActionBack(new Act_EndEntityTurn(gp));
     }
@@ -771,11 +779,12 @@ public class CombatManager {
         HashMap<Integer, Vector3f> colors = new HashMap<>();
         HashSet<Integer> disabledOptions = new HashSet<>();
 
-        for (MoveBase move : gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves()) {
+        for (MoveBase move : gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves()) {
 
             moveOptions.add(move.getName());
 
-            if (move.getSkillPoints() > gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getSkillPoints()) {
+            if (move.getSkillPoints() > gp.getEntityM()
+                    .getEntityById(queuedEntityTurnOrder.peekFirst()).getSkillPoints()) {
 
                 colors.put(moveOptions.size() - 1, disabledOptionColor);
                 disabledOptions.add(moveOptions.size() - 1);
@@ -839,11 +848,12 @@ public class CombatManager {
         } else {
 
             ArrayList<String> playerSideOptions = new ArrayList<>();
-            EntityBase entity = gp.getEntityById(lastGeneratedPlayerSideOptions.get(getLatestSubMenuMemory().getSelectedOption()));
+            EntityBase entity = gp.getEntityM()
+                    .getEntityById(lastGeneratedPlayerSideOptions.get(getLatestSubMenuMemory().getSelectedOption()));
 
-            if (getLatestSubMenuMemory().getSelectedOption() <= gp.getNumActivePartyMembers()) {                        // Determine if the selected entity is the player entity or an active party member.
+            if (getLatestSubMenuMemory().getSelectedOption() <= gp.getEntityM().getNumActivePartyMembers()) {           // Determine if the selected entity is the player entity or an active party member.
 
-                if (entity.getEntityId() != gp.getPlayer().getEntityId()) {
+                if (entity.getEntityId() != gp.getEntityM().getPlayer().getEntityId()) {
 
                     // TODO : Consider disabling option is entity is fainted.
                     playerSideOptions.add("Swap Out");
@@ -902,8 +912,9 @@ public class CombatManager {
             revertSubMenuSelection();
         } else {
 
-            int playerSideId1 = lastGeneratedPlayerSideOptions.get(subMenuLog.get(subMenuLog.size() - 3).getSelectedOption());
-            int playerSideId2 = -1;                                                                                           // Default entity ID to force error if invalid option somehow selected.
+            int playerSideId1 = lastGeneratedPlayerSideOptions
+                    .get(subMenuLog.get(subMenuLog.size() - 3).getSelectedOption());
+            int playerSideId2 = -1;                                                                                     // Default entity ID to force error if invalid option somehow selected.
             String selectedSwapOption = subMenuLog.get(subMenuLog.size() - 2).getOptions().get(
                     subMenuLog.get(subMenuLog.size() - 2).getSelectedOption());
 
@@ -912,7 +923,8 @@ public class CombatManager {
                 playerSideId2 = lastGeneratedActivePlayerSideOptions.get(getLatestSubMenuMemory().getSelectedOption());
             } else if (selectedSwapOption.equals("Swap Out")) {
 
-                playerSideId2 = lastGeneratedInactivePlayerSideOptions.get(getLatestSubMenuMemory().getSelectedOption());
+                playerSideId2 = lastGeneratedInactivePlayerSideOptions
+                        .get(getLatestSubMenuMemory().getSelectedOption());
             }
             addQueuedActionBack(new Act_SwapPlayerSideEntity(gp, playerSideId1, playerSideId2));
             addQueuedActionBack(new Act_EndEntityTurn(gp));
@@ -932,7 +944,7 @@ public class CombatManager {
             revertSubMenuSelection();
         } else {                                                                                                        // Determine appropriate target entity that was selected.
 
-            EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
+            EntityBase sourceEntity = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst());
             MoveBase move = null;
 
             switch (subMenuLog.get(subMenuLog.size() - 2).getType()) {
@@ -943,7 +955,7 @@ public class CombatManager {
                     move = sourceEntity.getMoves().get(subMenuLog.get(subMenuLog.size() - 2).getSelectedOption());
                     break;
             }
-            EntityBase targetEntity = gp.getEntityById(
+            EntityBase targetEntity = gp.getEntityM().getEntityById(
                     lastGeneratedTargetOptions.get(
                             getLatestSubMenuMemory().getSelectedOption()));
             String message;
@@ -1041,32 +1053,32 @@ public class CombatManager {
         // Reset all non-party member combating entities back to pre-combat positions.
         // Note that this includes the player entity.
         for (int entityId : storedEntityCols.keySet()) {
-            if (!gp.getParty().containsKey(entityId)) {
-                gp.getEntityById(entityId).setCol(storedEntityCols.get(entityId));
+            if (!gp.getEntityM().getParty().containsKey(entityId)) {
+                gp.getEntityM().getEntityById(entityId).setCol(storedEntityCols.get(entityId));
             }
         }
         for (int entityId : storedEntityRows.keySet()) {
-            if (!gp.getParty().containsKey(entityId)) {
-                gp.getEntityById(entityId).setRow(storedEntityRows.get(entityId));
+            if (!gp.getEntityM().getParty().containsKey(entityId)) {
+                gp.getEntityM().getEntityById(entityId).setRow(storedEntityRows.get(entityId));
             }
         }
 
         // Reset all non-party member combating entities back to pre-combat directions.
         // Note that this includes the player entity.
         for (int entityId : storedEntityDirections.keySet()) {
-            if (!gp.getParty().containsKey(entityId)) {
-                gp.getEntityById(entityId).setDirectionCurrent(storedEntityDirections.get(entityId));
+            if (!gp.getEntityM().getParty().containsKey(entityId)) {
+                gp.getEntityM().getEntityById(entityId).setDirectionCurrent(storedEntityDirections.get(entityId));
             }
         }
 
         // Transfer non-combating followers of all combating entities back from the standby entity map.
         for (int entityId : storedNonCombatingFollowers) {
-            switch (gp.getStandby().get(entityId).getType()) {
+            switch (gp.getEntityM().getStandby().get(entityId).getType()) {
                 case OBJECT:
-                    gp.transferEntity(gp.getStandby(), gp.getObj(), entityId);
+                    gp.getEntityM().transferEntity(gp.getEntityM().getStandby(), gp.getEntityM().getObj(), entityId);
                     break;
                 case CHARACTER:
-                    gp.transferEntity(gp.getStandby(), gp.getNpc(), entityId);
+                    gp.getEntityM().transferEntity(gp.getEntityM().getStandby(), gp.getEntityM().getNpc(), entityId);
                     break;
             }
         }
@@ -1077,29 +1089,31 @@ public class CombatManager {
         // This is because, when the follower chain is rebuilt in `swapEntityInParty()`, the last tile position of the
         // followed is set to the follower's combat position since the warp to player hasn't happened yet, causing this
         // issue.
-        gp.getWarpS().warpFollowersToFollowed(gp.getPlayer(), gp.getParty());
+        gp.getWarpS().warpFollowersToFollowed(gp.getEntityM().getPlayer(), gp.getEntityM().getParty());
 
         // Warp non-party member followers to the player entity.
         // Note that followers of all other combating entities are NOT warped to their followers and will be left at
         // their pre-combat positions.
-        gp.getWarpS().warpFollowersToFollowed(gp.getPlayer(), gp.getNpc());
-        gp.getWarpS().warpFollowersToFollowed(gp.getPlayer(), gp.getObj());
+        gp.getWarpS().warpFollowersToFollowed(gp.getEntityM().getPlayer(), gp.getEntityM().getNpc());
+        gp.getWarpS().warpFollowersToFollowed(gp.getEntityM().getPlayer(), gp.getEntityM().getObj());
 
         // Restore pre-combat ordering of party members (run before restoring pre-combat party hidden states).
         for (int i = 0; i < partyOrdering.size(); i++) {
-            gp.getPartyS().swapEntityInParty(partyOrdering.get(i), (int)gp.getParty().keySet().toArray()[i]);
+            gp.getPartyS().swapEntityInParty(partyOrdering.get(i),
+                    (int)gp.getEntityM().getParty().keySet().toArray()[i]);
         }
 
         // Reset all combating entities back to pre-combat hidden state.
         // Must run after restoring pre-combat party ordering, or party members may have incorrect hidden status after
         // transition is complete.
         for (int entityId : storedEntityHidden.keySet()) {
-            gp.getEntityById(entityId).setHidden(storedEntityHidden.get(entityId));
+            gp.getEntityM().getEntityById(entityId).setHidden(storedEntityHidden.get(entityId));
         }
 
         // Swap music, if applicable.
         if (!retainPreCombatTrack) {
-            gp.getSoundS().swapTrack(gp.getLoadedMap().getTracks().get(gp.getLoadedMap().getMapState()), true);
+            gp.getSoundS().swapTrack(
+                    gp.getMapM().getLoadedMap().getTracks().get(gp.getMapM().getLoadedMap().getMapState()), true);
         }
     }
 
@@ -1107,11 +1121,11 @@ public class CombatManager {
     /**
      * Closes out a basic exit combat transition that has completed all of its phases (i.e., tidies up any variables).
      * This is to be run once a basic exit combat transition has fully completed.
-     * The game state is set to explore to return control to the player.
+     * The primary game state is set to explore to return control to the player.
      */
     private void concludeBasicExitCombatTransition() {
 
-        gp.setGameState(GameState.EXPLORE);
+        gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
     }
 
 
@@ -1122,25 +1136,25 @@ public class CombatManager {
      */
     private void preparePlayerSideEntities() {
 
-        for (int entityId : gp.getParty().keySet()) {                                                                   // Store original party member ordering.
+        for (int entityId : gp.getEntityM().getParty().keySet()) {                                                      // Store original party member ordering.
 
             partyOrdering.add(entityId);
         }
-        handleNonCombatingFollowers(gp.getPlayer());
+        handleNonCombatingFollowers(gp.getEntityM().getPlayer());
 
-        for (EntityBase partyEntityId : gp.getParty().values()) {
+        for (EntityBase partyEntityId : gp.getEntityM().getParty().values()) {
 
             handleNonCombatingFollowers(partyEntityId);
         }
-        setCombating(gp.getPlayer());
-        gp.getPlayer().setCol(fieldCenterCol - 4);
-        gp.getPlayer().setRow(fieldCenterRow);
-        gp.getPlayer().cancelAction();
-        gp.getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
+        setCombating(gp.getEntityM().getPlayer());
+        gp.getEntityM().getPlayer().setCol(fieldCenterCol - 4);
+        gp.getEntityM().getPlayer().setRow(fieldCenterRow);
+        gp.getEntityM().getPlayer().cancelAction();
+        gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
 
         int placedPartyMembers = 0;
 
-        for (EntityBase entity : gp.getParty().values()) {
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
             if (entity != null) {
 
@@ -1177,15 +1191,15 @@ public class CombatManager {
 
         for (int nonPlayerSideEntityId : nonPlayerSideEntities) {
 
-            handleNonCombatingFollowers(gp.getEntityById(nonPlayerSideEntityId));
+            handleNonCombatingFollowers(gp.getEntityM().getEntityById(nonPlayerSideEntityId));
         }
         int placedNonPlayerSideEntities = 0;
 
         for (int entityId : nonPlayerSideEntities) {
 
-            if (gp.getParty().get(entityId) == null) {
+            if (gp.getEntityM().getParty().get(entityId) == null) {
 
-                EntityBase opponent = gp.getEntityById(entityId);
+                EntityBase opponent = gp.getEntityM().getEntityById(entityId);
                 setCombating(opponent);
                 opponent.cancelAction();
                 opponent.setDirectionCurrent(EntityDirection.LEFT);
@@ -1223,9 +1237,9 @@ public class CombatManager {
 
         // Add all combating entities to the new list of combating entities, even if fainted or outside the first
         // two party slots.
-        for (int entityId : gp.getCombatingEntities()) {
+        for (int entityId : gp.getEntityM().getCombatingEntities()) {
 
-            entitiesToPlace.put(entityId, gp.getEntityById(entityId).getAgility());
+            entitiesToPlace.put(entityId, gp.getEntityM().getEntityById(entityId).getAgility());
         }
 
         // Build the turn order based on entity agility attributes (higher agility moves sooner).
@@ -1290,7 +1304,7 @@ public class CombatManager {
     private void generateNpcTurn() {
 
         // Get source entity.
-        EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
+        EntityBase sourceEntity = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst());
 
         // Generate possible moves for source entity to use
         ArrayList<MoveBase> possibleMoves = new ArrayList<>();
@@ -1310,7 +1324,7 @@ public class CombatManager {
         // Generate random target entity.
         generateNonPlayerSideTargetOptions(move.getMoveTargets());
         i = random.nextInt(lastGeneratedTargetOptions.size());                                                          // Generate random number from 0 to number of selectable target entities (both inclusive)
-        EntityBase targetEntity = gp.getEntityById(lastGeneratedTargetOptions.get(i));
+        EntityBase targetEntity = gp.getEntityM().getEntityById(lastGeneratedTargetOptions.get(i));
 
         // Add move action.
         String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
@@ -1333,10 +1347,10 @@ public class CombatManager {
 
         ArrayList<String> playerSideOptions = new ArrayList<>();
         lastGeneratedPlayerSideOptions.clear();
-        playerSideOptions.add(gp.getPlayer().getName());
-        lastGeneratedPlayerSideOptions.add(gp.getPlayer().getEntityId());
+        playerSideOptions.add(gp.getEntityM().getPlayer().getName());
+        lastGeneratedPlayerSideOptions.add(gp.getEntityM().getPlayer().getEntityId());
 
-        for (EntityBase entity : gp.getParty().values()) {
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
             playerSideOptions.add(entity.getName());
             lastGeneratedPlayerSideOptions.add(entity.getEntityId());
@@ -1360,9 +1374,9 @@ public class CombatManager {
         lastGeneratedActivePlayerSideOptions.clear();
         int entityIndex = 0;
 
-        for (EntityBase entity : gp.getParty().values()) {                                                              // Populate options with active party member entities.
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {                                                 // Populate options with active party member entities.
 
-            if (entityIndex < gp.getNumActivePartyMembers()) {
+            if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
                 activePlayerSideOptions.add(entity.getName());
                 lastGeneratedActivePlayerSideOptions.add(entity.getEntityId());
@@ -1391,9 +1405,9 @@ public class CombatManager {
         lastGeneratedInactivePlayerSideOptions.clear();
         int entityIndex = 0;
 
-        for (EntityBase entity : gp.getParty().values()) {                                                              // Populate options with inactive party member entities.
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {                                                 // Populate options with inactive party member entities.
 
-            if (entityIndex >= gp.getNumActivePartyMembers()) {
+            if (entityIndex >= gp.getEntityM().getNumActivePartyMembers()) {
 
                 inactivePlayerSideOptions.add(entity.getName());
                 lastGeneratedInactivePlayerSideOptions.add(entity.getEntityId());
@@ -1424,7 +1438,7 @@ public class CombatManager {
     private void generateTargetSelectSubMenuAction() {
 
         targetArrowVisible = true;                                                                                      // Target selection has been initiated.
-        EntityBase sourceEntity = gp.getEntityById(queuedEntityTurnOrder.peekFirst());
+        EntityBase sourceEntity = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst());
         MoveTargets moveTargets = null;
 
         switch (getLatestSubMenuMemory().getType()) {
@@ -1566,10 +1580,10 @@ public class CombatManager {
 
         for (int entityId : nonPlayerSideEntities) {
 
-            if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
-                    && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
+            if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
+                    && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                targetOptions.add(gp.getEntityById(entityId).getName());
+                targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
                 lastGeneratedTargetOptions.add(entityId);
             }
         }
@@ -1591,22 +1605,23 @@ public class CombatManager {
      */
     private void addPlayerSideEntitiesToTargetOptions(ArrayList targetOptions) {
 
-        if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != gp.getPlayer().getEntityId())
-                && (gp.getPlayer().getStatus() != EntityStatus.FAINT)) {
+        if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
+                    != gp.getEntityM().getPlayer().getEntityId())
+                && (gp.getEntityM().getPlayer().getStatus() != EntityStatus.FAINT)) {
 
-            targetOptions.add(gp.getPlayer().getName());
-            lastGeneratedTargetOptions.add(gp.getPlayer().getEntityId());
+            targetOptions.add(gp.getEntityM().getPlayer().getName());
+            lastGeneratedTargetOptions.add(gp.getEntityM().getPlayer().getEntityId());
         }
         int entityIndex = 0;
 
-        for (int entityId : gp.getParty().keySet()) {
+        for (int entityId : gp.getEntityM().getParty().keySet()) {
 
-            if (entityIndex < gp.getNumActivePartyMembers()) {
+            if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
-                if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
-                        && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
+                if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
+                        && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                    targetOptions.add(gp.getEntityById(entityId).getName());
+                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
                     lastGeneratedTargetOptions.add(entityId);
                 }
             } else {
@@ -1631,23 +1646,24 @@ public class CombatManager {
      */
     private void addSelfEntityToTargetOptions(ArrayList targetOptions) {
 
-        if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == gp.getPlayer().getEntityId())         // Check if player entity is the self.
-                && (gp.getPlayer().getStatus() != EntityStatus.FAINT)) {
+        if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
+                    == gp.getEntityM().getPlayer().getEntityId())                                                       // Check if player entity is the self.
+                && (gp.getEntityM().getPlayer().getStatus() != EntityStatus.FAINT)) {
 
-            targetOptions.add(gp.getPlayer().getName());
-            lastGeneratedTargetOptions.add(gp.getPlayer().getEntityId());
+            targetOptions.add(gp.getEntityM().getPlayer().getName());
+            lastGeneratedTargetOptions.add(gp.getEntityM().getPlayer().getEntityId());
             return;                                                                                                     // The single target entity has been added.
         }
         int entityIndex = 0;
 
-        for (int entityId : gp.getParty().keySet()) {
+        for (int entityId : gp.getEntityM().getParty().keySet()) {
 
-            if (entityIndex < gp.getNumActivePartyMembers()) {
+            if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
-                if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)                     // Check if a party member entity is the self.
-                        && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
+                if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)        // Check if a party member entity is the self.
+                        && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                    targetOptions.add(gp.getEntityById(entityId).getName());
+                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
                     lastGeneratedTargetOptions.add(entityId);
                     return;                                                                                             // The single target entity has been added.
                 }
@@ -1660,10 +1676,10 @@ public class CombatManager {
 
         for (int entityId : nonPlayerSideEntities) {
 
-            if ((gp.getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)                         // Check if a non-player-side entity is the self.
-                    && (gp.getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
+            if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)            // Check if a non-player-side entity is the self.
+                    && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                targetOptions.add(gp.getEntityById(entityId).getName());
+                targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
                 lastGeneratedTargetOptions.add(entityId);
                 return;                                                                                                 // The single target entity has been added.
             }
@@ -1680,7 +1696,7 @@ public class CombatManager {
      */
     private void checkJustFainted(int entityId) {
 
-        EntityBase targetEntity = gp.getEntityById(entityId);
+        EntityBase targetEntity = gp.getEntityM().getEntityById(entityId);
 
         if ((targetEntity.getLife() <= 0)
                 && (targetEntity.getStatus() != EntityStatus.FAINT)) {
@@ -1710,9 +1726,9 @@ public class CombatManager {
      */
     private void setCombating(EntityBase target) {
 
-        if (!gp.getCombatingEntities().contains(target.getEntityId())) {
+        if (!gp.getEntityM().getCombatingEntities().contains(target.getEntityId())) {
 
-            gp.getCombatingEntities().add(target.getEntityId());
+            gp.getEntityM().getCombatingEntities().add(target.getEntityId());
             storedEntityCols.put(target.getEntityId(), target.getCol());
             storedEntityRows.put(target.getEntityId(), target.getRow());
             storedEntityDirections.put(target.getEntityId(), target.getDirectionCurrent());
@@ -1749,12 +1765,14 @@ public class CombatManager {
 
             if (!match) {                                                                                                // If the follower was not found to be a non-player-side combating entity, then handle it.
 
-                switch (gp.getEntityById(followerId).getType()) {
+                switch (gp.getEntityM().getEntityById(followerId).getType()) {
                     case OBJECT:
-                        gp.transferEntity(gp.getObj(), gp.getStandby(), followerId);                                    // Store as standby entity during combat to prevent interference (walking towards combatant, etc.).
+                        gp.getEntityM()
+                                .transferEntity(gp.getEntityM().getObj(), gp.getEntityM().getStandby(), followerId);    // Store as standby entity during combat to prevent interference (walking towards combatant, etc.).
                         break;
                     case CHARACTER:
-                        gp.transferEntity(gp.getNpc(), gp.getStandby(), followerId);                                    // Store as standby entity during combat to prevent interference (walking towards combatant, etc.)..
+                        gp.getEntityM()
+                                .transferEntity(gp.getEntityM().getNpc(), gp.getEntityM().getStandby(), followerId);    // Store as standby entity during combat to prevent interference (walking towards combatant, etc.)..
                         break;
                 }
                 storedNonCombatingFollowers.add(followerId);
@@ -1810,9 +1828,9 @@ public class CombatManager {
      */
     private void resetAllCombatingEntityStats() {
 
-        for (int entityId : gp.getCombatingEntities()) {
+        for (int entityId : gp.getEntityM().getCombatingEntities()) {
 
-            gp.getEntityById(entityId).resetStats();
+            gp.getEntityM().getEntityById(entityId).resetStats();
         }
     }
 
@@ -1877,6 +1895,10 @@ public class CombatManager {
 
 
     // GETTERS
+    public boolean isCombatActive() {
+        return combatActive;
+    }
+
     public LinkedHashSet<Integer> getNonPlayerSideEntities() {
         return nonPlayerSideEntities;
     }

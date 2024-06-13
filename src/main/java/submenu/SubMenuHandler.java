@@ -77,6 +77,8 @@ public class SubMenuHandler {
 
     /**
      * Generates a sub-menu.
+     * Note that this method will not actually display the sub-menu.
+     * The primary game state must be changed to sub-menu for the generated sub-menu to be displayed.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -98,6 +100,8 @@ public class SubMenuHandler {
 
     /**
      * Generates a sub-menu.
+     * Note that this method will not actually display the sub-menu.
+     * The primary game state must be changed to sub-menu for the generated sub-menu to be displayed.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -118,6 +122,8 @@ public class SubMenuHandler {
 
     /**
      * Generates a sub-menu.
+     * Note that this method will not actually display the sub-menu.
+     * The primary game state must be changed to sub-menu for the generated sub-menu to be displayed.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -137,6 +143,8 @@ public class SubMenuHandler {
 
     /**
      * Generates a sub-menu.
+     * Note that this method will not actually display the sub-menu.
+     * The primary game state must be changed to sub-menu for the generated sub-menu to be displayed.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -154,6 +162,8 @@ public class SubMenuHandler {
 
     /**
      * Generates a sub-menu.
+     * Note that this method will not actually display the sub-menu.
+     * The primary game state must be changed to sub-menu for the generated sub-menu to be displayed.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -174,6 +184,8 @@ public class SubMenuHandler {
 
     /**
      * Generates a sub-menu.
+     * Note that this method will not actually display the sub-menu.
+     * The primary game state must be changed to sub-menu for the generated sub-menu to be displayed.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -192,6 +204,8 @@ public class SubMenuHandler {
 
     /**
      * Generates a sub-menu.
+     * Note that this method will not actually display the sub-menu.
+     * The primary game state must be changed to sub-menu for the generated sub-menu to be displayed.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -209,6 +223,8 @@ public class SubMenuHandler {
 
     /**
      * Generates a sub-menu.
+     * Note that this method will not actually display the sub-menu.
+     * The primary game state must be changed to sub-menu for the generated sub-menu to be displayed.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option

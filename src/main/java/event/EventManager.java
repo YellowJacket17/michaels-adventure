@@ -1,7 +1,7 @@
 package event;
 
 import miscellaneous.CollisionInspector;
-import miscellaneous.GameState;
+import core.PrimaryGameState;
 import entity.EntityBase;
 import core.GamePanel;
 import entity.EntityDirection;
@@ -80,15 +80,15 @@ public class EventManager {
      */
     public boolean handleObjectInteraction(double dt, EventType type) {
 
-        int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getObj(), false);                              // If there's collision with an object (i.e., object in front of player entity), retrieve the entity ID of the object.
+        int entityId = gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getObj(), false);    // If there's collision with an object (i.e., object in front of player entity), retrieve the entity ID of the object.
 
         if (entityId != CollisionInspector.NO_COLLISION) {
 
-            EntityBase target = gp.getObj().get(entityId);                                                              // Retrieve the entity corresponding with the returned entity ID.
+            EntityBase target = gp.getEntityM().getObj().get(entityId);                                                 // Retrieve the entity corresponding with the returned entity ID.
 
             if (!target.isMoving()) {                                                                                   // An object can only be interacted with if it's not currently in a state of motion.
 
-                switch (gp.getLoadedMap().getMapId()) {                                                                 // Switch which map to check for interaction events on depending on the current loaded map.
+                switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
                     case 0:
                         return evt_map000.objInteraction(dt, type, target);
                     case 1:
@@ -109,15 +109,15 @@ public class EventManager {
      */
     public boolean handleNpcInteraction(double dt, EventType type) {
 
-        int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getNpc(), false);                              // If there's collision with an NPC (i.e., NPC in front of player), retrieve the entity ID of the NPC.
+        int entityId = gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getNpc(), false);    // If there's collision with an NPC (i.e., NPC in front of player), retrieve the entity ID of the NPC.
 
         if (entityId != CollisionInspector.NO_COLLISION) {
 
-            EntityBase target = gp.getNpc().get(entityId);                                                              // Retrieve the entity corresponding with the returned entity ID.
+            EntityBase target = gp.getEntityM().getNpc().get(entityId);                                                 // Retrieve the entity corresponding with the returned entity ID.
 
             if (!target.isMoving()) {                                                                                   // An NPC can only be interacted with if it's not currently in a state of motion.
 
-                switch (gp.getLoadedMap().getMapId()) {                                                                 // Switch which map to check for interaction events on depending on the current loaded map.
+                switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
                     case 0:
                         return evt_map000.npcInteraction(dt, type, target);
                     case 1:
@@ -138,15 +138,15 @@ public class EventManager {
      */
     public boolean handlePartyInteraction(double dt, EventType type) {
 
-        int entityId = gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getParty(), false);                            // If there's collision with a party member (i.e., party member in front of player entity), retrieve the entity ID of the party member.
+        int entityId = gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getParty(), false);  // If there's collision with a party member (i.e., party member in front of player entity), retrieve the entity ID of the party member.
 
         if (entityId != CollisionInspector.NO_COLLISION) {
 
-            EntityBase target = gp.getParty().get(entityId);                                                            // Retrieve the entity corresponding with the returned entity ID.
+            EntityBase target = gp.getEntityM().getParty().get(entityId);                                               // Retrieve the entity corresponding with the returned entity ID.
 
             if (!target.isMoving()) {                                                                                   // A party member can only be interacted with if it's not currently in a state of motion.
 
-                switch (gp.getLoadedMap().getMapId()) {                                                                 // Switch which map to check for interaction events on depending on the current loaded map.
+                switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
                     case 0:
                         return evt_map000.partyInteraction(dt, type, target);
                     case 1:
@@ -167,13 +167,13 @@ public class EventManager {
      */
     public boolean handleTileInteraction(double dt, EventType type) {
 
-        int playerCol = gp.getPlayer().getCol();                                                                        // Initialize variable with player entity's current tile position.
-        int playerRow = gp.getPlayer().getRow();                                                                        // ^^^
+        int playerCol = gp.getEntityM().getPlayer().getCol();                                                           // Initialize variable with player entity's current tile position.
+        int playerRow = gp.getEntityM().getPlayer().getRow();                                                           // ^^^
 
         int targetCol = 0;                                                                                              // Declare a variable to store the simulated step of the player entity.
         int targetRow = 0;                                                                                              // ^^^
 
-        switch (gp.getPlayer().getDirectionCurrent()) {                                                                 // Simulate player's movement and check where they would be after taking a step forward.
+        switch (gp.getEntityM().getPlayer().getDirectionCurrent()) {                                                    // Simulate player's movement and check where they would be after taking a step forward.
             case UP:
                 targetCol = playerCol;
                 targetRow = playerRow - 1;
@@ -192,19 +192,24 @@ public class EventManager {
                 break;
         }
 
-        if ((type == EventType.STEP)                                                                                                // If interaction type is step.
-                && ((gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getNpc(), true) != CollisionInspector.NO_COLLISION)          // Ensure tile is not already occupied by a solid, non-follower/followed, visible NPC.
-                    || (gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getObj(), true) != CollisionInspector.NO_COLLISION)       // Ensure tile is not already occupied by a solid, non-follower/followed, visible object.
-                    || (gp.getCollisionI().checkEntity(gp.getPlayer(), gp.getParty(), true) != CollisionInspector.NO_COLLISION))) { // Ensure title is not already occupied by a solid, non-follower/followed, visible party member.
+        if ((type == EventType.STEP)                                                                                    // If interaction type is step.
+                && ((gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getNpc(), true)
+                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible NPC.
+                || (gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getObj(), true)
+                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible object.
+                || (gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getParty(), true)
+                    != CollisionInspector.NO_COLLISION))) {                                                             // Ensure title is not already occupied by a solid, non-follower/followed, visible party member.
 
             return false;
         }
 
-        switch (gp.getLoadedMap().getMapId()) {                                                                         // Switch which map to check for interaction events on depending on the current loaded map.
+        switch (gp.getMapM().getLoadedMap().getMapId()) {                                                               // Switch which map to check for interaction events on depending on the current loaded map.
                 case 0:
-                    return evt_map000.tileInteraction(dt, type, targetCol, targetRow, gp.getPlayer().getDirectionCurrent());
+                    return evt_map000.tileInteraction(dt, type, targetCol, targetRow,
+                            gp.getEntityM().getPlayer().getDirectionCurrent());
                 case 1:
-                    return evt_map001.tileInteraction(dt, type, targetCol, targetRow, gp.getPlayer().getDirectionCurrent());
+                    return evt_map001.tileInteraction(dt, type, targetCol, targetRow,
+                            gp.getEntityM().getPlayer().getDirectionCurrent());
             }
         return false;
     }
@@ -212,7 +217,7 @@ public class EventManager {
 
     /**
      * Handles if any further logic should be executed after a conversation ends.
-     * If not, all entities are removed from a conversing state and the game state is set to explore.
+     * If not, all entities are removed from a conversing state and the primary game state is set to explore.
      *
      * @param convId ID of the conversation that just ended
      */
@@ -236,7 +241,8 @@ public class EventManager {
 
     /**
      * Handles what logic should be run based on the selection the player made in a sub-menu.
-     * If a valid sub-menu ID is not passed, the game state defaults to an explore state and nothing else happens.
+     * If a valid sub-menu ID is not passed, the primary game state defaults to an explore state and nothing else
+     * happens.
      *
      * @param subMenuId ID of sub-menu being handled
      * @param selectedIndex index of selected sub-menu option
@@ -267,21 +273,21 @@ public class EventManager {
      */
     public void setConversing(EntityBase target) {
 
-        if (!gp.getConversingEntities().contains(gp.getPlayer().getEntityId())) {
+        if (!gp.getEntityM().getConversingEntities().contains(gp.getEntityM().getPlayer().getEntityId())) {
 
-            gp.getConversingEntities().add(gp.getPlayer().getEntityId());                                               // The player has begun conversing with an entity.
+            gp.getEntityM().getConversingEntities().add(gp.getEntityM().getPlayer().getEntityId());                     // The player has begun conversing with an entity.
         }
 
-        if (!gp.getConversingEntities().contains(target.getEntityId())) {
+        if (!gp.getEntityM().getConversingEntities().contains(target.getEntityId())) {
 
-            gp.getConversingEntities().add(target.getEntityId());                                                       // An NPC has begun conversing with the player.
+            gp.getEntityM().getConversingEntities().add(target.getEntityId());                                          // An NPC has begun conversing with the player.
         }
     }
 
 
     /**
      * Initiates a player conversation with a target entity.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param target ID of the entity entering a conversation with the player entity
      * @param playerDirection direction the player entity is currently facing (used to make the target entity face the player entity)
@@ -306,7 +312,7 @@ public class EventManager {
                 break;
         }
 
-        gp.setGameState(GameState.DIALOGUE);                                                                            // Enter into a dialogue state.
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);                                                              // Enter into a dialogue state.
         gp.getDialogueR().initiateConversation(convId);                                                                 // Trigger the appropriate conversation with the NPC.
     }
 
@@ -314,11 +320,11 @@ public class EventManager {
     /**
      * Cleans up after a conversation has completed.
      * The type of cleanup done depends on the inputted mode.
-     * If a mode does not automatically set the game state itself, the game state must be manually set after this
-     * function call (directly or via another function call) avoid complications in game logic.
+     * If a mode does not automatically set the primary game state itself, the primary game state must be manually set
+     * after this function call (directly or via another function call) avoid complications in game logic.
      *
      * @param mode type of cleanup to perform: (1) reset fields in DialogueReader, remove all entities from a conversing
-     *             state, set player interaction buffer, and set the game state to explore; (2) reset fields in
+     *             state, set player interaction buffer, and set the primary game state to explore; (2) reset fields in
      *             DialogueReader and remove all entities from a conversing state; (3) reset fields in DialogueReader
      * @throws IllegalArgumentException if an illegal mode is passed as argument
      */
@@ -328,12 +334,12 @@ public class EventManager {
 
         switch (mode) {
             case 1:
-                gp.clearConversingEntities();                                                                           // All conversations between entities have ended.
-                gp.getPlayer().setInteractionCountdown(0.16);                                                           // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity, for example (prevents player from getting stuck in interaction loop).
-                gp.setGameState(GameState.EXPLORE);                                                                     // Return control back to the player.
+                gp.getEntityM().clearConversingEntities();                                                              // All conversations between entities have ended.
+                gp.getEntityM().getPlayer().setInteractionCountdown(0.16);                                              // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity, for example (prevents player from getting stuck in interaction loop).
+                gp.setPrimaryGameState(PrimaryGameState.EXPLORE);                                                       // Return control back to the player.
                 break;
             case 2:
-                gp.clearConversingEntities();                                                                           // All conversations between entities have ended.
+                gp.getEntityM().clearConversingEntities();                                                              // All conversations between entities have ended.
                 break;
             case 3:
                 // Nothing here.
@@ -347,12 +353,13 @@ public class EventManager {
     /**
      * Cleans up after a sub-menu option has been selected and the sub-menu is to be closed.
      * The type of cleanup done depends on the inputted mode.
-     * If a mode does not automatically set the game state itself, the game state must be manually set after this
-     * function call (directly or via another function call) avoid complications in game logic.
+     * If a mode does not automatically set the primary game state itself, the primary game state must be manually set
+     * after this function call (directly or via another function call) avoid complications in game logic.
      *
      * @param mode type of cleanup to perform: (1) reset fields in SubMenuHandler, reset fields in DialogueReader if
-     *             applicable, set player interaction buffer, and set the game state to explore; (2) reset fields in
-     *             SubMenuHandler and reset fields in DialogueReader if applicable; (3) reset fields in SubMenuHandler
+     *             applicable, set player interaction buffer, and set the primary game state to explore; (2) reset
+     *             fields in SubMenuHandler and reset fields in DialogueReader if applicable; (3) reset fields in
+     *             SubMenuHandler
      * @throws IllegalArgumentException if an illegal mode is passed as argument
      */
     public void cleanupSubmenu(int mode) {
@@ -361,14 +368,14 @@ public class EventManager {
 
         switch (mode) {
             case 1:
-                if (gp.getDialogueR().getCurrentConv() != null) {
+                if (gp.getDialogueR().getActiveConv() != null) {
                     gp.getDialogueR().reset();                                                                          // Reset the DialogueReader's fields back to their default values.
                 }
-                gp.getPlayer().setInteractionCountdown(0.16);                                                           // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity (prevents player from getting stuck in interaction loop).
-                gp.setGameState(GameState.EXPLORE);                                                                     // No further logic will run.
+                gp.getEntityM().getPlayer().setInteractionCountdown(0.16);                                              // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity (prevents player from getting stuck in interaction loop).
+                gp.setPrimaryGameState(PrimaryGameState.EXPLORE);                                                       // No further logic will run.
                 break;
             case 2:
-                if (gp.getDialogueR().getCurrentConv() != null) {
+                if (gp.getDialogueR().getActiveConv() != null) {
                     gp.getDialogueR().reset();                                                                          // Reset the DialogueReader's fields back to their default values.
                 }
                 break;
@@ -390,7 +397,7 @@ public class EventManager {
      */
     public void setEntityFollowPath(int entityId, int goalCol, int goalRow) {
 
-        EntityBase entity = gp.getEntityById(entityId);
+        EntityBase entity = gp.getEntityM().getEntityById(entityId);
 
         if (entity != null) {
 
@@ -410,8 +417,8 @@ public class EventManager {
      */
     public void setEntityFollowTarget(int followerId, int targetId) {
 
-        EntityBase follower = gp.getEntityById(followerId);
-        EntityBase target = gp.getEntityById(targetId);
+        EntityBase follower = gp.getEntityM().getEntityById(followerId);
+        EntityBase target = gp.getEntityM().getEntityById(targetId);
 
         if ((follower != null) && (target != null) && (followerId != targetId)) {
 
@@ -436,7 +443,7 @@ public class EventManager {
      */
     public void setEntityWalking(int entityId) {
 
-        EntityBase entity = gp.getEntityById(entityId);
+        EntityBase entity = gp.getEntityM().getEntityById(entityId);
 
         if (entity != null) {
 
@@ -455,7 +462,7 @@ public class EventManager {
      */
     public void setEntityRunning(int entityId) {
 
-        EntityBase entity = gp.getEntityById(entityId);
+        EntityBase entity = gp.getEntityM().getEntityById(entityId);
 
         if (entity != null) {
 
@@ -474,11 +481,11 @@ public class EventManager {
      */
     public void stopEntityFollowTarget(int followerId) {
 
-        EntityBase follower = gp.getEntityById(followerId);
+        EntityBase follower = gp.getEntityM().getEntityById(followerId);
 
         if (follower != null) {
 
-            follower.stopFollowingEntity();                                                                          // Exit a following state.
+            follower.stopFollowingEntity();                                                                             // Exit a following state.
         } else {
 
             UtilityTool.logWarning("Attempted to stop an entity that does not exist from following another entity.");
@@ -508,7 +515,7 @@ public class EventManager {
                     return true;                                                                                        // The follower entity is following the followed candidate entity.
                 } else {
 
-                    EntityBase entity = gp.getEntityById(entityId);
+                    EntityBase entity = gp.getEntityM().getEntityById(entityId);
 
                     if (entity.isOnEntity()) {                                                                          // Check if the current entity being checked is itself following another entity in a chain.
 
@@ -539,7 +546,7 @@ public class EventManager {
         int entityId = target.getEntityId();                                                                            // The first check will be to see if the target entity is being followed; if so, we will move one spot down the chain in the next iteration to see if the entity following the target entity is being followed itself, etc.
         boolean followed;                                                                                               // Declare a variable to track whether the entity being checked in the current iteration is being followed.
         int i;                                                                                                          // Declare a loop control variable for checking all entities.
-        List<EntityBase> allEntities = gp.getAllEntities();
+        List<EntityBase> allEntities = gp.getEntityM().getAllEntities();
 
         while ((iteration < maxIteration)) {
 
@@ -584,7 +591,7 @@ public class EventManager {
 
             if (lastEntityId != target.getEntityId()) {
 
-                gp.getEntityById(lastEntityId).stopFollowingEntity();
+                gp.getEntityM().getEntityById(lastEntityId).stopFollowingEntity();
             } else {
 
                 followers = false;
@@ -607,7 +614,7 @@ public class EventManager {
 
         for (int i = 0; i < amount; i++) {
 
-            singleAdded = gp.getPlayer().addItemToInventory(item);
+            singleAdded = gp.getEntityM().getPlayer().addItemToInventory(item);
 
             if (!singleAdded) {
 
@@ -633,7 +640,7 @@ public class EventManager {
 
         for (int i = 0; i < amount; i++) {
 
-            singleRemoved = gp.getPlayer().removeItemFromInventory(item);
+            singleRemoved = gp.getEntityM().getPlayer().removeItemFromInventory(item);
 
             if (!singleRemoved) {
 
@@ -647,7 +654,7 @@ public class EventManager {
 
     /**
      * Initiates the player to pick up an item and add it to the player's inventory.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param item item to be added to the player's inventory
      * @return whether the item was added to the player's inventory (true) or not (false)
@@ -655,24 +662,26 @@ public class EventManager {
     public boolean pickupItem(ItemBase item) {
 
         String text = "";
-        boolean added = gp.getPlayer().addItemToInventory(item);
+        boolean added = gp.getEntityM().getPlayer().addItemToInventory(item);
 
         if (added) {
 
             gp.getSoundS().playEffect("testEffect1");
 
-            if ((gp.getPlayer().getName() != null) && (!gp.getPlayer().getName().equals(""))) {
+            if ((gp.getEntityM().getPlayer().getName() != null)
+                    && (!gp.getEntityM().getPlayer().getName().equals(""))) {
 
-                text = gp.getPlayer().getName() + " got a " + item.getName() + "!";
+                text = gp.getEntityM().getPlayer().getName() + " got a " + item.getName() + "!";
             } else {
 
                 text = "Player got a " + item.getName() + "!";
             }
         } else {
 
-            if ((gp.getPlayer().getName() != null) && (!gp.getPlayer().getName().equals(""))) {
+            if ((gp.getEntityM().getPlayer().getName() != null)
+                    && (!gp.getEntityM().getPlayer().getName().equals(""))) {
 
-                text = gp.getPlayer().getName() + " cannot carry anymore!";
+                text = gp.getEntityM().getPlayer().getName() + " cannot carry anymore!";
             } else {
 
                 text = "Player cannot carry anymore!";
@@ -685,27 +694,27 @@ public class EventManager {
 
     /**
      * Initiates a single message to display on the screen.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param message text to be displayed
      */
     public void displayMessage(String message) {
 
-        gp.setGameState(GameState.DIALOGUE);
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         gp.getDialogueR().initiateStandardMessage(message);
     }
 
 
     /**
      * Initiates a single message to display on the screen.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param message text to be displayed
      * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false)
      */
     public void displayMessage(String message, boolean showArrow) {
 
-        gp.setGameState(GameState.DIALOGUE);
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         gp.getDialogueR().initiateStandardMessage(message, showArrow);
     }
 
@@ -715,11 +724,11 @@ public class EventManager {
      */
     public void showAllNonPartyFollowers() {
 
-        ArrayList<Integer> nonPartyFollowers = seekFollowers(gp.getPlayer(), true, true, false, false);
+        ArrayList<Integer> nonPartyFollowers = seekFollowers(gp.getEntityM().getPlayer(), true, true, false, false);
 
         for (int entityId : nonPartyFollowers) {
 
-            gp.getEntityById(entityId).setHidden(false);
+            gp.getEntityM().getEntityById(entityId).setHidden(false);
         }
     }
 
@@ -729,11 +738,11 @@ public class EventManager {
      */
     public void hideAllNonPartyFollowers() {
 
-        ArrayList<Integer> nonPartyFollowers = seekFollowers(gp.getPlayer(), true, true, false, false);
+        ArrayList<Integer> nonPartyFollowers = seekFollowers(gp.getEntityM().getPlayer(), true, true, false, false);
 
         for (int entityId : nonPartyFollowers) {
 
-            gp.getEntityById(entityId).setHidden(true);
+            gp.getEntityM().getEntityById(entityId).setHidden(true);
         }
     }
 
@@ -756,7 +765,7 @@ public class EventManager {
 
         if (npc) {
 
-            for (EntityBase candidate : gp.getNpc().values()) {                                                         // Record any NPC followers.
+            for (EntityBase candidate : gp.getEntityM().getNpc().values()) {                                            // Record any NPC followers.
 
                 if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
 
@@ -768,7 +777,7 @@ public class EventManager {
 
         if (obj) {
 
-            for (EntityBase candidate : gp.getObj().values()) {                                                         // Record any object followers.
+            for (EntityBase candidate : gp.getEntityM().getObj().values()) {                                            // Record any object followers.
 
                 if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
 
@@ -779,7 +788,7 @@ public class EventManager {
 
         if (party) {
 
-            for (EntityBase candidate : gp.getParty().values()) {                                                       // Record any standby followers.
+            for (EntityBase candidate : gp.getEntityM().getParty().values()) {                                          // Record any standby followers.
 
                 if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
 
@@ -790,7 +799,7 @@ public class EventManager {
 
         if (standby) {
 
-            for (EntityBase candidate : gp.getStandby().values()) {                                                     // Record any standby followers.
+            for (EntityBase candidate : gp.getEntityM().getStandby().values()) {                                        // Record any standby followers.
 
                 if (gp.getEventM().checkEntityChainUp(followed, candidate)) {
 

@@ -4,7 +4,7 @@ import combat.ActionBase;
 import combat.SubMenuMemory;
 import combat.SubMenuType;
 import core.GamePanel;
-import miscellaneous.GameState;
+import core.PrimaryGameState;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -147,11 +147,11 @@ public class Act_GenerateSubMenu extends ActionBase {
     /**
      * Stages and initiates a sub-menu to appear during combat.
      * The sub-menu ID is set to 1 to indicate that this is a combat sub-menu.
-     * The game state is set to sub-menu.
+     * The primary game state is set to sub-menu.
      */
     private void displaySubMenu() {
 
-        gp.setGameState(GameState.SUB_MENU);
+        gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         if (subMenuDefaultPosition) {
             gp.getSubMenuH().generateSubMenu(options, 1, colors, disabledOptions);
         } else {

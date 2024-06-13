@@ -2,7 +2,7 @@ package combat.implementation.action;
 
 import combat.ActionBase;
 import core.GamePanel;
-import miscellaneous.GameState;
+import core.PrimaryGameState;
 
 /**
  * This class defines a combat action (read a message).
@@ -39,11 +39,11 @@ public class Act_ReadMessage extends ActionBase {
 
     /**
      * Stages and initiates a single message to be read to the dialogue screen during combat.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      */
     public void displayMessage() {
 
-        gp.setGameState(GameState.DIALOGUE);
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
 
         if (interactive) {
 

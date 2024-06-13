@@ -3,6 +3,7 @@ package miscellaneous;
 import core.GamePanel;
 import entity.EntityBase;
 import entity.EntityStatus;
+import event.FadeState;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -125,7 +126,7 @@ public class UserInterface {
             this.renderer = renderer;                                                                                   // Makes it easier to access current renderer across entire class.
         }
 
-        switch (gp.getGameState()) {
+        switch (gp.getPrimaryGameState()) {
             case EXPLORE:
                 // Nothing here.
                 break;
@@ -144,18 +145,20 @@ public class UserInterface {
                 renderInGameMenuMainWindowScreen();
                 renderSettingsMenuScreen();
                 break;
-            case TRANSITION:
-                renderTransitionScreen();
-                break;
             case SUB_MENU:
                 renderSubMenuScreen();
-                if (gp.getDialogueR().getCurrentConv() != null) {                                                       // Keep dialogue screen up if the sub-menu is being drawn while dialogue is also being displayed.
+                if (gp.getDialogueR().getActiveConv() != null) {                                                        // Keep dialogue screen up if the sub-menu is being drawn while dialogue is also being displayed.
                     renderDialogueScreen();
                 }
         }
 
+        // FADE
+        if ((gp.getFadeS().getState() != FadeState.INACTIVE) || (gp.getFadeS().isFlashActive())) {
+            renderFadeScreen();
+        }
+
         // COMBAT
-        if (gp.isCombatActive()) {
+        if (gp.getCombatM().isCombatActive()) {
             renderCombatScreen();
         }
 
@@ -192,22 +195,24 @@ public class UserInterface {
                 ZIndex.SECOND_LAYER);
 
         // Dialogue sub-window and text, if applicable (i.e., area where speaker's name is printed).
-        if (gp.getDialogueR().getDialogueEntityName() != null
-                && !gp.getDialogueR().getDialogueEntityName().equals("")) {
+        if (gp.getDialogueR().getActiveDialogueEntityName() != null
+                && !gp.getDialogueR().getActiveDialogueEntityName().equals("")) {
 
             // Set position and dimensions of dialogue sub-window.
             float subWindowScreenX = 0.03f;
             float subWindowScreenTopBottomPadding = 0.02f;
             float subWindowScreenLeftRightPadding = 0.02f;
-            String entityName = gp.getDialogueR().getDialogueEntityName();
+            String entityName = gp.getDialogueR().getActiveDialogueEntityName();
             float entityNameWidth = 0;
             for (int i = 0; i < entityName.length(); i++) {
                 char optionCharacter = entityName.charAt(i);
                 entityNameWidth += renderer.getFont("Arimo").getCharacter(optionCharacter).getWidth() * fontScale;
             }
-            float subWindowScreenWidth = gp.getCamera().worldWidthToScreenWidth(entityNameWidth) + (2 * subWindowScreenLeftRightPadding);
+            float subWindowScreenWidth = gp.getCamera().worldWidthToScreenWidth(entityNameWidth)
+                    + (2 * subWindowScreenLeftRightPadding);
             float subWindowScreenHeight = characterScreenHeight + (2 * subWindowScreenTopBottomPadding);
-            Vector2f subWindowScreenCoords = new Vector2f(subWindowScreenX, mainWindowScreenCoords.y - subWindowScreenHeight);
+            Vector2f subWindowScreenCoords = new Vector2f(subWindowScreenX,
+                    mainWindowScreenCoords.y - subWindowScreenHeight);
 
             // Render dialogue sub-window.
             Vector2f subWindowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(subWindowScreenCoords);
@@ -219,16 +224,19 @@ public class UserInterface {
                     ZIndex.SECOND_LAYER);
 
             // Set position of dialogue entity name.
-            Vector2f subTextScreenCoords = new Vector2f(subWindowScreenX + subWindowScreenLeftRightPadding, subWindowScreenCoords.y + subWindowScreenTopBottomPadding);
+            Vector2f subTextScreenCoords = new Vector2f(subWindowScreenX + subWindowScreenLeftRightPadding,
+                    subWindowScreenCoords.y + subWindowScreenTopBottomPadding);
 
             // Render dialogue entity name.
-            renderString(gp.getDialogueR().getDialogueEntityName(), subTextScreenCoords, fontScale, new Vector3f(121, 149, 255), "Arimo");
+            renderString(gp.getDialogueR().getActiveDialogueEntityName(), subTextScreenCoords, fontScale,
+                    new Vector3f(121, 149, 255), "Arimo");
         }
 
         // Dialogue progress arrow, if applicable.
         if ((gp.getDialogueR().isDialoguePaused())
                 || (!gp.getDialogueR().isReadingDialogue() && (gp.getDialogueR().isAlwaysShowArrow()))) {
-            Vector2f arrowScreenCoords = new Vector2f(mainWindowScreenCoords.x + mainWindowScreenWidth - 0.02f, mainWindowScreenCoords.y + mainWindowScreenHeight - 0.03f);
+            Vector2f arrowScreenCoords = new Vector2f(mainWindowScreenCoords.x + mainWindowScreenWidth - 0.02f,
+                    mainWindowScreenCoords.y + mainWindowScreenHeight - 0.03f);
             gp.getDialogueA().addToRenderPipeline(renderer, arrowScreenCoords.x, arrowScreenCoords.y);
         }
 
@@ -236,9 +244,11 @@ public class UserInterface {
         float mainTextScreenLeftPadding = 0.03f;
         float mainTextScreenSpacing = (mainWindowScreenHeight - (2 * characterScreenHeight)) / 3;
         Vector2f mainTextScreenCoords = new Vector2f(mainTextScreenLeftPadding, mainWindowScreenCoords.y + mainTextScreenSpacing);
-        renderString(gp.getDialogueR().getDialoguePrint1(), mainTextScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderString(gp.getDialogueR().getDialoguePrint1(), mainTextScreenCoords, fontScale,
+                new Vector3f(255, 255, 255), "Arimo");
         mainTextScreenCoords.y += characterScreenHeight + mainTextScreenSpacing;
-        renderString(gp.getDialogueR().getDialoguePrint2(), mainTextScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderString(gp.getDialogueR().getDialoguePrint2(), mainTextScreenCoords, fontScale,
+                new Vector3f(255, 255, 255), "Arimo");
     }
 
 
@@ -250,7 +260,9 @@ public class UserInterface {
     private void renderInGameMenuMainWindowScreen() {
 
         // Prepare main window position and dimensions.
-        Vector2f mainWindowScreenCoords = new Vector2f(mainWindowScreenLeftRightPadding, mainWindowScreenTopBottomPadding);
+        Vector2f mainWindowScreenCoords = new Vector2f(
+                mainWindowScreenLeftRightPadding,
+                mainWindowScreenTopBottomPadding);
         float mainWindowScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding);
         float mainWindowScreenHeight = 1 - (2 * mainWindowScreenTopBottomPadding);
 
@@ -294,12 +306,13 @@ public class UserInterface {
         float fontScale = 0.17f;                                                                                        // Font size (multiplies native height).
         float optionsCharacterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;        // It doesn't matter which character is used, since all characters in a font have the same height.
         float optionsCharacterScreenHeight = gp.getCamera().worldHeightToScreenHeight(optionsCharacterWorldHeight);     // Normalized (screen) character height.
-        float titleScreenTopBottomPadding = (dividerScreenCoords.y - mainWindowScreenTopBottomPadding - optionsCharacterScreenHeight) / 2;
+        float titleScreenTopBottomPadding = (dividerScreenCoords.y - mainWindowScreenTopBottomPadding
+                - optionsCharacterScreenHeight) / 2;
         Vector2f titleScreenCoords = new Vector2f(
                 mainWindowScreenLeftRightPadding + 0.065f,
                 mainWindowScreenTopBottomPadding + titleScreenTopBottomPadding);
         String title = "???";
-        switch (gp.getGameState()) {
+        switch (gp.getPrimaryGameState()) {
             case PARTY_MENU:
                 title = "PARTY";
                 break;
@@ -350,7 +363,7 @@ public class UserInterface {
         gp.getGuiIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
 
         // Extract keys from party map.
-        Set<Integer> keySet = gp.getParty().keySet();
+        Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
 
         // Prepare entity icon and status information text positions to render on top of respective slot icons.
@@ -360,25 +373,30 @@ public class UserInterface {
         float statusInfoTextScreenY = bottomSlotIconScreenY + 0.01f;
 
         // Render entity icon 2 (bottommost).
-        if ((gp.getParty().size() > 1) && (gp.getParty().get(keyArray[1]) != null)) {
-            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getParty().get(keyArray[1]).getEntityId(), entityIconScreenX, entityIconScreenY);
-            renderPartyMemberStatusInformation(gp.getParty().get(keyArray[1]), statusInfoTextScreenX, statusInfoTextScreenY);
+        if ((gp.getEntityM().getParty().size() > 1) && (gp.getEntityM().getParty().get(keyArray[1]) != null)) {
+            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getParty().get(keyArray[1]).getEntityId(),
+                    entityIconScreenX, entityIconScreenY);
+            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[1]),
+                    statusInfoTextScreenX, statusInfoTextScreenY);
         }
 
 
         // Render entity icon 1.
         entityIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
         statusInfoTextScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
-        if ((gp.getParty().size() > 0) && (gp.getParty().get(keyArray[0]) != null)) {
-            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getParty().get(keyArray[0]).getEntityId(), entityIconScreenX, entityIconScreenY);
-            renderPartyMemberStatusInformation(gp.getParty().get(keyArray[0]), statusInfoTextScreenX, statusInfoTextScreenY);
+        if ((gp.getEntityM().getParty().size() > 0) && (gp.getEntityM().getParty().get(keyArray[0]) != null)) {
+            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getParty().get(keyArray[0]).getEntityId(),
+                    entityIconScreenX, entityIconScreenY);
+            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[0]),
+                    statusInfoTextScreenX, statusInfoTextScreenY);
         }
 
         // Render entity icon 0 (topmost, player entity).
         entityIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
         statusInfoTextScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
-        gp.getEntityIconM().addToRenderPipeline(renderer, gp.getPlayer().getEntityId(), entityIconScreenX, entityIconScreenY);
-        renderPartyMemberStatusInformation(gp.getPlayer(), statusInfoTextScreenX, statusInfoTextScreenY);
+        gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getPlayer().getEntityId(),
+                entityIconScreenX, entityIconScreenY);
+        renderPartyMemberStatusInformation(gp.getEntityM().getPlayer(), statusInfoTextScreenX, statusInfoTextScreenY);
     }
 
 
@@ -414,7 +432,8 @@ public class UserInterface {
         float barScreenWidth = 0.055f;                                                                                  // The maximum normalized (screen) width of the life bar interior (corresponds with maximum life).
         float barScreenHeight = 0.023f;                                                                                 // The normalized (screen) thickness of the life bar.
         Vector4f barBorderColor = new Vector4f(255, 255, 255, 255);
-        renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight, barScreenX, barScreenY, barBorderColor);
+        renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight,
+                barScreenX, barScreenY, barBorderColor);
 
         // Draw remaining life points text with a shadowed effect.
         textScreenCoords.x += 0.074f;
@@ -434,7 +453,8 @@ public class UserInterface {
      * @param screenY screen y-coordinate of the life bar (topmost)
      * @param borderColor bar border color (r, g, b, a)
      */
-    private void renderLifeBar(int life, int maxLife, float screenWidth, float screenHeight, float screenX, float screenY, Vector4f borderColor) {
+    private void renderLifeBar(int life, int maxLife, float screenWidth, float screenHeight,
+                               float screenX, float screenY, Vector4f borderColor) {
 
         // Prepare life bar.
         float borderScreenThickness = screenWidth * 0.04f;                                                              // Normalized (screen) thickness of border surrounding life bar interior.
@@ -531,7 +551,7 @@ public class UserInterface {
         float itemIconScreenHeight;
         String quantity;
         Vector2f quantityScreenCoords = new Vector2f();
-        int numItems = gp.getPlayer().getInventory().size();                                                            // Number of items currently in the player's inventory.
+        int numItems = gp.getEntityM().getPlayer().getInventory().size();                                               // Number of items currently in the player's inventory.
 
         // Render each item slot/icon (backdrop, icon, amount, and selector).
         int row = 0;                                                                                                    // Variable to track which row is currently being rendered.
@@ -544,8 +564,8 @@ public class UserInterface {
 
             while ((col < maxNumItemCol) && (itemIndex < numItems)) {
 
-                itemIconWorldWidth = gp.getPlayer().getInventory().get(itemIndex).getNativeSpriteWidth();
-                itemIconWorldHeight = gp.getPlayer().getInventory().get(itemIndex).getNativeSpriteHeight();
+                itemIconWorldWidth = gp.getEntityM().getPlayer().getInventory().get(itemIndex).getNativeSpriteWidth();
+                itemIconWorldHeight = gp.getEntityM().getPlayer().getInventory().get(itemIndex).getNativeSpriteHeight();
                 itemIconScreenWidth = gp.getCamera().worldWidthToScreenWidth(itemIconWorldWidth);
                 itemIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(itemIconWorldHeight);
 
@@ -553,19 +573,22 @@ public class UserInterface {
                 itemIconScreenX = itemBackdropScreenX + ((itemBackdropScreenWidth - itemIconScreenWidth) / 2);          // Normalized (screen) width of the item/slot icon.
                 itemIconScreenY = itemBackdropScreenY + ((itemBackdropScreenHeight - itemIconScreenHeight) / 2);        // Normalized (screen) height of the item/slot icon.
 
-                if (gp.getPlayer().getInventory().get(itemIndex).isStackable()) {
+                if (gp.getEntityM().getPlayer().getInventory().get(itemIndex).isStackable()) {
 
-                    quantity = Integer.toString(gp.getPlayer().getInventory().get(itemIndex).getAmount());
+                    quantity = Integer.toString(gp.getEntityM().getPlayer().getInventory().get(itemIndex).getAmount());
                     quantityScreenCoords.x = itemBackdropScreenX + (itemBackdropScreenWidth * 0.9f);
                     quantityScreenCoords.y = itemBackdropScreenY + (itemBackdropScreenHeight * 0.9f);
 
                     gp.getGuiIconM().addToRenderPipeline(renderer, 6, itemBackdropScreenX, itemBackdropScreenY);
-                    gp.getPlayer().getInventory().get(itemIndex).addToRenderPipeline(renderer, itemIconScreenX, itemIconScreenY);
-                    renderStringShadow(quantity, quantityScreenCoords, 0.12f, new Vector3f(255, 255, 255), "Arimo Bold");
+                    gp.getEntityM().getPlayer().getInventory().get(itemIndex)
+                            .addToRenderPipeline(renderer, itemIconScreenX, itemIconScreenY);
+                    renderStringShadow(
+                            quantity, quantityScreenCoords, 0.12f, new Vector3f(255, 255, 255), "Arimo Bold");
                 } else {
 
                     gp.getGuiIconM().addToRenderPipeline(renderer, 7, itemBackdropScreenX, itemBackdropScreenY);
-                    gp.getPlayer().getInventory().get(itemIndex).addToRenderPipeline(renderer, itemIconScreenX, itemIconScreenY);
+                    gp.getEntityM().getPlayer().getInventory().get(itemIndex)
+                            .addToRenderPipeline(renderer, itemIconScreenX, itemIconScreenY);
                 }
 
                 if ((itemRowSelected == row) && (itemColSelected == col)) {
@@ -574,8 +597,10 @@ public class UserInterface {
                     int selectorWorldHeight = gp.getGuiIconM().getIconById(8).getNativeSpriteHeight();
                     float selectorScreenWidth = gp.getCamera().worldWidthToScreenWidth(selectorWorldWidth);
                     float selectorScreenHeight = gp.getCamera().worldHeightToScreenHeight(selectorWorldHeight);
-                    float selectorScreenX = itemBackdropScreenX - ((selectorScreenWidth - itemBackdropScreenWidth) / 2);
-                    float selectorScreenY = itemBackdropScreenY - ((selectorScreenHeight - itemBackdropScreenHeight) / 2);
+                    float selectorScreenX = itemBackdropScreenX
+                            - ((selectorScreenWidth - itemBackdropScreenWidth) / 2);
+                    float selectorScreenY = itemBackdropScreenY
+                            - ((selectorScreenHeight - itemBackdropScreenHeight) / 2);
                     gp.getGuiIconM().addToRenderPipeline(renderer, 8, selectorScreenX, selectorScreenY);
                 }
                 itemIndex++;
@@ -596,12 +621,14 @@ public class UserInterface {
         Vector3f nameColor = new Vector3f(121, 149, 255);
         Vector3f quantityColor = new Vector3f(244, 154, 45);
         Vector3f descriptionColor = new Vector3f(255, 255, 255);
-        float leftmostScreenX = mainWindowScreenLeftRightPadding + ((1 - (2 * mainWindowScreenLeftRightPadding)) / 2) + 0.05f;
+        float leftmostScreenX = mainWindowScreenLeftRightPadding
+                + ((1 - (2 * mainWindowScreenLeftRightPadding)) / 2) + 0.05f;
         float topmostScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;
         Vector2f screenCoords = new Vector2f(leftmostScreenX, topmostScreenY);
-        String name = gp.getPlayer().getInventory().get(inventoryIndexSelected).getName();
-        String quantity = "Quantity: " + gp.getPlayer().getInventory().get(inventoryIndexSelected).getAmount();
-        String description = gp.getPlayer().getInventory().get(inventoryIndexSelected).getDescription();
+        String name = gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getName();
+        String quantity = "Quantity: "
+                + gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getAmount();
+        String description = gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getDescription();
 
         // Render name, quantity, and description.
         renderStringShadow(name, screenCoords, 0.15f, nameColor, "Arimo Bold");
@@ -636,22 +663,26 @@ public class UserInterface {
                 settingLabelScreenCoords.y);
 
         // First setting (VSync).
-        renderSystemSetting(0, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);
+        renderSystemSetting(0, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
+                scrollArrowScreenWidth, scrollArrowScreenHeight);
 
         // Second setting (frame rate limit).
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
-        renderSystemSetting(1, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);
+        renderSystemSetting(1, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
+                scrollArrowScreenWidth, scrollArrowScreenHeight);
 
         // Third setting (tether game speed).
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
-        renderSystemSetting(2, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);
+        renderSystemSetting(2, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
+                scrollArrowScreenWidth, scrollArrowScreenHeight);
 
         // Fourth setting (full screen).
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
-        renderSystemSetting(3, settingLabelScreenCoords, settingValueScreenCoords, fontScale, scrollArrowScreenWidth, scrollArrowScreenHeight);
+        renderSystemSetting(3, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
+                scrollArrowScreenWidth, scrollArrowScreenHeight);
     }
 
 
@@ -670,15 +701,19 @@ public class UserInterface {
 
         Setting setting = gp.getSystemSetting(index);
         if (systemSettingSelected == index) {
-            renderString(setting.getLabel(), settingLabelScreenCoords, fontScale, new Vector3f(244, 154, 45), "Arimo Bold");
+            renderString(setting.getLabel(), settingLabelScreenCoords, fontScale,
+                    new Vector3f(244, 154, 45), "Arimo Bold");
         } else {
-            renderString(setting.getLabel(), settingLabelScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+            renderString(setting.getLabel(), settingLabelScreenCoords, fontScale,
+                    new Vector3f(255, 255, 255), "Arimo");
         }
-        renderString(setting.getOption(setting.getActiveOption()), settingValueScreenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderString(setting.getOption(setting.getActiveOption()), settingValueScreenCoords, fontScale,
+                new Vector3f(255, 255, 255), "Arimo");
         if (systemSettingSelected == index) {
             float characterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;
             float characterScreenHeight = gp.getCamera().worldHeightToScreenHeight(characterWorldHeight);
-            float scrollArrowScreenY = settingValueScreenCoords.y + ((characterScreenHeight - scrollArrowScreenHeight) / 2);
+            float scrollArrowScreenY = settingValueScreenCoords.y
+                    + ((characterScreenHeight - scrollArrowScreenHeight) / 2);
             float rightScrollArrowScreenX = settingValueScreenCoords.x - 0.02f - scrollArrowScreenWidth;
             float leftScrollArrowScreenX = rightScrollArrowScreenX - 0.015f - scrollArrowScreenWidth;
             gp.getGuiIconM().addToRenderPipeline(renderer, 9, leftScrollArrowScreenX, scrollArrowScreenY);
@@ -688,33 +723,48 @@ public class UserInterface {
 
 
     /**
-     * Adds transition screen components to the render pipeline (fade out to black, perform necessary loading, then fade
-     * in from black).
+     * Adds fade screen components to the render pipeline (fade out to color, wait on color, fade in from color).
      */
-    private void renderTransitionScreen() {
+    private void renderFadeScreen() {
 
         Vector2f worldCoords = new Vector2f(0, 0);
-        float worldWidth = GamePanel.MAX_WORLD_COL * GamePanel.NATIVE_TILE_SIZE;                                        // Overlaid black rectangle will span entire width of world.
-        float worldHeight = GamePanel.MAX_WORLD_ROW * GamePanel.NATIVE_TILE_SIZE;                                       // Overlaid black rectangle will span entire height of world.
-        float alpha = 0;
+        float worldWidth = GamePanel.MAX_WORLD_COL * GamePanel.NATIVE_TILE_SIZE;                                        // Overlaid rectangle will span entire width of world.
+        float worldHeight = GamePanel.MAX_WORLD_ROW * GamePanel.NATIVE_TILE_SIZE;                                       // Overlaid rectangle will span entire height of world.
+        float alpha = 255;
 
-        switch (gp.getActiveTransitionPhase()) {
-            case FADING_TO:                                                                                             // Phase 1: Fade screen to black.
-                alpha = (float)(gp.getTransitionCounter() / gp.getTransitionCounterFadingToMax()) * 255;
-                renderer.addRectangle(new Vector4f(0, 0, 0, alpha),
+        switch (gp.getFadeS().getState()) {
+            case FADE_TO:                                                                                               // Fade screen to color.
+                alpha = (float)(gp.getFadeS().getFadeCounter() / gp.getFadeS().getFadeCounterFadeToMax()) * 255;
+                renderer.addRectangle(
+                        new Vector4f(
+                                gp.getFadeS().getColor().x,
+                                gp.getFadeS().getColor().y,
+                                gp.getFadeS().getColor().z,
+                                alpha),
                         new Transform(new Vector2f(0, 0), new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.FIRST_LAYER);
+                        ZIndex.SECOND_LAYER);
                 break;
-            case LOADING:                                                                                               // Phase 2: Wait on black screen.
-                renderer.addRectangle(new Vector4f(0, 0, 0, 255),
+            case ACTIVE:                                                                                                // Wait on colored screen.
+                renderer.addRectangle(
+                        new Vector4f(
+                                gp.getFadeS().getColor().x,
+                                gp.getFadeS().getColor().y,
+                                gp.getFadeS().getColor().z,
+                                alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.FIRST_LAYER);
+                        ZIndex.SECOND_LAYER);
                 break;
-            case FADING_FROM:                                                                                           // Phase 3: Fade from black.
-                alpha = 255 - ((float)(gp.getTransitionCounter() / gp.getTransitionCounterFadingToMax()) * 255);
-                renderer.addRectangle(new Vector4f(0, 0, 0, alpha),
+            case FADE_FROM:                                                                                             // Fade from color.
+                alpha = 255 - ((float)(gp.getFadeS().getFadeCounter()
+                        / gp.getFadeS().getFadeCounterFadeFromMax()) * 255);
+                renderer.addRectangle(
+                        new Vector4f(
+                                gp.getFadeS().getColor().x,
+                                gp.getFadeS().getColor().y,
+                                gp.getFadeS().getColor().z,
+                                alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.FIRST_LAYER);
+                        ZIndex.SECOND_LAYER);
                 break;
         }
     }
@@ -752,14 +802,16 @@ public class UserInterface {
                 maxOptionWorldWidth = optionWorldWidth;
             }
         }
-        float windowScreenWidth = gp.getCamera().worldWidthToScreenWidth(maxOptionWorldWidth) + optionsScreenLeftPadding + optionsScreenRightPadding;
+        float windowScreenWidth = gp.getCamera().worldWidthToScreenWidth(maxOptionWorldWidth)
+                + optionsScreenLeftPadding + optionsScreenRightPadding;
 
         // Calculate window position.
         Vector2f windowScreenCoords;                                                                                    // Declare variable to store window screen coordinates (initialized immediately below).
         if (gp.getSubMenuH().isSubMenuDefaultPosition()) {                                                              // This is where the default position of the sub-menu window is defined.
             windowScreenCoords = new Vector2f(1 - 0.03f - windowScreenWidth, 1 - 0.2f - 0.03f - windowScreenHeight);    // The 0.2f in the y-component is the height of the main dialogue window in the `renderDialogueScreen()` method.
         } else {
-            windowScreenCoords = new Vector2f(gp.getSubMenuH().getSubMenuScreenX(), gp.getSubMenuH().getSubMenuScreenY());
+            windowScreenCoords = new Vector2f(
+                    gp.getSubMenuH().getSubMenuScreenX(), gp.getSubMenuH().getSubMenuScreenY());
         }
 
         // Render sub-menu window.
@@ -772,7 +824,9 @@ public class UserInterface {
                 ZIndex.SECOND_LAYER);
 
         // Calculate position of text for first option.
-        Vector2f optionsScreenCoords = new Vector2f(windowScreenCoords.x + optionsScreenLeftPadding, windowScreenCoords.y + optionsScreenTopBottomPadding);
+        Vector2f optionsScreenCoords = new Vector2f(
+                windowScreenCoords.x + optionsScreenLeftPadding,
+                windowScreenCoords.y + optionsScreenTopBottomPadding);
 
         // Render text for each option and selection arrow next to selected option.
         Vector3f color;
@@ -784,8 +838,10 @@ public class UserInterface {
             }
             renderString(gp.getSubMenuH().getOptions().get(i), optionsScreenCoords, fontScale, color, "Arimo");
             if (i == gp.getSubMenuH().getIndexSelected()) {
-                float selectionArrowScreenHeight = gp.getCamera().worldHeightToScreenHeight(gp.getSelectionA().getNativeSpriteHeight());
-                float selectionArrowScreenY = optionsScreenCoords.y + (optionsCharacterScreenHeight / 2) - (selectionArrowScreenHeight / 2);
+                float selectionArrowScreenHeight = gp.getCamera().worldHeightToScreenHeight(
+                        gp.getSelectionA().getNativeSpriteHeight());
+                float selectionArrowScreenY = optionsScreenCoords.y + (optionsCharacterScreenHeight / 2)
+                        - (selectionArrowScreenHeight / 2);
                 gp.getSelectionA().addToRenderPipeline(renderer, optionsScreenCoords.x - 0.02f, selectionArrowScreenY);
             }
             optionsScreenCoords.y += optionsCharacterScreenHeight + optionsScreenSpacing;
@@ -819,7 +875,7 @@ public class UserInterface {
         // Opposing entities.
         float bannerScreenY = 0;
         for (int entityId : gp.getCombatM().getNonPlayerSideEntities()) {
-            EntityBase entity = gp.getEntityById(entityId);
+            EntityBase entity = gp.getEntityM().getEntityById(entityId);
             if (entity.getStatus() != EntityStatus.FAINT) {
                 renderEntityCombatBanner(entity.getEntityId(), 1 - 0.15f, bannerScreenY);
             }
@@ -828,15 +884,15 @@ public class UserInterface {
 
         // Player entity.
         bannerScreenY = 0;
-        if (gp.getPlayer().getStatus() != EntityStatus.FAINT) {
-            renderEntityCombatBanner(gp.getPlayer().getEntityId(), 0, 0);
+        if (gp.getEntityM().getPlayer().getStatus() != EntityStatus.FAINT) {
+            renderEntityCombatBanner(gp.getEntityM().getPlayer().getEntityId(), 0, 0);
         }
         bannerScreenY += 0.08f;
 
         // Party members.
         int entityIndex = 0;
-        for (EntityBase entity : gp.getParty().values()) {                                                              // Only render banners for active party members.
-            if (entityIndex < gp.getNumActivePartyMembers()) {
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {                                                 // Only render banners for active party members.
+            if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
                 if (entity.getStatus() != EntityStatus.FAINT) {
                     renderEntityCombatBanner(entity.getEntityId(), 0, bannerScreenY);
                 }
@@ -875,17 +931,21 @@ public class UserInterface {
                 ZIndex.THIRD_LAYER
         );
         Vector2f nameScreenCoords = new Vector2f(bannerScreenX, bannerScreenY);
-        renderString(gp.getEntityById(entityId).getName(), nameScreenCoords, 0.11f, new Vector3f(0, 0, 0), "Arimo Bold");
+        renderString(gp.getEntityM().getEntityById(entityId).getName(),
+                nameScreenCoords, 0.11f, new Vector3f(0, 0, 0), "Arimo Bold");
 
         float barScreenWidth = 0.11f;
         float barScreenHeight = 0.03f;
         float barScreenX = bannerScreenX + 0.03f;
         float barScreenY = bannerScreenY + bannerScreenHeight - barScreenHeight;
-        renderLifeBar(gp.getEntityById(entityId).getLife(), gp.getEntityById(entityId).getMaxLife(), barScreenWidth, barScreenHeight, barScreenX, barScreenY, new Vector4f(0, 0, 0, 255));
+        renderLifeBar(gp.getEntityM().getEntityById(entityId).getLife(),
+                gp.getEntityM().getEntityById(entityId).getMaxLife(), barScreenWidth, barScreenHeight,
+                barScreenX, barScreenY, new Vector4f(0, 0, 0, 255));
 
         Vector2f lifeLabelScreenCoords = new Vector2f(bannerScreenX, barScreenY);
         renderString("HP", lifeLabelScreenCoords, 0.11f, new Vector3f(190, 97, 104), "Arimo Bold");
-        renderString(gp.getEntityById(entityId).getName(), nameScreenCoords, 0.11f, new Vector3f(0, 0, 0), "Arimo Bold");
+        renderString(gp.getEntityM().getEntityById(entityId).getName(),
+                nameScreenCoords, 0.11f, new Vector3f(0, 0, 0), "Arimo Bold");
     }
 
 
@@ -900,9 +960,9 @@ public class UserInterface {
 
             if (i == gp.getSubMenuH().getIndexSelected()) {                                                             // If combating entity that's currently being considered to target.
 
-                float entityWorldX = gp.getEntityById(entityId).getWorldX();
-                float entityWorldY = gp.getEntityById(entityId).getWorldY();
-                float entitySpriteHeight = gp.getEntityById(entityId).getNativeSpriteHeight();
+                float entityWorldX = gp.getEntityM().getEntityById(entityId).getWorldX();
+                float entityWorldY = gp.getEntityM().getEntityById(entityId).getWorldY();
+                float entitySpriteHeight = gp.getEntityM().getEntityById(entityId).getNativeSpriteHeight();
                 float targetArrowWorldX = entityWorldX + (GamePanel.NATIVE_TILE_SIZE / 2)
                         - (gp.getTargetA().getNativeSpriteWidth() / 2);                                                 // Render arrow centered horizontally above target entity sprite.
                 float targetArrowWorldY = entityWorldY + GamePanel.NATIVE_TILE_SIZE - entitySpriteHeight
@@ -949,22 +1009,24 @@ public class UserInterface {
 
         // Player column.
         screenCoords = new Vector2f(screenX, 0.19f);
-        String col = "Player Col: " + gp.getPlayer().getCol();
+        String col = "Player Col: " + gp.getEntityM().getPlayer().getCol();
         renderStringShadow(col, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Player row.
         screenCoords = new Vector2f(screenX, 0.25f);
-        String row = "Player Row: " + gp.getPlayer().getRow();
+        String row = "Player Row: " + gp.getEntityM().getPlayer().getRow();
         renderStringShadow(row, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Camera center (x).
         screenCoords = new Vector2f(screenX, 0.31f);
-        String centerX = "Camera Center X: " + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
+        String centerX = "Camera Center X: "
+                + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
         renderStringShadow(centerX, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Camera center (y).
         screenCoords = new Vector2f(screenX, 0.37f);
-        String centerY = "Camera Center Y: " + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
+        String centerY = "Camera Center Y: "
+                + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
         renderStringShadow(centerY, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
     }
 
@@ -1076,7 +1138,7 @@ public class UserInterface {
      */
     private void setActivePartyMember() {
 
-        Set<Integer> keySet = gp.getParty().keySet();
+        Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
 
         switch (partySlotSelected) {
@@ -1086,7 +1148,7 @@ public class UserInterface {
                 selectPartySlot2(false);                                                                                // Set slot 2 to not selected.
                 break;
             case 1:
-                if ((gp.getParty().size() > 0) && (gp.getParty().get(keyArray[0]) != null)) {                           // Check whether a party member actually occupies this slot or not.
+                if ((gp.getEntityM().getParty().size() > 0) && (gp.getEntityM().getParty().get(keyArray[0]) != null)) { // Check whether a party member actually occupies this slot or not.
                     selectPartySlot0(false);                                                                            // Set slot 0 (player entity) to not selected.
                     selectPartySlot1(true);                                                                             // Set slot 1 to selected.
                     selectPartySlot2(false);                                                                            // Set slot 2 to not selected.
@@ -1095,7 +1157,7 @@ public class UserInterface {
                 }
                 break;
             case 2:
-                if ((gp.getParty().size() > 1) && (gp.getParty().get(keyArray[1]) != null)) {                           // Check whether a part member actually occupies this slot or not.
+                if ((gp.getEntityM().getParty().size() > 1) && (gp.getEntityM().getParty().get(keyArray[1]) != null)) { // Check whether a part member actually occupies this slot or not.
                     selectPartySlot0(false);                                                                            // Set slot 0 (player entity) to not selected.
                     selectPartySlot1(false);                                                                            // Set slot 1 to not selected.
                     selectPartySlot2(true);                                                                             // Set slot 2 to selected.
@@ -1114,7 +1176,7 @@ public class UserInterface {
      */
     private void selectPartySlot0(boolean selected) {
 
-        gp.getEntityIconM().getEntityIconById(gp.getPlayer().getEntityId()).setSelected(selected);
+        gp.getEntityIconM().getEntityIconById(gp.getEntityM().getPlayer().getEntityId()).setSelected(selected);
         gp.getGuiIconM().getIconById(3).setSelected(selected);
     }
 
@@ -1126,12 +1188,13 @@ public class UserInterface {
      */
     private void selectPartySlot1(boolean selected) {
 
-        Set<Integer> keySet = gp.getParty().keySet();
+        Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
 
-        if ((gp.getParty().size() > 0) && (gp.getParty().get(keyArray[0]) != null)) {                                   // Safeguard in case the `party` map is either too small or contains a null value.
+        if ((gp.getEntityM().getParty().size() > 0) && (gp.getEntityM().getParty().get(keyArray[0]) != null)) {         // Safeguard in case the `party` map is either too small or contains a null value.
 
-            gp.getEntityIconM().getEntityIconById(gp.getParty().get(keyArray[0]).getEntityId()).setSelected(selected);
+            gp.getEntityIconM().getEntityIconById(gp.getEntityM().getParty().get(keyArray[0]).getEntityId())
+                    .setSelected(selected);
         }
         gp.getGuiIconM().getIconById(4).setSelected(selected);
     }
@@ -1144,12 +1207,13 @@ public class UserInterface {
      */
     private void selectPartySlot2(boolean selected) {
 
-        Set<Integer> keySet = gp.getParty().keySet();
+        Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
 
-        if ((gp.getParty().size() > 1) && (gp.getParty().get(keyArray[1]) != null)) {                                   // Safeguard in case the `party` map is either too small or contains a null value.
+        if ((gp.getEntityM().getParty().size() > 1) && (gp.getEntityM().getParty().get(keyArray[1]) != null)) {         // Safeguard in case the `party` map is either too small or contains a null value.
 
-            gp.getEntityIconM().getEntityIconById(gp.getParty().get(keyArray[1]).getEntityId()).setSelected(selected);
+            gp.getEntityIconM().getEntityIconById(gp.getEntityM().getParty().get(keyArray[1]).getEntityId())
+                    .setSelected(selected);
         }
         gp.getGuiIconM().getIconById(5).setSelected(selected);
     }

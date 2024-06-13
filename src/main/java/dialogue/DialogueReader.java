@@ -1,8 +1,10 @@
 package dialogue;
 
 import core.GamePanel;
-import miscellaneous.GameState;
+import core.PrimaryGameState;
 import utility.exceptions.ConversationNotFoundException;
+
+import java.util.HashMap;
 
 /**
  * This class handles the reading of conversations/dialogue.
@@ -13,6 +15,11 @@ public class DialogueReader {
     private final GamePanel gp;
 
     /**
+     * Map to store all loaded conversations; conversation ID is the key, conversation is the value.
+     */
+    private final HashMap<Integer, Conversation> conv = new HashMap<>();
+
+    /**
      * Variable to track which piece of dialogue (by index) in a conversation should be read next.
      * This is NOT the current piece of dialogue being read.
      */
@@ -21,7 +28,7 @@ public class DialogueReader {
     /**
      * The current conversation being read.
      */
-    private Conversation currentConv;
+    private Conversation activeConv;
 
     /**
      * Boolean to track whether all dialogue in a conversation has been read or not.
@@ -76,12 +83,12 @@ public class DialogueReader {
     /**
      * Variable to store the current piece of dialogue being read.
      */
-    private String dialogueText = "";
+    private String activeDialogueText = "";
 
     /**
      * Variable to store the name of entity delivering the current piece of dialogue being read.
      */
-    private String dialogueEntityName = "";
+    private String activeDialogueEntityName = "";
 
     /**
      * Variable to store the characters that have been printed on the first/top line from the current piece of dialogue.
@@ -131,24 +138,24 @@ public class DialogueReader {
      */
     public void update(double dt) {
 
-        if (currentConv != null) {
+        if (activeConv != null) {
 
             if (readingConversation) {
 
                 progressDialogue(dt);                                                                                   // Progress the current piece of dialogue that's being read.
             } else {
 
-                if ((!currentConv.isPlayerInputToEnd()) && (gp.getGameState() == GameState.DIALOGUE)) {                 // Only trigger this when the game state is set to dialogue; it prevents this from triggering repeatedly if the conversation is not set to null after the first time.
+                if ((!activeConv.isPlayerInputToEnd()) && (gp.getPrimaryGameState() == PrimaryGameState.DIALOGUE)) {    // Only trigger this when the primary game state is set to dialogue; it prevents this from triggering repeatedly if the conversation is not set to null after the first time.
 
-                    if (currentConv.getConvId() == -2) {                                                                // Check if this is a sub-menu message.
+                    if (activeConv.getConvId() == -2) {                                                                 // Check if this is a sub-menu message.
 
                         gp.getSubMenuS().handlePostSubMenuPrompt();
-                    } else if (currentConv.getConvId() == -4) {                                                         // Check is this is a noninteractive combat message.
+                    } else if (activeConv.getConvId() == -4) {                                                          // Check is this is a noninteractive combat message.
 
                         gp.getCombatM().progressCombat();
                 } else {
 
-                        gp.getEventM().handlePostConversation(currentConv.getConvId());
+                        gp.getEventM().handlePostConversation(activeConv.getConvId());
                     }
                 }
             }
@@ -191,7 +198,7 @@ public class DialogueReader {
     public void initiateSubMenuMessage(String message) {
 
         stageMessage(message, -2);                                                                                      // Instantiate a temporary conversation with an ID of -2 to indicate that this is a sub-menu prompt.
-        currentConv.setPlayerInputToEnd(false);                                                                         // This is so the sub-menu appears instantly once the dialogue has finished being read without player input.
+        activeConv.setPlayerInputToEnd(false);                                                                          // This is so the sub-menu appears instantly once the dialogue has finished being read without player input.
         alwaysShowArrow = false;                                                                                        // Ensure that the dialogue arrow is not shown each time user input is required.
     }
 
@@ -246,7 +253,7 @@ public class DialogueReader {
     public void initiateNoninteractiveCombatMessage(String message, boolean showArrow) {
 
         stageMessage(message, -4);                                                                                      // Instantiate a temporary conversation with an ID of -4 to indicate that this is a noninteractive combat message.
-        currentConv.setPlayerInputToEnd(false);                                                                         // This is so logic following the dialogue once it has finished being read is run immediately without player input.
+        activeConv.setPlayerInputToEnd(false);                                                                          // This is so logic following the dialogue once it has finished being read is run immediately without player input.
         alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
     }
 
@@ -260,15 +267,14 @@ public class DialogueReader {
     public void initiateConversation(int convId) {
 
         alwaysShowArrow = false;                                                                                        // Ensure the dialogue arrow is not shown each time user input is required.
+        activeConv = conv.get(convId);                                                                                  // Retrieve the appropriate conversation and stage it.
 
-        currentConv = gp.getConv().get(convId);                                                                         // Retrieve the appropriate conversation and stage it.
-
-        if (currentConv != null) {
+        if (activeConv != null) {
 
             readingConversation = true;
             nextDialogueIndex = 0;
 
-            stageDialogue(currentConv.getDialogueList().get(nextDialogueIndex));                                        // Stage the first piece of dialogue in the conversation to be read.
+            stageDialogue(activeConv.getDialogueList().get(nextDialogueIndex));                                         // Stage the first piece of dialogue in the conversation to be read.
             nextDialogueIndex++;                                                                                        // Iterate the variable tracking which piece of dialogue to read next.
         } else {
 
@@ -292,7 +298,7 @@ public class DialogueReader {
                 stagedPrintCountdown = defaultPrintCountdown;                                                           // Reset to the default number of seconds passed between each printed character.
             } else {
 
-                stageDialogue(currentConv.getDialogueList().get(nextDialogueIndex));                                    // Stage the next piece of dialogue in the conversation to be read.
+                stageDialogue(activeConv.getDialogueList().get(nextDialogueIndex));                                     // Stage the next piece of dialogue in the conversation to be read.
                 nextDialogueIndex++;                                                                                    // Iterate the variable tracking which piece of dialogue to read next.
             }
         }
@@ -334,15 +340,15 @@ public class DialogueReader {
 
                     if (printLine == 1) {
 
-                        dialoguePrint1 += dialogueText.charAt(i);                                                       // Add the next dialogue character to be printed (line 1).
+                        dialoguePrint1 += activeDialogueText.charAt(i);                                                 // Add the next dialogue character to be printed (line 1).
                     } else if (printLine == 2) {
 
-                        dialoguePrint2 += dialogueText.charAt(i);                                                       // Add the next dialogue character to be printed (line 2).
+                        dialoguePrint2 += activeDialogueText.charAt(i);                                                 // Add the next dialogue character to be printed (line 2).
                     }
-                    dialoguePrintTotal += dialogueText.charAt(i);
+                    dialoguePrintTotal += activeDialogueText.charAt(i);
                     printCountdown += stagedPrintCountdown;                                                             // Iterate `printCounter` to wait a number of seconds until the next character is printed; if negative after iteration, the next character must immediately be printed.
 
-                    if (dialoguePrintTotal.length() == dialogueText.length()) {
+                    if (dialoguePrintTotal.length() == activeDialogueText.length()) {
 
                         progressionCountdown = stagedProgressionCountdown;                                              // Force the player to wait a number of seconds determined by `stagedProgressionCountdown` before progressing (prevents accidental skipping of dialogue).
                         printCountdown = stagedPrintCountdown;                                                          // Reset character print countdown for the next batch to be printed out.
@@ -350,12 +356,12 @@ public class DialogueReader {
                 }
             }
 
-            if ((dialoguePrintTotal.length() == dialogueText.length()) && (progressionCountdown <= 0)) {                // All dialogue must be printed to the screen and there must be no time buffer on progression.
+            if ((dialoguePrintTotal.length() == activeDialogueText.length()) && (progressionCountdown <= 0)) {          // All dialogue must be printed to the screen and there must be no time buffer on progression.
 
                 readingDialogue = false;
                 gp.getDialogueA().reset();                                                                              // Reset the dialogue arrow to its default state (i.e., default position).
 
-                if (nextDialogueIndex >= currentConv.getDialogueList().size()){
+                if (nextDialogueIndex >= activeConv.getDialogueList().size()){
 
                     readingConversation = false;                                                                        // All dialogue in the conversation has finished being read.
                 }
@@ -371,14 +377,14 @@ public class DialogueReader {
     public void reset() {
 
         nextDialogueIndex = 0;
-        currentConv = null;
+        activeConv = null;
         readingConversation = false;
         stagedPrintCountdown = defaultPrintCountdown;
         progressionCountdown = 0;
         printCountdown = 0;
         printLine = 1;
-        dialogueText = "";
-        dialogueEntityName = "";
+        activeDialogueText = "";
+        activeDialogueEntityName = "";
         dialoguePrint1 = "";
         dialoguePrint2 = "";
         dialoguePrintTotal = "";
@@ -400,11 +406,11 @@ public class DialogueReader {
         Dialogue dialogue = new Dialogue();                                                                             // Instantiate a temporary piece of dialogue to add to the temporary conversation.
         dialogue.setText(message);                                                                                      // Set the dialogue text as the message to be read.
         conversation.getDialogueList().add(dialogue);                                                                   // Add the dialogue to the temporary conversation.
-        currentConv = conversation;                                                                                     // Stage the temporary conversation as the current conversation being read.
+        activeConv = conversation;                                                                                      // Stage the temporary conversation as the current conversation being read.
 
         readingConversation = true;
 
-        stageDialogue(currentConv.getDialogueList().get(0));                                                            // Stage the message to be read.
+        stageDialogue(activeConv.getDialogueList().get(0));                                                             // Stage the message to be read.
 
         nextDialogueIndex++;                                                                                            // Necessary to have so that the conversation will be flagged as complete once the single staged piece dialogue has been read.
     }
@@ -421,8 +427,8 @@ public class DialogueReader {
         this.progressionCountdown = 0;
         this.printCountdown = 0;
         this.printLine = 1;
-        this.dialogueText = dialogue.getText();
-        this.dialogueEntityName = dialogue.getEntityName();
+        this.activeDialogueText = dialogue.getText();
+        this.activeDialogueEntityName = dialogue.getEntityName();
         this.dialoguePrint1 = "";
         this.dialoguePrint2 = "";
         this.dialoguePrintTotal = "";
@@ -441,7 +447,7 @@ public class DialogueReader {
      */
     private int checkNextCharacter(int i) {
 
-        if (dialogueText.charAt(i) == ' ') {                                                                            // Check if the next character to be printed is a space.
+        if (activeDialogueText.charAt(i) == ' ') {                                                                      // Check if the next character to be printed is a space.
 
             StringBuilder nextWord = new StringBuilder();                                                               // Initialize a string for the next word in the dialogue.
             int nextWordCounter = i + 1;                                                                                // Skip over the space to get to the next word.
@@ -458,22 +464,23 @@ public class DialogueReader {
 
             while (readingNextWord) {
 
-                if (dialogueText.charAt(nextWordCounter) == ' ') {
+                if (activeDialogueText.charAt(nextWordCounter) == ' ') {
 
                     readingNextWord = false;                                                                            // We have reached the next space, signaling that we've reached the end of the next word.
                 } else {
 
-                    nextWord.append(dialogueText.charAt(nextWordCounter));
+                    nextWord.append(activeDialogueText.charAt(nextWordCounter));
                     nextWordCounter++;
 
-                    if (nextWordCounter >= dialogueText.length() ) {
+                    if (nextWordCounter >= activeDialogueText.length() ) {
 
                         readingNextWord = false;                                                                        // We have reached the end of the dialogue, signaling that we've reached the end of the next word.
                     }
                 }
             }
 
-            if ((dialoguePrintTemp + " " + nextWord).length() > (int)(3.4 * (GamePanel.NATIVE_SCREEN_WIDTH / GamePanel.NATIVE_TILE_SIZE))) {
+            if ((dialoguePrintTemp + " " + nextWord).length() >
+                    (int)(3.4 * (GamePanel.NATIVE_SCREEN_WIDTH / GamePanel.NATIVE_TILE_SIZE))) {
 
                 printLine++;                                                                                            // Start printing character on the next line of the dialogue window.
 
@@ -494,20 +501,24 @@ public class DialogueReader {
 
 
     // GETTERS
-    public Conversation getCurrentConv() {
-        return currentConv;
+    public HashMap<Integer, Conversation> getConv() {
+        return conv;
+    }
+
+    public Conversation getActiveConv() {
+        return activeConv;
     }
 
     public boolean isReadingConversation() {
         return readingConversation;
     }
 
-    public String getDialogueText() {
-        return dialogueText;
+    public String getActiveDialogueText() {
+        return activeDialogueText;
     }
 
-    public String getDialogueEntityName() {
-        return dialogueEntityName;
+    public String getActiveDialogueEntityName() {
+        return activeDialogueEntityName;
     }
 
     public String getDialoguePrint1() {

@@ -95,7 +95,7 @@ public class PathFinder {
 
         while ((col < GamePanel.MAX_WORLD_COL) && (row < GamePanel.MAX_WORLD_ROW)) {
 
-            int tileNum = gp.getLoadedMap().getMapTileNum()[col][row];
+            int tileNum = gp.getMapM().getLoadedMap().getMapTileNum()[col][row];
 
             if (gp.getTileM().getTiles()[tileNum].hasCollision()) {                                                     // Check whether the tile a node occupies is solid or not; set the node to solid if true.
 

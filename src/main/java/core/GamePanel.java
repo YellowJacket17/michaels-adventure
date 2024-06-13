@@ -3,35 +3,32 @@ package core;
 import ai.PathFinder;
 import animation.AnimationManager;
 import asset.AssetPool;
-import asset.Sound;
 import combat.CombatManager;
 import combat.TargetArrow;
 import cutscene.CutsceneManager;
-import dialogue.Conversation;
 import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
+import entity.EntityManager;
 import event.support.*;
+import map.MapManager;
 import miscellaneous.*;
+import org.joml.Vector3f;
 import render.Camera;
 import render.Renderer;
 import asset.Spritesheet;
 import submenu.SelectionArrow;
 import entity.EntityBase;
-import entity.implementation.player.Player;
 import environment.EnvironmentManager;
 import icon.EntityIconManager;
 import icon.GuiIconManager;
 import event.EventManager;
 import landmark.LandmarkBase;
 import landmark.LandmarkManager;
-import map.Map;
 import submenu.SubMenuHandler;
 import tile.TileManager;
 import utility.*;
-import utility.exceptions.EntityTransferException;
 
 import java.util.*;
-import java.util.List;
 
 /**
  * Core class for the game that houses essential functions and configurations.
@@ -67,11 +64,6 @@ public class GamePanel {
      */
     public static final int MAX_WORLD_ROW = 100;
 
-    /**
-     * Current loaded map.
-     */
-    private Map loadedMap;
-
 
     // SYSTEM
     private Camera camera;
@@ -83,6 +75,8 @@ public class GamePanel {
     private final LandmarkManager landmarkM = new LandmarkManager(this);
     private GuiIconManager guiIconM;
     private final EntityIconManager entityIconM = new EntityIconManager(this);
+    private final EntityManager entityM = new EntityManager(this);
+    private final MapManager mapM = new MapManager(this);
     private final EnvironmentManager environmentM = new EnvironmentManager(this);
     private final CutsceneManager cutsceneM = new CutsceneManager(this);
     private final AnimationManager animationM = new AnimationManager();
@@ -93,148 +87,30 @@ public class GamePanel {
     private final SubMenuSupport subMenuS = new SubMenuSupport(this);
     private final PartySupport partyS = new PartySupport(this);
     private final SoundSupport soundS = new SoundSupport(this);
+    private final FadeSupport fadeS = new FadeSupport(this);
+    private final TransitionSupport transitionS = new TransitionSupport(this);
     private final PathFinder pathF = new PathFinder(this);
     private final UserInterface ui = new UserInterface(this);
 
 
-    // ENTITY (PLAYER, NPC, OBJECT)
-    /**
-     * Player entity.
-     */
-    private Player player;
-
-    /**
-     * Map to store objects loaded into the game; entity ID is the key, entity is the value.
-     */
-    private final LimitedLinkedHashMap<Integer, EntityBase> obj = new LimitedLinkedHashMap<>(50);
-
-    /**
-     * Map to store NPCs loaded into the game; entity ID is the key, entity is the value.
-     */
-    private final LimitedLinkedHashMap<Integer, EntityBase> npc = new LimitedLinkedHashMap<>(50);
-
-    /**
-     * Map to store party members loaded into the game; entity ID is the key, entity is the value.
-     * The number of entities at the front of the map (indices 0, 1, etc.) according to the `numActivePartyMembers` field are the active
-     * party members.
-     */
-    private final LimitedLinkedHashMap<Integer, EntityBase> party = new LimitedLinkedHashMap<>(5);
-
-    /**
-     * Map to store entities loaded into the game but not currently available; entity ID is the key,
-     * entity is the value.
-     * Note that entities in this map are neither updated nor rendered.
-     * Entities in this map may be of either entity type.
-     */
-    private final LimitedLinkedHashMap<Integer, EntityBase> standby = new LimitedLinkedHashMap<>(50);
-
-    /**
-     * List to temporarily store all loaded entities (player, NPCs, objects, party members) when layering for rendering.
-     */
-    private final ArrayList<EntityBase> entityList = new ArrayList<>();
-
-    /**
-     * Set to store the IDs of all entities currently in a conversation.
-     */
-    private final HashSet<Integer> conversingEntities = new HashSet<>();
-
-    /**
-     * Set to store the IDs of all entities currently in combat.
-     */
-    private final HashSet<Integer> combatingEntities = new HashSet<>();
-
-    /**
-     * Set to store the IDs of all entities that should no longer be loaded on a map (ex. picked up an object, causing
-     * is to disappear from the map).
-     */
-    private final HashSet<Integer> removedEntities = new HashSet<>();
-
-    /**
-     * Sets the number of active party members allowed at a time.
-     * Active party members are those that actively follow the player entity, actively participate in combat, etc.
-     * This is in contrast to reserve party members.
-     */
-    private final int numActivePartyMembers = 2;
-
-
-    // DIALOGUE
-    /**
-     * Map to store all loaded conversations; conversation ID is the key, conversation is the value.
-     */
-    private final HashMap<Integer, Conversation> conv = new HashMap<>();
-
-    /**
-     * Arrow that appears when the player is required to progress a piece of dialogue.
-     */
-    private DialogueArrow dialogueA;
-
-
-    // SUB-MENU
-    /**
-     * Arrow that appears when the player is required to make a sub-menu selection.
-     */
-    private SelectionArrow selectionA;
-
-
-    // COMBAT
-    /**
-     * Arrow that appears when the player is required to make a taret entity selection in combat.
-     */
-    private TargetArrow targetA;
-
-
     // GAME STATE
     /**
-     * Variable to store which state the game is currently in (the game state controls what is updated each frame).
+     * Variable to store which primary state the game is currently in.
+     * The primary game state drives what is updated each frame, what is rendered, and how player inputs are registered.
      */
-    private GameState gameState;
+    private PrimaryGameState primaryGameState;
 
     /**
-     * Boolean to set whether the game is in combat mode or not.
+     * Boolean indicating whether player inputs are registered (true) or not (false).
+     * Note that this only affects gameplay control (ex. system controls like enter/exit full screen are not affected).
+     * Also note that some primary game states automatically lock/revoke player control.
      */
-    private boolean combatActive = false;
+    private boolean lockPlayerControl = false;
 
     /**
-     * Boolean to set whether debug mode is active or not.
+     * Boolean to set whether debug mode is active (true) or not (false).
      */
     private boolean debugActive = false;
-
-
-    // TRANSITION
-    /**
-     * Variable to store the current transition type being performed (null if none).
-     */
-    private TransitionType activeTransitionType;
-
-    /**
-     * Variable to store phase of the current transition being performed.
-     */
-    private TransitionPhase activeTransitionPhase;
-
-    /**
-     * Boolean to flag whether a new transition phase was just entered.
-     */
-    private boolean transitionPhaseChanged = false;
-
-    /**
-     * Core time counter (seconds) for controlling transition fade to/fade from effect.
-     */
-    private double transitionCounter;
-
-    /**
-     * Duration of fading to for transition (seconds).
-     */
-    private final double transitionCounterFadingToMax = 0.5;
-
-    /**
-     * Duration of loading for transition (seconds).
-     */
-    private final double transitionCounterLoadingMax = 0.25;
-
-    /**
-     * Duration of fading from for transition (seconds).
-     */
-    private final double transitionCounterFadingFromMax = 0.5;
 
 
     // SETTINGS
@@ -242,6 +118,28 @@ public class GamePanel {
      * List to store system settings available to the player.
      */
     private LimitedArrayList<Setting> systemSettings = new LimitedArrayList<>(10);
+
+
+    // MISCELLANEOUS
+    /**
+     * List to temporarily store all loaded entities (player, NPCs, objects, party members) when layering for rendering.
+     */
+    private final ArrayList<EntityBase> entityList = new ArrayList<>();
+
+    /**
+     * Arrow that appears when the player is required to progress a piece of dialogue.
+     */
+    private DialogueArrow dialogueA;
+
+    /**
+     * Arrow that appears when the player is required to make a sub-menu selection.
+     */
+    private SelectionArrow selectionA;
+
+    /**
+     * Arrow that appears when the player is required to make a taret entity selection in combat.
+     */
+    private TargetArrow targetA;
 
 
     // CONSTRUCTOR
@@ -260,6 +158,9 @@ public class GamePanel {
         // Load resources.
         loadResources();
 
+        // Initialize player.
+        entityM.initPlayer();
+
         // Initialize remaining system classes.
         camera = new Camera(NATIVE_SCREEN_WIDTH, NATIVE_SCREEN_HEIGHT);
         tileM = new TileManager(this);
@@ -267,7 +168,6 @@ public class GamePanel {
         dialogueA = new DialogueArrow(this);
         selectionA = new SelectionArrow(this);
         targetA = new TargetArrow(this);
-        player = new Player(this);
 
         // Initialize system settings.
         Setting vSyncSetting = new Setting("VSync", "Syncs frame rate with monitor refresh rate to prevent screen tearing.");
@@ -289,20 +189,21 @@ public class GamePanel {
         systemSettings.add(fullScreenSetting);
 
         // Load map along with associated entities and dialogue.
-        loadMap(1, 0, true);
+        mapM.loadMap(1, 0, true);
 
         // Set camera to track player entity.
-        cameraS.setTrackedEntity(player);
+        cameraS.setTrackedEntity(entityM.getPlayer());
 
         // Force fade into the game.
-        gameState = GameState.TRANSITION;
-        activeTransitionType = TransitionType.WARP;
-        activeTransitionPhase = TransitionPhase.LOADING;
-        transitionPhaseChanged = false;
+        fadeS.displayColor(new Vector3f(255, 255, 255));
+        fadeS.initiateFadeFrom(0.5);
 
         // Other setup.
         environmentM.setup();
         soundS.playTrack("testTrack1");
+
+        // Set primary game state to player control.
+        primaryGameState = PrimaryGameState.EXPLORE;
     }
 
 
@@ -314,10 +215,13 @@ public class GamePanel {
     public void update(double dt) {
 
         // Player input.
-        player.updatePlayerInput(dt);
+        entityM.updateInput(dt);
+
+        // Fade.
+        fadeS.update(dt);
 
         // Transition.
-        updateTransition(dt);
+        transitionS.update(dt);
 
         // Dialogue.
         dialogueR.update(dt);
@@ -329,11 +233,8 @@ public class GamePanel {
         // Animation.
         animationM.update(dt);
 
-        // Player.
-        player.update(dt);
-
         // Entities.
-        updateEntities(dt);
+        entityM.update(dt);
 
         // Entity icons.
         entityIconM.update(dt);
@@ -362,7 +263,7 @@ public class GamePanel {
         tileM.addToRenderPipeline(renderer);                                                                            // Render tile sprites as defined in the TileManager class.
 
         // Entity and landmark.
-        for (EntityBase entity : obj.values()) {                                                                        // Add all objects in the current map to the list of entities.
+        for (EntityBase entity : entityM.getObj().values()) {                                                           // Add all objects in the current map to the list of entities.
 
             if (entity != null) {
 
@@ -370,7 +271,7 @@ public class GamePanel {
             }
         }
 
-        for (EntityBase entity : npc.values()) {                                                                        // Add all NPCs in the current map to the list of entities.
+        for (EntityBase entity : entityM.getNpc().values()) {                                                           // Add all NPCs in the current map to the list of entities.
 
             if (entity != null) {
 
@@ -378,13 +279,13 @@ public class GamePanel {
             }
         }
 
-        Set<Integer> keySet = party.keySet();
+        Set<Integer> keySet = entityM.getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
         int numRenderedPartyMembers;
 
-        if (keySet.size() > numActivePartyMembers) {
+        if (keySet.size() > entityM.getNumActivePartyMembers()) {
 
-            numRenderedPartyMembers = numActivePartyMembers;
+            numRenderedPartyMembers = entityM.getNumActivePartyMembers();
         } else {
 
             numRenderedPartyMembers = keySet.size();
@@ -392,19 +293,19 @@ public class GamePanel {
 
         for (int i = (numRenderedPartyMembers - 1); i >= 0; i--) {                                                      // Add active party members in the current map to the list of entities; iterates backwards.
 
-            if (party.get(keyArray[i]) != null) {
+            if (entityM.getParty().get(keyArray[i]) != null) {
 
-                entityList.add(party.get(keyArray[i]));
+                entityList.add(entityM.getParty().get(keyArray[i]));
             }
         }
 
-        entityList.add(player);                                                                                         // Add player to the list of all entities.
+        entityList.add(entityM.getPlayer());                                                                            // Add player to the list of all entities.
 
         ArrayList<LandmarkBase> landmarkList;
 
-        if (loadedMap != null) {
+        if (mapM.getLoadedMap() != null) {
 
-            landmarkList = loadedMap.getMapLandmarks();                                                                 // Get the list of landmarks on the loaded map.
+            landmarkList = mapM.getLoadedMap().getMapLandmarks();                                                       // Get the list of landmarks on the loaded map.
         } else {
 
             landmarkList = new ArrayList<>();                                                                           // Fail-safe to have empty landmark array if no map is loaded.
@@ -443,431 +344,6 @@ public class GamePanel {
         // Flush the render pipeline to draw the frame.
         renderer.render();
 
-    }
-
-
-    /**
-     * Loads a new map into memory and sets it as the current map to render.
-     * The following will be purged before loading the new map: prior loaded map, prior NPCs in `npc` (hash)map, prior
-     * objects in `obj` (hash)map, and prior conversations in `conv` (hash)map.
-     * New NPCs, objects, and conversations will be loaded with the new map.
-     * To retain an NPC or object between map loads, it should first be transferred to the `standby` (hash)map.
-     *
-     * @param mapId ID of map to load
-     * @param mapState state in which to load map
-     * @param swapTrack whether to swap to play the track specified by the map being loaded (true) or not (false)
-     */
-    public void loadMap(int mapId, int mapState, boolean swapTrack) {
-
-        // Set new map.
-        loadedMap = JsonParser.loadMapJson(this, mapId);
-
-        // Set map state and swap track, if applicable.
-        loadedMap.setMapState(mapState, swapTrack);
-
-        // Clear conversing and combating entity lists.
-        clearConversingEntities();
-        clearCombatingEntities();
-
-        // Purge `npc` and `obj` (hash)maps.
-        npc.clear();
-        obj.clear();
-
-        // Load entities on new map.
-        JsonParser.loadEntitiesJson(this, mapId);
-
-        // Purge `conv` (hash)map.
-        conv.clear();
-
-        // Load dialogue associated with new map.
-        JsonParser.loadDialogueJson(this, mapId);
-    }
-
-
-    /**
-     * Loads any new entity into memory, regardless of whether it's tied to the loaded map or not.
-     * If the entity is already loaded, nothing will happen.
-     *
-     * @param entityId ID of entity to load
-     */
-    public void loadEntity(int entityId) {
-
-        JsonParser.loadEntityJson(this, entityId);
-    }
-
-
-    /**
-     * Clears the list of conversing entities and makes them exit a state of conversing.
-     */
-    public void clearConversingEntities() {
-
-        conversingEntities.clear();
-    }
-
-
-    /**
-     * Clears the list of combating entities and makes them exit a state of combat.
-     */
-    public void clearCombatingEntities() {
-
-        combatingEntities.clear();
-    }
-
-
-    /**
-     * Retrieves any loaded entity by its ID.
-     *
-     * @param entityId ID of the entity being retrieved
-     * @return retrieved entity OR null if no matching entity was found
-     */
-    public EntityBase getEntityById(int entityId) {
-
-        EntityBase entity;
-
-        // Check player.
-        if (player != null) {
-            if (player.getEntityId() == entityId) {
-                return player;
-            }
-        }
-
-        // Check party.
-        entity = party.get(entityId);
-        if (entity != null) {
-            return entity;
-        }
-
-        // Check NPCs.
-        entity = npc.get(entityId);
-        if (entity != null) {
-            return entity;
-        }
-
-        // Check standby.
-        entity = standby.get(entityId);
-        if (entity != null) {
-            return entity;
-        }
-
-        // Check objects.
-        entity = obj.get(entityId);
-
-        return entity;
-    }
-
-
-    /**
-     * Retrieves all instantiated entities.
-     *
-     * @return list of all instantiated entities
-     */
-    public List<EntityBase> getAllEntities() {
-
-        // Initialize a list that will hold all entities.
-        List<EntityBase> allEntities = new ArrayList<>();
-
-        // Add player entity.
-        allEntities.add(player);
-
-        // Add all non-null party member entities.
-        for (EntityBase entity : party.values()) {
-            if (entity != null) {
-                allEntities.add(entity);
-            }
-        }
-
-        // Add all non-null NPC entities.
-        for (EntityBase entity : npc.values()) {
-            if (entity != null) {
-                allEntities.add(entity);
-            }
-        }
-
-        // Add all non-null standby entities.
-        for (EntityBase entity : standby.values()) {
-            if (entity != null) {
-                allEntities.add(entity);
-            }
-        }
-
-        // Add all non-null object entities.
-        for (EntityBase entity : obj.values()) {
-            if (entity != null) {
-                allEntities.add(entity);
-            }
-        }
-
-        return allEntities;
-    }
-
-
-    /**
-     * Transfers an entity from a source entity map to a target entity map.
-     *
-     * @param source source entity map being transferred from
-     * @param target target entity map being transferred to
-     * @param entityId ID of the entity to be transferred
-     * @throws EntityTransferException if transferring an entity fails
-     */
-    public void transferEntity(LimitedLinkedHashMap<Integer, EntityBase> source,
-                               LimitedLinkedHashMap<Integer, EntityBase> target,
-                               int entityId) {
-
-        EntityBase entity = source.get(entityId);
-
-        if (entity != null) {
-
-            try {
-
-                target.put(entityId, entity);
-
-            } catch (IllegalStateException e) {
-
-                throw new EntityTransferException("Failed to transfer entity "
-                        + (((entity.getName() != null) && (!entity.getName().equals("")))
-                        ? "'" + (entity.getName() + "' ") : "")
-                        + "with ID "
-                        + entityId
-                        + " from source map to target map: target map full");
-            }
-            source.remove(entityId);
-        } else {
-
-            throw new EntityTransferException("Failed to transfer entity with ID '"
-                    + entityId
-                    + "' from source map to target map - no such entity found in source map");
-        }
-    }
-
-
-    /**
-     * Removes an entity from a source entity map and blacklists it to not be loaded again.
-     *
-     * @param source source entity map to remove the entity from
-     * @param entityId ID of the entity to be removed
-     */
-    public void removeEntity(LimitedLinkedHashMap<Integer, EntityBase> source, int entityId) {
-
-        source.remove(entityId);
-        removedEntities.add(entityId);
-    }
-
-
-    /**
-     * Initiates a transition.
-     * The game state is set to transition.
-     * Remember to also set a sub-transition type directly after calling this method if applicable.
-     *
-     * @param transitionType transition type
-     */
-    public void initiateTransition(TransitionType transitionType) {
-
-        setGameState(GameState.TRANSITION);                                                                             // Set the game to a transition state.
-        activeTransitionType = transitionType;                                                                          // Set the overarching transition type.
-        transitionPhaseChanged = true;
-        activeTransitionPhase = TransitionPhase.FADING_TO;                                                              // All transitions start with a fade to.
-    }
-
-
-    /**
-     * Updates the state of all entities by one frame.
-     *
-     * @param dt time since last frame (seconds)
-     */
-    private void updateEntities(double dt) {
-
-        // Object.
-        for (EntityBase entity : obj.values()) {
-            if (entity != null) {
-                entity.update(dt);
-            }
-        }
-
-        // NPC.
-        for (EntityBase entity : npc.values()) {
-            if (entity != null) {
-                entity.update(dt);
-            }
-        }
-
-        // Party.
-        for (EntityBase entity : party.values()) {
-            if (entity != null) {
-                entity.update(dt);
-            }
-        }
-    }
-
-
-    /**
-     * Updates a transition (i.e., performs any loading or other logic that needs to be run immediately after a new
-     * transition phase is entered).
-     *
-     * @param dt time since last frame (seconds)
-     */
-    private void updateTransition(double dt) {
-
-        switch (activeTransitionPhase) {
-            case FADING_TO:                                                                                             // Phase 1: Fade screen to black.
-                transitionCounter += dt;
-                if (transitionCounter >= transitionCounterFadingToMax) {
-                    transitionCounter -= transitionCounterFadingToMax;                                                  // Rollback counter to prepare it for the second phase.
-                    activeTransitionPhase = TransitionPhase.LOADING;                                                    // Proceed to the next (second) phase of the transition.
-                    transitionPhaseChanged = true;
-                }
-                break;
-            case LOADING:                                                                                               // Phase 2: Wait on black screen.
-                transitionCounter += dt;
-                if (transitionCounter >= transitionCounterLoadingMax) {
-                    transitionCounter -= transitionCounterLoadingMax;                                                   // Rollback counter to prepare it for the final (third) phase.
-                    activeTransitionPhase = TransitionPhase.FADING_FROM;                                                // Proceed to the final (third) phase of the transition.
-                    transitionPhaseChanged = true;
-                }
-                break;
-            case FADING_FROM:                                                                                           // Phase 3: Fade from black.
-                transitionCounter += dt;
-                if (transitionCounter >= transitionCounterFadingFromMax) {
-                    transitionCounter = 0;                                                                              // Reset counter to its default state since the transition is complete.
-                    activeTransitionPhase = TransitionPhase.CLEANUP;
-                    transitionPhaseChanged = true;
-                }
-                break;
-        }
-
-        if ((activeTransitionType != null) && (transitionPhaseChanged)) {
-
-            switch (activeTransitionPhase) {
-                case LOADING:
-                    handleTransitionLoading(dt);
-                    System.gc();                                                                                        // Now is a good time for garbage collection by the JVM.
-                    break;
-                case CLEANUP:
-                    concludeTransition();
-                    break;
-            }
-        }
-
-        if (transitionPhaseChanged) {
-
-            transitionPhaseChanged = false;
-        }
-    }
-
-
-    /**
-     * Performs any loading that needs to be done once the screen is black during a transition of any type.
-     *
-     * @param dt time since last frame (seconds)
-     */
-    private void handleTransitionLoading(double dt) {
-
-        switch (activeTransitionType) {
-            case WARP:
-                warpS.handleWarpTransitionLoading(dt);
-                break;
-            case ENTER_COMBAT:
-                combatM.handleEnterCombatTransitionLoading();
-                break;
-            case EXIT_COMBAT:
-                combatM.handleExitCombatTransitionLoading();
-                break;
-        }
-    }
-
-
-    /**
-     * Closes out a transition of any type that has completed all of its phases (i.e., tidies up any variables).
-     */
-    private void concludeTransition() {
-
-        switch (activeTransitionType) {
-            case WARP:
-                warpS.concludeWarpTransition();
-                break;
-            case ENTER_COMBAT:
-                combatM.concludeEnterCombatTransition();
-                break;
-            case EXIT_COMBAT:
-                combatM.concludeExitCombatTransition();
-                break;
-        }
-
-        // Reset transition variables.
-        activeTransitionType = null;
-        activeTransitionPhase = TransitionPhase.DEFAULT;
-    }
-
-
-    /**
-     * Performs necessary initializations when switching to a new game state.
-     *
-     * @param currentGameState game state being switched from
-     * @param newGameState game state being switched to
-     */
-    private void gameStateInitialization(GameState currentGameState, GameState newGameState) {
-
-        // Tidy up the state being switching from.
-        switch (currentGameState) {
-
-            case PARTY_MENU:
-                guiIconM.getIconById(0).setSelected(false);                                                             // Deselect the party menu icon.
-                ui.setPartySlotSelected(0);                                                                             // Set the selected party member stat icon back to its default.
-                entityIconM.purgeAllEntityIcons();
-                break;
-
-            case INVENTORY_MENU:
-                guiIconM.getIconById(1).setSelected(false);                                                             // Deselected the inventory menu icon.
-                ui.setItemColSelected(0);                                                                               // Set the item slot back to its default column.
-                ui.setItemRowSelected(0);                                                                               // Set the item slot back to its default row.
-                for (int row = 0; row < ui.getMaxNumItemRow(); row++) {                                                 // Set all entries in the array of occupied item slots to false.
-                    for (int col = 0; col < ui.getMaxNumItemCol(); col++) {
-                        ui.getOccupiedItemSlots()[row][col] = false;
-                    }
-                }
-                break;
-
-            case SETTINGS_MENU:
-                guiIconM.getIconById(2).setSelected(false);                                                             // Deselect the settings menu icon.
-                ui.setSystemSettingSelected(0);                                                                         // Reset selected setting to default.
-                ui.setSystemOptionSelected(systemSettings.get(0).getActiveOption());                                    // Reset selected option to default (i.e., active option of the default setting).
-                break;
-        }
-
-        // Prepare for the state being switching to.
-        switch (newGameState) {
-
-            case PARTY_MENU:
-                guiIconM.getIconById(0).setSelected(true);                                                              // Select the party menu icon.
-                entityIconM.createPartyEntityIcons();                                                                   // Create entity icons for the party members.
-                entityIconM.getEntityIconById(player.getEntityId()).setSelected(true);                                  // Set the player icon as being selected (will animate the player icon).
-                guiIconM.getIconById(3).setSelected(true);                                                              // Set the background icon for the player as being selected (will darken the background).
-                ui.setPartySlotSelected(0);                                                                             // Set the player's party member stat icon as being selected in the UI.
-                break;
-
-            case INVENTORY_MENU:
-                guiIconM.getIconById(1).setSelected(true);                                                              // Select the inventory menu icon.
-                int numItems = player.getInventory().size();
-                int itemIndex = 0;                                                                                      // Variable to track how many item slots in the player's inventory have been assigned to an array slot.
-                for (int row = 0; row < ui.getMaxNumItemRow(); row++) {                                                 // Set the array of occupied item slots (inventory is displayed as a grid).
-                    for (int col = 0; col < ui.getMaxNumItemCol(); col++) {
-                        if (itemIndex < numItems) {
-                            ui.getOccupiedItemSlots()[row][col] = true;
-                        } else {
-                            ui.getOccupiedItemSlots()[row][col] = false;
-                        }
-                        itemIndex++;
-                    }
-                }
-                ui.setItemColSelected(0);                                                                               // Set the top-left item icon as being selected.
-                ui.setItemRowSelected(0);                                                                               // ^^^
-                break;
-
-            case SETTINGS_MENU:
-                guiIconM.getIconById(2).setSelected(true);                                                              // Select the settings menu icon.
-                ui.setSystemSettingSelected(0);
-                ui.setSystemOptionSelected(systemSettings.get(0).getActiveOption());
-                break;
-        }
     }
 
 
@@ -923,11 +399,81 @@ public class GamePanel {
     }
 
 
-    // GETTERS
-    public Map getLoadedMap() {
-        return loadedMap;
+    /**
+     * Performs necessary initializations when switching to a primary new game state.
+     *
+     * @param currentPrimaryGameState primary game state being switched from
+     * @param newPrimaryGameState primary game state being switched to
+     */
+    private void primaryGameStateInitialization(PrimaryGameState currentPrimaryGameState,
+                                                PrimaryGameState newPrimaryGameState) {
+
+        // Tidy up the state being switching from.
+        switch (currentPrimaryGameState) {
+
+            case PARTY_MENU:
+                guiIconM.getIconById(0).setSelected(false);                                                             // Deselect the party menu icon.
+                ui.setPartySlotSelected(0);                                                                             // Set the selected party member stat icon back to its default.
+                entityIconM.purgeAllEntityIcons();
+                break;
+
+            case INVENTORY_MENU:
+                guiIconM.getIconById(1).setSelected(false);                                                             // Deselected the inventory menu icon.
+                ui.setItemColSelected(0);                                                                               // Set the item slot back to its default column.
+                ui.setItemRowSelected(0);                                                                               // Set the item slot back to its default row.
+                for (int row = 0; row < ui.getMaxNumItemRow(); row++) {                                                 // Set all entries in the array of occupied item slots to false.
+                    for (int col = 0; col < ui.getMaxNumItemCol(); col++) {
+                        ui.getOccupiedItemSlots()[row][col] = false;
+                    }
+                }
+                break;
+
+            case SETTINGS_MENU:
+                guiIconM.getIconById(2).setSelected(false);                                                             // Deselect the settings menu icon.
+                ui.setSystemSettingSelected(0);                                                                         // Reset selected setting to default.
+                ui.setSystemOptionSelected(systemSettings.get(0).getActiveOption());                                    // Reset selected option to default (i.e., active option of the default setting).
+                break;
+        }
+
+        // Prepare for the state being switching to.
+        switch (newPrimaryGameState) {
+
+            case PARTY_MENU:
+                guiIconM.getIconById(0).setSelected(true);                                                              // Select the party menu icon.
+                entityIconM.createPartyEntityIcons();                                                                   // Create entity icons for the party members.
+                entityIconM.getEntityIconById(entityM.getPlayer().getEntityId()).setSelected(true);                     // Set the player icon as being selected (will animate the player icon).
+                guiIconM.getIconById(3).setSelected(true);                                                              // Set the background icon for the player as being selected (will darken the background).
+                ui.setPartySlotSelected(0);                                                                             // Set the player's party member stat icon as being selected in the UI.
+                break;
+
+            case INVENTORY_MENU:
+                guiIconM.getIconById(1).setSelected(true);                                                              // Select the inventory menu icon.
+                int numItems = entityM.getPlayer().getInventory().size();
+                int itemIndex = 0;                                                                                      // Variable to track how many item slots in the player's inventory have been assigned to an array slot.
+                for (int row = 0; row < ui.getMaxNumItemRow(); row++) {                                                 // Set the array of occupied item slots (inventory is displayed as a grid).
+                    for (int col = 0; col < ui.getMaxNumItemCol(); col++) {
+                        if (itemIndex < numItems) {
+                            ui.getOccupiedItemSlots()[row][col] = true;
+                        } else {
+                            ui.getOccupiedItemSlots()[row][col] = false;
+                        }
+                        itemIndex++;
+                    }
+                }
+                ui.setItemColSelected(0);                                                                               // Set the top-left item icon as being selected.
+                ui.setItemRowSelected(0);                                                                               // ^^^
+                break;
+
+            case SETTINGS_MENU:
+                guiIconM.getIconById(2).setSelected(true);                                                              // Select the settings menu icon.
+                ui.setSystemSettingSelected(0);
+                ui.setSystemOptionSelected(systemSettings.get(0).getActiveOption());
+                break;
+        }
     }
 
+
+    // GETTERS
     public Camera getCamera() {
         return camera;
     }
@@ -958,6 +504,14 @@ public class GamePanel {
 
     public EntityIconManager getEntityIconM() {
         return entityIconM;
+    }
+
+    public EntityManager getEntityM() {
+        return entityM;
+    }
+
+    public MapManager getMapM() {
+        return mapM;
     }
 
     public EnvironmentManager getEnvironmentM() {
@@ -1000,6 +554,14 @@ public class GamePanel {
         return soundS;
     }
 
+    public FadeSupport getFadeS() {
+        return fadeS;
+    }
+
+    public TransitionSupport getTransitionS() {
+        return transitionS;
+    }
+
     public PathFinder getPathF() {
         return pathF;
     }
@@ -1008,44 +570,27 @@ public class GamePanel {
         return ui;
     }
 
-    public Player getPlayer() {
-        return player;
+    public PrimaryGameState getPrimaryGameState() {
+        return primaryGameState;
     }
 
-    public LimitedLinkedHashMap<Integer, EntityBase> getObj() {
-        return obj;
+    public boolean isLockPlayerControl() {
+        return lockPlayerControl;
     }
 
-    public LimitedLinkedHashMap<Integer, EntityBase> getNpc() {
-        return npc;
+    public boolean isDebugActive() {
+        return debugActive;
     }
 
-    public LimitedLinkedHashMap<Integer, EntityBase> getParty() {
-        return party;
+    public int getSystemSettingsSize() {
+        return systemSettings.size();
     }
 
-    public LimitedLinkedHashMap<Integer, EntityBase> getStandby() {
-        return standby;
-    }
-
-    public HashSet<Integer> getConversingEntities() {
-        return conversingEntities;
-    }
-
-    public HashSet<Integer> getCombatingEntities() {
-        return combatingEntities;
-    }
-
-    public HashSet<Integer> getRemovedEntities() {
-        return removedEntities;
-    }
-
-    public int getNumActivePartyMembers() {
-        return numActivePartyMembers;
-    }
-
-    public HashMap<Integer, Conversation> getConv() {
-        return conv;
+    public Setting getSystemSetting(int setting) {
+        if ((setting < systemSettings.size()) && (setting >= 0)) {
+            return systemSettings.get(setting);
+        }
+        return null;
     }
 
     public DialogueArrow getDialogueA() {
@@ -1060,62 +605,15 @@ public class GamePanel {
         return targetA;
     }
 
-    public GameState getGameState() {
-        return gameState;
-    }
-
-    public boolean isCombatActive() {
-        return combatActive;
-    }
-
-    public boolean isDebugActive() {
-        return debugActive;
-    }
-
-    public TransitionType getActiveTransitionType() {
-        return activeTransitionType;
-    }
-
-    public TransitionPhase getActiveTransitionPhase() {
-        return activeTransitionPhase;
-    }
-
-    public double getTransitionCounter() {
-        return transitionCounter;
-    }
-
-    public double getTransitionCounterFadingToMax() {
-        return transitionCounterFadingToMax;
-    }
-
-    public double getTransitionCounterLoadingMax() {
-        return transitionCounterLoadingMax;
-    }
-
-    public double getTransitionCounterFadingFromMax() {
-        return transitionCounterFadingFromMax;
-    }
-
-    public int getSystemSettingsSize() {
-        return systemSettings.size();
-    }
-
-    public Setting getSystemSetting(int setting) {
-        if ((setting < systemSettings.size()) && (setting >= 0)) {
-            return systemSettings.get(setting);
-        }
-        return null;
-    }
-
 
     // SETTERS
-    public void setGameState(GameState gameState) {
-        gameStateInitialization(this.gameState, gameState);
-        this.gameState = gameState;
+    public void setPrimaryGameState(PrimaryGameState primaryGameState) {
+        primaryGameStateInitialization(this.primaryGameState, primaryGameState);
+        this.primaryGameState = primaryGameState;
     }
 
-    public void setCombatActive(boolean combatActive) {
-        this.combatActive = combatActive;
+    public void setLockPlayerControl(boolean lockPlayerControl) {
+        this.lockPlayerControl = lockPlayerControl;
     }
 
     public void setDebugActive(boolean debugActive) {

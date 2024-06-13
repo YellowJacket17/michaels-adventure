@@ -2,7 +2,7 @@ package entity.implementation.player;
 
 import combat.implementation.move.Mve_Punch;
 import combat.implementation.move.Mve_Tackle;
-import miscellaneous.GameState;
+import core.PrimaryGameState;
 import miscellaneous.KeyListener;
 import entity.EntityBase;
 import entity.EntityDirection;
@@ -110,11 +110,11 @@ public class Player extends EntityBase {
 
     // METHODS
     /**
-     * Updates the state of the game per player input by one frame.
+     * Updates player input per the current frame.
      *
      * @param dt time since last frame (seconds)
      */
-    public void updatePlayerInput(double dt) {
+    public void updateInput(double dt) {
 
         if (moveCountdown > 0) {
             moveCountdown -= dt;                                                                                        // Decrease move frame countdown by one each time a new frame is drawn.
@@ -150,29 +150,28 @@ public class Player extends EntityBase {
             fullScreenCountdown = stagedMenuInteractionCountdown;
         }
 
-        switch (gp.getGameState()) {
-            case EXPLORE:
-                updateExploreInput(dt);
-                break;
-            case DIALOGUE:
-                updateDialogueInput();
-                break;
-            case TRANSITION:
-                break;
-            case CUTSCENE:
-                break;
-            case PARTY_MENU:
-                updatePartyMenuInput();
-                break;
-            case INVENTORY_MENU:
-                updateInventoryMenuInput();
-                break;
-            case SETTINGS_MENU:
-                updateSettingsMenuInput();
-                break;
-            case SUB_MENU:
-                updateSubMenuInput();
-                break;
+        if (!gp.isLockPlayerControl()) {
+
+            switch (gp.getPrimaryGameState()) {
+                case EXPLORE:
+                    updateExploreInput(dt);
+                    break;
+                case DIALOGUE:
+                    updateDialogueInput();
+                    break;
+                case PARTY_MENU:
+                    updatePartyMenuInput();
+                    break;
+                case INVENTORY_MENU:
+                    updateInventoryMenuInput();
+                    break;
+                case SETTINGS_MENU:
+                    updateSettingsMenuInput();
+                    break;
+                case SUB_MENU:
+                    updateSubMenuInput();
+                    break;
+            }
         }
         updateDebugInput();
     }
@@ -182,12 +181,12 @@ public class Player extends EntityBase {
     public void update(double dt) {
 
         // These are core actions that take precedent over all others.
-        if (gp.getCombatingEntities().contains(entityId)) {
+        if (gp.getEntityM().getCombatingEntities().contains(entityId)) {
             // TODO : Add combat-specific logic here.
             return;
         }
 
-        if (gp.getConversingEntities().contains(entityId)) {
+        if (gp.getEntityM().getConversingEntities().contains(entityId)) {
             return;
         }
 
@@ -201,17 +200,11 @@ public class Player extends EntityBase {
         }
 
         // Set other actions.
-        switch (gp.getGameState()) {
+        switch (gp.getPrimaryGameState()) {
             case EXPLORE:
                 updateAction(dt);
                 break;
             case DIALOGUE:
-                updateAction(dt);
-                break;
-            case TRANSITION:
-                updateAction(dt);
-                break;
-            case CUTSCENE:
                 updateAction(dt);
                 break;
             case PARTY_MENU:
@@ -236,13 +229,13 @@ public class Player extends EntityBase {
      */
     public void updateWarpTransitionStepPortal(double dt) {
 
-        switch (gp.getActiveTransitionPhase()) {
-            case FADING_TO:                                                                                             // Phase 1: Set the player to a walking sprite.
+        switch (gp.getTransitionS().getState()) {
+            case FADE_TO:                                                                                               // Phase 1: Set the player to a walking sprite.
                 moving = false;                                                                                         // Cancel the player movement that triggered this transition event.
                 setWalkingSprite();
                 updateWorldPosition(dt);                                                                                // Update the world position of the player by one unit of its speed in the current direction.
                 break;
-            case LOADING:                                                                                               // Phase 2: Set the player to an idle sprite.
+            case ACTIVE:                                                                                                // Phase 2: Set the player to an idle sprite.
                 setIdleSprite();
                 directionCurrent = directionCandidate;                                                                  // Set the direction the player will be facing when loaded into the new map.
                 directionLast = directionCandidate;
@@ -509,7 +502,7 @@ public class Player extends EntityBase {
 
         if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned) && (!moving)) {
 
-            gp.setGameState(GameState.PARTY_MENU);
+            gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
             menuActioned = true;                                                                                        // Disable the ability of the player to close the menu (party, inventory, settings) by pressing the Space key.
         }
         else if (!moving) {                                                                                             // If the player is moving, they will not stop until they move the tile length (for grid-based movement); so, only accept key inputs when the player is not moving.
@@ -578,20 +571,20 @@ public class Player extends EntityBase {
     private void updateDialogueInput() {
 
         if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER))
-                && (gp.getDialogueR().getCurrentConv() != null)
+                && (gp.getDialogueR().getActiveConv() != null)
                 && (!gp.getDialogueR().isReadingDialogue())
                 && (interactionCountdown <= 0)) {
 
             if ((!gp.getDialogueR().isReadingConversation())
-                    && (gp.getDialogueR().getCurrentConv().isPlayerInputToEnd())) {                                     // If no longer reading a conversation AND player input is required to end the conversation.
+                    && (gp.getDialogueR().getActiveConv().isPlayerInputToEnd())) {                                     // If no longer reading a conversation AND player input is required to end the conversation.
 
-                if (gp.getDialogueR().getCurrentConv().getConvId() == -3) {
+                if (gp.getDialogueR().getActiveConv().getConvId() == -3) {
 
                     gp.getCombatM().progressCombat();                                                                   // The conversation was an interactive combat message and has finished; check what logic to run next in combat.
                     interactionCountdown = stagedMenuInteractionCountdown;                                              // Player must wait before interacting with another action, for example (prevents instantly progressing next action that appears).
                 } else {
 
-                    gp.getEventM().handlePostConversation(gp.getDialogueR().getCurrentConv().getConvId());              // Check to see if any events will be triggered once the conversation has finished.
+                    gp.getEventM().handlePostConversation(gp.getDialogueR().getActiveConv().getConvId());              // Check to see if any events will be triggered once the conversation has finished.
                 }
             } else {
 
@@ -610,17 +603,17 @@ public class Player extends EntityBase {
         if (interactionCountdown <= 0) {
 
             if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
-                gp.setGameState(GameState.EXPLORE);
+                gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_2)) {
-                gp.setGameState(GameState.INVENTORY_MENU);
+                gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_3)) {
-                gp.setGameState(GameState.SETTINGS_MENU);
+                gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
@@ -646,17 +639,17 @@ public class Player extends EntityBase {
         if (interactionCountdown <= 0) {
 
             if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
-                gp.setGameState(GameState.EXPLORE);
+                gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
             if (KeyListener.isKeyPressed(GLFW_KEY_1)) {
-                gp.setGameState(GameState.PARTY_MENU);
+                gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_3)) {
-                gp.setGameState(GameState.SETTINGS_MENU);
+                gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
@@ -692,17 +685,17 @@ public class Player extends EntityBase {
         if (interactionCountdown <= 0) {
 
             if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
-                gp.setGameState(GameState.EXPLORE);
+                gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_1)) {
-                gp.setGameState(GameState.PARTY_MENU);
+                gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_2)) {
-                gp.setGameState(GameState.INVENTORY_MENU);
+                gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
@@ -769,7 +762,7 @@ public class Player extends EntityBase {
         if ((KeyListener.isKeyPressed(GLFW_KEY_Q)) && (!debugActioned)) {
 
             if ((gp.isDebugActive())
-                    && (gp.getGameState() == GameState.EXPLORE)
+                    && (gp.getPrimaryGameState() == PrimaryGameState.EXPLORE)
                     && (gp.getCameraS().isOverrideEntityTracking())) {
 
                 List<String> options = List.of("Yes", "No");                                                            // Immutable list.

@@ -1,7 +1,7 @@
 package event.support;
 
 import core.GamePanel;
-import miscellaneous.GameState;
+import core.PrimaryGameState;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -95,7 +95,7 @@ public class SubMenuSupport {
 
     /**
      * Initiates a sub-menu to instantly appear with the passed options.
-     * The game state is set to sub-menu.
+     * The primary game state is set to sub-menu.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -107,14 +107,14 @@ public class SubMenuSupport {
     public void displaySubMenuBasic(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
                                     HashMap<Integer, Vector3f> colors, HashSet<Integer> disabledOptions) {
 
-        gp.setGameState(GameState.SUB_MENU);
+        gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         gp.getSubMenuH().generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY, colors, disabledOptions);
     }
 
 
     /**
      * Initiates a sub-menu to instantly appear with the passed options.
-     * The game state is set to sub-menu.
+     * The primary game state is set to sub-menu.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -125,14 +125,14 @@ public class SubMenuSupport {
     public void displaySubMenuBasic(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
                                     HashMap<Integer, Vector3f> colors) {
 
-        gp.setGameState(GameState.SUB_MENU);
+        gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         gp.getSubMenuH().generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY, colors);
     }
 
 
     /**
      * Initiates a sub-menu to instantly appear with the passed options.
-     * The game state is set to sub-menu.
+     * The primary game state is set to sub-menu.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -142,14 +142,14 @@ public class SubMenuSupport {
     public void displaySubMenuBasic(List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors,
                                     HashSet<Integer> disabledOptions) {
 
-        gp.setGameState(GameState.SUB_MENU);
+        gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         gp.getSubMenuH().generateSubMenu(options, subMenuId, colors, disabledOptions);
     }
 
 
     /**
      * Initiates a sub-menu to instantly appear with the passed options.
-     * The game state is set to sub-menu.
+     * The primary game state is set to sub-menu.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -157,14 +157,14 @@ public class SubMenuSupport {
      */
     public void displaySubMenuBasic(List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors) {
 
-        gp.setGameState(GameState.SUB_MENU);
+        gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         gp.getSubMenuH().generateSubMenu(options, subMenuId, colors);
     }
 
 
     /**
      * Initiates a sub-menu to instantly appear with the passed options.
-     * The game state is set to sub-menu.
+     * The primary game state is set to sub-menu.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -175,14 +175,14 @@ public class SubMenuSupport {
     public void displaySubMenuBasic(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
                                     HashSet<Integer> disabledOptions) {
 
-        gp.setGameState(GameState.SUB_MENU);
+        gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         gp.getSubMenuH().generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY, disabledOptions);
     }
 
 
     /**
      * Initiates a sub-menu to instantly appear with the passed options.
-     * The game state is set to sub-menu.
+     * The primary game state is set to sub-menu.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -191,14 +191,14 @@ public class SubMenuSupport {
      */
     public void displaySubMenuBasic(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY) {
 
-        gp.setGameState(GameState.SUB_MENU);
+        gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         gp.getSubMenuH().generateSubMenu(options, subMenuId, subMenuScreenX, subMenuScreenY);
     }
 
 
     /**
      * Initiates a sub-menu to instantly appear with the passed options.
-     * The game state is set to sub-menu.
+     * The primary game state is set to sub-menu.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
@@ -206,28 +206,28 @@ public class SubMenuSupport {
      */
     public void displaySubMenuBasic(List<String> options, int subMenuId, HashSet<Integer> disabledOptions) {
 
-        gp.setGameState(GameState.SUB_MENU);
+        gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         gp.getSubMenuH().generateSubMenu(options, subMenuId, disabledOptions);
     }
 
 
     /**
      * Initiates a sub-menu to instantly appear with the passed options.
-     * The game state is set to sub-menu.
+     * The primary game state is set to sub-menu.
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
      */
     public void displaySubMenuBasic(List<String> options, int subMenuId) {
 
-        gp.setGameState(GameState.SUB_MENU);
+        gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         gp.getSubMenuH().generateSubMenu(options, subMenuId);
     }
 
 
     /**
      * Initiates a sub-menu to appear after an accompanying prompt is read.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
@@ -249,7 +249,7 @@ public class SubMenuSupport {
 
     /**
      * Initiates a sub-menu to appear after an accompanying prompt is read.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
@@ -270,7 +270,7 @@ public class SubMenuSupport {
 
     /**
      * Initiates a sub-menu to appear after an accompanying prompt is read.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
@@ -290,7 +290,7 @@ public class SubMenuSupport {
 
     /**
      * Initiates a sub-menu to appear after an accompanying prompt is read.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
@@ -308,7 +308,7 @@ public class SubMenuSupport {
 
     /**
      * Initiates a sub-menu to appear after an accompanying prompt is read.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
@@ -329,7 +329,7 @@ public class SubMenuSupport {
 
     /**
      * Initiates a sub-menu to appear after an accompanying prompt is read.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
@@ -348,7 +348,7 @@ public class SubMenuSupport {
 
     /**
      * Initiates a sub-menu to appear after an accompanying prompt is read.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
@@ -366,7 +366,7 @@ public class SubMenuSupport {
 
     /**
      * Initiates a sub-menu to appear after an accompanying prompt is read.
-     * The game state is set to dialogue.
+     * The primary game state is set to dialogue.
      *
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
@@ -378,7 +378,7 @@ public class SubMenuSupport {
             tempOptions.add(item);
         }
         tempSubMenuId = subMenuId;
-        gp.setGameState(GameState.DIALOGUE);
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         gp.getDialogueR().initiateSubMenuMessage(prompt);
     }
 

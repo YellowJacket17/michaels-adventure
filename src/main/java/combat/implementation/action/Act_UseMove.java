@@ -94,7 +94,7 @@ public class Act_UseMove extends ActionBase {
     public void run() {
 
         calculateDamage();
-        gp.getEntityById(sourceEntityId).subtractSkillPoints(move.getSkillPoints());                                    // Subtract skill points used by this move.
+        gp.getEntityM().getEntityById(sourceEntityId).subtractSkillPoints(move.getSkillPoints());                       // Subtract skill points used by this move.
         move.runEffects(sourceEntityId, targetEntityIds);                                                               // Apply any additional affects that this move may have.
 
         // TODO : Should fainting be polled before running effects as well?
@@ -115,8 +115,8 @@ public class Act_UseMove extends ActionBase {
 
         // TODO : Is the list `allDamage` necessary?
         LimitedArrayList<Integer> allDamage = new LimitedArrayList<>(6);
-        int sourceEntityAttack = gp.getEntityById(sourceEntityId).getAttack();
-        int sourceEntityMagic = gp.getEntityById(sourceEntityId).getMagic();
+        int sourceEntityAttack = gp.getEntityM().getEntityById(sourceEntityId).getAttack();
+        int sourceEntityMagic = gp.getEntityM().getEntityById(sourceEntityId).getMagic();
         int targetDamage = 0;
         boolean targetGuarding;
 
@@ -126,7 +126,8 @@ public class Act_UseMove extends ActionBase {
 
                 targetGuarding = true;
                 gp.getCombatM().getGuardingEntities().remove(targetEntityId);
-                String message = gp.getEntityById(targetEntityId).getName() + "'s defensive stance was broken!";
+                String message = gp.getEntityM()
+                        .getEntityById(targetEntityId).getName() + "'s defensive stance was broken!";
                 gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
             } else {
 
@@ -135,18 +136,18 @@ public class Act_UseMove extends ActionBase {
 
             if (move.getCategory() == MoveCategory.PHYSICAL) {
 
-                int targetEntityDefense = gp.getEntityById(targetEntityId).getDefense();
+                int targetEntityDefense = gp.getEntityM().getEntityById(targetEntityId).getDefense();
                 targetDamage = move.getPower() * (sourceEntityAttack / targetEntityDefense);
                 if (targetGuarding) {targetDamage /= 2;}
                 allDamage.add(targetDamage);
             } else if (move.getCategory() == MoveCategory.MAGIC) {
 
-                int targetEntityMagic = gp.getEntityById(targetEntityId).getMagic();
+                int targetEntityMagic = gp.getEntityM().getEntityById(targetEntityId).getMagic();
                 targetDamage = move.getPower() * (sourceEntityMagic / targetEntityMagic);
                 if (targetGuarding) {targetDamage /= 2;}
                 allDamage.add(targetDamage);
             }
-            gp.getEntityById(targetEntityId).subtractLife(targetDamage);
+            gp.getEntityM().getEntityById(targetEntityId).subtractLife(targetDamage);
         }
     }
 

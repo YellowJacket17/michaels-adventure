@@ -253,7 +253,7 @@ public class Window {
         // Set window clear color and alpha blending.
         glClearColor(r, g, b, a);                                                                                       // Set window clear color.
         glEnable(GL_BLEND);                                                                                             // Enable blending (alpha values).
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);                                                                    // Set blending function.
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);                                                                    // Set blending function.
 
         // Initialize variables for tracking time (applicable to both enabled and disabled VSync).
         // Note that `glfwGetTime()` returns time (seconds) elapsed since GLFW was initialized.

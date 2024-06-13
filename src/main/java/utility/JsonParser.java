@@ -248,7 +248,7 @@ public class JsonParser {
 
             conversation.getDialogueList().add(dialogue);                                                               // Add dialogue to next index in list.
         }
-        gp.getConv().put(conversation.getConvId(), conversation);
+        gp.getDialogueR().getConv().put(conversation.getConvId(), conversation);
     }
 
 
@@ -475,10 +475,10 @@ public class JsonParser {
 
         switch (type) {
             case "character":
-                gp.getNpc().put(entity.getEntityId(), entity);
+                gp.getEntityM().getNpc().put(entity.getEntityId(), entity);
                 break;
             case "object":
-                gp.getObj().put(entity.getEntityId(), entity);
+                gp.getEntityM().getObj().put(entity.getEntityId(), entity);
                 break;
         }
     }
@@ -493,43 +493,43 @@ public class JsonParser {
      */
     private static boolean checkEntityLoaded(GamePanel gp, int entityId) {
 
-        for (int loadedId : gp.getNpc().keySet()) {
+        for (int loadedId : gp.getEntityM().getNpc().keySet()) {
 
-            if ((gp.getNpc().get(loadedId) != null)
+            if ((gp.getEntityM().getNpc().get(loadedId) != null)
                     && (loadedId == entityId)) {
 
                 return true;                                                                                            // Entity is in the `npc` map, so avoid loading a duplicate.
             }
         }
 
-        for (int loadedId : gp.getObj().keySet()) {
+        for (int loadedId : gp.getEntityM().getObj().keySet()) {
 
-            if ((gp.getObj().get(loadedId) != null)
+            if ((gp.getEntityM().getObj().get(loadedId) != null)
                     && (loadedId == entityId)) {
 
                 return true;                                                                                            // Entity is in the `obj` map, so avoid loading a duplicate.
             }
         }
 
-        for (int loadedId : gp.getParty().keySet()) {
+        for (int loadedId : gp.getEntityM().getParty().keySet()) {
 
-            if ((gp.getParty().get(loadedId) != null)
+            if ((gp.getEntityM().getParty().get(loadedId) != null)
                     && (loadedId == entityId)) {
 
                 return true;                                                                                            // Entity is in the `party` map, so avoid loading a duplicate.
             }
         }
 
-        for (int loadedId : gp.getStandby().keySet()) {
+        for (int loadedId : gp.getEntityM().getStandby().keySet()) {
 
-            if ((gp.getStandby().get(loadedId) != null)
+            if ((gp.getEntityM().getStandby().get(loadedId) != null)
                     && (loadedId == entityId)) {
 
                 return true;                                                                                            // Entity is in the `standby` map, so avoid loading a duplicate.
             }
         }
 
-        if (gp.getRemovedEntities().contains(entityId)) {
+        if (gp.getEntityM().getRemovedEntities().contains(entityId)) {
 
             return true;                                                                                                // Entity is in the `removedEntities` set, so skip loading.
         }

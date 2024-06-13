@@ -62,7 +62,7 @@ public class CollisionInspector {
 
         try {
 
-            tileNum = gp.getLoadedMap().getMapTileNum()[entityCol][entityRow];                                          // Check what tile type the entity is predicted to walk into.
+            tileNum = gp.getMapM().getLoadedMap().getMapTileNum()[entityCol][entityRow];                                // Check what tile type the entity is predicted to walk into.
 
             if (gp.getTileM().getTiles()[tileNum].hasCollision()) {                                                     // Check if there's collision on `tileNum`; if true, the entity is hitting a solid tile and cannot move in that direction.
 
@@ -90,7 +90,7 @@ public class CollisionInspector {
      */
     public void checkLandmark(EntityBase entity) {
 
-        if (gp.getLoadedMap() != null) {                                                                                // Only run this logic if there's a loaded map.
+        if (gp.getMapM().getLoadedMap() != null) {                                                                      // Only run this logic if there's a loaded map.
 
             int entityCol = entity.getCol();                                                                            // Initialize variable with entity's current tile position.
             int entityRow = entity.getRow();                                                                            // ^^^
@@ -110,7 +110,7 @@ public class CollisionInspector {
                     break;
             }
 
-            ArrayList<LandmarkBase> landmarks = gp.getLoadedMap().getMapLandmarks();                                    // Retrieve all landmarks on the current map.
+            ArrayList<LandmarkBase> landmarks = gp.getMapM().getLoadedMap().getMapLandmarks();                          // Retrieve all landmarks on the current map.
             boolean collision = false;                                                                                  // Initialize a variable that will track whether a collision has been detected or not.
             int index = 0;                                                                                              // Initialize a variable to track which landmark in the landmarks array is currently being checked.
 
@@ -210,7 +210,7 @@ public class CollisionInspector {
     public void checkPlayer(EntityBase entity, boolean ignoreFollowers) {
 
         LimitedLinkedHashMap<Integer, EntityBase> target = new LimitedLinkedHashMap<>(1);                               // Create a target map that only contains the player entity; this is so we can use the `calculateEntityCollision()` method.
-        target.put(gp.getPlayer().getEntityId(), gp.getPlayer());
+        target.put(gp.getEntityM().getPlayer().getEntityId(), gp.getEntityM().getPlayer());
         calculateEntityCollision(entity, target, ignoreFollowers);
     }
 
@@ -224,9 +224,9 @@ public class CollisionInspector {
      */
     private boolean calculateNodeLandmark(int targetRow, int targetCol) {
 
-        if (gp.getLoadedMap() != null) {                                                                                // Only run this logic if there's a loaded map.
+        if (gp.getMapM().getLoadedMap() != null) {                                                                      // Only run this logic if there's a loaded map.
 
-            ArrayList<LandmarkBase> landmarks = gp.getLoadedMap().getMapLandmarks();                                    // Generate a single list od all landmarks on the current map.
+            ArrayList<LandmarkBase> landmarks = gp.getMapM().getLoadedMap().getMapLandmarks();                          // Generate a single list od all landmarks on the current map.
 
             int index = 0;                                                                                              // Initialize a variable to track which landmark in the landmarks array is currently being checked.
 
@@ -282,23 +282,23 @@ public class CollisionInspector {
 
         ArrayList<EntityBase> target = new ArrayList<>();                                                               // Generate a single list of all non-null entities; excludes the entity we're finding a path for.
 
-        if (gp.getPlayer().getEntityId() != entity.getEntityId()) {
-            target.add(gp.getPlayer());
+        if (gp.getEntityM().getPlayer().getEntityId() != entity.getEntityId()) {
+            target.add(gp.getEntityM().getPlayer());
         }
 
-        for (EntityBase candidate : gp.getNpc().values()) {
+        for (EntityBase candidate : gp.getEntityM().getNpc().values()) {
             if ((candidate != null) && (candidate.getEntityId() != entity.getEntityId())) {
                 target.add(candidate);
             }
         }
 
-        for (EntityBase candidate : gp.getObj().values()) {
+        for (EntityBase candidate : gp.getEntityM().getObj().values()) {
             if ((candidate != null) && (candidate.getEntityId() != entity.getEntityId())) {
                 target.add(candidate);
             }
         }
 
-        for (EntityBase candidate : gp.getParty().values()) {
+        for (EntityBase candidate : gp.getEntityM().getParty().values()) {
             if ((candidate != null) && (candidate.getEntityId() != entity.getEntityId())) {
                 target.add(candidate);
             }

@@ -2,10 +2,9 @@ package event.support;
 
 import asset.Sound;
 import core.GamePanel;
-import miscellaneous.GameState;
-import miscellaneous.TransitionType;
 import entity.EntityBase;
 import entity.EntityDirection;
+import event.TransitionType;
 import event.WarpTransitionType;
 import utility.LimitedLinkedHashMap;
 
@@ -70,57 +69,58 @@ public class WarpSupport {
 
         boolean newMap = false;
 
-        if (mapId != gp.getLoadedMap().getMapId()) {                                                                    // Only load the map if it's different from the one the player is warping from.
+        if (mapId != gp.getMapM().getLoadedMap().getMapId()) {                                                          // Only load the map if it's different from the one the player is warping from.
 
             newMap = true;
 
-            for (EntityBase entity : gp.getNpc().values()) {                                                            // Transfer any non-party NPC player entity followers to `standby` map.
+            for (EntityBase entity : gp.getEntityM().getNpc().values()) {                                               // Transfer any non-party NPC player entity followers to `standby` map.
 
-                if (gp.getEventM().checkEntityChainUp(gp.getPlayer(), entity)) {
+                if (gp.getEventM().checkEntityChainUp(gp.getEntityM().getPlayer(), entity)) {
 
-                    gp.transferEntity(gp.getNpc(), gp.getStandby(), entity.getEntityId());
+                    gp.getEntityM().transferEntity(
+                            gp.getEntityM().getNpc(), gp.getEntityM().getStandby(), entity.getEntityId());
                     nonPartyFollowers.put(entity.getEntityId(), 0);
                 }
             }
 
-            for (EntityBase entity : gp.getObj().values()) {                                                            // Transfer any non-party object player entity followers to `standby` map.
+            for (EntityBase entity : gp.getEntityM().getObj().values()) {                                               // Transfer any non-party object player entity followers to `standby` map.
 
-                if (gp.getEventM().checkEntityChainUp(gp.getPlayer(), entity)) {
+                if (gp.getEventM().checkEntityChainUp(gp.getEntityM().getPlayer(), entity)) {
 
-                    gp.transferEntity(gp.getObj(), gp.getStandby(), entity.getEntityId());
+                    gp.getEntityM().transferEntity(gp.getEntityM().getObj(), gp.getEntityM().getStandby(), entity.getEntityId());
                     nonPartyFollowers.put(entity.getEntityId(), 1);
                 }
             }
-            gp.loadMap(mapId, mapState, !overrideMapTrack);                                                             // Load new map now that any non-party player entity followers have been transferred to `standby` map.
+            gp.getMapM().loadMap(mapId, mapState, !overrideMapTrack);                                                   // Load new map now that any non-party player entity followers have been transferred to `standby` map.
         }
-        gp.getPlayer().setCol(col);                                                                                     // Set the player entity's position in the world (x)
-        gp.getPlayer().setRow(row);                                                                                     // Set the player entity's position in the world (y).
+        gp.getEntityM().getPlayer().setCol(col);                                                                        // Set the player entity's position in the world (x)
+        gp.getEntityM().getPlayer().setRow(row);                                                                        // Set the player entity's position in the world (y).
 
-        if (gp.getPlayer().isMoving()) {                                                                                // If the player entity is moving, adjust the ending position to be correct.
-            switch (gp.getPlayer().getDirectionCandidate()) {
+        if (gp.getEntityM().getPlayer().isMoving()) {                                                                   // If the player entity is moving, adjust the ending position to be correct.
+            switch (gp.getEntityM().getPlayer().getDirectionCandidate()) {
                 case UP:
-                    gp.getPlayer().setRowEnd(gp.getPlayer().getRowEnd() - 1);
+                    gp.getEntityM().getPlayer().setRowEnd(gp.getEntityM().getPlayer().getRowEnd() - 1);
                     break;
                 case DOWN:
-                    gp.getPlayer().setRowEnd(gp.getPlayer().getRowEnd() + 1);
+                    gp.getEntityM().getPlayer().setRowEnd(gp.getEntityM().getPlayer().getRowEnd() + 1);
                     break;
                 case LEFT:
-                    gp.getPlayer().setColEnd(gp.getPlayer().getColEnd() - 1);
+                    gp.getEntityM().getPlayer().setColEnd(gp.getEntityM().getPlayer().getColEnd() - 1);
                     break;
                 case RIGHT:
-                    gp.getPlayer().setColEnd(gp.getPlayer().getColEnd() + 1);
+                    gp.getEntityM().getPlayer().setColEnd(gp.getEntityM().getPlayer().getColEnd() + 1);
                     break;
             }
         }
-        warpFollowersToFollowed(gp.getPlayer(), gp.getParty());                                                                           // Check party members.
+        warpFollowersToFollowed(gp.getEntityM().getPlayer(), gp.getEntityM().getParty());                               // Check party members.
 
         if (newMap) {                                                                                                   // If a new map is loaded, warp all party members to the player and have them follow the player.
 
-            warpFollowersToFollowed(gp.getPlayer(), gp.getStandby());                                                                     // Check standby entities, since non-party followers were transferred here.
+            warpFollowersToFollowed(gp.getEntityM().getPlayer(), gp.getEntityM().getStandby());                         // Check standby entities, since non-party followers were transferred here.
         } else {
 
-            warpFollowersToFollowed(gp.getPlayer(), gp.getNpc());                                                                         // Check NPCs.
-            warpFollowersToFollowed(gp.getPlayer(), gp.getObj());                                                                         // Check objects (just in case).
+            warpFollowersToFollowed(gp.getEntityM().getPlayer(), gp.getEntityM().getNpc());                             // Check NPCs.
+            warpFollowersToFollowed(gp.getEntityM().getPlayer(), gp.getEntityM().getObj());                             // Check objects (just in case).
         }
 
         if (newMap) {
@@ -129,10 +129,12 @@ public class WarpSupport {
 
                 switch (nonPartyFollowers.get(entityId)) {
                     case 0:
-                        gp.transferEntity(gp.getStandby(), gp.getNpc(), entityId);
+                        gp.getEntityM().transferEntity(
+                                gp.getEntityM().getStandby(), gp.getEntityM().getNpc(), entityId);
                         break;
                     case 1:
-                        gp.transferEntity(gp.getStandby(), gp.getObj(), entityId);
+                        gp.getEntityM().transferEntity(
+                                gp.getEntityM().getStandby(), gp.getEntityM().getObj(), entityId);
                         break;
                 }
             }
@@ -146,7 +148,6 @@ public class WarpSupport {
      * The track specified by the map being warped to will not automatically play.
      * Any additional entities in the `npc` and `obj` (hash)maps will be purged if warping to a new map.
      * To retain these additional entities, they should first be transferred to the `standby` (hash)map.
-     * The game state is set to transition.
      *
      * @param dt time since last frame (seconds)
      * @param mapId ID of the map that the player entity will be warped to
@@ -161,7 +162,7 @@ public class WarpSupport {
     public void initiateWarp(double dt, int mapId, int mapState, int col, int row, WarpTransitionType type,
                              EntityDirection loadDirection, String trackName) {
 
-        gp.initiateTransition(TransitionType.WARP);
+        gp.getTransitionS().initiateTransition(TransitionType.WARP);
         activeWarpTransitionType = type;                                                                                // Set the warp current transition type being used.
         stagedMapId = mapId;                                                                                            // Store the requested map.
         stagedMapState = mapState;                                                                                      // Store the requested map state.
@@ -172,11 +173,11 @@ public class WarpSupport {
 
         switch (type) {
             case BASIC:
-                gp.getPlayer().cancelAction();                                                                          // Cancel the player action that triggered the transition (for example, walking into a trigger tile).
+                gp.getEntityM().getPlayer().cancelAction();                                                             // Cancel the player action that triggered the transition (for example, walking into a trigger tile).
                 break;
             case STEP_PORTAL:
-                gp.getPlayer().updateWarpTransitionStepPortal(dt);                                                      // Initiate the first phase of this transition type for the player entity.
-                gp.getPlayer().setDirectionCandidate(loadDirection);                                                    // Set the direction that the player entity will be facing when loaded into the new map.
+                gp.getEntityM().getPlayer().updateWarpTransitionStepPortal(dt);                                         // Initiate the first phase of this transition type for the player entity.
+                gp.getEntityM().getPlayer().setDirectionCandidate(loadDirection);                                       // Set the direction that the player entity will be facing when loaded into the new map.
                 break;
         }
     }
@@ -188,7 +189,6 @@ public class WarpSupport {
      * The track specified by the map being warped to will automatically play.
      * Any additional entities in the `npc` and `obj` (hash)maps will be purged if warping to a new map.
      * To retain these additional entities, they should first be transferred to the `standby` (hash)map.
-     * The game state is set to transition.
      *
      * @param dt time since last frame (seconds)
      * @param mapId ID of the map that the player entity will be warped to
@@ -201,7 +201,7 @@ public class WarpSupport {
     public void initiateWarp(double dt, int mapId, int mapState, int col, int row, WarpTransitionType type,
                              EntityDirection loadDirection) {
 
-        gp.initiateTransition(TransitionType.WARP);
+        gp.getTransitionS().initiateTransition(TransitionType.WARP);
         activeWarpTransitionType = type;                                                                                // Set the warp current transition type being used.
         stagedMapId = mapId;                                                                                            // Store the requested map.
         stagedMapState = mapState;                                                                                      // Store the requested map state.
@@ -210,11 +210,11 @@ public class WarpSupport {
 
         switch (type) {
             case BASIC:
-                gp.getPlayer().cancelAction();                                                                          // Cancel the player action that triggered the transition (for example, walking into a trigger tile).
+                gp.getEntityM().getPlayer().cancelAction();                                                             // Cancel the player action that triggered the transition (for example, walking into a trigger tile).
                 break;
             case STEP_PORTAL:
-                gp.getPlayer().updateWarpTransitionStepPortal(dt);                                                      // Initiate the first phase of this transition type for the player entity.
-                gp.getPlayer().setDirectionCandidate(loadDirection);                                                    // Set the direction that the player entity will be facing when loaded into the new map.
+                gp.getEntityM().getPlayer().updateWarpTransitionStepPortal(dt);                                         // Initiate the first phase of this transition type for the player entity.
+                gp.getEntityM().getPlayer().setDirectionCandidate(loadDirection);                                       // Set the direction that the player entity will be facing when loaded into the new map.
                 break;
         }
     }
@@ -232,7 +232,7 @@ public class WarpSupport {
                 // Nothing here.
                 break;
             case STEP_PORTAL:
-                gp.getPlayer().updateWarpTransitionStepPortal(dt);                                                      // Initiate the second phase of this transition type for the player entity.
+                gp.getEntityM().getPlayer().updateWarpTransitionStepPortal(dt);                                         // Initiate the second phase of this transition type for the player entity.
                 break;
         }
         initiateWarp(stagedMapId, stagedMapState, stagedCol, stagedRow);
@@ -253,12 +253,10 @@ public class WarpSupport {
     /**
      * Closes out a warp transition that has completed all of its phases (i.e., tidies up any variables).
      * This is to be run once a warp transition has fully completed.
-     * The game state is set to explore to return control to the player.
      */
     public void concludeWarpTransition() {
 
         reset();
-        gp.setGameState(GameState.EXPLORE);
     }
 
 

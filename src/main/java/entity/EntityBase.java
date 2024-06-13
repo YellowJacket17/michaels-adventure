@@ -377,12 +377,12 @@ public abstract class EntityBase extends Drawable {
     public void update(double dt) {
 
         // These are core actions that take precedent over all others.
-        if (gp.getCombatingEntities().contains(entityId)) {
+        if (gp.getEntityM().getCombatingEntities().contains(entityId)) {
             // TODO : Add combat-specific logic here.
             return;
         }
 
-        if (gp.getConversingEntities().contains(entityId)) {
+        if (gp.getEntityM().getConversingEntities().contains(entityId)) {
             return;
         }
 
@@ -396,7 +396,7 @@ public abstract class EntityBase extends Drawable {
         }
 
         // If entity is in player's party and not following/active, no update is necessary.
-        if (gp.getParty().get(entityId) != null) {return;}
+        if (gp.getEntityM().getParty().get(entityId) != null) {return;}
 
         // Set other actions.
         setAction(dt);
@@ -621,13 +621,13 @@ public abstract class EntityBase extends Drawable {
         gp.getCollisionI().checkLandmark(this);
 
         // Check object collision.
-        gp.getCollisionI().checkEntity(this, gp.getObj(), true);
+        gp.getCollisionI().checkEntity(this, gp.getEntityM().getObj(), true);
 
         // Check NPC collision.
-        gp.getCollisionI().checkEntity(this, gp.getNpc(), true);
+        gp.getCollisionI().checkEntity(this, gp.getEntityM().getNpc(), true);
 
         // Check party collision.
-        gp.getCollisionI().checkEntity(this, gp.getParty(), true);
+        gp.getCollisionI().checkEntity(this, gp.getEntityM().getParty(), true);
 
         // Check player collision.
         gp.getCollisionI().checkPlayer(this, true);
@@ -793,7 +793,7 @@ public abstract class EntityBase extends Drawable {
                         + "', column '"
                         + goalCol
                         + "', map ID '"
-                        + gp.getLoadedMap().getMapId()
+                        + gp.getMapM().getLoadedMap().getMapId()
                         + "'.");
             }
         }
@@ -808,7 +808,7 @@ public abstract class EntityBase extends Drawable {
      */
     protected void actionFollowEntity(double dt, int entityId) {
 
-        EntityBase target = gp.getEntityById(entityId);
+        EntityBase target = gp.getEntityM().getEntityById(entityId);
 
         if (target != null) {
 
@@ -1405,9 +1405,9 @@ public abstract class EntityBase extends Drawable {
 
     public void startFollowingEntity(int entityId) {
         if (this.entityId != entityId) {                                                                                // Ensure that we're not trying to make the entity follow itself.
-            EntityBase target = gp.getEntityById(entityId);
+            EntityBase target = gp.getEntityM().getEntityById(entityId);
             if (target != null) {
-                EntityBase followed = gp.getEntityById(gp.getEventM().checkEntityChainDown(target));                    // If a chain of followers is following the target entity, then this entity will be placed at the back of the chain (i.e., this entity will actually follow the entity at the end of the chain).
+                EntityBase followed = gp.getEntityM().getEntityById(gp.getEventM().checkEntityChainDown(target));       // If a chain of followers is following the target entity, then this entity will be placed at the back of the chain (i.e., this entity will actually follow the entity at the end of the chain).
                 onEntityId = followed.getEntityId();
                 followed.setColLast(this.getCol());                                                                     // The follower will always find a path to the followed's last position; setting it this way prevents the follower from instantly moving once following begins.
                 followed.setRowLast(this.getRow());                                                                     // ^^^

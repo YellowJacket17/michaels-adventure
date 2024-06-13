@@ -82,7 +82,7 @@ public class TileManager {
 
             int tileNum;
             try {
-                tileNum = gp.getLoadedMap().getMapTileNum()[worldCol][worldRow];                                        // Determine which tile type to render from the loaded map data, determined by which map is currently being displayed.
+                tileNum = gp.getMapM().getLoadedMap().getMapTileNum()[worldCol][worldRow];                              // Determine which tile type to render from the loaded map data, determined by which map is currently being displayed.
             } catch (NullPointerException e) {
                 tileNum = defaultTile;                                                                                  // If no map is loaded, just use the default tile.
             }

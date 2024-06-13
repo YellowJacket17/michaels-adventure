@@ -1,8 +1,0 @@
-04/30/2024 17:35:40:446  INFO     Application started.
-04/30/2024 17:35:45:029  ERROR    An unhandled exception has occurred!
-utility.exceptions.JsonParseException: Cannot invoke "org.json.simple.JSONObject.size()" because "tracksJson" is null
-	at utility.JsonParser.loadMapJson(JsonParser.java:62)
-	at core.GamePanel.loadMap(GamePanel.java:454)
-	at core.GamePanel.init(GamePanel.java:289)
-	at core.Window.initGame(Window.java:239)
-	at core.App.main(App.java:19)
