@@ -57,13 +57,13 @@ public class JsonParser {
 
 
     /**
-     * Loads and instantiates conversations with dialogue from JSON data for a specified map.
+     * Loads and instantiates conversations from JSON data for a specified map.
      *
      * @param gp GamePanel instance to load into
-     * @param mapId ID of map where dialogue is being loaded
-     * @throws JsonParseException if an error occurs while loading dialogue from JSON
+     * @param mapId ID of map where conversation with dialogue is being loaded
+     * @throws JsonParseException if an error occurs while loading conversation/dialogue from JSON
      */
-    public static void loadDialogueJson(GamePanel gp, int mapId) {
+    public static void loadConversationsJson(GamePanel gp, int mapId) {
 
         JSONParser parser = new JSONParser();
 
@@ -74,18 +74,63 @@ public class JsonParser {
             Object conversations = parser.parse(contents);
             JSONObject conversationsJson = (JSONObject)conversations;
 
+            boolean onMap;
+
             for (int i = 0; i < conversationsJson.size(); i++) {                                                        // Retrieve conversation (with "i" corresponding to conversation ID) from the loaded JSON data.
 
                 JSONObject conversationJson = (JSONObject)conversationsJson.get(Integer.toString(i));
 
-                int conversationMapId = (int)((long)conversationJson.get("map"));
+                // Check if the conversation is set to be loaded on the target map.
+                // Map ID is optional, hence the try-catch statement.
+                try {
 
-                if (conversationMapId == mapId) {
+                    onMap = true;                                                                                       // Reset to check the following conversation.
+                    int conversationMapId = (int)((long)conversationJson.get("map"));
 
-                    parseDialogue(gp, i, conversationJson);
-                }
+                    if (conversationMapId != mapId) {
+
+                        onMap = false;                                                                                  // Conversation is not on the target map, so don't load it.
+                    }
+
+                    if (onMap && !checkConversationLoaded(gp, i)) {
+
+                        parseConversation(gp, i, conversationJson);
+                    }
+
+                } catch (NullPointerException e) {}                                                                     // Do nothing (i.e., simply do not load the conversation).
             }
 
+        } catch (Exception e) {
+
+            throw new JsonParseException(e.getMessage());
+        }
+    }
+
+
+    /**
+     * Loads and instantiates a conversation from JSON data.
+     * If the conversation is already loaded, nothing will happen.
+     *
+     * @param gp GamePanel instance to load into
+     * @param convId ID of conversation with dialogue to load
+     * @throws JsonParseException if an error occurs while loading conversation from JSON
+     */
+    public static void loadConversationJson(GamePanel gp, int convId) {
+
+        JSONParser parser = new JSONParser();
+
+        try (InputStream is = JsonParser.class.getResourceAsStream("/json/dialogue.json")) {
+
+            String contents = readFromInputStream(is);
+
+            Object conversations = parser.parse(contents);
+            JSONObject conversationsJson = (JSONObject)conversations;
+
+            if (!checkConversationLoaded(gp, convId)) {
+
+                JSONObject conversationJson = (JSONObject)conversationsJson.get(Integer.toString(convId));
+                parseConversation(gp, convId, conversationJson);
+            }
         } catch (Exception e) {
 
             throw new JsonParseException(e.getMessage());
@@ -205,13 +250,13 @@ public class JsonParser {
 
 
     /**
-     * Parses dialogue from JSON data and adds it in memory.
+     * Parses a conversation from JSON data and adds it in memory.
      *
      * @param gp GamePanel instance to load into
      * @param convId ID of conversation with dialogue to parse
      * @param conversationJson JSON data representing conversation with dialogue to parse
      */
-    private static void parseDialogue(GamePanel gp, int convId, JSONObject conversationJson) {
+    private static void parseConversation(GamePanel gp, int convId, JSONObject conversationJson) {
 
         Conversation conversation = new Conversation(convId);
 
@@ -481,6 +526,27 @@ public class JsonParser {
                 gp.getEntityM().getObj().put(entity.getEntityId(), entity);
                 break;
         }
+    }
+
+
+    /**
+     * Checks to see if a conversation is already loaded.
+     *
+     * @param gp GamePanel instance to load into
+     * @param convId ID of conversation with dialogue to check
+     * @return whether the conversation is already loaded (true) or not (false)
+     */
+    private static boolean checkConversationLoaded(GamePanel gp, int convId) {
+
+        for (int loadedId : gp.getDialogueR().getConv().keySet()) {
+
+            if ((gp.getDialogueR().getConv().get(loadedId) != null)
+                    && (loadedId == convId)) {
+
+                return true;                                                                                            // Conversation is in the `conv` map, so avoid loading a duplicate.
+            }
+        }
+        return false;
     }
 
 

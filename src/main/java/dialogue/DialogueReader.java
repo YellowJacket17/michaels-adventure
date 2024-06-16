@@ -2,6 +2,7 @@ package dialogue;
 
 import core.GamePanel;
 import core.PrimaryGameState;
+import utility.JsonParser;
 import utility.exceptions.ConversationNotFoundException;
 
 import java.util.HashMap;
@@ -165,6 +166,18 @@ public class DialogueReader {
                 }
             }
         }
+    }
+
+
+    /**
+     * Loads any new conversation into memory, regardless of whether it's tied to the loaded map or not.
+     * If the conversation is already loaded, nothing will happen.
+     *
+     * @param convId ID of conversation with dialogue to load
+     */
+    public void loadConversation(int convId) {
+
+        JsonParser.loadConversationJson(gp, convId);
     }
 
 

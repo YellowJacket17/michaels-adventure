@@ -271,7 +271,7 @@ public class GamePanel {
             }
         }
 
-        for (EntityBase entity : entityM.getNpc().values()) {                                                           // Add all NPCs in the current map to the list of entities.
+        for (EntityBase entity : entityM.getNpc().values()) {                                                           // Add all loaded NPCs to the list of entities.
 
             if (entity != null) {
 
@@ -281,17 +281,8 @@ public class GamePanel {
 
         Set<Integer> keySet = entityM.getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
-        int numRenderedPartyMembers;
 
-        if (keySet.size() > entityM.getNumActivePartyMembers()) {
-
-            numRenderedPartyMembers = entityM.getNumActivePartyMembers();
-        } else {
-
-            numRenderedPartyMembers = keySet.size();
-        }
-
-        for (int i = (numRenderedPartyMembers - 1); i >= 0; i--) {                                                      // Add active party members in the current map to the list of entities; iterates backwards.
+        for (int i = (entityM.getParty().size() - 1); i >= 0; i--) {                                                    // Add all loaded party members (active and inactive) to the list of entities; iterates backwards.
 
             if (entityM.getParty().get(keyArray[i]) != null) {
 
@@ -299,7 +290,7 @@ public class GamePanel {
             }
         }
 
-        entityList.add(entityM.getPlayer());                                                                            // Add player to the list of all entities.
+        entityList.add(entityM.getPlayer());                                                                            // Add player entity to the list of all entities.
 
         ArrayList<LandmarkBase> landmarkList;
 

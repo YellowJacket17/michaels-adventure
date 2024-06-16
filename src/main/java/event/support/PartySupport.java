@@ -51,6 +51,7 @@ public class PartySupport {
 
                 gp.getEntityM().getParty().get(entityId).setHidden(true);                                               // New entity is in reserve party, so hide.
             }
+            entityIndex++;
         }
 
         for (int nonPartyId : nonPartyFollowers) {                                                                      // Set non-party followers to follow player entity again.

@@ -388,6 +388,7 @@ public class CombatManager {
 
         gp.getTransitionS().initiateTransition(TransitionType.EXIT_COMBAT);
         activeExitCombatTransitionType = type;                                                                          // Set the current exit combat transition type being used.
+        gp.getEventM().cleanupConversation(1);                                                                          // Cleans up from the last combat message displayed and removes dialogue window from screen.
     }
 
 
@@ -408,7 +409,6 @@ public class CombatManager {
     /**
      * Closes out an enter combat transition that has completed all of its phases (i.e., tidies up any variables).
      * This is to be run once an enter combat transition has fully completed.
-     * The primary game state is set to dialogue to introduce the combat.
      */
     public void concludeEnterCombatTransition() {
 
@@ -480,7 +480,6 @@ public class CombatManager {
     /**
      * Closes out an exit combat transition that has completed all of its phases (i.e., tidies up any variables).
      * This is to be run once an exit combat transition has fully completed.
-     * The primary game state is set depending on the type of exit combat transition that was used.
      */
     public void concludeExitCombatTransition() {
 
@@ -492,7 +491,6 @@ public class CombatManager {
         reset();
         resetAllCombatingEntityStats();
         gp.getEntityM().clearCombatingEntities();
-        gp.getDialogueR().reset();
         combatActive = false;
     }
 
@@ -1121,11 +1119,10 @@ public class CombatManager {
     /**
      * Closes out a basic exit combat transition that has completed all of its phases (i.e., tidies up any variables).
      * This is to be run once a basic exit combat transition has fully completed.
-     * The primary game state is set to explore to return control to the player.
      */
     private void concludeBasicExitCombatTransition() {
 
-        gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
+        // Nothing here.
     }
 
 

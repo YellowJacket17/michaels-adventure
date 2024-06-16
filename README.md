@@ -105,6 +105,10 @@ Conversation IDs MUST start at "0" in the JSON file, working down as 0, 1, 2, et
 Conversation IDs are loaded into the game as the order in which they appear in the JSON file.
 For example, even if the conversation ID at the top of the JSON file read "3", it would still be loaded into the game as conversation with ID "0".
 
+The "map" field indicates which map a conversation should automatically be loaded into.
+In other words, when said map is loaded, the conversation will also be loaded and placed appropriately.
+If a conversation is not tied to a particular map, simply omit this field and load it individually.
+
 If the "convName" field is omitted from a JSON element, it will automatically be set as an empty string.
 
 If the "playerInputToEnd" field is omitted from a JSON element, it will automatically be set as "true".

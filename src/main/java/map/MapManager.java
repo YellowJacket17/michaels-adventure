@@ -63,7 +63,7 @@ public class MapManager {
         gp.getDialogueR().getConv().clear();
 
         // Load dialogue associated with new map.
-        JsonParser.loadDialogueJson(gp, mapId);
+        JsonParser.loadConversationsJson(gp, mapId);
     }
 
 

@@ -400,6 +400,7 @@ public class CollisionInspector {
 
                             entity.setColliding(true);
                             collidingEntityId = candidate.getEntityId();
+                            break;
                         }
                     }
                 }
