@@ -4,7 +4,7 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import render.Renderer;
 import asset.Sprite;
-import render.ZIndex;
+import render.enumeration.ZIndex;
 import render.drawable.Drawable;
 import render.drawable.Transform;
 import asset.AssetPool;
@@ -75,45 +75,49 @@ public class TileManager {
      */
     public void addToRenderPipeline(Renderer renderer) {
 
-        int worldCol = 0;
-        int worldRow = 0;
+        if (gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
-        while ((worldCol < GamePanel.MAX_WORLD_COL) && (worldRow < GamePanel.MAX_WORLD_ROW)) {                          // Render each tile from left to right for each row, starting with the top row and working downwards.
+            int worldCol = 0;
+            int worldRow = 0;
 
-            int tileNum;
-            try {
-                tileNum = gp.getMapM().getLoadedMap().getMapTileNum()[worldCol][worldRow];                              // Determine which tile type to render from the loaded map data, determined by which map is currently being displayed.
-            } catch (NullPointerException e) {
-                tileNum = defaultTile;                                                                                  // If no map is loaded, just use the default tile.
-            }
+            while ((worldCol < GamePanel.MAX_WORLD_COL) && (worldRow < GamePanel.MAX_WORLD_ROW)) {                      // Render each tile from left to right for each row, starting with the top row and working downwards.
 
-            int spriteNum = 0;
-            if (tiles[tileNum].getSprites().size() != 1) {                                                              // If this statement is false, the tile only has one sprite attached to it, hence it cannot be animated.
-                switch (tiles[tileNum].getAnimationGroup()) {
-                    case 0:                                                                                             // Animation group 0: water1 animation.
-                        spriteNum = gp.getAnimationM().getSprite(0);
-                        break;
+                int tileNum;
+                try {
+                    tileNum = gp.getMapM().getLoadedMap().getMapTileNum()[worldCol][worldRow];                          // Determine which tile type to render from the loaded map data, determined by which map is currently being displayed.
+                } catch (NullPointerException e) {
+                    tileNum = defaultTile;                                                                              // If no map is loaded, just use the default tile.
                 }
-            }
 
-            if ((tiles[tileNum].getSprites().get(spriteNum) != null) && (spriteNum < tiles[tileNum].getSprites().size())) {
+                int spriteNum = 0;
+                if (tiles[tileNum].getSprites().size() != 1) {                                                          // If this statement is false, the tile only has one sprite attached to it, hence it cannot be animated.
+                    switch (tiles[tileNum].getAnimationGroup()) {
+                        case 0:                                                                                         // Animation group 0: water1 animation.
+                            spriteNum = gp.getAnimationM().getSprite(0);
+                            break;
+                    }
+                }
 
-                Sprite sprite = tiles[tileNum].getSprites().get(spriteNum);
-                drawables[worldCol][worldRow].setSprite(sprite);
-                renderer.addDrawable(drawables[worldRow][worldCol], ZIndex.THIRD_LAYER);
+                if ((tiles[tileNum].getSprites().get(spriteNum) != null)
+                        && (spriteNum < tiles[tileNum].getSprites().size())) {
 
-            } else if (!renderErrors.contains(tileNum)) {
+                    Sprite sprite = tiles[tileNum].getSprites().get(spriteNum);
+                    drawables[worldCol][worldRow].setSprite(sprite);
+                    renderer.addDrawable(drawables[worldRow][worldCol], ZIndex.THIRD_LAYER);
+
+                } else if (!renderErrors.contains(tileNum)) {
                     UtilityTool.logError("Failed to add tile at index '"
                             + tileNum
                             + "' to the render pipeline: the map may contain a tile that does not exist or a tile may"
                             + " have been assigned to the incorrect animation group.");
                     renderErrors.add(tileNum);
-            }
+                }
 
-            worldCol++;                                                                                                 // Iterate so that we can render the next tile.
-            if (worldCol == GamePanel.MAX_WORLD_COL) {
-                worldCol = 0;
-                worldRow++;
+                worldCol++;                                                                                             // Iterate so that we can render the next tile.
+                if (worldCol == GamePanel.MAX_WORLD_COL) {
+                    worldCol = 0;
+                    worldRow++;
+                }
             }
         }
     }

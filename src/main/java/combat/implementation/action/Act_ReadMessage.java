@@ -2,7 +2,6 @@ package combat.implementation.action;
 
 import combat.ActionBase;
 import core.GamePanel;
-import core.PrimaryGameState;
 
 /**
  * This class defines a combat action (read a message).

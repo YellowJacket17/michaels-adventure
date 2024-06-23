@@ -1,10 +1,11 @@
 package event;
 
+import event.enumeration.EventType;
 import miscellaneous.CollisionInspector;
-import core.PrimaryGameState;
+import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
 import core.GamePanel;
-import entity.EntityDirection;
+import entity.enumeration.EntityDirection;
 import event.implementation.conversation.Evt_Conv001;
 import event.implementation.conversation.Evt_Conv002;
 import event.implementation.conversation.Evt_Conv004;
@@ -332,7 +333,8 @@ public class EventManager {
         switch (mode) {
             case 1:
                 gp.getEntityM().clearConversingEntities();                                                              // All conversations between entities have ended.
-                gp.getEntityM().getPlayer().setInteractionCountdown(0.16);                                              // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity, for example (prevents player from getting stuck in interaction loop).
+                gp.getEntityM().getPlayer().setInteractionCountdown(
+                        gp.getEntityM().getPlayer().getStagedMenuInteractionCountdown());                               // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity, for example (prevents player from getting stuck in interaction loop).
                 gp.setPrimaryGameState(PrimaryGameState.EXPLORE);                                                       // Return control back to the player.
                 break;
             case 2:
@@ -368,7 +370,8 @@ public class EventManager {
                 if (gp.getDialogueR().getActiveConv() != null) {
                     gp.getDialogueR().reset();                                                                          // Reset the DialogueReader's fields back to their default values.
                 }
-                gp.getEntityM().getPlayer().setInteractionCountdown(0.16);                                              // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity (prevents player from getting stuck in interaction loop).
+                gp.getEntityM().getPlayer().setInteractionCountdown(
+                        gp.getEntityM().getPlayer().getStagedMenuInteractionCountdown());                               // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity (prevents player from getting stuck in interaction loop).
                 gp.setPrimaryGameState(PrimaryGameState.EXPLORE);                                                       // No further logic will run.
                 break;
             case 2:
@@ -600,18 +603,18 @@ public class EventManager {
     /**
      * Adds a given amount of an item to the player's inventory.
      *
-     * @param item item to be incremented in the player's inventory
+     * @param itemId ID of item to be incremented in the player's inventory
      * @param amount amount to increment the item by
      * @return whether the full amount of the item was added to the player's inventory (true) or not (false)
      */
-    public boolean incrementItem(ItemBase item, int amount) {
+    public boolean incrementItem(int itemId, int amount) {
 
         boolean allAdded = true;
         boolean singleAdded;
 
         for (int i = 0; i < amount; i++) {
 
-            singleAdded = gp.getEntityM().getPlayer().addItemToInventory(item);
+            singleAdded = gp.getEntityM().getPlayer().addItemToInventory(itemId);
 
             if (!singleAdded) {
 
@@ -626,18 +629,18 @@ public class EventManager {
     /**
      * Removes a given amount of an item from the player's inventory.
      *
-     * @param item item to be decremented in the player's inventory
+     * @param itemId ID of item to be decremented in the player's inventory
      * @param amount amount to decrement the item by
      * @return whether the full amount of the item was removed from the player's inventory (true) or not (false)
      */
-    public boolean decrementItem(ItemBase item, int amount) {
+    public boolean decrementItem(int itemId, int amount) {
 
         boolean allRemoved = true;
         boolean singleRemoved;
 
         for (int i = 0; i < amount; i++) {
 
-            singleRemoved = gp.getEntityM().getPlayer().removeItemFromInventory(item);
+            singleRemoved = gp.getEntityM().getPlayer().removeItemFromInventory(itemId);
 
             if (!singleRemoved) {
 
@@ -653,13 +656,13 @@ public class EventManager {
      * Initiates the player to pick up an item and add it to the player's inventory.
      * The primary game state is set to dialogue.
      *
-     * @param item item to be added to the player's inventory
+     * @param itemId ID of item to be added to the player's inventory
      * @return whether the item was added to the player's inventory (true) or not (false)
      */
-    public boolean pickupItem(ItemBase item) {
+    public boolean pickupItem(int itemId) {
 
         String text = "";
-        boolean added = gp.getEntityM().getPlayer().addItemToInventory(item);
+        boolean added = gp.getEntityM().getPlayer().addItemToInventory(itemId);
 
         if (added) {
 
@@ -668,10 +671,10 @@ public class EventManager {
             if ((gp.getEntityM().getPlayer().getName() != null)
                     && (!gp.getEntityM().getPlayer().getName().equals(""))) {
 
-                text = gp.getEntityM().getPlayer().getName() + " got a " + item.getName() + "!";
+                text = gp.getEntityM().getPlayer().getName() + " got a " + gp.getItemM().checkName(itemId) + "!";
             } else {
 
-                text = "Player got a " + item.getName() + "!";
+                text = "Player got a " + gp.getItemM().checkName(itemId) + "!";
             }
         } else {
 

@@ -2,7 +2,7 @@ package event.support;
 
 import core.GamePanel;
 import entity.EntityBase;
-import entity.EntityDirection;
+import entity.enumeration.EntityDirection;
 import org.joml.Vector2i;
 import utility.LimitedArrayList;
 

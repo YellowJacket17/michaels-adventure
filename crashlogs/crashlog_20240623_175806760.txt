@@ -1,0 +1,10 @@
+06/23/2024 17:57:59:756  INFO     Application started.
+06/23/2024 17:58:06:749  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "entity.implementation.player.Player.addItemToInventory(int)" because the return value of "entity.EntityManager.getPlayer()" is null
+	at event.EventManager.incrementItem(EventManager.java:617)
+	at entity.implementation.player.Player.setDefaultValues(Player.java:501)
+	at entity.implementation.player.Player.<init>(Player.java:106)
+	at entity.EntityManager.initPlayer(EntityManager.java:138)
+	at core.GamePanel.init(GamePanel.java:195)
+	at core.Window.initGame(Window.java:239)
+	at core.App.main(App.java:19)

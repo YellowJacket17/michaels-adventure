@@ -1,12 +1,9 @@
 package combat.implementation.action;
 
 import combat.ActionBase;
-import combat.ExitCombatTransitionType;
 import combat.MoveBase;
-import combat.MoveCategory;
+import combat.enumeration.MoveCategory;
 import core.GamePanel;
-import entity.EntityBase;
-import entity.EntityStatus;
 import utility.LimitedArrayList;
 
 import java.util.List;

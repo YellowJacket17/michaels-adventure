@@ -1,13 +1,18 @@
 package cutscene;
 
 import core.GamePanel;
-import cutscene.implementation.Cts_Test1;
+import cutscene.implementation.Cts_000;
+import cutscene.implementation.Cts_001;
 import utility.UtilityTool;
 
 /**
  * This class handles operations related to in-game cutscenes.
  */
 public class CutsceneManager {
+
+    /*
+     * Cutscene subclasses must be added to logic in this management class to be runnable
+     */
 
     // BASIC FIELDS
     private final GamePanel gp;
@@ -22,11 +27,12 @@ public class CutsceneManager {
      * A value of zero means that no cutscene is active.
      * Scene numbers are assigned to cutscenes in the switch statement in the `draw()` method of this class.
      */
-    private int activeSceneNum;
+    private int activeCutsceneNum;
 
 
-    // SCENE FIELDS
-    private final Cts_Test1 cts_test1;
+    // CUTSCENE FIELDS
+    private final Cts_001 cts_001;
+    private final Cts_000 cts_000;
 
 
     // CONSTRUCTOR
@@ -38,7 +44,8 @@ public class CutsceneManager {
     public CutsceneManager(GamePanel gp) {
         this.gp = gp;
 
-        cts_test1 = new Cts_Test1(gp);
+        cts_000 = new Cts_000(gp);
+        cts_001 = new Cts_001(gp);
     }
 
 
@@ -53,10 +60,15 @@ public class CutsceneManager {
 
         if (cutsceneActive) {
 
-            switch(activeSceneNum) {
+            switch(activeCutsceneNum) {
+                case 0:
+                    if (cts_000.isTriggerable()) {
+                        cts_000.run(dt);
+                    }
+                    break;
                 case 1:
-                    if (cts_test1.isTriggerable()) {
-                        cts_test1.run(dt);
+                    if (cts_001.isTriggerable()) {
+                        cts_001.run(dt);
                     }
                     break;
                 default:
@@ -71,12 +83,12 @@ public class CutsceneManager {
      * Triggers the specified cutscene to run, either from the beginning or from the phase it was last paused at.
      * Note that control is not automatically unlocked/revoked from the player and must be done so manually if needed.
      *
-     * @param sceneNum number of the cutscene to be triggered
+     * @param cutsceneNum number of the cutscene to be triggered
      */
-    public void initiateCutscene(int sceneNum) {
+    public void initiateCutscene(int cutsceneNum) {
 
         cutsceneActive = true;
-        activeSceneNum = sceneNum;
+        activeCutsceneNum = cutsceneNum;
         gp.setLockPlayerControl(true);
     }
 
@@ -90,7 +102,7 @@ public class CutsceneManager {
     public void exitCutscene() {
 
         cutsceneActive = false;
-        activeSceneNum = 0;
+        activeCutsceneNum = 0;
         gp.setLockPlayerControl(false);
     }
 
@@ -100,7 +112,7 @@ public class CutsceneManager {
         return cutsceneActive;
     }
 
-    public int getActiveSceneNum() {
-        return activeSceneNum;
+    public int getActiveCutsceneNum() {
+        return activeCutsceneNum;
     }
 }

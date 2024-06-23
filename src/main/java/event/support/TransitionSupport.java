@@ -1,6 +1,8 @@
 package event.support;
 
 import core.GamePanel;
+import event.enumeration.FadeState;
+import event.enumeration.TransitionType;
 import org.joml.Vector3f;
 
 /**

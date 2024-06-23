@@ -3,7 +3,9 @@ package event.support;
 import asset.Sound;
 import core.GamePanel;
 import entity.EntityBase;
-import entity.EntityDirection;
+import entity.enumeration.EntityDirection;
+import event.enumeration.TransitionType;
+import event.enumeration.WarpTransitionType;
 import utility.LimitedLinkedHashMap;
 
 import java.util.HashMap;

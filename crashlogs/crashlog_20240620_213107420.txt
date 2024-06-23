@@ -1,0 +1,18 @@
+06/20/2024 21:30:54:721  INFO     Application started.
+06/20/2024 21:31:02:102  INFO     Starting game loop.
+06/20/2024 21:31:02:104  WARNING  Unrecognized key with code '-1' was detected.
+06/20/2024 21:31:07:417  ERROR    An unhandled exception has occurred!
+java.util.ConcurrentModificationException
+	at java.base/java.util.HashMap$HashIterator.nextNode(HashMap.java:1597)
+	at java.base/java.util.HashMap$KeyIterator.next(HashMap.java:1620)
+	at asset.AssetPool.purgeSpritesheets(AssetPool.java:151)
+	at event.implementation.map.Evt_Map001.tileInteraction(Evt_Map001.java:119)
+	at event.EventManager.handleTileInteraction(EventManager.java:211)
+	at entity.implementation.player.Player.checkStepInteraction(Player.java:920)
+	at entity.implementation.player.Player.updateExploreInput(Player.java:552)
+	at entity.implementation.player.Player.updateInput(Player.java:157)
+	at entity.EntityManager.updateInput(EntityManager.java:127)
+	at core.GamePanel.update(GamePanel.java:218)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:303)
+	at core.App.main(App.java:21)

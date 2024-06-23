@@ -6,7 +6,7 @@ import org.joml.Vector4f;
 import asset.Shader;
 import asset.Sprite;
 import asset.Texture;
-import render.ZIndex;
+import render.enumeration.ZIndex;
 import asset.AssetPool;
 import utility.LimitedArrayList;
 

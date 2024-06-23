@@ -5,7 +5,7 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import asset.Shader;
 import asset.Sprite;
-import render.ZIndex;
+import render.enumeration.ZIndex;
 import asset.AssetPool;
 
 import java.util.Arrays;

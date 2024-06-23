@@ -3,7 +3,7 @@ package submenu;
 import core.GamePanel;
 import org.joml.Vector2f;
 import render.Renderer;
-import render.ZIndex;
+import render.enumeration.ZIndex;
 import render.drawable.Drawable;
 import asset.AssetPool;
 import utility.UtilityTool;

@@ -1,7 +1,6 @@
 package event.support;
 
 import core.GamePanel;
-import core.PrimaryGameState;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;

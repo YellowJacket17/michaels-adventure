@@ -1,10 +1,10 @@
 package asset;
 
+import asset.enumeration.SoundType;
 import utility.exceptions.AssetLoadException;
 
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.Objects;
 
 import static org.lwjgl.openal.AL10.*;
 import static org.lwjgl.stb.STBVorbis.stb_vorbis_decode_filename;
@@ -163,6 +163,7 @@ public class Sound {
 
     /**
      * Frees this memory if this sound is finished being used.
+     * Note that this does not destruct this sound instance, which must be managed by JVM garbage collection.
      */
     public void delete() {
 
@@ -303,6 +304,7 @@ public class Sound {
 
         return alGetSourcef(sourceId, AL_GAIN);
     }
+
 
     @Override
     public boolean equals(Object o) {

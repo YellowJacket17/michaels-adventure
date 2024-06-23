@@ -45,9 +45,12 @@ public class EnvironmentManager {
      */
     public void addToRenderPipeline(Renderer renderer) {
 
-        if (lightManager != null) {
+        if (gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
-            lightManager.addToRenderPipeline(renderer);
+            if (lightManager != null) {
+
+                lightManager.addToRenderPipeline(renderer);
+            }
         }
     }
 

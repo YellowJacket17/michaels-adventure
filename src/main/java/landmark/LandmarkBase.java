@@ -3,7 +3,7 @@ package landmark;
 import core.GamePanel;
 import render.Renderer;
 import asset.Sprite;
-import render.ZIndex;
+import render.enumeration.ZIndex;
 import render.drawable.Drawable;
 import utility.UtilityTool;
 
@@ -126,30 +126,34 @@ public abstract class LandmarkBase extends Drawable {
 
         // TODO : Add logic to retrieve other images in a landmark for animation.
 
-        int spriteNum = 0;                                                                                              // Select which image from the landmark will be drawn.
+        if (gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
-        if ((sprites.get(spriteNum) != null) && (spriteNum < sprites.size())) {
+            int spriteNum = 0;                                                                                          // Select which image from the landmark will be drawn.
 
-            sprite = sprites.get(spriteNum);
-            int worldYAdjustment = 0;                                                                                   // `worldY` adjustment so that the sprite is rendered correctly.
+            if ((sprites.get(spriteNum) != null) && (spriteNum < sprites.size())) {
 
-            if (sprite.getNativeHeight() > GamePanel.NATIVE_TILE_SIZE) {
+                sprite = sprites.get(spriteNum);
+                int worldYAdjustment = 0;                                                                               // `worldY` adjustment so that the sprite is rendered correctly.
 
-                worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE;
+                if (sprite.getNativeHeight() > GamePanel.NATIVE_TILE_SIZE) {
+
+                    worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE;
+                }
+                transform.position.x = worldX;
+                transform.position.y = worldY + worldYAdjustment;
+                transform.scale.x = sprite.getNativeWidth();
+                transform.scale.y = sprite.getNativeHeight();
+                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+            } else if (!renderError) {
+
+                UtilityTool.logError("Failed to add landmark "
+                        + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
+                        + "with ID "
+                        + landmarkId
+                        + " to the render pipeline: sprites may not have been properly loaded upon landmark "
+                        + "initialization.");
+                renderError = true;
             }
-            transform.position.x = worldX;
-            transform.position.y = worldY + worldYAdjustment;
-            transform.scale.x = sprite.getNativeWidth();
-            transform.scale.y = sprite.getNativeHeight();
-            renderer.addDrawable(this, ZIndex.THIRD_LAYER);
-        } else if (!renderError) {
-
-            UtilityTool.logError("Failed to add landmark "
-                    + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
-                    + "with ID "
-                    + landmarkId
-                    + " to the render pipeline: sprites may not have been properly loaded upon landmark initialization.");
-            renderError = true;
         }
     }
 

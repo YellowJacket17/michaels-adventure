@@ -2,9 +2,13 @@ package entity;
 
 import combat.MoveBase;
 import core.GamePanel;
+import entity.enumeration.DefaultIdle;
+import entity.enumeration.EntityDirection;
+import entity.enumeration.EntityStatus;
+import entity.enumeration.EntityType;
 import render.Renderer;
 import asset.Sprite;
-import render.ZIndex;
+import render.enumeration.ZIndex;
 import render.drawable.Drawable;
 import utility.LimitedArrayList;
 import utility.UtilityTool;
@@ -410,7 +414,7 @@ public abstract class EntityBase extends Drawable {
      */
     public void addToRenderPipeline(Renderer renderer) {
 
-        if (!hidden) {
+        if (!hidden && gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
             sprite = retrieveSprite();                                                                                  // Retrieve the sprite to be rendered.
 

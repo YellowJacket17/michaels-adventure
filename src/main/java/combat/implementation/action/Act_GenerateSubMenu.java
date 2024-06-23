@@ -2,9 +2,8 @@ package combat.implementation.action;
 
 import combat.ActionBase;
 import combat.SubMenuMemory;
-import combat.SubMenuType;
+import combat.enumeration.SubMenuType;
 import core.GamePanel;
-import core.PrimaryGameState;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;

@@ -1,5 +1,7 @@
 package combat;
 
+import combat.enumeration.SubMenuType;
+
 import java.util.List;
 
 /**

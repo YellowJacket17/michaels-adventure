@@ -2,10 +2,10 @@ package event.implementation.map;
 
 import core.GamePanel;
 import entity.EntityBase;
-import entity.EntityDirection;
+import entity.enumeration.EntityDirection;
 import event.EventMapBase;
-import event.EventType;
-import event.support.WarpTransitionType;
+import event.enumeration.EventType;
+import event.enumeration.WarpTransitionType;
 
 /**
  * This class implements event logic for map with ID 0.

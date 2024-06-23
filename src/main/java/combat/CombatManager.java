@@ -1,14 +1,17 @@
 package combat;
 
 import asset.Sound;
+import combat.enumeration.EnterCombatTransitionType;
+import combat.enumeration.ExitCombatTransitionType;
+import combat.enumeration.MoveTargets;
+import combat.enumeration.SubMenuType;
 import combat.implementation.action.*;
 import combat.implementation.move.Mve_BasicAttack;
 import core.GamePanel;
-import entity.EntityStatus;
-import core.PrimaryGameState;
-import event.support.TransitionType;
+import entity.enumeration.EntityStatus;
+import event.enumeration.TransitionType;
 import entity.EntityBase;
-import entity.EntityDirection;
+import entity.enumeration.EntityDirection;
 import org.joml.Vector3f;
 import utility.LimitedArrayList;
 

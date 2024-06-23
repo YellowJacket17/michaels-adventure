@@ -1,6 +1,6 @@
 package event.implementation.conversation;
 
-import combat.EnterCombatTransitionType;
+import combat.enumeration.EnterCombatTransitionType;
 import core.GamePanel;
 import event.EventConvBase;
 

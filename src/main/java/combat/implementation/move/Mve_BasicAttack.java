@@ -1,8 +1,8 @@
 package combat.implementation.move;
 
 import combat.MoveBase;
-import combat.MoveCategory;
-import combat.MoveTargets;
+import combat.enumeration.MoveCategory;
+import combat.enumeration.MoveTargets;
 import core.GamePanel;
 
 import java.util.List;

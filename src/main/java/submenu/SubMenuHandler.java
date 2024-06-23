@@ -1,7 +1,7 @@
 package submenu;
 
 import core.GamePanel;
-import core.PrimaryGameState;
+import core.enumeration.PrimaryGameState;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;

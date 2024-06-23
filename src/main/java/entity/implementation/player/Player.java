@@ -2,13 +2,13 @@ package entity.implementation.player;
 
 import combat.implementation.move.Mve_Punch;
 import combat.implementation.move.Mve_Tackle;
-import core.PrimaryGameState;
+import core.enumeration.PrimaryGameState;
 import miscellaneous.KeyListener;
 import entity.EntityBase;
-import entity.EntityDirection;
-import entity.EntityType;
+import entity.enumeration.EntityDirection;
+import entity.enumeration.EntityType;
 import core.GamePanel;
-import event.EventType;
+import event.enumeration.EventType;
 import item.implementation.Itm_Controller;
 import item.implementation.Itm_Key;
 import item.ItemBase;
@@ -246,19 +246,20 @@ public class Player extends EntityBase {
 
     /**
      * Checks if there is space in the player's inventory to add a unit of an item if possible.
-     * If the item is stackable, check if we can stack either add to an existing stack or create a new stack.
-     * If the item is not stackable, check if there's space in the inventory to add a new item.
+     * If the item is stackable, a check is done to see if it can either be added to an existing stack or used to create
+     * a new stack if there's space in the inventory.
+     * If the item is not stackable, a check will be done to see if there's space in the inventory to add a new item.
      *
-     * @param item item to be added
+     * @param itemId ID of item to be added
      * @return whether a unit of the item was successfully added to the player's inventory (true) or not (false)
      */
-    public boolean addItemToInventory(ItemBase item) {
+    public boolean addItemToInventory(int itemId) {
 
         boolean obtainable = false;
 
-        if (item.isStackable()) {                                                                                       // Logic for if the item is stackable.
+        if (gp.getItemM().checkStackable(itemId)) {                                                                                       // Logic for if the item is stackable.
 
-            int index = searchPartiallyFilledItemStack(item.getItemId());                                               // If the item is already in the player's inventory, retrieve the index that the item occupies in the `inventory` array; this is NOT the item ID.
+            int index = searchPartiallyFilledItemStack(itemId);                                                         // If the item is already in the player's inventory, retrieve the index that the item occupies in the `inventory` array; this is NOT the item ID.
 
             if (index != -1) {                                                                                          // Item already exists in the inventory, so try to stack it.
 
@@ -273,7 +274,7 @@ public class Player extends EntityBase {
 
                 if (inventory.size() != inventory.maxCapacity()) {                                                      // If the player's inventory is already full, don't add the item.
 
-                    inventory.add(item);
+                    inventory.add(gp.getItemM().retrieveNewInstance(itemId));
                     obtainable = true;
                 }
             }
@@ -281,7 +282,7 @@ public class Player extends EntityBase {
 
             if (inventory.size() != inventory.maxCapacity()) {                                                          // If the player's inventory is already full, don't add the item.
 
-                inventory.add(item);
+                inventory.add(gp.getItemM().retrieveNewInstance(itemId));
                 obtainable = true;
             }
         }
@@ -292,14 +293,14 @@ public class Player extends EntityBase {
     /**
      * Checks if there is an instance of an item to remove a unit from in the player's inventory.
      *
-     * @param item item to be removed
+     * @param itemId ID of item to be removed
      * @return whether a unit of the item was successfully removed to the player's inventory (true) or not (false)
      */
-    public boolean removeItemFromInventory(ItemBase item) {
+    public boolean removeItemFromInventory(int itemId) {
 
         boolean removable = false;
 
-        int index = searchLastInstanceOfItem(item.getItemId());
+        int index = searchLastInstanceOfItem(itemId);
 
         if (index != -1) {
 
@@ -314,6 +315,28 @@ public class Player extends EntityBase {
             removable = true;
         }
         return removable;
+    }
+
+
+    /**
+     * Searches the player's inventory to see if a particular item is present.
+     *
+     * @param itemId ID of the target item
+     * @return whether the item is present (true) or not (false)
+     */
+    public boolean searchItemInventory(int itemId) {
+
+        boolean present = false;
+
+        for (ItemBase item : inventory) {
+
+            if (item.getItemId() == itemId) {
+
+                present = true;
+                break;
+            }
+        }
+        return present;
     }
 
 
@@ -475,19 +498,12 @@ public class Player extends EntityBase {
         moves.add(new Mve_Punch(gp));
 
         // Items.
-        ItemBase item;
-
-        for (int i = 0; i < 600; i++) {
-
-            item = new Itm_Key(gp);
-            addItemToInventory(item);
-        }
-
-        for (int i = 0; i < 1; i++) {
-
-            item = new Itm_Controller(gp);
-            addItemToInventory(item);
-        }
+//        for (int i = 0; i < 600; i++) {
+//            addItemToInventory(0);
+//        }
+//        for (int i = 0; i < 1; i++) {
+//            addItemToInventory(1);
+//        }
     }
 
 
@@ -929,7 +945,15 @@ public class Player extends EntityBase {
     }
 
 
-    // GETTER
+    // GETTERS
+    public double getStagedMoveCountdown() {
+        return stagedMoveCountdown;
+    }
+
+    public double getStagedMenuInteractionCountdown() {
+        return stagedMenuInteractionCountdown;
+    }
+
     public ArrayList<ItemBase> getInventory() {
         return inventory;
     }

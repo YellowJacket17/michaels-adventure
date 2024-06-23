@@ -1,7 +1,7 @@
 package combat.implementation.action;
 
 import combat.ActionBase;
-import combat.ExitCombatTransitionType;
+import combat.enumeration.ExitCombatTransitionType;
 import core.GamePanel;
 
 /**

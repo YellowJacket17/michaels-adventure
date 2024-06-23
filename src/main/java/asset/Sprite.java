@@ -54,14 +54,14 @@ public class Sprite {
      *
      * @param texture parent texture of sprite
      * @param textureCoords coordinates of sprite on parent texture
-     * @param spriteWidth native sprite width
-     * @param spriteHeight native sprite height
+     * @param nativeSpriteWidth native sprite width
+     * @param nativeSpriteHeight native sprite height
      */
-    public Sprite(Texture texture, Vector2f[] textureCoords, int spriteWidth, int spriteHeight) {
+    public Sprite(Texture texture, Vector2f[] textureCoords, int nativeSpriteWidth, int nativeSpriteHeight) {
         this.texture = texture;
         this.textureCoords = textureCoords;
-        this.nativeWidth = spriteWidth;
-        this.nativeHeight = spriteHeight;
+        this.nativeWidth = nativeSpriteWidth;
+        this.nativeHeight = nativeSpriteHeight;
     }
 
 

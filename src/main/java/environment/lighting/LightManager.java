@@ -4,7 +4,7 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import render.Renderer;
-import render.ZIndex;
+import render.enumeration.ZIndex;
 import render.drawable.Transform;
 
 import java.util.ArrayList;

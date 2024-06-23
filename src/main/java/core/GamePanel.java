@@ -3,13 +3,16 @@ package core;
 import ai.PathFinder;
 import animation.AnimationManager;
 import asset.AssetPool;
+import asset.Illustration;
 import combat.CombatManager;
 import combat.TargetArrow;
+import core.enumeration.PrimaryGameState;
 import cutscene.CutsceneManager;
 import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
 import entity.EntityManager;
 import event.support.*;
+import item.ItemManager;
 import map.MapManager;
 import miscellaneous.*;
 import org.joml.Vector3f;
@@ -76,6 +79,7 @@ public class GamePanel {
     private GuiIconManager guiIconM;
     private final EntityIconManager entityIconM = new EntityIconManager(this);
     private final EntityManager entityM = new EntityManager(this);
+    private ItemManager itemM;
     private final MapManager mapM = new MapManager(this);
     private final EnvironmentManager environmentM = new EnvironmentManager(this);
     private final CutsceneManager cutsceneM = new CutsceneManager(this);
@@ -89,6 +93,7 @@ public class GamePanel {
     private final SoundSupport soundS = new SoundSupport(this);
     private final FadeSupport fadeS = new FadeSupport(this);
     private final TransitionSupport transitionS = new TransitionSupport(this);
+    private final IllustrationSupport illustrationS = new IllustrationSupport(this);
     private final PathFinder pathF = new PathFinder(this);
     private final UserInterface ui = new UserInterface(this);
 
@@ -106,6 +111,12 @@ public class GamePanel {
      * Also note that some primary game states automatically lock/revoke player control.
      */
     private boolean lockPlayerControl = false;
+
+    /**
+     * Boolean indicating whether the overworld (tiles, entities, landmarks, and environmental effects) are rendered
+     * (true) or not (false).
+     */
+    private boolean renderWorld = true;
 
     /**
      * Boolean to set whether debug mode is active (true) or not (false).
@@ -158,13 +169,11 @@ public class GamePanel {
         // Load resources.
         loadResources();
 
-        // Initialize player.
-        entityM.initPlayer();
-
-        // Initialize remaining system classes.
+        // Initialize remaining system classes requiring fully initialized GamePanel instance.
         camera = new Camera(NATIVE_SCREEN_WIDTH, NATIVE_SCREEN_HEIGHT);
         tileM = new TileManager(this);
         guiIconM = new GuiIconManager(this);
+        itemM = new ItemManager(this);
         dialogueA = new DialogueArrow(this);
         selectionA = new SelectionArrow(this);
         targetA = new TargetArrow(this);
@@ -187,6 +196,9 @@ public class GamePanel {
         fullScreenSetting.addOption("Disabled");
         fullScreenSetting.addOption("Enabled");
         systemSettings.add(fullScreenSetting);
+
+        // Initialize player.
+        entityM.initPlayer();
 
         // Load map along with associated entities and dialogue.
         mapM.loadMap(1, 0, true);
@@ -264,28 +276,21 @@ public class GamePanel {
 
         // Entity and landmark.
         for (EntityBase entity : entityM.getObj().values()) {                                                           // Add all objects in the current map to the list of entities.
-
             if (entity != null) {
-
                 entityList.add(entity);
             }
         }
 
         for (EntityBase entity : entityM.getNpc().values()) {                                                           // Add all loaded NPCs to the list of entities.
-
             if (entity != null) {
-
                 entityList.add(entity);
             }
         }
 
         Set<Integer> keySet = entityM.getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
-
         for (int i = (entityM.getParty().size() - 1); i >= 0; i--) {                                                    // Add all loaded party members (active and inactive) to the list of entities; iterates backwards.
-
             if (entityM.getParty().get(keyArray[i]) != null) {
-
                 entityList.add(entityM.getParty().get(keyArray[i]));
             }
         }
@@ -293,31 +298,21 @@ public class GamePanel {
         entityList.add(entityM.getPlayer());                                                                            // Add player entity to the list of all entities.
 
         ArrayList<LandmarkBase> landmarkList;
-
         if (mapM.getLoadedMap() != null) {
-
             landmarkList = mapM.getLoadedMap().getMapLandmarks();                                                       // Get the list of landmarks on the loaded map.
         } else {
-
             landmarkList = new ArrayList<>();                                                                           // Fail-safe to have empty landmark array if no map is loaded.
         }
-
         for (int row = 0; row < MAX_WORLD_ROW; row++) {                                                                 // Render the entities and landmarks row-by-row, starting at the top.
-
             for (LandmarkBase landmark : landmarkList) {                                                                // Render all landmarks in the current row.
-
                 if ((landmark.getRow() >= row)
                         && (landmark.getRow() < (row + 1))) {
-
                     landmark.addToRenderPipeline(renderer);
                 }
             }
-
             for (EntityBase entity : entityList) {                                                                      // Render all entities in the current row.
-
                 if ((entity.getWorldY() >= (row * NATIVE_TILE_SIZE))
                         && (entity.getWorldY() < ((row + 1) * NATIVE_TILE_SIZE))) {
-
                     entity.addToRenderPipeline(renderer);
                 }
             }
@@ -326,15 +321,17 @@ public class GamePanel {
         // Environment.
 //        environmentM.addToRenderPipeline(renderer);
 
+        // Illustration.
+        illustrationS.addToRenderPipeline(renderer);
+
         // UI.
         ui.addToRenderPipeline(renderer, dt);
-
-        // Cleanup.
-        entityList.clear();                                                                                             // Reset the list of all entities by emptying it.
 
         // Flush the render pipeline to draw the frame.
         renderer.render();
 
+        // Cleanup.
+        entityList.clear();                                                                                             // Reset the list of all entities by emptying it.
     }
 
 
@@ -387,6 +384,10 @@ public class GamePanel {
         AssetPool.addSound("testTrack2", "sound/tracks/testIntro.ogg", "sound/tracks/testLoop.ogg");
         AssetPool.addSound("testTrack4", "sound/tracks/testTrack4.ogg", "sound/tracks/testTrack4.ogg");
         AssetPool.addSound("testEffect1", "sound/effects/testEffect1.ogg");
+
+        // Illustrations.
+        filePath = "/illustrations/illustration1.png";
+        AssetPool.addIllustration("illustration1", new Illustration(AssetPool.getTexture(filePath)));
     }
 
 
@@ -501,6 +502,10 @@ public class GamePanel {
         return entityM;
     }
 
+    public ItemManager getItemM() {
+        return itemM;
+    }
+
     public MapManager getMapM() {
         return mapM;
     }
@@ -553,6 +558,10 @@ public class GamePanel {
         return transitionS;
     }
 
+    public IllustrationSupport getIllustrationS() {
+        return illustrationS;
+    }
+
     public PathFinder getPathF() {
         return pathF;
     }
@@ -567,6 +576,10 @@ public class GamePanel {
 
     public boolean isLockPlayerControl() {
         return lockPlayerControl;
+    }
+
+    public boolean isRenderWorld() {
+        return renderWorld;
     }
 
     public boolean isDebugActive() {
@@ -605,6 +618,10 @@ public class GamePanel {
 
     public void setLockPlayerControl(boolean lockPlayerControl) {
         this.lockPlayerControl = lockPlayerControl;
+    }
+
+    public void setRenderWorld(boolean renderWorld) {
+        this.renderWorld = renderWorld;
     }
 
     public void setDebugActive(boolean debugActive) {

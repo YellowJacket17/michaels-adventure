@@ -6,7 +6,7 @@ import combat.implementation.move.Mve_Tackle;
 import dialogue.Conversation;
 import dialogue.Dialogue;
 import entity.EntityBase;
-import entity.DefaultIdle;
+import entity.enumeration.DefaultIdle;
 import entity.implementation.character.Npc_Test1;
 import entity.implementation.character.Npc_Test2;
 import entity.implementation.object.Obj_Chest;

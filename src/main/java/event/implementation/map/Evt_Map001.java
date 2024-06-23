@@ -1,11 +1,12 @@
 package event.implementation.map;
 
-import combat.EnterCombatTransitionType;
+import combat.enumeration.EnterCombatTransitionType;
 import core.GamePanel;
 import entity.EntityBase;
-import entity.EntityDirection;
+import entity.enumeration.EntityDirection;
 import event.*;
-import event.support.WarpTransitionType;
+import event.enumeration.EventType;
+import event.enumeration.WarpTransitionType;
 import item.implementation.Itm_Controller;
 import item.implementation.Itm_Key;
 import item.ItemBase;
@@ -29,8 +30,7 @@ public class Evt_Map001 extends EventMapBase {
         switch (target.getEntityId()) {
             case 1:
                 if (type == EventType.CLICK) {
-                    ItemBase item = new Itm_Controller(gp);
-                    boolean added = gp.getEventM().pickupItem(item);
+                    boolean added = gp.getEventM().pickupItem(1);
                     if (added) {
                         gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());                   // Add the object to the array of removed entities so that it no longer gets loaded onto the map.
                     }
@@ -39,10 +39,21 @@ public class Evt_Map001 extends EventMapBase {
                 break;
             case 2:
                 if (type == EventType.CLICK) {
-                    ItemBase item = new Itm_Key(gp);
-                    boolean added = gp.getEventM().pickupItem(item);
+                    boolean added = gp.getEventM().pickupItem(0);
                     if (added) {
                         gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
+                    }
+                    return true;
+                }
+                break;
+            case 3:
+                if (type == EventType.CLICK) {
+                    if (gp.getEntityM().getPlayer().searchItemInventory(0)) {
+                        if (!gp.getIllustrationS().isIllustrationActive()) {
+                            gp.getCutsceneM().initiateCutscene(0);
+                        }
+                    } else {
+                        gp.getDialogueR().initiateStandardMessage("A key is needed to open this chest.");
                     }
                     return true;
                 }
@@ -114,7 +125,6 @@ public class Evt_Map001 extends EventMapBase {
 
             gp.getCutsceneM().initiateCutscene(1);
 //            gp.getCameraS().setCameraScroll(0, 0, 5);
-            gp.getFadeS().initiateFlash(0.15, 0.15, 0.02, new Vector3f(255, 255, 255));
             return true;
         }
 

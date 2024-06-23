@@ -1,7 +1,7 @@
 package entity.implementation.character;
 
 import entity.EntityBase;
-import entity.EntityType;
+import entity.enumeration.EntityType;
 import core.GamePanel;
 import asset.AssetPool;
 

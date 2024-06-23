@@ -5,7 +5,7 @@ import entity.EntityBase;
 import org.joml.Vector2f;
 import render.Renderer;
 import asset.Sprite;
-import render.ZIndex;
+import render.enumeration.ZIndex;
 import render.drawable.Drawable;
 import utility.UtilityTool;
 
@@ -44,23 +44,23 @@ public abstract class ItemBase extends Drawable {
     /**
      * Variable setting the maximum number of items that can be in a stack if this item is stackable.
      */
-    protected final int maxStackAmount = 99;                                                                            // Sets the maximum number of items that can be in a stack if the item is stackable.
+    protected final int maxStackAmount = 99;
 
     /**
      * Current number of items in this item stack.
      */
-    protected int amount = 1;                                                                                           // Current amount of the item in the stack; default is 1.
+    protected int amount = 1;
 
     /**
      * Boolean indicating whether this item is stackable in the player's inventory or not.
      */
-    protected final boolean stackable;                                                                                  // Whether an item is stackable in the inventory or not; not initialized here since it's final and a constructor argument.
+    protected final boolean stackable;
 
     /**
      * Boolean to track whether a render error has occurred.
      * This prevents a render error from this item being printed to the console again.
      */
-    protected boolean renderError = false;                                                                                // If a draw error occurs, this will be marked as true; this prevents a draw error from being printed to the console again.
+    protected boolean renderError = false;
 
 
     // CONSTRUCTOR

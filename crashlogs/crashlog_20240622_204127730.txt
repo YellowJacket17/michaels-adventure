@@ -1,0 +1,11 @@
+06/22/2024 20:41:21:307  INFO     Application started.
+06/22/2024 20:41:27:728  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "item.ItemBase.isStackable()" because the return value of "java.util.HashMap.get(Object)" is null
+	at item.ItemManager.checkStackable(ItemManager.java:95)
+	at entity.implementation.player.Player.addItemToInventory(Player.java:260)
+	at entity.implementation.player.Player.setDefaultValues(Player.java:506)
+	at entity.implementation.player.Player.<init>(Player.java:106)
+	at entity.EntityManager.initPlayer(EntityManager.java:138)
+	at core.GamePanel.init(GamePanel.java:195)
+	at core.Window.initGame(Window.java:239)
+	at core.App.main(App.java:19)

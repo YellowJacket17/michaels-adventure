@@ -2,13 +2,13 @@ package miscellaneous;
 
 import core.GamePanel;
 import entity.EntityBase;
-import entity.EntityStatus;
-import event.support.FadeState;
+import entity.enumeration.EntityStatus;
+import event.enumeration.FadeState;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import render.Renderer;
-import render.ZIndex;
+import render.enumeration.ZIndex;
 import render.drawable.Transform;
 
 import java.util.Set;
@@ -616,25 +616,28 @@ public class UserInterface {
      */
     private void renderSelectedItemDescription() {
 
-        // Initializations.
-        Vector3f nameColor = new Vector3f(121, 149, 255);
-        Vector3f quantityColor = new Vector3f(244, 154, 45);
-        Vector3f descriptionColor = new Vector3f(255, 255, 255);
-        float leftmostScreenX = mainWindowScreenLeftRightPadding
-                + ((1 - (2 * mainWindowScreenLeftRightPadding)) / 2) + 0.05f;
-        float topmostScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;
-        Vector2f screenCoords = new Vector2f(leftmostScreenX, topmostScreenY);
-        String name = gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getName();
-        String quantity = "Quantity: "
-                + gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getAmount();
-        String description = gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getDescription();
+        if (gp.getEntityM().getPlayer().getInventory().size() != 0) {
 
-        // Render name, quantity, and description.
-        renderStringShadow(name, screenCoords, 0.15f, nameColor, "Arimo Bold");
-        screenCoords.y += 0.090f;
-        renderStringShadow(quantity, screenCoords, 0.15f, quantityColor, "Arimo Bold");
-        screenCoords.y += 0.090f;
-        renderStringBlock(description, screenCoords, 23, 0.065f, 0.15f, descriptionColor, "Arimo", true);
+            // Initializations.
+            Vector3f nameColor = new Vector3f(121, 149, 255);
+            Vector3f quantityColor = new Vector3f(244, 154, 45);
+            Vector3f descriptionColor = new Vector3f(255, 255, 255);
+            float leftmostScreenX = mainWindowScreenLeftRightPadding
+                    + ((1 - (2 * mainWindowScreenLeftRightPadding)) / 2) + 0.05f;
+            float topmostScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;
+            Vector2f screenCoords = new Vector2f(leftmostScreenX, topmostScreenY);
+            String name = gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getName();
+            String quantity = "Quantity: "
+                    + gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getAmount();
+            String description = gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getDescription();
+
+            // Render name, quantity, and description.
+            renderStringShadow(name, screenCoords, 0.15f, nameColor, "Arimo Bold");
+            screenCoords.y += 0.090f;
+            renderStringShadow(quantity, screenCoords, 0.15f, quantityColor, "Arimo Bold");
+            screenCoords.y += 0.090f;
+            renderStringBlock(description, screenCoords, 23, 0.065f, 0.15f, descriptionColor, "Arimo", true);
+        }
     }
 
 
@@ -726,9 +729,9 @@ public class UserInterface {
      */
     private void renderFadeScreen() {
 
-        Vector2f worldCoords = new Vector2f(0, 0);
-        float worldWidth = GamePanel.MAX_WORLD_COL * GamePanel.NATIVE_TILE_SIZE;                                        // Overlaid rectangle will span entire width of world.
-        float worldHeight = GamePanel.MAX_WORLD_ROW * GamePanel.NATIVE_TILE_SIZE;                                       // Overlaid rectangle will span entire height of world.
+        Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(0, 0));
+        float worldWidth = GamePanel.NATIVE_SCREEN_WIDTH;
+        float worldHeight = GamePanel.NATIVE_SCREEN_HEIGHT;
         float alpha = 255;
 
         switch (gp.getFadeS().getState()) {
@@ -740,7 +743,7 @@ public class UserInterface {
                                 gp.getFadeS().getColor().y,
                                 gp.getFadeS().getColor().z,
                                 alpha),
-                        new Transform(new Vector2f(0, 0), new Vector2f(worldWidth, worldHeight)),
+                        new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
                         ZIndex.SECOND_LAYER);
                 break;
             case ACTIVE:                                                                                                // Wait on colored screen.

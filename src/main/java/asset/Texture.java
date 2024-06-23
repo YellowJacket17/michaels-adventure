@@ -139,7 +139,7 @@ public class Texture {
 
 
     /**
-     * Allocates an empty constructor on the GPU.
+     * Allocates an empty texture on the GPU.
      *
      * @param width texture width
      * @param height texture height
@@ -156,6 +156,16 @@ public class Texture {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
         nativeWidth = width;
         nativeHeight = height;
+    }
+
+
+    /**
+     * Frees this memory if this texture is finished being used.
+     * Note that this does not destruct this texture instance, which must be managed by JVM garbage collection.
+     */
+    public void delete() {
+
+        glDeleteTextures(textureId);
     }
 
 

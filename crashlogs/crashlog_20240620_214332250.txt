@@ -1,0 +1,11 @@
+06/20/2024 21:43:19:352  INFO     Application started.
+06/20/2024 21:43:26:602  INFO     Starting game loop.
+06/20/2024 21:43:26:605  WARNING  Unrecognized key with code '-1' was detected.
+06/20/2024 21:43:32:248  ERROR    An unhandled exception has occurred!
+utility.exceptions.AssetLoadException: Attempted to access an unloaded sound named 'testTrack1'
+	at asset.AssetPool.getSound(AssetPool.java:252)
+	at event.support.SoundSupport.update(SoundSupport.java:58)
+	at core.GamePanel.update(GamePanel.java:249)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:303)
+	at core.App.main(App.java:21)

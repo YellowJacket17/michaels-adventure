@@ -1,7 +1,7 @@
 package event.support;
 
 import asset.Sound;
-import asset.SoundType;
+import asset.enumeration.SoundType;
 import core.GamePanel;
 import asset.AssetPool;
 import utility.UtilityTool;
@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class SoundSupport {
 
-    // FIELD
+    // FIELDS
     private final GamePanel gp;
 
     /**

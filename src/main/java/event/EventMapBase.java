@@ -2,7 +2,8 @@ package event;
 
 import core.GamePanel;
 import entity.EntityBase;
-import entity.EntityDirection;
+import entity.enumeration.EntityDirection;
+import event.enumeration.EventType;
 
 /**
  * This abstract class defines base logic for events on given maps.

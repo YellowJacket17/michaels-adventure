@@ -1,5 +1,7 @@
 package combat;
 
+import combat.enumeration.MoveCategory;
+import combat.enumeration.MoveTargets;
 import core.GamePanel;
 
 import java.util.List;

@@ -5,7 +5,7 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import render.Renderer;
 import asset.Sprite;
-import render.ZIndex;
+import render.enumeration.ZIndex;
 import utility.UtilityTool;
 
 import java.util.HashMap;
