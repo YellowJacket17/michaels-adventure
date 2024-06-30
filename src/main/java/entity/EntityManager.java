@@ -49,16 +49,6 @@ public class EntityManager {
     private final LimitedLinkedHashMap<Integer, EntityBase> standby = new LimitedLinkedHashMap<>(50);
 
     /**
-     * Set to store the IDs of all entities currently in a conversation.
-     */
-    private final HashSet<Integer> conversingEntities = new HashSet<>();
-
-    /**
-     * Set to store the IDs of all entities currently in combat.
-     */
-    private final HashSet<Integer> combatingEntities = new HashSet<>();
-
-    /**
      * Set to store the IDs of all entities that should no longer be loaded on a map (ex. picked up an object, causing
      * is to disappear from the map).
      */
@@ -195,7 +185,7 @@ public class EntityManager {
 
 
     /**
-     * Retrieves all instantiated entities.
+     * Retrieves all instantiated entities, including the player entity.
      *
      * @return list of all instantiated entities
      */
@@ -291,21 +281,63 @@ public class EntityManager {
     }
 
 
-    /**
-     * Clears the list of conversing entities and makes them exit a state of conversing.
-     */
-    public void clearConversingEntities() {
+    public ArrayList<Integer> getCombatingEntities() {
 
-        conversingEntities.clear();
+        ArrayList<Integer> combatingEntities = new ArrayList<>();
+
+        for (EntityBase candidate : getAllEntities()) {
+
+            if (candidate.isCombating()) {
+
+                combatingEntities.add(candidate.getEntityId());
+            }
+        }
+        return combatingEntities;
+    }
+
+
+    public ArrayList<Integer> getConversingEntities() {
+
+        ArrayList<Integer> conversingEntities = new ArrayList<>();
+
+        for (EntityBase candidate : getAllEntities()) {
+
+            if (candidate.isCombating()) {
+
+                conversingEntities.add(candidate.getEntityId());
+            }
+        }
+        return conversingEntities;
     }
 
 
     /**
-     * Clears the list of combating entities and makes them exit a state of combat.
+     * Removes all entities from a state of combating.
      */
     public void clearCombatingEntities() {
 
-        combatingEntities.clear();
+        for (EntityBase candidate : getAllEntities()) {
+
+            if (candidate.isCombating()) {
+
+                candidate.setCombating(false);
+            }
+        }
+    }
+
+
+    /**
+     * Removes all entities from a state of conversing.
+     */
+    public void clearConversingEntities() {
+
+        for (EntityBase candidate : getAllEntities()) {
+
+            if (candidate.isConversing()) {
+
+                candidate.setConversing(false);
+            }
+        }
     }
 
 
@@ -328,14 +360,6 @@ public class EntityManager {
 
     public LimitedLinkedHashMap<Integer, EntityBase> getStandby() {
         return standby;
-    }
-
-    public HashSet<Integer> getConversingEntities() {
-        return conversingEntities;
-    }
-
-    public HashSet<Integer> getCombatingEntities() {
-        return combatingEntities;
     }
 
     public HashSet<Integer> getRemovedEntities() {

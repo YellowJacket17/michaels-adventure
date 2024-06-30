@@ -28,9 +28,9 @@ public class Obj_Key extends EntityBase {
      */
     private void setupSprite() {
 
-        down1 = AssetPool.getSpritesheet("objects").getSprite(0);
+        idleDown = AssetPool.getSpritesheet("objects").getSprite(0);
 
-        sprite = down1;
+        sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
     }

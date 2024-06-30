@@ -23,23 +23,32 @@ public class Npc_Test1 extends EntityBase {
      */
     private void setupSprite() {
 
-        down1 = AssetPool.getSpritesheet("characters").getSprite(90);
-        down2 = AssetPool.getSpritesheet("characters").getSprite(91);
-        down3 = AssetPool.getSpritesheet("characters").getSprite(92);
+        idleDown = AssetPool.getSpritesheet("characters").getSprite(90);
+        walkDown1 = AssetPool.getSpritesheet("characters").getSprite(91);
+        walkDown2 = AssetPool.getSpritesheet("characters").getSprite(92);
 
-        up1 = AssetPool.getSpritesheet("characters").getSprite(93);
-        up2 = AssetPool.getSpritesheet("characters").getSprite(94);
-        up3 = AssetPool.getSpritesheet("characters").getSprite(95);
+        idleUp = AssetPool.getSpritesheet("characters").getSprite(93);
+        walkUp1 = AssetPool.getSpritesheet("characters").getSprite(94);
+        walkUp2 = AssetPool.getSpritesheet("characters").getSprite(95);
 
-        left1 = AssetPool.getSpritesheet("characters").getSprite(96);
-        left2 = AssetPool.getSpritesheet("characters").getSprite(97);
-        left3 = AssetPool.getSpritesheet("characters").getSprite(98);
+        idleLeft = AssetPool.getSpritesheet("characters").getSprite(96);
+        walkLeft1 = AssetPool.getSpritesheet("characters").getSprite(97);
+        walkLeft2 = AssetPool.getSpritesheet("characters").getSprite(98);
 
-        right1 = AssetPool.getSpritesheet("characters").getSprite(99);
-        right2 = AssetPool.getSpritesheet("characters").getSprite(100);
-        right3 = AssetPool.getSpritesheet("characters").getSprite(101);
+        idleRight = AssetPool.getSpritesheet("characters").getSprite(99);
+        walkRight1 = AssetPool.getSpritesheet("characters").getSprite(100);
+        walkRight2 = AssetPool.getSpritesheet("characters").getSprite(101);
 
-        sprite = down1;
+        combatStanceLeft1 = AssetPool.getSpritesheet("characters").getSprite(102);
+        combatStanceLeft2 = AssetPool.getSpritesheet("characters").getSprite(103);
+
+        combatStanceRight1 = AssetPool.getSpritesheet("characters").getSprite(105);
+        combatStanceRight2 = AssetPool.getSpritesheet("characters").getSprite(106);
+
+        combatAttackLeft = AssetPool.getSpritesheet("characters").getSprite(104);
+        combatAttackRight = AssetPool.getSpritesheet("characters").getSprite(107);
+
+        sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
     }

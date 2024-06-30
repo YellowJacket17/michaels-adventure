@@ -28,9 +28,9 @@ public class Obj_Controller extends EntityBase {
      */
     private void setupSprite() {
 
-        down1 = AssetPool.getSpritesheet("objects").getSprite(2);
+        idleDown = AssetPool.getSpritesheet("objects").getSprite(2);
 
-        sprite = down1;
+        sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
     }

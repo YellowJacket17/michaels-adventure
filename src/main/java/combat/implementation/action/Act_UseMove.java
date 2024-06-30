@@ -93,6 +93,7 @@ public class Act_UseMove extends ActionBase {
         calculateDamage();
         gp.getEntityM().getEntityById(sourceEntityId).subtractSkillPoints(move.getSkillPoints());                       // Subtract skill points used by this move.
         move.runEffects(sourceEntityId, targetEntityIds);                                                               // Apply any additional affects that this move may have.
+        gp.getEntityM().getEntityById(sourceEntityId).initiateCombatAttackAnimation();
 
         // TODO : Should fainting be polled before running effects as well?
 

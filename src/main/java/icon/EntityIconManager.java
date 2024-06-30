@@ -152,19 +152,19 @@ public class EntityIconManager {
 
             EntityIcon entityIcon = new EntityIcon(entityId);
 
-            Sprite down1 = entity.getDown1();
+            Sprite down1 = entity.getIdleDown();
             if (down1 != null ) {
                 entityIcon.setDown1(down1);
             }
 
-            Sprite down2 = entity.getDown2();
+            Sprite down2 = entity.getWalkDown1();
             if (down2 != null) {
                 entityIcon.setDown2(down2);
             } else {
                 entityIcon.setDown2(down1);
             }
 
-            Sprite down3 = entity.getDown3();
+            Sprite down3 = entity.getWalkDown2();
             if (down3 != null) {
                 entityIcon.setDown3(down3);
             } else {

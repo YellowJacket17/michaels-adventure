@@ -6,7 +6,7 @@ import combat.implementation.move.Mve_Tackle;
 import dialogue.Conversation;
 import dialogue.Dialogue;
 import entity.EntityBase;
-import entity.enumeration.DefaultIdle;
+import entity.enumeration.DefaultIdleAction;
 import entity.implementation.character.Npc_Test1;
 import entity.implementation.character.Npc_Test2;
 import entity.implementation.object.Obj_Chest;
@@ -506,13 +506,13 @@ public class JsonParser {
 
         switch (defaultAction) {
             case "randomSteps":
-                entity.setDefaultAction(DefaultIdle.RANDOM_STEPS);
+                entity.setDefaultAction(DefaultIdleAction.RANDOM_STEPS);
                 break;
             case "randomTurns":
-                entity.setDefaultAction(DefaultIdle.RANDOM_TURNS);
+                entity.setDefaultAction(DefaultIdleAction.RANDOM_TURNS);
                 break;
             default:
-                entity.setDefaultAction(DefaultIdle.STATIC);
+                entity.setDefaultAction(DefaultIdleAction.STATIC);
         }
 
         // Type.

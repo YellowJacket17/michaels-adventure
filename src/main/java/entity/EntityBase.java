@@ -2,7 +2,7 @@ package entity;
 
 import combat.MoveBase;
 import core.GamePanel;
-import entity.enumeration.DefaultIdle;
+import entity.enumeration.DefaultIdleAction;
 import entity.enumeration.EntityDirection;
 import entity.enumeration.EntityStatus;
 import entity.enumeration.EntityType;
@@ -85,7 +85,16 @@ public abstract class EntityBase extends Drawable {
     /**
      * Entity sprite.
      */
-    protected Sprite down1, down2, down3, up1, up2, up3, left1, left2, left3, right1, right2, right3;
+    protected Sprite
+            idleDown, walkDown1, walkDown2,
+            idleUp, walkUp1, walkUp2,
+            idleLeft, walkLeft1, walkLeft2,
+            idleRight, walkRight1, walkRight2,
+            combatStanceLeft1, combatStanceLeft2,
+            combatStanceRight1, combatStanceRight2,
+            combatAttackRight, combatAttackLeft,
+            combatFaintLeft1, combatFaintLeft2, combatFaintLeft3, combatFaintLeft4, combatFaintLeft5,
+            combatFaintRight1, combatFaintRight2, combatFaintRight3, combatFaintRight4, combatFaintRight5;
 
     /**
      * Boolean tracking whether a render error has occurred.
@@ -144,30 +153,62 @@ public abstract class EntityBase extends Drawable {
     protected EntityDirection directionCandidate;
 
     /**
-     * Current sprite number to render for a given direction.
-     * This is primarily used for walking animation.
+     * Current walking sprite number to render for a given direction.
+     * This is used for walking animation to distinguish whether the left or right foot should be forward,
+     * regardless of direction of travel.
+     * A value of 1 represents idle.
+     * A value of 2 represents left foot forward.
+     * A value of 3 represents right foot forward.
      */
-    protected int spriteNumCurrent = 1;
+    protected int walkSpriteNumCurrent = 1;
 
     /**
      * Last sprite number rendered for a given direction.
      * This is primarily used for walking animation.
      */
-    protected int spriteNumLast = 2;
+    protected int walkSpriteNumLast = 2;
 
     /**
-     * Boolean tracking whether this entity is currently in a state of motion or not (used for grid-based movement).
+     * Current combat stance sprite number to render for a given direction.
+     * This is used for combat stance animation to distinguish which frame of the animation to render, regardless of
+     * whether this entity is facing left or right.
+     * A value of 1 represents first frame.
+     * A value of 2 represents second frame.
+     */
+    protected int combatStanceSpriteNumCurrent = 1;
+
+    /**
+     * Current combat attack sprite number to render for a given direction.
+     * This is used for combat attack animation to distinguish which frame of animation to render, regardless of whether
+     * this entity is facing left or right.
+     * In practice, there is only one frame for combat attack animation.
+     */
+    protected int combatAttackSpriteNumCurrent = 1;
+
+    /**
+     * Boolean indicating whether this entity is currently in a state of motion or not (used for grid-based movement).
      */
     protected boolean moving = false;
 
     /**
-     * Boolean tracking whether the entity is currently in a state of turning or not.
+     * Boolean indicating whether this entity is currently in a state of turning or not.
      * This is primarily used when the player entity turns (i.e., changes direction) from a static state.
      */
     protected boolean turning = false;
 
     /**
-     * Boolean tracking whether this entity is currently colliding with something (other entity, landmark, tile, etc.)
+     * Boolean indicating whether this entity is currently in a state of combating or not.
+     * Note that this does not indicate whether this entity is a player-side or non-player-side combating entity.
+     */
+    protected boolean combating = false;
+
+    /**
+     * Boolean indicating whether this entity is currently in a state of conversing or not.
+     */
+    protected boolean conversing = false;
+
+    /**
+     * Boolean indicating whether this entity is currently colliding with something (other entity, landmark, tile, etc.)
      * that has collision.
      */
     protected boolean colliding = false;
@@ -181,7 +222,12 @@ public abstract class EntityBase extends Drawable {
     /**
      * Default idle action that this entity will do when not being interacted with by the player or some other event.
      */
-    protected DefaultIdle defaultIdle;
+    protected DefaultIdleAction defaultIdleAction;
+
+    /**
+     * Boolean indicating whether this entity is currently in a combat attack animation.
+     */
+    protected boolean playingCombatAttackAnimation = false;
 
 
     // PATHFINDING
@@ -207,7 +253,7 @@ public abstract class EntityBase extends Drawable {
     protected static final int NO_ENTITY_FOLLOWED = 33712339;
 
 
-    // BUFFERS
+    // COUNTERS/BUFFERS
     /**
      * Counts the number of world units this entity has moved thus far while in a state of motion.
      * In practice, this is used to track whether a tile's length has been traversed yet or not.
@@ -218,6 +264,29 @@ public abstract class EntityBase extends Drawable {
      * Controls the number of seconds this entity must wait before moving again after exiting a state of motion.
      */
     protected double rest;
+
+    /**
+     * Counts time passed (seconds) while this entity is animating.
+     * This is used to control animations, such as the pace at which to swap sprites.
+     * In practice, this is used for idle combat animation and fainting combat animation.
+     * Note that the walking animation (i.e., animation while in a state of motion) does not use this counter, instead
+     * using `worldCounter`.
+     */
+    protected double animationCounter;
+
+    /**
+     * Maximum number of seconds allocated to a full combat stance animation cycle.
+     * Increasing this value will extend the duration of the combat stance animation cycle.
+     * In other words, increasing this value will make the combat stance animation appear to run more slowly.
+     */
+    protected double animationCounterCombatStanceMax = 1.2;
+
+    /**
+     * Maximum number of seconds allocated to a full combat attack animation cycle.
+     * Increasing this value will extend the duration of the combat attack animation cycle.
+     * In other words, increasing this value will make the combat attack animation appear to run more slowly.
+     */
+    protected double animationCounterCombatAttackMax = 0.6;
 
 
     // BASIC ATTRIBUTES
@@ -381,26 +450,29 @@ public abstract class EntityBase extends Drawable {
     public void update(double dt) {
 
         // These are core actions that take precedent over all others.
-        if (gp.getEntityM().getCombatingEntities().contains(entityId)) {
-            // TODO : Add combat-specific logic here.
+        if (hidden) {return;}
+
+        if (playingCombatAttackAnimation) {
+            updateCombatAttackAnimation(dt);
             return;
         }
 
-        if (gp.getEntityM().getConversingEntities().contains(entityId)) {
+        if (combating) {
+            updateCombatStanceAnimation(dt);
             return;
         }
+
+        if (conversing) {return;}
 
         if (isOnEntity()) {
             actionFollowEntity(dt, onEntityId);
             return;
         }
+
         if (onPath) {
             actionPath(dt, onPathGoalCol, onPathGoalRow);
             return;
         }
-
-        // If entity is in player's party and not following/active, no update is necessary.
-        if (gp.getEntityM().getParty().get(entityId) != null) {return;}
 
         // Set other actions.
         setAction(dt);
@@ -414,9 +486,18 @@ public abstract class EntityBase extends Drawable {
      */
     public void addToRenderPipeline(Renderer renderer) {
 
-        if (!hidden && gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
+        if (playingCombatAttackAnimation) {
 
-            sprite = retrieveSprite();                                                                                  // Retrieve the sprite to be rendered.
+            setCombatAttackSprite();
+        } else if (combating) {
+
+            setCombatStanceSprite();
+        } else {
+
+            setWalkingSprite();
+        }
+
+        if (!hidden && gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
             if (sprite != null) {
 
@@ -433,7 +514,8 @@ public abstract class EntityBase extends Drawable {
                         + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
                         + "with ID '"
                         + entityId
-                        + "' to the render pipeline: sprites may not have been properly loaded upon entity initialization.");
+                        + "' to the render pipeline: sprites may not have been properly loaded upon entity "
+                        + "initialization.");
                 renderError = true;
             }
         }
@@ -441,7 +523,8 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Cancels this entity's current action (i.e., exits its current state of motion and returns to its previous tile).
+     * Cancels this entity's current action (i.e., exits its current state of motion or turning and returns to its
+     * previous tile, if applicable).
      */
     public void cancelAction() {
 
@@ -451,7 +534,7 @@ public abstract class EntityBase extends Drawable {
         worldY = worldYStart;
         worldCounter = 0;
         directionCurrent = directionLast;
-        spriteNumCurrent = 1;
+        walkSpriteNumCurrent = 1;
     }
 
 
@@ -504,39 +587,89 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Sets this entity to a walking sprite.
+     * Stages this entity to render in an idle sprite.
+     * Note that this only stages the sprite number to be retrieved when rendering and does not set the actual sprite.
+     * This will only be rendered if this entity is in a state of combating and not playing any other scripted
+     * animation (ex. attacking animation).
      */
-    public void setWalkingSprite() {
+    public void stageIdleSprite() {
 
         if (!moving) {
 
-            if (spriteNumLast == 2) {
+            walkSpriteNumCurrent = 1;
 
-                spriteNumCurrent = 3;
+            if (walkSpriteNumLast == 2) {                                                                                   // Swap which foot will step forward for the next walking cycle.
+
+                walkSpriteNumLast = 3;
             } else {
 
-                spriteNumCurrent = 2;
+                walkSpriteNumLast = 2;
             }
         }
     }
 
 
     /**
-     * Sets this entity to an idle sprite.
+     * Stages this entity to render in a walking sprite.
+     * Either this entity's left or right foot will be forward, depending on which was forward last.
+     * Note that this only stages the sprite number to be retrieved when rendering and does not set the actual sprite.
+     * This will only be rendered if this entity is in a state of combating and not playing any other scripted
+     * animation (ex. attacking animation).
      */
-    public void setIdleSprite() {
+    public void stageWalkingSprite() {
 
         if (!moving) {
 
-            spriteNumCurrent = 1;
+            if (walkSpriteNumLast == 2) {
 
-            if (spriteNumLast == 2) {                                                                                   // Swap which foot will step forward for the next walking cycle.
-
-                spriteNumLast = 3;
+                walkSpriteNumCurrent = 3;
             } else {
 
-                spriteNumLast = 2;
+                walkSpriteNumCurrent = 2;
             }
+        }
+    }
+
+
+    /**
+     * Stages this entity to render in a combat stance sprite.
+     * Note that this only stages the sprite number to be retrieved when rendering and does not set the actual sprite.
+     * This will only be rendered if this entity is in a state of combating and not playing any other scripted
+     * animation (ex. attacking animation).
+     */
+    public void stageCombatStanceSprite() {
+
+        if (animationCounter < animationCounterCombatStanceMax / 2) {
+
+            combatStanceSpriteNumCurrent = 1;
+        } else {
+
+            combatStanceSpriteNumCurrent = 2;
+        }
+    }
+
+
+    /**
+     * Stages this entity to render in a combat attack sprite.
+     * Note that this only stages the sprite number to be retrieved when rendering and does not set the actual sprite.
+     * This will only be rendered if this entity is playing a combat attack animation.
+     */
+    public void stageCombatAttackSprite() {
+
+        combatAttackSpriteNumCurrent = 1;
+    }
+
+
+    /**
+     * Initiates a combat attack animation for this entity.
+     * If the animation is already playing, nothing will happen.
+     */
+    public void initiateCombatAttackAnimation() {
+
+        if (!playingCombatAttackAnimation) {
+
+            playingCombatAttackAnimation = true;
+            animationCounter = 0;
         }
     }
 
@@ -554,61 +687,88 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Retrieves the sprite that matches this entity's current direction and sprite number.
-     *
-     * @return sprite
+     * Sets this entity's sprite to match this entity's current direction and staged walking sprite number.
      */
-    protected Sprite retrieveSprite() {
-
-        Sprite sprite = null;
+    protected void setWalkingSprite() {
 
         switch (directionCurrent) {
             case UP:
-                if (spriteNumCurrent == 1) {
-                    sprite = up1;
-                }
-                if (spriteNumCurrent == 2) {
-                    sprite = up2;
-                }
-                if (spriteNumCurrent == 3) {
-                    sprite = up3;
+                if (walkSpriteNumCurrent == 1) {
+                    sprite = idleUp;
+                } else if (walkSpriteNumCurrent == 2) {
+                    sprite = walkUp1;
+                } else if (walkSpriteNumCurrent == 3) {
+                    sprite = walkUp2;
                 }
                 break;
             case DOWN:
-                if (spriteNumCurrent == 1) {
-                    sprite = down1;
-                }
-                if (spriteNumCurrent == 2) {
-                    sprite = down2;
-                }
-                if (spriteNumCurrent == 3) {
-                    sprite = down3;
+                if (walkSpriteNumCurrent == 1) {
+                    sprite = idleDown;
+                } else if (walkSpriteNumCurrent == 2) {
+                    sprite = walkDown1;
+                } else if (walkSpriteNumCurrent == 3) {
+                    sprite = walkDown2;
                 }
                 break;
             case LEFT:
-                if (spriteNumCurrent == 1) {
-                    sprite = left1;
-                }
-                if (spriteNumCurrent == 2) {
-                    sprite = left2;
-                }
-                if (spriteNumCurrent == 3) {
-                    sprite = left3;
+                if (walkSpriteNumCurrent == 1) {
+                    sprite = idleLeft;
+                } else if (walkSpriteNumCurrent == 2) {
+                    sprite = walkLeft1;
+                } else if (walkSpriteNumCurrent == 3) {
+                    sprite = walkLeft2;
                 }
                 break;
             case RIGHT:
-                if (spriteNumCurrent == 1) {
-                    sprite = right1;
-                }
-                if (spriteNumCurrent == 2) {
-                    sprite = right2;
-                }
-                if (spriteNumCurrent == 3) {
-                    sprite = right3;
+                if (walkSpriteNumCurrent == 1) {
+                    sprite = idleRight;
+                } else if (walkSpriteNumCurrent == 2) {
+                    sprite = walkRight1;
+                } else if (walkSpriteNumCurrent == 3) {
+                    sprite = walkRight2;
                 }
                 break;
         }
-        return sprite;
+    }
+
+
+    /**
+     * Sets this entity's sprite to match this entity's current direction and staged combat stance sprite number.
+     */
+    protected void setCombatStanceSprite() {
+
+        switch (directionCurrent) {
+            case LEFT:
+                if (combatStanceSpriteNumCurrent == 1) {
+                    sprite = combatStanceLeft1;
+                } else if (combatStanceSpriteNumCurrent == 2) {
+                    sprite = combatStanceLeft2;
+                }
+                break;
+            case RIGHT:
+                if (combatStanceSpriteNumCurrent == 1) {
+                    sprite = combatStanceRight1;
+                } else if (combatStanceSpriteNumCurrent == 2) {
+                    sprite = combatStanceRight2;
+                }
+                break;
+        }
+    }
+
+
+    /**
+     * Sets this entity's sprite to match this entity's current direction and staged combat attack sprite number.
+     */
+    protected void setCombatAttackSprite() {
+
+        switch (directionCurrent) {
+            case LEFT:
+                sprite = combatAttackLeft;
+                break;
+            case RIGHT:
+                sprite = combatAttackRight;
+                break;
+        }
     }
 
 
@@ -655,7 +815,7 @@ public abstract class EntityBase extends Drawable {
      *
      * @param dt time since last frame (seconds)
      */
-    protected void updateAction(double dt) {
+    protected void updateWalkingAction(double dt) {
 
         if (moving) {
 
@@ -668,16 +828,16 @@ public abstract class EntityBase extends Drawable {
 
             if (worldCounter <= GamePanel.NATIVE_TILE_SIZE / 2) {                                                       // Walking animation; entity will have a foot forward for half of the world units traversed.
 
-                if (spriteNumLast == 2) {
+                if (walkSpriteNumLast == 2) {
 
-                    spriteNumCurrent = 3;
+                    walkSpriteNumCurrent = 3;
                 } else {
 
-                    spriteNumCurrent = 2;
+                    walkSpriteNumCurrent = 2;
                 }
             } else {
 
-                spriteNumCurrent = 1;
+                walkSpriteNumCurrent = 1;
             }
 
             if (worldCounter >= GamePanel.NATIVE_TILE_SIZE) {                                                           // Check if the entity has moved a number of world units equal to a tile size in the current state of motion.
@@ -691,12 +851,12 @@ public abstract class EntityBase extends Drawable {
                 worldXStart = worldXEnd;
                 worldYStart = worldYEnd;
 
-                if (spriteNumLast == 2) {                                                                               // Swap which foot will step forward for the next walking cycle.
+                if (walkSpriteNumLast == 2) {                                                                               // Swap which foot will step forward for the next walking cycle.
 
-                    spriteNumLast = 3;
+                    walkSpriteNumLast = 3;
                 } else {
 
-                    spriteNumLast = 2;
+                    walkSpriteNumLast = 2;
                 }
             }
         }
@@ -728,6 +888,47 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
+     * Updates this entity's combat stance animation by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    protected void updateCombatStanceAnimation(double dt) {
+
+        animationCounter += dt;
+
+        if (animationCounter >= animationCounterCombatStanceMax) {
+
+            animationCounter = 0;
+        }
+        stageCombatStanceSprite();
+    }
+
+
+    /**
+     * Updates this entity's combat attack animation by one frame.
+     * If the animation has completed, then it is exited.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    public void updateCombatAttackAnimation(double dt) {
+
+        animationCounter += dt;
+
+        if (animationCounter >= animationCounterCombatAttackMax) {
+
+            playingCombatAttackAnimation = false;
+            animationCounter = 0;
+
+            if (combating) {
+
+                combatStanceSpriteNumCurrent = 1;                                                                       // Reset combat stance animation to first sprite in cycle, if applicable
+            }
+        }
+        stageCombatAttackSprite();
+    }
+
+
+    /**
      * Sets this entity's behavior.
      * Override this method in implemented entity classes if custom actions are desired.
      *
@@ -735,7 +936,7 @@ public abstract class EntityBase extends Drawable {
      */
     protected void setAction(double dt) {
 
-        switch (defaultIdle) {
+        switch (defaultIdleAction) {
             case RANDOM_STEPS:
                 actionRandomSteps(dt);
                 break;
@@ -843,7 +1044,7 @@ public abstract class EntityBase extends Drawable {
 
             searchPath(goalCol, goalRow);
         }
-        updateAction(dt);                                                                                               // The entity's position on the map will be updated each frame while `onPath` is true (i.e., it will continue walking).
+        updateWalkingAction(dt);                                                                                               // The entity's position on the map will be updated each frame while `onPath` is true (i.e., it will continue walking).
     }
 
 
@@ -864,7 +1065,7 @@ public abstract class EntityBase extends Drawable {
 
             initiateRandomStep();
         }
-        updateAction(dt);
+        updateWalkingAction(dt);
 
         if ((!moving) && (movingFlag)) {                                                                                // If this statement is true, it means the entity exited a state a motion (i.e., concluded a step) while in this method.
 
@@ -882,7 +1083,7 @@ public abstract class EntityBase extends Drawable {
 
         if (moving) {
 
-            updateAction(dt);                                                                                           // If entity is currently in a state of motion, it needs to finish that before doing anything else.
+            updateWalkingAction(dt);                                                                                           // If entity is currently in a state of motion, it needs to finish that before doing anything else.
             return;
         }
 
@@ -1066,52 +1267,116 @@ public abstract class EntityBase extends Drawable {
         return collision;
     }
 
-    public Sprite getUp1() {
-        return up1;
+    public Sprite getIdleUp() {
+        return idleUp;
     }
 
-    public Sprite getUp2() {
-        return up2;
+    public Sprite getWalkUp1() {
+        return walkUp1;
     }
 
-    public Sprite getUp3() {
-        return up3;
+    public Sprite getWalkUp2() {
+        return walkUp2;
     }
 
-    public Sprite getDown1() {
-        return down1;
+    public Sprite getIdleDown() {
+        return idleDown;
     }
 
-    public Sprite getDown2() {
-        return down2;
+    public Sprite getWalkDown1() {
+        return walkDown1;
     }
 
-    public Sprite getDown3() {
-        return down3;
+    public Sprite getWalkDown2() {
+        return walkDown2;
     }
 
-    public Sprite getLeft1() {
-        return left1;
+    public Sprite getIdleLeft() {
+        return idleLeft;
     }
 
-    public Sprite getLeft2() {
-        return left2;
+    public Sprite getWalkLeft1() {
+        return walkLeft1;
     }
 
-    public Sprite getLeft3() {
-        return left3;
+    public Sprite getWalkLeft2() {
+        return walkLeft2;
     }
 
-    public Sprite getRight1() {
-        return right1;
+    public Sprite getIdleRight() {
+        return idleRight;
     }
 
-    public Sprite getRight2() {
-        return right2;
+    public Sprite getWalkRight1() {
+        return walkRight1;
     }
 
-    public Sprite getRight3() {
-        return right3;
+    public Sprite getWalkRight2() {
+        return walkRight2;
+    }
+
+    public Sprite getCombatStanceLeft1() {
+        return combatStanceLeft1;
+    }
+
+    public Sprite getCombatStanceLeft2() {
+        return combatStanceLeft2;
+    }
+
+    public Sprite getCombatStanceRight1() {
+        return combatStanceRight1;
+    }
+
+    public Sprite getCombatStanceRight2() {
+        return combatStanceRight2;
+    }
+
+    public Sprite getCombatAttackRight() {
+        return combatAttackRight;
+    }
+
+    public Sprite getCombatAttackLeft() {
+        return combatAttackLeft;
+    }
+
+    public Sprite getCombatFaintLeft1() {
+        return combatFaintLeft1;
+    }
+
+    public Sprite getCombatFaintLeft2() {
+        return combatFaintLeft2;
+    }
+
+    public Sprite getCombatFaintLeft3() {
+        return combatFaintLeft3;
+    }
+
+    public Sprite getCombatFaintLeft4() {
+        return combatFaintLeft4;
+    }
+
+    public Sprite getCombatFaintLeft5() {
+        return combatFaintLeft5;
+    }
+
+    public Sprite getCombatFaintRight1() {
+        return combatFaintRight1;
+    }
+
+    public Sprite getCombatFaintRight2() {
+        return combatFaintRight2;
+    }
+
+    public Sprite getCombatFaintRight3() {
+        return combatFaintRight3;
+    }
+
+    public Sprite getCombatFaintRight4() {
+        return combatFaintRight4;
+    }
+
+    public Sprite getCombatFaintRight5() {
+        return combatFaintRight5;
     }
 
     public float getWorldX() {
@@ -1196,6 +1461,14 @@ public abstract class EntityBase extends Drawable {
 
     public boolean isTurning() {
         return turning;
+    }
+
+    public boolean isCombating() {
+        return combating;
+    }
+
+    public boolean isConversing() {
+        return conversing;
     }
 
     public boolean isColliding() {
@@ -1381,6 +1654,23 @@ public abstract class EntityBase extends Drawable {
         this.directionCandidate = directionCandidate;
     }
 
+    public void setCombating(boolean combating) {
+        this.combating = combating;
+        if (combating) {
+            cancelAction();
+            Random random = new Random();
+            int i = random.nextInt(((int)animationCounterCombatStanceMax * 100) + 1);                                   // Generate random number from 0 to (`animationCounterCombatStanceMax` * 100) + 1 (both inclusive).
+            animationCounter = i / (animationCounterCombatStanceMax * 100);                                             // Randomize animation counter so that not all entities are animating in sync.
+        }
+    }
+
+    public void setConversing(boolean conversing) {
+        this.conversing = conversing;
+        if (conversing) {
+            cancelAction();
+        }
+    }
+
     public void setColliding(boolean colliding) {
         this.colliding = colliding;
     }
@@ -1389,8 +1679,8 @@ public abstract class EntityBase extends Drawable {
         this.hidden = hidden;
     }
 
-    public void setDefaultAction(DefaultIdle defaultIdle) {
-        this.defaultIdle = defaultIdle;
+    public void setDefaultAction(DefaultIdleAction defaultIdleAction) {
+        this.defaultIdleAction = defaultIdleAction;
     }
 
     public void startFollowingPath(int goalCol, int goalRow) {

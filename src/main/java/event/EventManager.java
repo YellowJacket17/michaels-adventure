@@ -274,14 +274,14 @@ public class EventManager {
      */
     public void setConversing(EntityBase target) {
 
-        if (!gp.getEntityM().getConversingEntities().contains(gp.getEntityM().getPlayer().getEntityId())) {
+        if (!gp.getEntityM().getPlayer().isConversing()) {
 
-            gp.getEntityM().getConversingEntities().add(gp.getEntityM().getPlayer().getEntityId());                     // The player has begun conversing with an entity.
+            gp.getEntityM().getPlayer().setConversing(true);                                                            // The player has begun conversing with an entity.
         }
 
-        if (!gp.getEntityM().getConversingEntities().contains(target.getEntityId())) {
+        if (!target.isConversing()) {
 
-            gp.getEntityM().getConversingEntities().add(target.getEntityId());                                          // An NPC has begun conversing with the player.
+            target.setConversing(true);                                                                                 // An NPC has begun conversing with the player.
         }
     }
 

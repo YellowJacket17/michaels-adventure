@@ -41,3 +41,6 @@ build/
 ### Audio ###
 *.wav
 *.ogg
+
+## Illustrations ##
+illustrations/

@@ -238,6 +238,8 @@ public class CombatManager {
 
     /**
      * Initiates combat fade-to-black transition and performs necessary loading.
+     * Applicable entities will be set to a state of combating.
+     * Note that any entities in a state of conversing will be removed from said state.
      *
      * @param col center column of combat field
      * @param row center row of combat field
@@ -258,6 +260,8 @@ public class CombatManager {
 
     /**
      * Initiates entering combat with a fade-to-black transition and performs necessary loading.
+     * Applicable entities will be set to a state of combating.
+     * Note that any entities in a state of conversing will be removed from said state.
      *
      * @param col center column of combat field
      * @param row center row of combat field
@@ -278,7 +282,9 @@ public class CombatManager {
 
 
     /**
-     * Initiates combat with a fade-to-black transition.
+     * Initiates combat with a fade-to-black transition and performs necessary loading.
+     * Applicable entities will be set to a state of combating.
+     * Note that any entities in a state of conversing will be removed from said state.
      *
      * @param col center column of combat field
      * @param row center row of combat field
@@ -477,6 +483,8 @@ public class CombatManager {
                 handleBasicExitCombatTransitionLoading();
                 break;
         }
+        resetAllCombatingEntityStats();
+        gp.getEntityM().clearCombatingEntities();
     }
 
 
@@ -492,8 +500,6 @@ public class CombatManager {
                 break;
         }
         reset();
-        resetAllCombatingEntityStats();
-        gp.getEntityM().clearCombatingEntities();
         combatActive = false;
     }
 
@@ -1149,7 +1155,6 @@ public class CombatManager {
         setCombating(gp.getEntityM().getPlayer());
         gp.getEntityM().getPlayer().setCol(fieldCenterCol - 4);
         gp.getEntityM().getPlayer().setRow(fieldCenterRow);
-        gp.getEntityM().getPlayer().cancelAction();
         gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
 
         int placedPartyMembers = 0;
@@ -1159,7 +1164,6 @@ public class CombatManager {
             if (entity != null) {
 
                 setCombating(entity);
-                entity.cancelAction();
                 entity.setDirectionCurrent(EntityDirection.RIGHT);
                 entity.setCol(fieldCenterCol - 5);
 
@@ -1201,7 +1205,6 @@ public class CombatManager {
 
                 EntityBase opponent = gp.getEntityM().getEntityById(entityId);
                 setCombating(opponent);
-                opponent.cancelAction();
                 opponent.setDirectionCurrent(EntityDirection.LEFT);
 
                 if (placedNonPlayerSideEntities == 0) {
@@ -1726,9 +1729,9 @@ public class CombatManager {
      */
     private void setCombating(EntityBase target) {
 
-        if (!gp.getEntityM().getCombatingEntities().contains(target.getEntityId())) {
+        if (!target.isCombating()) {
 
-            gp.getEntityM().getCombatingEntities().add(target.getEntityId());
+            target.setCombating(true);
             storedEntityCols.put(target.getEntityId(), target.getCol());
             storedEntityRows.put(target.getEntityId(), target.getRow());
             storedEntityDirections.put(target.getEntityId(), target.getDirectionCurrent());

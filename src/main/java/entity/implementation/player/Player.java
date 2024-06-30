@@ -9,8 +9,6 @@ import entity.enumeration.EntityDirection;
 import entity.enumeration.EntityType;
 import core.GamePanel;
 import event.enumeration.EventType;
-import item.implementation.Itm_Controller;
-import item.implementation.Itm_Key;
 import item.ItemBase;
 import org.joml.Vector2f;
 import asset.AssetPool;
@@ -181,19 +179,23 @@ public class Player extends EntityBase {
     public void update(double dt) {
 
         // These are core actions that take precedent over all others.
-        if (gp.getEntityM().getCombatingEntities().contains(entityId)) {
-            // TODO : Add combat-specific logic here.
+        if (playingCombatAttackAnimation) {
+            updateCombatAttackAnimation(dt);
             return;
         }
 
-        if (gp.getEntityM().getConversingEntities().contains(entityId)) {
+        if (combating) {
+            updateCombatStanceAnimation(dt);
             return;
         }
+
+        if (conversing) {return;}
 
         if (isOnEntity()) {
             actionFollowEntity(dt, onEntityId);
             return;
         }
+
         if (onPath) {
             actionPath(dt, onPathGoalCol, onPathGoalRow);
             return;
@@ -202,10 +204,10 @@ public class Player extends EntityBase {
         // Set other actions.
         switch (gp.getPrimaryGameState()) {
             case EXPLORE:
-                updateAction(dt);
+                updateWalkingAction(dt);
                 break;
             case DIALOGUE:
-                updateAction(dt);
+                updateWalkingAction(dt);
                 break;
             case PARTY_MENU:
                 break;
@@ -232,11 +234,11 @@ public class Player extends EntityBase {
         switch (gp.getTransitionS().getState()) {
             case FADE_TO:                                                                                               // Phase 1: Set the player to a walking sprite.
                 moving = false;                                                                                         // Cancel the player movement that triggered this transition event.
-                setWalkingSprite();
+                stageWalkingSprite();
                 updateWorldPosition(dt);                                                                                // Update the world position of the player by one unit of its speed in the current direction.
                 break;
             case ACTIVE:                                                                                                // Phase 2: Set the player to an idle sprite.
-                setIdleSprite();
+                stageIdleSprite();
                 directionCurrent = directionCandidate;                                                                  // Set the direction the player will be facing when loaded into the new map.
                 directionLast = directionCandidate;
                 break;
@@ -257,7 +259,7 @@ public class Player extends EntityBase {
 
         boolean obtainable = false;
 
-        if (gp.getItemM().checkStackable(itemId)) {                                                                                       // Logic for if the item is stackable.
+        if (gp.getItemM().checkStackable(itemId)) {                                                                     // Logic for if the item is stackable.
 
             int index = searchPartiallyFilledItemStack(itemId);                                                         // If the item is already in the player's inventory, retrieve the index that the item occupies in the `inventory` array; this is NOT the item ID.
 
@@ -341,7 +343,7 @@ public class Player extends EntityBase {
 
 
     @Override
-    protected void updateAction(double dt) {
+    protected void updateWalkingAction(double dt) {
 
         if (moving) {                                                                                                   // This will execute if the player entity is currently in a state of motion.
 
@@ -391,16 +393,16 @@ public class Player extends EntityBase {
 
             if ((turning && (worldCounter <= 16 / 2)) || (worldCounter <= GamePanel.NATIVE_TILE_SIZE / 2)) {            // Walking animation; player entity will have a foot forward for half of the world units traversed.
 
-                if (spriteNumLast == 2) {
+                if (walkSpriteNumLast == 2) {
 
-                    spriteNumCurrent = 3;
+                    walkSpriteNumCurrent = 3;
                 } else {
 
-                    spriteNumCurrent = 2;
+                    walkSpriteNumCurrent = 2;
                 }
             } else {
 
-                spriteNumCurrent = 1;
+                walkSpriteNumCurrent = 1;
             }
 
             if ((turning && (worldCounter >= 16)) || (worldCounter >= GamePanel.NATIVE_TILE_SIZE)) {                    // Check if the world unit counter meets criteria to finish turning OR check if the player entity has moved a number of world units equal to a tile size in the current state of motion.
@@ -428,12 +430,12 @@ public class Player extends EntityBase {
                     directionLast = directionCurrent;
                 }
 
-                if (spriteNumLast == 2) {                                                                               // Swap which foot will step forward for the next walking cycle.
+                if (walkSpriteNumLast == 2) {                                                                               // Swap which foot will step forward for the next walking cycle.
 
-                    spriteNumLast = 3;
+                    walkSpriteNumLast = 3;
                 } else {
 
-                    spriteNumLast = 2;
+                    walkSpriteNumLast = 2;
                 }
             }
         }
@@ -445,23 +447,32 @@ public class Player extends EntityBase {
      */
     private void setupSprite() {
 
-        down1 = AssetPool.getSpritesheet("characters").getSprite(0);
-        down2 = AssetPool.getSpritesheet("characters").getSprite(1);
-        down3 = AssetPool.getSpritesheet("characters").getSprite(2);
+        idleDown = AssetPool.getSpritesheet("characters").getSprite(0);
+        walkDown1 = AssetPool.getSpritesheet("characters").getSprite(1);
+        walkDown2 = AssetPool.getSpritesheet("characters").getSprite(2);
 
-        up1 = AssetPool.getSpritesheet("characters").getSprite(3);
-        up2 = AssetPool.getSpritesheet("characters").getSprite(4);
-        up3 = AssetPool.getSpritesheet("characters").getSprite(5);
+        idleUp = AssetPool.getSpritesheet("characters").getSprite(3);
+        walkUp1 = AssetPool.getSpritesheet("characters").getSprite(4);
+        walkUp2 = AssetPool.getSpritesheet("characters").getSprite(5);
 
-        left1 = AssetPool.getSpritesheet("characters").getSprite(6);
-        left2 = AssetPool.getSpritesheet("characters").getSprite(7);
-        left3 = AssetPool.getSpritesheet("characters").getSprite(8);
+        idleLeft = AssetPool.getSpritesheet("characters").getSprite(6);
+        walkLeft1 = AssetPool.getSpritesheet("characters").getSprite(7);
+        walkLeft2 = AssetPool.getSpritesheet("characters").getSprite(8);
 
-        right1 = AssetPool.getSpritesheet("characters").getSprite(9);
-        right2 = AssetPool.getSpritesheet("characters").getSprite(10);
-        right3 = AssetPool.getSpritesheet("characters").getSprite(11);
+        idleRight = AssetPool.getSpritesheet("characters").getSprite(9);
+        walkRight1 = AssetPool.getSpritesheet("characters").getSprite(10);
+        walkRight2 = AssetPool.getSpritesheet("characters").getSprite(11);
 
-        sprite = down1;
+        combatStanceLeft1 = AssetPool.getSpritesheet("characters").getSprite(12);
+        combatStanceLeft2 = AssetPool.getSpritesheet("characters").getSprite(13);
+
+        combatStanceRight1 = AssetPool.getSpritesheet("characters").getSprite(15);
+        combatStanceRight2 = AssetPool.getSpritesheet("characters").getSprite(16);
+
+        combatAttackLeft = AssetPool.getSpritesheet("characters").getSprite(14);
+        combatAttackRight = AssetPool.getSpritesheet("characters").getSprite(17);
+
+        sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
     }
@@ -573,7 +584,7 @@ public class Player extends EntityBase {
                     checkColliding();                                                                                   // Check collision.
                 } else {                                                                                                // If player is not moving, set idle sprite.
 
-                    spriteNumCurrent = 1;
+                    walkSpriteNumCurrent = 1;
                 }
             }
         }
@@ -592,7 +603,7 @@ public class Player extends EntityBase {
                 && (interactionCountdown <= 0)) {
 
             if ((!gp.getDialogueR().isReadingConversation())
-                    && (gp.getDialogueR().getActiveConv().isPlayerInputToEnd())) {                                     // If no longer reading a conversation AND player input is required to end the conversation.
+                    && (gp.getDialogueR().getActiveConv().isPlayerInputToEnd())) {                                      // If no longer reading a conversation AND player input is required to end the conversation.
 
                 if (gp.getDialogueR().getActiveConv().getConvId() == -3) {
 
@@ -600,7 +611,7 @@ public class Player extends EntityBase {
                     interactionCountdown = stagedMenuInteractionCountdown;                                              // Player must wait before interacting with another action, for example (prevents instantly progressing next action that appears).
                 } else {
 
-                    gp.getEventM().handlePostConversation(gp.getDialogueR().getActiveConv().getConvId());              // Check to see if any events will be triggered once the conversation has finished.
+                    gp.getEventM().handlePostConversation(gp.getDialogueR().getActiveConv().getConvId());               // Check to see if any events will be triggered once the conversation has finished.
                 }
             } else {
 
