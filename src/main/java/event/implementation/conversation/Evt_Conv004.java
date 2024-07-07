@@ -19,6 +19,7 @@ public class Evt_Conv004 extends EventConvBase {
     @Override
     public void run() {
 
-        gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, "testTrack4", gp.getEntityM().getEntityById(8));
+        gp.getEventM().cleanupConversation(1);
+        gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, "testTrack3", gp.getEntityM().getEntityById(8));
     }
 }

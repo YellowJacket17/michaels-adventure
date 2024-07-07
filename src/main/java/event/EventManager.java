@@ -288,28 +288,31 @@ public class EventManager {
 
     /**
      * Initiates a player conversation with a target entity.
+     * Both the target entity and player entity will be set to face each other.
      *
      * @param target ID of the entity entering a conversation with the player entity
-     * @param playerDirection direction the player entity is currently facing (used to make the target entity face the player entity)
      * @param convId ID of the conversation to be initiated
      */
-    public void talkToNpc(EntityBase target, EntityDirection playerDirection, int convId) {
+    public void talkToNpc(EntityBase target, int convId) {
 
-        setConversing(target);                                                                                          // The NPC and player have begun conversing.
+        setConversing(target);                                                                                          // Sets both NPC and player entity to states of conversing.
+        EntityBase player = gp.getEntityM().getPlayer();
 
-        switch (playerDirection) {                                                                                      // Have the NPC face the player's direction.
-            case UP:
-                target.setDirectionCurrent(EntityDirection.DOWN);
-                break;
-            case DOWN:
-                target.setDirectionCurrent(EntityDirection.UP);
-                break;
-            case LEFT:
-                target.setDirectionCurrent(EntityDirection.RIGHT);
-                break;
-            case RIGHT:
-                target.setDirectionCurrent(EntityDirection.LEFT);
-                break;
+        if ((target.getRow() > player.getRow()) && (target.getCol() == player.getCol())) {                              // Have both NPC and player entity face eac other.
+            target.setDirectionCurrent(EntityDirection.UP);
+            gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.DOWN);
+
+        } else if ((target.getRow() < player.getRow()) && (target.getCol() == player.getCol())) {
+            target.setDirectionCurrent(EntityDirection.DOWN);
+            gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.UP);
+
+        } else if ((target.getCol() > player.getCol()) && (target.getRow() == player.getRow())) {
+            target.setDirectionCurrent(EntityDirection.LEFT);
+            gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
+
+        } else if ((target.getCol() < player.getCol()) && (target.getRow() == player.getRow())) {
+            target.setDirectionCurrent(EntityDirection.RIGHT);
+            gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.LEFT);
         }
         gp.getDialogueR().initiateConversation(convId);                                                                 // Trigger the appropriate conversation with the NPC.
     }

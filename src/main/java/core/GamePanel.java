@@ -382,7 +382,7 @@ public class GamePanel {
         // Sounds.
         AssetPool.addSound("testTrack1", "sound/tracks/testTrack1.ogg", "sound/tracks/testTrack1.ogg");
         AssetPool.addSound("testTrack2", "sound/tracks/testIntro.ogg", "sound/tracks/testLoop.ogg");
-        AssetPool.addSound("testTrack4", "sound/tracks/testTrack4.ogg", "sound/tracks/testTrack4.ogg");
+        AssetPool.addSound("testTrack3", "sound/tracks/testTrack3.ogg", "sound/tracks/testTrack3.ogg");
         AssetPool.addSound("testEffect1", "sound/effects/testEffect1.ogg");
 
         // Illustrations.
@@ -397,8 +397,8 @@ public class GamePanel {
      * @param currentPrimaryGameState primary game state being switched from
      * @param newPrimaryGameState primary game state being switched to
      */
-    private void primaryGameStateInitialization(PrimaryGameState currentPrimaryGameState,
-                                                PrimaryGameState newPrimaryGameState) {
+    private void primaryGameStateInit(PrimaryGameState currentPrimaryGameState,
+                                      PrimaryGameState newPrimaryGameState) {
 
         // Tidy up the state being switching from.
         switch (currentPrimaryGameState) {
@@ -612,7 +612,7 @@ public class GamePanel {
 
     // SETTERS
     public void setPrimaryGameState(PrimaryGameState primaryGameState) {
-        primaryGameStateInitialization(this.primaryGameState, primaryGameState);
+        primaryGameStateInit(this.primaryGameState, primaryGameState);
         this.primaryGameState = primaryGameState;
     }
 

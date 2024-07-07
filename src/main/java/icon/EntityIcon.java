@@ -18,7 +18,7 @@ public class EntityIcon extends Drawable {
     /**
      * Icon sprite.
      */
-    private Sprite down1, down2, down3;
+    private Sprite idleDown, walkDown1, walkDown2;
 
     /**
      * Boolean tracking whether the current icon is in a selected state or not.
@@ -50,36 +50,38 @@ public class EntityIcon extends Drawable {
 
 
     /**
-     * Adds frame time to this animation counter value.
+     * Updates the state of this entity icon by one frame if selected.
+     * A down walking animation is rendered if selected.
      *
      * @param dt time since last frame (seconds)
      */
-    public void iterateCounter(double dt) {
+    public void update(double dt) {
 
-        counter += dt;
-    }
+        if (selected) {
 
-    /**
-     * Subtracts the maximum allowed animation counter value from this animation counter value.
-     * If this counter value is less than the maximum allowed value, then this counter value will be set to zero.
-     */
-    public void rollbackCounter() {
+            counter += dt;
 
-        if (counter >= counterMax) {
+            while (counter > counterMax) {
 
-            counter -= counterMax;
-        } else {
+                counter -= counterMax;
+            }
 
-            counter = 0;
+            if (counter <= 0.2) {
+                sprite = idleDown;
+
+            } else if (counter <= 0.4) {
+                sprite = walkDown1;
+
+            } else if (counter <= 0.6) {
+                sprite = idleDown;
+
+            } else if (counter <= 0.8) {
+                sprite = walkDown2;
+
+            } else {
+                sprite = idleDown;
+            }
         }
-    }
-
-    /**
-     * Resets this animation counter back to zero.
-     */
-    public void resetCounter() {
-
-        counter = 0;
     }
 
 
@@ -88,48 +90,29 @@ public class EntityIcon extends Drawable {
         return entityId;
     }
 
-    public Sprite getDown1() {
-        return down1;
-    }
-
-    public Sprite getDown2() {
-        return down2;
-    }
-
-    public Sprite getDown3() {
-        return down3;
-    }
-
     public boolean isSelected() {
         return selected;
     }
 
-    public double getCounter() {
-        return counter;
-    }
-
-    public double getCounterMax() {
-        return counterMax;
-    }
-
 
     // SETTERS
-    public void setDown1(Sprite down1) {
-        this.down1 = down1;
+    public void setIdleDown(Sprite idleDown) {
+        this.idleDown = idleDown;
     }
 
-    public void setDown2(Sprite down2) {
-        this.down2 = down2;
+    public void setWalkDown1(Sprite walkDown1) {
+        this.walkDown1 = walkDown1;
     }
 
-    public void setDown3(Sprite down3) {
-        this.down3 = down3;
+    public void setWalkDown2(Sprite walkDown2) {
+        this.walkDown2 = walkDown2;
     }
 
     public void setSelected(boolean selected) {
         this.selected = selected;
         if (!selected) {
-            resetCounter();
+            counter = 0;
+            sprite = idleDown;
         }
     }
 }

@@ -27,12 +27,12 @@ public class GuiIconManager {
     private final GamePanel gp;
 
     /**
-     * Map to store icons; icon ID is the key, icon is the value
+     * Map to store GUI icons; icon ID is the key, icon is the value
      */
     private final HashMap<Integer, GuiIcon> icons = new HashMap<>();
 
     /**
-     * Set to store icon render errors.
+     * Set to store GUI icon render errors.
      * If an icon render error occurs, the ID associated with the icon will be added to this set.
      * This prevents a render error from that icon being printed to the console again.
      */
@@ -66,32 +66,18 @@ public class GuiIconManager {
 
         if (guiIcon != null) {
 
-            Sprite sprite;
-
-            if (guiIcon.isSelected()) {
-
-                sprite = guiIcon.getActive();
-            } else {
-
-                sprite = guiIcon.getInactive();
-            }
-
-            if (sprite != null) {
-
                 Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
                 guiIcon.transform.position.x = worldCoords.x;
                 guiIcon.transform.position.y = worldCoords.y;
-                guiIcon.transform.scale.x = sprite.getNativeWidth();
-                guiIcon.transform.scale.y = sprite.getNativeHeight();
-                guiIcon.setSprite(sprite);
+                guiIcon.transform.scale.x = guiIcon.getNativeSpriteWidth();
+                guiIcon.transform.scale.y = guiIcon.getNativeSpriteHeight();
                 renderer.addDrawable(guiIcon, ZIndex.FIRST_LAYER);
-            } else if (!renderErrors.contains(iconId)) {
+        } else if (!renderErrors.contains(iconId)) {
 
-                UtilityTool.logError("Failed to add GUI icon with ID '"
-                        + iconId
-                        + "' to the render pipeline: sprites may not have been properly loaded upon icon initialization.");
-                renderErrors.add(iconId);
-            }
+            UtilityTool.logError("Failed to add GUI icon with ID '"
+                    + iconId
+                    + "' to the render pipeline: icon does not exist.");
+            renderErrors.add(iconId);
         }
     }
 
@@ -100,26 +86,16 @@ public class GuiIconManager {
      * Retrieves a GUI icon by ID.
      *
      * @param iconId ID of the icon to be retrieved
-     * @return icon
+     * @return GUI icon
      */
     public GuiIcon getIconById(int iconId) {
 
-        GuiIcon guiIcon = icons.get(iconId);
-
-        if (guiIcon == null) {
-
-            UtilityTool.logWarning("Attempted to retrieve an icon with ID '"
-                    + iconId
-                    + "' that does not exist.");
-
-            guiIcon = new GuiIcon(-1);                                                                                  // Return a placeholder icon to prevent the program from hitting an unhandled exception.
-        }
-        return guiIcon;
+        return icons.get(iconId);
     }
 
 
     /**
-     * Stages icon sprites to be loaded from resources directory.
+     * Stages GUI icon sprites to be loaded from resources directory.
      * In other words, this is the method that instantiates menu icons for the game.
      */
     private void loadIcons() {

@@ -9,7 +9,7 @@
                 "text": "Hi there!"
             },
             "1": {
-                "speakerName": "Test NPC 1",
+                "speakerName": "Test Enemy 1",
                 "text": "Hello! What are you doing here?"
             },
             "2": {
@@ -17,7 +17,7 @@
                 "text": "I'm testing different components of the game world. What are you up to?"
             },
             "3": {
-                "speakerName": "Test NPC 1",
+                "speakerName": "Test Enemy 1",
                 "text": "Oh, nothing much. I'm just a test NPC, but maybe one day I'll become something more! At least, that's what the creator told me. It's so great to be alive, wouldn't you agree?"
             },
             "4": {
@@ -44,11 +44,11 @@
         "map": 0,
         "dialogue": {
             "0": {
-                "speakerName": "Test NPC 2",
+                "speakerName": "Joe",
                 "text": "My, my, what a mysterious place this is..."
             },
             "1": {
-                "speakerName": "Test NPC 2",
+                "speakerName": "Joe",
                 "text": "Mind if we look around with you for a bit?"
             }
         }
@@ -59,7 +59,7 @@
         "map": 0,
         "dialogue": {
             "0": {
-                "speakerName": "Test NPC 2",
+                "speakerName": "Joe",
                 "text": "Alright, that's enough for now."
             },
             "1": {
@@ -74,7 +74,7 @@
         "map": 1,
         "dialogue": {
             "0": {
-                "speakerName": "Test NPC 2",
+                "speakerName": "Joe",
                 "text": "Would you mind taking us back to where you found us?"
             },
             "1": {
@@ -88,15 +88,15 @@
         "map": 1,
         "dialogue": {
             "0": {
-                "speakerName": "Test NPC 5",
+                "speakerName": "Test Enemy 2",
                 "text": "AH! You bumped into me!"
             },
             "1": {
-                "speakerName": "Michael",
+                "speakerName": "Mary",
                 "text": "Wha..."
             },
             "2": {
-                "speakerName": "Test NPC 5",
+                "speakerName": "Test Enemy 2",
                 "text": "You've ruined my day. Prepare to be pulverized, punk!"
             }
         }   

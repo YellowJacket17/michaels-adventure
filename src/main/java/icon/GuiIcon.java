@@ -58,14 +58,6 @@ public class GuiIcon extends Drawable {
         return active;
     }
 
-    public Sprite getInactive() {
-        return inactive;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
 
     // SETTERS
     public void setName(String name) {
@@ -74,13 +66,24 @@ public class GuiIcon extends Drawable {
 
     public void setActive(Sprite active) {
         this.active = active;
+        if (selected) {
+            sprite = this.active;
+        }
     }
 
     public void setInactive(Sprite inactive) {
         this.inactive = inactive;
+        if (!selected) {
+            sprite = this.inactive;
+        }
     }
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+        if (selected) {
+            sprite = active;
+        } else {
+            sprite = inactive;
+        }
     }
 }

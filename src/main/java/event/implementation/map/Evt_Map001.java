@@ -69,13 +69,13 @@ public class Evt_Map001 extends EventMapBase {
         switch (target.getEntityId()) {
             case 4:
                 if (type == EventType.CLICK) {
-                    gp.getEventM().talkToNpc(target, gp.getEntityM().getPlayer().getDirectionCurrent(), 0);
+                    gp.getEventM().talkToNpc(target, 0);
                     return true;
                 }
                 break;
             case 8:
                 if (type == EventType.STEP) {
-                    gp.getEventM().talkToNpc(target, gp.getEntityM().getPlayer().getDirectionCurrent(), 4);
+                    gp.getEventM().talkToNpc(target, 4);
                     return true;
                 }
                 break;
@@ -93,7 +93,7 @@ public class Evt_Map001 extends EventMapBase {
                         && (target.isOnEntity())
                         && (target.getOnEntityId() == gp.getEntityM().getPlayer().getEntityId())) {
 
-                    gp.getEventM().talkToNpc(target, gp.getEntityM().getPlayer().getDirectionCurrent(), 3);
+                    gp.getEventM().talkToNpc(target, 3);
                     return true;
                 }
                 break;
@@ -131,7 +131,7 @@ public class Evt_Map001 extends EventMapBase {
         // Trigger combat.
         if ((type == EventType.STEP) && (col == 25) && (row == 28)) {
 
-            gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, "testTrack4",
+            gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, "testTrack3",
                     gp.getEntityM().getEntityById(4), gp.getEntityM().getEntityById(8));
             return true;
         }

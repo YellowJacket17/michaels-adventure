@@ -532,8 +532,8 @@ public class UserInterface {
     private void renderItemIcons() {
 
         // Initializations.
-        int itemBackdropWorldWidth = gp.getGuiIconM().getIconById(6).getNativeSpriteWidth();
-        int itemBackdropWorldHeight = gp.getGuiIconM().getIconById(6).getNativeSpriteHeight();
+        int itemBackdropWorldWidth = gp.getGuiIconM().getIconById(6).getNativeSpriteWidth();                            // Both stackable and non-stackable background icons have same width, so doesn't matter which is used here.
+        int itemBackdropWorldHeight = gp.getGuiIconM().getIconById(6).getNativeSpriteHeight();                          // Both stackable and non-stackable background icons have same height, so doesn't matter which is used here.
         float itemBackdropScreenWidth = gp.getCamera().worldWidthToScreenWidth(itemBackdropWorldWidth);                 // Normalized (screen) width of the item/slot backdrop (both stackable and non-stackable are the same).
         float itemBackdropScreenHeight = gp.getCamera().worldHeightToScreenHeight(itemBackdropWorldHeight);             // Normalized (screen) height of the item/slot backdrop (both stackable and non-stackable are the same).
         float horizontalScreenSpacing = itemBackdropScreenWidth + 0.03f;                                                // Normalized (screen) horizontal spacing between each item slot/icon backdrop.
@@ -592,8 +592,8 @@ public class UserInterface {
 
                 if ((itemRowSelected == row) && (itemColSelected == col)) {
 
-                    int selectorWorldWidth = gp.getGuiIconM().getIconById(8).getNativeSpriteWidth();
-                    int selectorWorldHeight = gp.getGuiIconM().getIconById(8).getNativeSpriteHeight();
+                    int selectorWorldWidth = gp.getGuiIconM().getIconById(8).getNativeSpriteWidth();                    // Note that `getNativeSpriteWidth()` returns the width of either the active or inactive sprite, depending on whether the icon is selected or not.
+                    int selectorWorldHeight = gp.getGuiIconM().getIconById(8).getNativeSpriteHeight();                  // Note that `getNativeSpriteHeight()` returns the height of either the active or inactive sprite, depending on whether the icon is selected or not.
                     float selectorScreenWidth = gp.getCamera().worldWidthToScreenWidth(selectorWorldWidth);
                     float selectorScreenHeight = gp.getCamera().worldHeightToScreenHeight(selectorWorldHeight);
                     float selectorScreenX = itemBackdropScreenX
@@ -1138,31 +1138,31 @@ public class UserInterface {
     /**
      * Updates which party member is active in the party menu screen.
      */
-    private void setActivePartyMember() {
+    private void updateSelectedPartyMenuEntity() {
 
         Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
 
         switch (partySlotSelected) {
             case 0:
-                selectPartySlot0(true);                                                                                 // Set slot 0 (player entity) to selected.
-                selectPartySlot1(false);                                                                                // Set slot 1 to not selected.
-                selectPartySlot2(false);                                                                                // Set slot 2 to not selected.
+                setSelectionStatusPartySlot0(true);                                                                     // Set slot 0 (player entity) as selected.
+                setSelectionStatusPartySlot1(false);                                                                    // Set slot 1 as not selected.
+                setSelectionStatusPartySlot2(false);                                                                    // Set slot 2 as not selected.
                 break;
             case 1:
                 if ((gp.getEntityM().getParty().size() > 0) && (gp.getEntityM().getParty().get(keyArray[0]) != null)) { // Check whether a party member actually occupies this slot or not.
-                    selectPartySlot0(false);                                                                            // Set slot 0 (player entity) to not selected.
-                    selectPartySlot1(true);                                                                             // Set slot 1 to selected.
-                    selectPartySlot2(false);                                                                            // Set slot 2 to not selected.
+                    setSelectionStatusPartySlot0(false);                                                                // Set slot 0 (player entity) as not selected.
+                    setSelectionStatusPartySlot1(true);                                                                 // Set slot 1 as selected.
+                    setSelectionStatusPartySlot2(false);                                                                // Set slot 2 as not selected.
                 } else {
                     setPartySlotSelected(partySlotSelected - 1);                                                        // No party member exists in this slot, so move up to the slot above.
                 }
                 break;
             case 2:
                 if ((gp.getEntityM().getParty().size() > 1) && (gp.getEntityM().getParty().get(keyArray[1]) != null)) { // Check whether a part member actually occupies this slot or not.
-                    selectPartySlot0(false);                                                                            // Set slot 0 (player entity) to not selected.
-                    selectPartySlot1(false);                                                                            // Set slot 1 to not selected.
-                    selectPartySlot2(true);                                                                             // Set slot 2 to selected.
+                    setSelectionStatusPartySlot0(false);                                                                // Set slot 0 (player entity) as not selected.
+                    setSelectionStatusPartySlot1(false);                                                                // Set slot 1 as not selected.
+                    setSelectionStatusPartySlot2(true);                                                                 // Set slot 2 as selected.
                 } else {
                     setPartySlotSelected(partySlotSelected - 1);                                                        // No party member exists in this slot, so move up to the slot above.
                 }
@@ -1172,11 +1172,11 @@ public class UserInterface {
 
 
     /**
-     * Sets whether slot 0 (player) in the party menu is selected or not.
+     * Sets whether slot 0 (player entity) in the party menu is selected or not.
      *
      * @param selected whether slot 0 is selected (true) or not (false)
      */
-    private void selectPartySlot0(boolean selected) {
+    private void setSelectionStatusPartySlot0(boolean selected) {
 
         gp.getEntityIconM().getEntityIconById(gp.getEntityM().getPlayer().getEntityId()).setSelected(selected);
         gp.getGuiIconM().getIconById(3).setSelected(selected);
@@ -1188,7 +1188,7 @@ public class UserInterface {
      *
      * @param selected whether slot 1 is selected (true) or not (false)
      */
-    private void selectPartySlot1(boolean selected) {
+    private void setSelectionStatusPartySlot1(boolean selected) {
 
         Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
@@ -1207,7 +1207,7 @@ public class UserInterface {
      *
      * @param selected whether slot 2 is selected (true) or not (false)
      */
-    private void selectPartySlot2(boolean selected) {
+    private void setSelectionStatusPartySlot2(boolean selected) {
 
         Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
@@ -1291,7 +1291,7 @@ public class UserInterface {
         } else {
             this.partySlotSelected = partySlotSelected;
         }
-        setActivePartyMember();
+        updateSelectedPartyMenuEntity();
     }
 
     public void setItemRowSelected(int itemRowSelected) {

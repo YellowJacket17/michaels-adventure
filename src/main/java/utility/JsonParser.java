@@ -9,6 +9,8 @@ import entity.EntityBase;
 import entity.enumeration.DefaultIdleAction;
 import entity.implementation.character.Npc_Test1;
 import entity.implementation.character.Npc_Test2;
+import entity.implementation.character.Npc_Test3;
+import entity.implementation.character.Npc_Test4;
 import entity.implementation.object.Obj_Chest;
 import entity.implementation.object.Obj_Controller;
 import entity.implementation.object.Obj_Key;
@@ -319,6 +321,12 @@ public class JsonParser {
                 break;
             case "Npc_Test2":
                 entity = new Npc_Test2(gp, entityId);
+                break;
+            case "Npc_Test3":
+                entity = new Npc_Test3(gp, entityId);
+                break;
+            case "Npc_Test4":
+                entity = new Npc_Test4(gp, entityId);
                 break;
             case "Obj_Chest":
                 entity = new Obj_Chest(gp, entityId);

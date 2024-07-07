@@ -40,7 +40,7 @@
         "map": 1,
         "defaultAction": "randomSteps",
         "attributes": {
-            "name": "Test NPC 1",
+            "name": "Test Enemy 1",
             "speed": 120,
             "maxLife": 100,
             "life": 100,
@@ -70,7 +70,7 @@
         "map": 0,
         "defaultAction": "randomSteps",
         "attributes": {
-            "name": "Test NPC 2",
+            "name": "Joe",
             "speed": 120,
             "maxLife": 25,
             "life": 12,
@@ -95,12 +95,12 @@
 
     "6": {
         "type": "character",
-        "class": "Npc_Test1",
+        "class": "Npc_Test3",
         "collision": true,
         "map": 0,
         "defaultAction": "randomSteps",
         "attributes": {
-            "name": "Test NPC 3",
+            "name": "Howie",
             "speed": 120,
             "maxLife": 17,
             "life": 1,
@@ -124,12 +124,12 @@
 
     "7": {
         "type": "character",
-        "class": "Npc_Test1",
+        "class": "Npc_Test4",
         "collision": true,
         "map": 0,
         "defaultAction": "randomTurns",
         "attributes": {
-            "name": "Test NPC 4",
+            "name": "Logan",
             "speed": 120,
             "maxLife": 1,
             "life": 1,
@@ -157,7 +157,7 @@
         "map": 1,
         "defaultAction": "randomTurns",
         "attributes": {
-            "name": "Test NPC 5",
+            "name": "Test Enemy 2",
             "speed": 120,
             "maxLife": 125,
             "life": 125,

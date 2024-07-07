@@ -47,6 +47,11 @@ All `.ogg` files are omitted from the remote repository due to file size.
 These files belong in the `sound` directory in the project root.
 The application will not run without being able to load them.
 
+## Illustrations
+All illustrations are omitted from the remote repository ddue to file size.
+These files belong in the `illustrations` directory within the `resources` directory.
+The `illustrations` directory is omitted altogether from the remote repository.
+
 ## JSON Guidelines ##
 
 In the below guidelines, all text contained within square brackets is meant to be replaced in actual JSON files.

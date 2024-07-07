@@ -62,16 +62,7 @@ public class EntityIconManager {
         for (int key : entityIcons.keySet()) {
 
             entityIcon = entityIcons.get(key);
-
-            if (entityIcon.isSelected()) {
-
-                entityIcon.iterateCounter(dt);
-
-                while (entityIcon.getCounter() > entityIcon.getCounterMax()) {
-
-                    entityIcon.rollbackCounter();
-                }
-            }
+            entityIcon.update(dt);
         }
     }
 
@@ -90,32 +81,18 @@ public class EntityIconManager {
 
         if (entityIcon != null) {
 
-            Sprite sprite;
+            Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
+            entityIcon.transform.position.x = worldCoords.x;
+            entityIcon.transform.position.y = worldCoords.y;
+            entityIcon.transform.scale.x = entityIcon.getNativeSpriteWidth();
+            entityIcon.transform.scale.y = entityIcon.getNativeSpriteHeight();
+            renderer.addDrawable(entityIcon, ZIndex.FIRST_LAYER);
+        } else if (!renderErrors.contains(entityId)) {
 
-            if (entityIcon.isSelected()) {
-
-                sprite = selectEntitySprite(entityIcon);
-            } else {
-
-                sprite = entityIcon.getDown1();
-            }
-
-            if (sprite != null) {
-
-                Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
-                entityIcon.transform.position.x = worldCoords.x;
-                entityIcon.transform.position.y = worldCoords.y;
-                entityIcon.transform.scale.x = sprite.getNativeWidth();
-                entityIcon.transform.scale.y = sprite.getNativeHeight();
-                entityIcon.setSprite(sprite);
-                renderer.addDrawable(entityIcon, ZIndex.FIRST_LAYER);
-            } else if (!renderErrors.contains(entityId)) {
-
-                UtilityTool.logError("Failed to draw entity icon with entity ID '"
-                        + entityId
-                        + "' to the render pipeline: the entity icon may not have been loaded properly or may not exist.");
-                renderErrors.add(entityId);
-            }
+            UtilityTool.logError("Failed to add entity icon with entity ID '"
+                    + entityId
+                    + "' to the render pipeline: icon does not exist.");
+            renderErrors.add(entityId);
         }
     }
 
@@ -144,40 +121,29 @@ public class EntityIconManager {
      */
     public void addEntityIcon(int entityId) {
 
-        // TODO : Possibly add error (try/catch) if an entity has a null `down1` image.
-
         EntityBase entity = gp.getEntityM().getEntityById(entityId);
+        EntityIcon entityIcon = new EntityIcon(entityId);
 
-        if (entity != null) {
-
-            EntityIcon entityIcon = new EntityIcon(entityId);
-
-            Sprite down1 = entity.getIdleDown();
-            if (down1 != null ) {
-                entityIcon.setDown1(down1);
-            }
-
-            Sprite down2 = entity.getWalkDown1();
-            if (down2 != null) {
-                entityIcon.setDown2(down2);
-            } else {
-                entityIcon.setDown2(down1);
-            }
-
-            Sprite down3 = entity.getWalkDown2();
-            if (down3 != null) {
-                entityIcon.setDown3(down3);
-            } else {
-                entityIcon.setDown3(down1);
-            }
-
-            entityIcons.put(entity.getEntityId(), entityIcon);
-        } else {
-
-            UtilityTool.logWarning("Attempted to create an icon for an entity with ID '"
-                    + entityId
-                    + "' that does not exist.");
+        Sprite idleDown = entity.getIdleDown();
+        if (idleDown != null ) {
+            entityIcon.setIdleDown(idleDown);
         }
+
+        Sprite walkDown1 = entity.getWalkDown1();
+        if (walkDown1 != null) {
+            entityIcon.setWalkDown1(walkDown1);
+        } else {
+            entityIcon.setWalkDown1(idleDown);
+        }
+
+        Sprite walkDown2 = entity.getWalkDown2();
+        if (walkDown2 != null) {
+            entityIcon.setWalkDown2(walkDown2);
+        } else {
+            entityIcon.setWalkDown2(idleDown);
+        }
+
+        entityIcons.put(entity.getEntityId(), entityIcon);
     }
 
 
@@ -189,17 +155,7 @@ public class EntityIconManager {
      */
     public EntityIcon getEntityIconById(int entityId) {
 
-        EntityIcon entityIcon = entityIcons.get(entityId);
-
-        if (entityIcon == null) {
-
-            UtilityTool.logWarning("Attempted to retrieve an entity icon with entity ID '"
-                    + entityId
-                    + "' that does not exist.");
-
-            entityIcon = new EntityIcon(-1);                                                                            // Return a placeholder entity icon to prevent the program from hitting an unhandled exception.
-        }
-        return entityIcon;
+        return entityIcons.get(entityId);
     }
 
 
@@ -210,31 +166,5 @@ public class EntityIconManager {
 
         entityIcons.clear();
         renderErrors.clear();                                                                                           // Reset draw errors since the list of entity icons was reset.
-    }
-
-
-    /**
-     * Selects which sprite to draw for an entity icon if animated.
-     * A walking animation is drawn.
-     *
-     * @param entityIcon entity icon being checked
-     */
-    private Sprite selectEntitySprite(EntityIcon entityIcon) {
-
-        if (entityIcon.getCounter() <= 0.2) {
-            return entityIcon.getDown1();
-
-        } else if (entityIcon.getCounter() <= 0.4) {
-            return entityIcon.getDown2();
-
-        } else if (entityIcon.getCounter() <= 0.6) {
-            return entityIcon.getDown1();
-
-        } else if (entityIcon.getCounter() <= 0.8) {
-            return entityIcon.getDown3();
-
-        } else {
-            return entityIcon.getDown1();                                                                               // Default return sprite.
-        }
     }
 }
