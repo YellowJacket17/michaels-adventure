@@ -233,12 +233,18 @@ public abstract class EntityBase extends Drawable {
     // PATHFINDING
     /**
      * Boolean setting whether this entity is currently following a path or not.
+     * Note that this variable is not used when this entity is following another entity.
+     * It is only used when a path to an arbitrary goal in the world is being followed.
+     * If an entity is being followed, this variable will always be set to a default value of false.
      */
     protected boolean onPath = false;
 
     /**
      * Goal for this entity to reach when following a path.
      * The default value is zero when no path is being followed.
+     * Note that this variable is not used when this entity is following another entity.
+     * It is only used when a path to an arbitrary foal in the world is being followed.
+     * If an entity is being followed, this variable will always be set to a default value of zero.
      */
     protected int onPathGoalCol, onPathGoalRow;
 
@@ -977,15 +983,15 @@ public abstract class EntityBase extends Drawable {
 
             } else if ((worldY == nextWorldY) && (worldX < nextWorldX)) {                                               // Check if the entity can move right.
                 autoStep(EntityDirection.RIGHT);
-
-            } else {                                                                                                    // The entity has arrived at the goal.
-                stopFollowingPath();
             }
         } else {
 
-            stopFollowingPath();                                                                                        // A path to the goal was not found, so exit this state.
+            if (onPath) {
 
-            if ((startCol != goalCol) && (startRow != goalRow)) {
+                stopFollowingPath();                                                                                    // Entity has either arrived at destination or path to destination could not be found, so exit this state.
+            }
+
+            if ((onEntityId != NO_ENTITY_FOLLOWED) && (startCol != goalCol) && (startRow != goalRow)) {                 // Check if a path to the followed entity could not be found for a reason other than already arrived at destination.
 
                 onEntityId = NO_ENTITY_FOLLOWED;                                                                        // Reset the target entity.
 
@@ -1017,9 +1023,10 @@ public abstract class EntityBase extends Drawable {
 
         if (target != null) {
 
-            int goalCol = target.getColLast();                                                                          // Set the goal to be the target entity's last position.
-            int goalRow = target.getRowLast();                                                                          // ^^^
-            actionPath(dt, goalCol, goalRow);                                                                           // Initiate a pathfinding operation.
+            if ((moving) || (getCol() != target.getColLast()) || (getRow() != target.getRowLast())) {                   // Only update if the entity being followed has changed position.
+
+                actionPath(dt, target.getColLast(), target.getRowLast());                                               // Initiate a pathfinding operation.
+            }
         } else {
 
             onEntityId = NO_ENTITY_FOLLOWED;
@@ -1044,7 +1051,7 @@ public abstract class EntityBase extends Drawable {
 
             searchPath(goalCol, goalRow);
         }
-        updateWalkingAction(dt);                                                                                               // The entity's position on the map will be updated each frame while `onPath` is true (i.e., it will continue walking).
+        updateWalkingAction(dt);                                                                                        // The entity's position on the map will be updated each frame while `onPath` is true (i.e., it will continue walking).
     }
 
 

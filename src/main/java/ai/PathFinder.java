@@ -92,10 +92,11 @@ public class PathFinder {
 
         int col = 0;
         int row = 0;
+        int tileNum;
 
         while ((col < GamePanel.MAX_WORLD_COL) && (row < GamePanel.MAX_WORLD_ROW)) {
 
-            int tileNum = gp.getMapM().getLoadedMap().getMapTileNum()[col][row];
+            tileNum = gp.getMapM().getLoadedMap().getMapTileNum()[col][row];
 
             if (gp.getTileM().getTiles()[tileNum].hasCollision()) {                                                     // Check whether the tile a node occupies is solid or not; set the node to solid if true.
 
@@ -116,6 +117,7 @@ public class PathFinder {
 
     /**
      * Searches for a path for an entity to follow using the set node configurations.
+     * If the entity is already at the goal, no path will be found.
      * Note that the `setNodes()` method in the PathFinder class should be called first.
      *
      * @param entity entity that a path is being found for
@@ -125,10 +127,19 @@ public class PathFinder {
 
         this.entity = entity;
 
+        if (entity.getCol() == goalNode.getCol() && entity.getRow() == goalNode.getRow()) {
+            return false;                                                                                               // Entity is already at goal, so no need to calculate path.
+        }
+
+        int col;
+        int row;
+        int bestNodeIndex;
+        int bestNodefCost;
+
         while ((!goalReached) && (step < 500)) {
 
-            int col = currentNode.getCol();
-            int row = currentNode.getRow();
+            col = currentNode.getCol();
+            row = currentNode.getRow();
 
             // Check the current node.
             currentNode.setChecked(true);
@@ -155,8 +166,8 @@ public class PathFinder {
             }
 
             // Find the best node by scanning the list of open nodes.
-            int bestNodeIndex = 0;                                                                                      // Initialize the index of the best node.
-            int bestNodefCost = 999;                                                                                    // Initialize to a high value since we'll be checking for lower values.
+            bestNodeIndex = 0;                                                                                          // Initialize the index of the best node.
+            bestNodefCost = 999;                                                                                        // Initialize to a high value since we'll be checking for lower values.
 
             for (int i = 0; i < openList.size(); i++) {
 
@@ -185,7 +196,6 @@ public class PathFinder {
                 goalReached = true;
                 trackThePath();
             }
-
             step++;
         }
         return goalReached;
