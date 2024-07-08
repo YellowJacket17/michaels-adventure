@@ -71,9 +71,6 @@ public class CutsceneManager {
                         cts_001.run(dt);
                     }
                     break;
-                default:
-                    UtilityTool.logWarning("Attempted to play a cutscene that does not exist.");
-                    exitCutscene();
             }
         }
     }

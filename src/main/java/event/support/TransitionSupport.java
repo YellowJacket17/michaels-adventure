@@ -97,7 +97,7 @@ public class TransitionSupport {
         gp.setLockPlayerControl(true);                                                                                  // Prevent player from providing inputs.
         transitionActive = true;                                                                                        // Indicate that a transition is being actioned.
         activeTransitionType = transitionType;                                                                          // Set the overarching transition type.
-        state = FadeState.FADE_TO;                                                                      // All transitions start with a fade to.
+        state = FadeState.FADE_TO;                                                                                      // All transitions start with a fade to.
         gp.getFadeS().initiateFlash(transitionFadeToDuration, transitionFadeFromDuration, transitionLoadDuration,
                 new Vector3f(0, 0, 0));                                                                                 // Initiate a fade to and fade from black.
     }

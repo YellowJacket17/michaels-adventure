@@ -347,7 +347,9 @@ public class EventManager {
                 // Nothing here.
                 break;
             default:
-                throw new IllegalArgumentException("Attempted to cleanup a conversation using an illegal mode");
+                throw new IllegalArgumentException("Attempted to cleanup a conversation using an illegal mode '"
+                        + mode
+                        + "'");
         }
     }
 
@@ -386,7 +388,9 @@ public class EventManager {
                 // Nothing here.
                 break;
             default:
-                throw new IllegalArgumentException("Attempted to cleanup a sub-menu using an illegal mode");
+                throw new IllegalArgumentException("Attempted to cleanup a sub-menu using an illegal mode '"
+                        + mode
+                        + "'");
         }
     }
 
@@ -400,15 +404,7 @@ public class EventManager {
      */
     public void setEntityFollowPath(int entityId, int goalCol, int goalRow) {
 
-        EntityBase entity = gp.getEntityM().getEntityById(entityId);
-
-        if (entity != null) {
-
-            entity.startFollowingPath(goalCol, goalRow);
-        } else {
-
-            UtilityTool.logWarning("Attempted to set an entity that does not exist to follow a path.");
-        }
+        gp.getEntityM().getEntityById(entityId).startFollowingPath(goalCol, goalRow);
     }
 
 
@@ -416,25 +412,31 @@ public class EventManager {
      * Sets an entity to follow a target entity.
      *
      * @param followerId ID of the follower entity
-     * @param targetId ID of the entity to be followed
+     * @param followedId ID of the entity to be followed
      */
-    public void setEntityFollowTarget(int followerId, int targetId) {
+    public void setEntityFollowTarget(int followerId, int followedId) {
 
         EntityBase follower = gp.getEntityM().getEntityById(followerId);
-        EntityBase target = gp.getEntityM().getEntityById(targetId);
+        EntityBase target = gp.getEntityM().getEntityById(followedId);
 
-        if ((follower != null) && (target != null) && (followerId != targetId)) {
+        if ((follower != null) && (target != null) && (followerId != followedId)) {
 
-            follower.startFollowingEntity(targetId);                                                                 // Set the ID of the target entity that the follower entity is following; sets the follower entity to a following state.
+            follower.startFollowingEntity(followedId);
         } else if (follower == null) {
 
-            UtilityTool.logWarning("Attempted to have an entity that does not exist follow another entity.");
+            throw new IllegalArgumentException("Attempted to have an entity with ID '"
+                    + followerId
+                    + "' that does not exist follow another entity");
         } else if (target == null) {
 
-            UtilityTool.logWarning("Attempted to have an entity that does not exist be followed by another entity.");
-        } else if (followerId == targetId) {
+            throw new IllegalArgumentException("Attempted to have an entity with ID '"
+                    + followedId
+                    + "' that does not exist be followed by another entity");
+        } else if (followerId == followedId) {
 
-            UtilityTool.logWarning("Attempted to have an entity follow itself.");
+            throw new IllegalArgumentException("Attempted to have an entity with ID '"
+                    + followerId
+                    + "' follow itself");
         }
     }
 
@@ -446,15 +448,7 @@ public class EventManager {
      */
     public void setEntityWalking(int entityId) {
 
-        EntityBase entity = gp.getEntityM().getEntityById(entityId);
-
-        if (entity != null) {
-
-            entity.setSpeed(2);
-        } else {
-
-            UtilityTool.logWarning("Attempted to set an entity that does not exist to a walking speed.");
-        }
+        gp.getEntityM().getEntityById(entityId).setSpeed(2);
     }
 
 
@@ -465,15 +459,7 @@ public class EventManager {
      */
     public void setEntityRunning(int entityId) {
 
-        EntityBase entity = gp.getEntityM().getEntityById(entityId);
-
-        if (entity != null) {
-
-            entity.setSpeed(4);
-        } else {
-
-            UtilityTool.logWarning("Attempted to set an entity that does not exist to a running speed.");
-        }
+        gp.getEntityM().getEntityById(entityId).setSpeed(4);
     }
 
 
@@ -484,20 +470,13 @@ public class EventManager {
      */
     public void stopEntityFollowTarget(int followerId) {
 
-        EntityBase follower = gp.getEntityM().getEntityById(followerId);
-
-        if (follower != null) {
-
-            follower.stopFollowingEntity();                                                                             // Exit a following state.
-        } else {
-
-            UtilityTool.logWarning("Attempted to stop an entity that does not exist from following another entity.");
-        }
+        gp.getEntityM().getEntityById(followerId).stopFollowingEntity();                                                // Exit a following state.;
     }
 
 
     /**
-     * Checks if an entity (follower) is following another entity (followedCandidate) via A* pathfinding, either directly or in a chain.
+     * Checks if an entity (follower) is following another entity (followedCandidate) via A* pathfinding, either
+     * directly or in a chain.
      *
      * @param followedCandidate entity being checked to see if the follower is following it
      * @param follower follower entity

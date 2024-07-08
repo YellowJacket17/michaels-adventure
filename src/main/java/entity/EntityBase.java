@@ -991,9 +991,12 @@ public abstract class EntityBase extends Drawable {
                 stopFollowingPath();                                                                                    // Entity has either arrived at destination or path to destination could not be found, so exit this state.
             }
 
-            if ((onEntityId != NO_ENTITY_FOLLOWED) && (startCol != goalCol) && (startRow != goalRow)) {                 // Check if a path to the followed entity could not be found for a reason other than already arrived at destination.
+            if (onEntityId != NO_ENTITY_FOLLOWED) {
 
-                onEntityId = NO_ENTITY_FOLLOWED;                                                                        // Reset the target entity.
+                onEntityId = NO_ENTITY_FOLLOWED;
+            }
+
+            if ((startCol != goalCol) && (startRow != goalRow)) {                                                       // Check if a path could not be found for a reason other than already arrived at destination.
 
                 UtilityTool.logError("Entity"
                         + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
@@ -1021,19 +1024,9 @@ public abstract class EntityBase extends Drawable {
 
         EntityBase target = gp.getEntityM().getEntityById(entityId);
 
-        if (target != null) {
+        if ((moving) || (getCol() != target.getColLast()) || (getRow() != target.getRowLast())) {                       // Only update if the entity being followed has changed position.
 
-            if ((moving) || (getCol() != target.getColLast()) || (getRow() != target.getRowLast())) {                   // Only update if the entity being followed has changed position.
-
-                actionPath(dt, target.getColLast(), target.getRowLast());                                               // Initiate a pathfinding operation.
-            }
-        } else {
-
-            onEntityId = NO_ENTITY_FOLLOWED;
-
-            UtilityTool.logError("Target entity with ID '"
-                    + entityId
-                    + "' does not exist: a path to follow the target could not be generated.");
+            actionPath(dt, target.getColLast(), target.getRowLast());                                                   // Initiate a pathfinding operation.
         }
     }
 
@@ -1707,12 +1700,10 @@ public abstract class EntityBase extends Drawable {
     public void startFollowingEntity(int entityId) {
         if (this.entityId != entityId) {                                                                                // Ensure that we're not trying to make the entity follow itself.
             EntityBase target = gp.getEntityM().getEntityById(entityId);
-            if (target != null) {
-                EntityBase followed = gp.getEntityM().getEntityById(gp.getEventM().checkEntityChainDown(target));       // If a chain of followers is following the target entity, then this entity will be placed at the back of the chain (i.e., this entity will actually follow the entity at the end of the chain).
-                onEntityId = followed.getEntityId();
-                followed.setColLast(this.getCol());                                                                     // The follower will always find a path to the followed's last position; setting it this way prevents the follower from instantly moving once following begins.
-                followed.setRowLast(this.getRow());                                                                     // ^^^
-            }
+            EntityBase followed = gp.getEntityM().getEntityById(gp.getEventM().checkEntityChainDown(target));           // If a chain of followers is following the target entity, then this entity will be placed at the back of the chain (i.e., this entity will actually follow the entity at the end of the chain).
+            onEntityId = followed.getEntityId();
+            followed.setColLast(this.getCol());                                                                         // The follower will always find a path to the followed's last position; setting it this way prevents the follower from instantly moving once following begins.
+            followed.setRowLast(this.getRow());                                                                         // ^^^
         }
     }
 
