@@ -21,9 +21,6 @@ public class Itm_Key extends ItemBase {
         super(gp, itmId, true);
         name = itmName;
         description = itmDescription;
-        sprite = AssetPool.getSpritesheet("items").getSprite(0);
-        transform.scale.x = sprite.getNativeWidth();
-        transform.scale.y = sprite.getNativeHeight();
     }
 
 
@@ -39,5 +36,14 @@ public class Itm_Key extends ItemBase {
     public boolean useCombat(EntityBase user) {
 
         return false;
+    }
+
+
+    @Override
+    protected void setSprite() {
+
+        sprite = AssetPool.getSpritesheet("items").getSprite(0);
+        transform.scale.x = sprite.getNativeWidth();
+        transform.scale.y = sprite.getNativeHeight();
     }
 }

@@ -18,15 +18,12 @@ public class Obj_Controller extends EntityBase {
     public Obj_Controller(GamePanel gp, int entityId) {
         super(gp, entityId, EntityType.OBJECT);
         name = objName;                                                                                                 // Set name upon instantiation.
-        setupSprite();
     }
 
 
     // METHOD
-    /**
-     * Sets loaded entity sprites.
-     */
-    private void setupSprite() {
+    @Override
+    protected void setSprites() {
 
         idleDown = AssetPool.getSpritesheet("objects").getSprite(2);
 

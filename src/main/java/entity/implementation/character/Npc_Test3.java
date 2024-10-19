@@ -13,15 +13,12 @@ public class Npc_Test3 extends EntityBase {
     // CONSTRUCTOR
     public Npc_Test3(GamePanel gp, int entityId) {
         super(gp, entityId, EntityType.CHARACTER);
-        setupSprite();
     }
 
 
     // METHOD
-    /**
-     * Sets loaded entity sprites.
-     */
-    private void setupSprite() {
+    @Override
+    protected void setSprites() {
 
         idleDown = AssetPool.getSpritesheet("characters").getSprite(72);
         walkDown1 = AssetPool.getSpritesheet("characters").getSprite(73);

@@ -76,6 +76,7 @@ public abstract class ItemBase extends Drawable {
         this.gp = gp;
         this.itemId = itemId;
         this.stackable = stackable;
+        setSprite();
     }
 
 
@@ -123,6 +124,13 @@ public abstract class ItemBase extends Drawable {
      * @return whether the item was successfully used (true) or not (false)
      */
     public abstract boolean useCombat(EntityBase user);
+
+
+    /**
+     * Sets loaded item sprite.
+     * Default sprite and default width and height should be set here.
+     */
+    protected abstract void setSprite();
 
 
     // GETTERS

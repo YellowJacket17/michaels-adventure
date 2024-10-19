@@ -47,9 +47,11 @@ public abstract class AnimationBase {
 
 
     /**
-     * Retrieves the next sprite to be drawn for th animation.
+     * Retrieves the next sprite to be drawn for the animation.
      *
-     * @return index of the next sprite to be drawn
+     * @param worldCol world column position of tile
+     * @param worldRow world row position of tile
+     * @return index of the next sprite to be rendered
      */
-    public abstract int getSprite();
+    public abstract int getSprite(int worldCol, int worldRow);
 }

@@ -346,8 +346,8 @@ public class GamePanel {
         AssetPool.getShader("/shaders/font.glsl");
 
         // Tiles spritesheet (spritesheet 0).
-        String filePath = "/spritesheets/tiles.png";
-        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 10, 32, 32, 1));
+        String filePath = "/spritesheets/tiles_test.png";
+        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 14, 32, 32, 1));
 
         // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";

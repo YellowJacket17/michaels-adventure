@@ -444,6 +444,7 @@ public abstract class EntityBase extends Drawable {
         this.directionLast = EntityDirection.DOWN;
         this.directionCandidate = EntityDirection.DOWN;
         setRest(1);
+        setSprites();
     }
 
 
@@ -693,6 +694,13 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
+     * Sets loaded entity sprites.
+     * Default sprite and default width and height should be set here.
+     */
+    protected abstract void setSprites();
+
+
+    /**
      * Sets this entity's sprite to match this entity's current direction and staged walking sprite number.
      */
     protected void setWalkingSprite() {
@@ -916,7 +924,7 @@ public abstract class EntityBase extends Drawable {
      *
      * @param dt time since last frame (seconds)
      */
-    public void updateCombatAttackAnimation(double dt) {
+    protected void updateCombatAttackAnimation(double dt) {
 
         animationCounter += dt;
 

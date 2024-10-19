@@ -1,5 +1,6 @@
 package animation;
 
+import animation.implementation.tile.Anm_cave1;
 import animation.implementation.tile.Anm_water1;
 
 /**
@@ -13,6 +14,11 @@ public class AnimationManager {
      */
     private final Anm_water1 anm_water1;
 
+    /**
+     * "cave1" animation group.
+     */
+    private final Anm_cave1 anm_cave1;
+
 
     // CONSTRUCTOR
     /**
@@ -20,6 +26,7 @@ public class AnimationManager {
      */
     public AnimationManager() {
         anm_water1 = new Anm_water1(2.65);
+        anm_cave1 = new Anm_cave1(3.65);
     }
 
 
@@ -32,6 +39,7 @@ public class AnimationManager {
     public void update(double dt) {
 
         anm_water1.update(dt);
+        anm_cave1.update(dt);
     }
 
 
@@ -41,13 +49,17 @@ public class AnimationManager {
      * Thw switch statement in this method determines what each animation group value actually does.
      *
      * @param group animation group to be checked
+     * @param worldCol world column position of tile
+     * @param worldRow world row position of tile
      * @return index of the next tile sprite to be drawn
      */
-    public int getSprite(int group) {
+    public int getSprite(int group, int worldCol, int worldRow) {
 
         switch (group) {
             case 0:
-                return anm_water1.getSprite();
+                return anm_water1.getSprite(worldCol, worldRow);
+            case 1:
+                return anm_cave1.getSprite(worldCol, worldRow);
             default:
                 return 0;
         }

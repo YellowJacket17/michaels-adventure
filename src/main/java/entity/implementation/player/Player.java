@@ -102,7 +102,7 @@ public class Player extends EntityBase {
     public Player(GamePanel gp) {
         super(gp, 0, EntityType.CHARACTER);
         setDefaultValues();                                                                                             // Set default player values when a player instance is created.
-        setupSprite();                                                                                                  // Load player sprites when a player instance is created.
+        setSprites();                                                                                                  // Load player sprites when a player instance is created.
     }
 
 
@@ -442,10 +442,8 @@ public class Player extends EntityBase {
     }
 
 
-    /**
-     * Sets loaded entity sprites.
-     */
-    private void setupSprite() {
+    @Override
+    protected void setSprites() {
 
         idleDown = AssetPool.getSpritesheet("characters").getSprite(0);
         walkDown1 = AssetPool.getSpritesheet("characters").getSprite(1);

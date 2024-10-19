@@ -88,15 +88,7 @@ public class TileManager {
                 } catch (NullPointerException e) {
                     tileNum = defaultTile;                                                                              // If no map is loaded, just use the default tile.
                 }
-
-                int spriteNum = 0;
-                if (tiles[tileNum].getSprites().size() != 1) {                                                          // If this statement is false, the tile only has one sprite attached to it, hence it cannot be animated.
-                    switch (tiles[tileNum].getAnimationGroup()) {
-                        case 0:                                                                                         // Animation group 0: water1 animation.
-                            spriteNum = gp.getAnimationM().getSprite(0);
-                            break;
-                    }
-                }
+                int spriteNum = gp.getAnimationM().getSprite(tiles[tileNum].getAnimationGroup(), worldCol, worldRow);   // Render appropriate tile in animation cycle, if applicable.
 
                 if ((tiles[tileNum].getSprites().get(spriteNum) != null)
                         && (spriteNum < tiles[tileNum].getSprites().size())) {
@@ -199,25 +191,35 @@ public class TileManager {
      */
     private void getTileImage() {
 
-        setup(0, AssetPool.getSpritesheet("tiles").getSprite(0), true);                                                       // Default.
+        setup(0, AssetPool.getSpritesheet("tiles").getSprite(0), true);                                                 // Default.
 
-        setup(1, AssetPool.getSpritesheet("tiles").getSprite(1), false);                                                      // Grass.
+        setup(1, AssetPool.getSpritesheet("tiles").getSprite(1), false);                                                // Grass.
 
-        setup(2, AssetPool.getSpritesheet("tiles").getSprite(2), true);                                                       // Non-animated water.
+        setup(2, AssetPool.getSpritesheet("tiles").getSprite(2), true);                                                 // Non-animated water.
 
-        setup(3, AssetPool.getSpritesheet("tiles").getSprite(3), true, 0);                                                    // Animated water (1).
+        setup(3, AssetPool.getSpritesheet("tiles").getSprite(3), true, 0);                                              // Animated water (1).
 
-            addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(4));                                                     // Animated water (2).
+            addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(4));                                               // Animated water (2).
 
-            addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(5));                                                     // Animated water (3).
+            addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(5));                                               // Animated water (3).
 
-            addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(6));                                                     // Animated water (4).
+            addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(6));                                               // Animated water (4).
 
-        setup(4, AssetPool.getSpritesheet("tiles").getSprite(7), true);                                                       // Rock.
+        setup(4, AssetPool.getSpritesheet("tiles").getSprite(7), true);                                                 // Rock.
 
-        setup(5, AssetPool.getSpritesheet("tiles").getSprite(8), false);                                                      // Portal.
+        setup(5, AssetPool.getSpritesheet("tiles").getSprite(8), false);                                                // Portal.
 
-        setup(6, AssetPool.getSpritesheet("tiles").getSprite(9), false);                                                      // Dirt.
+        setup(6, AssetPool.getSpritesheet("tiles").getSprite(9), false);                                                // Dirt.
+
+        setup(7, AssetPool.getSpritesheet("tiles").getSprite(10), false);                                               // Non-animated cave.
+
+        setup(8, AssetPool.getSpritesheet("tiles").getSprite(10), false, 1);                                            // Animated cave (1).
+
+            addSprite(8, AssetPool.getSpritesheet("tiles").getSprite(11));                                              // Animated cave (2).
+
+            addSprite(8, AssetPool.getSpritesheet("tiles").getSprite(12));                                              // Animated cave (3).
+
+            addSprite(8, AssetPool.getSpritesheet("tiles").getSprite(13));                                              // Animated cave (4).
     }
 
 

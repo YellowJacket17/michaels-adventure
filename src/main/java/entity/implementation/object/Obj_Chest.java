@@ -18,15 +18,12 @@ public class Obj_Chest extends EntityBase {
     public Obj_Chest(GamePanel gp, int entityId) {
         super(gp, entityId, EntityType.OBJECT);
         name = objName;                                                                                                 // Set name upon instantiation.
-        setupSprite();
     }
 
 
     // METHOD
-    /**
-     * Sets loaded entity sprites.
-     */
-    private void setupSprite() {
+    @Override
+    protected void setSprites() {
 
         idleDown = AssetPool.getSpritesheet("objects").getSprite(1);
 

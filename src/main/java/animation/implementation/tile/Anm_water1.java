@@ -15,7 +15,7 @@ public class Anm_water1 extends AnimationBase {
 
     // METHOD
     @Override
-    public int getSprite() {
+    public int getSprite(int worldCol, int worldRow) {
 
         if (counter <= 2.0) {
             return 3;

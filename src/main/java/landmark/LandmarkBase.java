@@ -90,6 +90,13 @@ public abstract class LandmarkBase extends Drawable {
     protected boolean[][] collision;
 
     /**
+     * Animation group that this landmark is part of.
+     * Animation groups can have values of 0, 1, 2, etc.
+     * A value of -1 means that this landmark is not animated.
+     */
+    private int animationGroup = -1;
+
+    /**
      * Boolean to track whether a render error has occurred.
      * This prevents a render error from this landmark being printed to the console again.
      */
@@ -113,6 +120,7 @@ public abstract class LandmarkBase extends Drawable {
         this.numTilesCol = numTilesCol;
         collision = new boolean[numTilesRow][numTilesCol];
         setTileCollision();
+        setSprites();
     }
 
 
@@ -124,11 +132,9 @@ public abstract class LandmarkBase extends Drawable {
      */
     public void addToRenderPipeline(Renderer renderer) {
 
-        // TODO : Add logic to retrieve other images in a landmark for animation.
-
         if (gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
-            int spriteNum = 0;                                                                                          // Select which image from the landmark will be drawn.
+            int spriteNum = gp.getAnimationM().getSprite(animationGroup, getCol(), getRow());                           // Render appropriate landmark in animation cycle, if applicable.
 
             if ((sprites.get(spriteNum) != null) && (spriteNum < sprites.size())) {
 
@@ -150,8 +156,8 @@ public abstract class LandmarkBase extends Drawable {
                         + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
                         + "with ID "
                         + landmarkId
-                        + " to the render pipeline: sprites may not have been properly loaded upon landmark "
-                        + "initialization.");
+                        + " to the render pipeline: the map may contain a landmark that does not exist or a landmark "
+                        + "may have been assigned to the incorrect animation group.");
                 renderError = true;
             }
         }
@@ -162,6 +168,13 @@ public abstract class LandmarkBase extends Drawable {
      * Sets which tiles occupied by the landmark have collision.
      */
     protected abstract void setTileCollision();
+
+
+    /**
+     * Sets loaded landmark sprites.
+     * Default sprite, default width and height, and animation group should be set here.
+     */
+    protected abstract void setSprites();
 
 
     // GETTERS
@@ -205,6 +218,10 @@ public abstract class LandmarkBase extends Drawable {
         return collision;
     }
 
+    public int getAnimationGroup() {
+        return animationGroup;
+    }
+
 
     // SETTERS
     public void setName(String name) {
@@ -225,5 +242,9 @@ public abstract class LandmarkBase extends Drawable {
 
     public void setRow(int row) {
         worldY = row * GamePanel.NATIVE_TILE_SIZE;
+    }
+
+    public void setAnimationGroup(int animationGroup) {
+        this.animationGroup = animationGroup;
     }
 }

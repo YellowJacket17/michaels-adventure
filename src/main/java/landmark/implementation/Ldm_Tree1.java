@@ -18,7 +18,6 @@ public class Ldm_Tree1 extends LandmarkBase {
     public Ldm_Tree1(GamePanel gp) {
         super(gp, ldmId, 2, 1);
         name = ldmName;
-        setupSprite();
     }
 
 
@@ -34,10 +33,8 @@ public class Ldm_Tree1 extends LandmarkBase {
     }
 
 
-    /**
-     * Sets loaded landmark sprites.
-     */
-    private void setupSprite() {
+    @Override
+    protected void setSprites() {
 
         sprites.add(AssetPool.getSpritesheet("landmarks").getSprite(1));
 
