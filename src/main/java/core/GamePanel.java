@@ -351,11 +351,11 @@ public class GamePanel {
 
         // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";
-        AssetPool.addSpritesheet("characters", new Spritesheet(AssetPool.getTexture(filePath), 108, 32, 60, 0));
+        AssetPool.addSpritesheet("characters", new Spritesheet(AssetPool.getTexture(filePath), 108, 32, 60, 1));
 
         // Objects spritesheet (spritesheet 2).
         filePath = "/spritesheets/objects.png";
-        AssetPool.addSpritesheet("objects", new Spritesheet(AssetPool.getTexture(filePath), 3, 32, 32, 0));
+        AssetPool.addSpritesheet("objects", new Spritesheet(AssetPool.getTexture(filePath), 3, 32, 32, 1));
 
         // Landmarks spritesheet (spritesheet 3).
         filePath = "/spritesheets/landmarks.png";
@@ -365,19 +365,19 @@ public class GamePanel {
 
         // Items spritesheet (spritesheet 4).
         filePath = "/spritesheets/items.png";
-        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 2, 32, 32, 0));
+        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 2, 32, 32, 1));
 
         // Icons spritesheet (spritesheet 5).
         filePath = "/spritesheets/icons.png";
         widths = new int[] {152, 152, 40, 36, 36, 28, 28, 28, 28, 28, 28, 6, 6, 6, 6};
-        heights = new int[] {56, 56, 40, 36, 36, 28, 28, 28, 28, 28, 28, 10, 10, 10, 10};
-        AssetPool.addSpritesheet("icons", new Spritesheet(AssetPool.getTexture(filePath), 15, widths, heights, 0));
+        heights = new int[] {58, 58, 40, 36, 36, 28, 28, 28, 28, 28, 28, 10, 10, 10, 10};
+        AssetPool.addSpritesheet("icons", new Spritesheet(AssetPool.getTexture(filePath), 15, widths, heights, 1));
 
         // Miscellaneous spritesheet (spritesheet 6).
         filePath = "/spritesheets/miscellaneous.png";
         widths = new int[] {6, 10, 12};
         heights = new int[] {10, 6, 8};
-        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 3, widths, heights, 0));
+        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 3, widths, heights, 1));
 
         // Sounds.
         AssetPool.addSound("testTrack1", "sound/tracks/testTrack1.ogg", "sound/tracks/testTrack1.ogg");

@@ -695,7 +695,8 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Sets loaded entity sprites.
-     * Default sprite and default width and height should be set here.
+     * Default sprite and default width and height, and default opacity (alpha) should be set here.
+     * If not manually set, default opacity is completely opaque.
      */
     protected abstract void setSprites();
 

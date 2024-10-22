@@ -172,7 +172,9 @@ public abstract class LandmarkBase extends Drawable {
 
     /**
      * Sets loaded landmark sprites.
-     * Default sprite, default width and height, and animation group should be set here.
+     * Default sprite, default width and height, default opacity (alpha), and animation group should be set here.
+     * If not manually set, default opacity is completely opaque.
+     * If not manually set, default animation group is no animation.
      */
     protected abstract void setSprites();
 

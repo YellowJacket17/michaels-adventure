@@ -131,6 +131,10 @@ public class Drawable {
 
 
     // SETTERS
+    public void setAlpha(int alpha) {
+        this.color.w = alpha;
+    }
+
     public void setColor(Vector4f color) {
         if (!this.color.equals(color)) {
             this.color.set(color);

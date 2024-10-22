@@ -368,9 +368,9 @@ public class UserInterface {
 
         // Prepare entity icon and status information text positions to render on top of respective slot icons.
         float entityIconScreenX = slotIconScreenX + 0.01f;
-        float entityIconScreenY = bottomSlotIconScreenY - 0.013f;
+        float entityIconScreenY = bottomSlotIconScreenY - 0.009f;
         float statusInfoTextScreenX = slotIconScreenX + 0.07f;
-        float statusInfoTextScreenY = bottomSlotIconScreenY + 0.01f;
+        float statusInfoTextScreenY = bottomSlotIconScreenY + 0.014f;
 
         // Render entity icon 2 (bottommost).
         if ((gp.getEntityM().getParty().size() > 1) && (gp.getEntityM().getParty().get(keyArray[1]) != null)) {
