@@ -20,6 +20,7 @@ public class Evt_Conv004 extends EventConvBase {
     public void run() {
 
         gp.getEventM().cleanupConversation(1);
-        gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, "testTrack3", gp.getEntityM().getEntityById(8));
+        gp.getCombatM().initiateCombat(20, 30, EnterCombatTransitionType.BASIC, "testTrack3",
+                gp.getEntityM().getEntityById(4), gp.getEntityM().getEntityById(8));
     }
 }

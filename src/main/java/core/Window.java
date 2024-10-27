@@ -328,6 +328,14 @@ public class Window {
                 }
             }
         }
+        terminate();
+    }
+
+
+    /**
+     * Frees resources to shut down the application.
+     */
+    public void terminate() {
 
         // Free memory.
         alcDestroyContext(audioContext);
@@ -337,15 +345,6 @@ public class Window {
 
         // Terminate GLFW.
         glfwTerminate();
-    }
-
-
-    /**
-     * If running, terminates the main game loop and subsequently shuts down the application.
-     */
-    public void terminate() {
-
-        running = false;
     }
 
 

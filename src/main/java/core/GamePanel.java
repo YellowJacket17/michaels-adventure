@@ -212,7 +212,6 @@ public class GamePanel {
 
         // Other setup.
         environmentM.setup();
-        soundS.playTrack("testTrack1");
 
         // Set primary game state to player control.
         primaryGameState = PrimaryGameState.EXPLORE;
@@ -346,8 +345,8 @@ public class GamePanel {
         AssetPool.getShader("/shaders/font.glsl");
 
         // Tiles spritesheet (spritesheet 0).
-        String filePath = "/spritesheets/tiles_test.png";
-        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 14, 32, 32, 1));
+        String filePath = "/spritesheets/tiles.png";
+        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 179, 32, 32, 1));
 
         // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";
@@ -359,9 +358,13 @@ public class GamePanel {
 
         // Landmarks spritesheet (spritesheet 3).
         filePath = "/spritesheets/landmarks.png";
-        int[] widths = new int[] {62, 32};
-        int[] heights = new int[] {90, 70};
-        AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 2, widths, heights, 1));
+        int[] widths = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 128, 128, 128, 128, 96, 96, 96, 96};
+        int[] heights = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 64, 64, 64, 64, 64, 64, 64, 64};
+        AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 71, widths, heights, 1));
 
         // Items spritesheet (spritesheet 4).
         filePath = "/spritesheets/items.png";

@@ -146,7 +146,9 @@ public class SoundSupport {
 
         stagedTrackName = resourceName;
 
-        if ((!playingTrackName.equals(Sound.NO_TRACK)) && (AssetPool.getSound(playingTrackName).isPlaying())) {
+        if ((!playingTrackName.equals(stagedTrackName))
+                && (!playingTrackName.equals(Sound.NO_TRACK))
+                && (AssetPool.getSound(playingTrackName).isPlaying())) {
 
             if (!trackFadingOut) {
 
@@ -195,7 +197,11 @@ public class SoundSupport {
 
                 AssetPool.getSound(stagedTrackName).play();
             }
-            playingTrackName = stagedTrackName;
+
+            if (!playingTrackName.equals(stagedTrackName)) {
+
+                playingTrackName = stagedTrackName;
+            }
         }
     }
 

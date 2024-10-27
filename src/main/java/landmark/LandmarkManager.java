@@ -1,8 +1,7 @@
 package landmark;
 
 import core.GamePanel;
-import landmark.implementation.Ldm_Tree1;
-import landmark.implementation.Ldm_Tree2;
+import landmark.implementation.*;
 import utility.UtilityTool;
 import utility.exceptions.AssetLoadException;
 
@@ -118,10 +117,19 @@ public class LandmarkManager {
 
         switch (num) {
             case 1:
-                landmark = new Ldm_Tree1(gp);
+                landmark = new Ldm_Waterfall1(gp);
                 break;
             case 2:
-                landmark = new Ldm_Tree2(gp);
+                landmark = new Ldm_Waterfall2(gp);
+                break;
+            case 3:
+                landmark = new Ldm_Waterfall3(gp);
+                break;
+            case 4:
+                landmark = new Ldm_Foam1(gp);
+                break;
+            case 5:
+                landmark = new Ldm_Foam2(gp);
                 break;
             default:
                 UtilityTool.logError("Attempted to instantiate a landmark type that does not exist.");

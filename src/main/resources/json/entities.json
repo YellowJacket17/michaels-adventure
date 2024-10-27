@@ -6,7 +6,7 @@
         "defaultAction": "static",
         "position": {
             "defaultCol": 23,
-            "defaultRow": 17
+            "defaultRow": 13
         }
     },    
 
@@ -16,8 +16,8 @@
         "map": 1,
         "defaultAction": "static",
         "position": {
-            "defaultCol": 4,
-            "defaultRow": 43
+            "defaultCol": 34,
+            "defaultRow": 26
         }
     },
     
@@ -28,7 +28,7 @@
         "defaultAction": "static",
         "position": {
             "defaultCol": 22,
-            "defaultRow": 25
+            "defaultRow": 26
         }
     },
     
@@ -86,7 +86,7 @@
         },
         "position": {
             "defaultCol": 3,
-            "defaultRow": 8
+            "defaultRow": 7
         },
         "moves": {
             "1": 1
@@ -116,7 +116,7 @@
         },
         "position": {
             "defaultCol": 14,
-            "defaultRow": 1
+            "defaultRow": 3
         },
         "moves": {
         }
@@ -143,7 +143,7 @@
         },
         "position": {
             "defaultCol": 13,
-            "defaultRow": 1
+            "defaultRow": 3
         },
         "moves": {
             "1": 1
@@ -170,8 +170,8 @@
             "level": 1
         },
         "position": {
-            "defaultCol": 8,
-            "defaultRow": 6
+            "defaultCol": 15,
+            "defaultRow": 32
         },
         "moves": {
         }

@@ -105,34 +105,11 @@ public class Evt_Map001 extends EventMapBase {
     @Override
     public boolean tileInteraction(double dt, EventType type, int col, int row, EntityDirection direction) {
 
-        // Trigger a message.
-        if ((type == EventType.CLICK) && (col == 22) && (row == 28)) {
-
-            gp.getEventM().displayMessage("Looks like something will happen if this tile is stepped on...");
-            return true;
-        }
-
         // Warp to map 0.
         if ((type == EventType.STEP) && (col == 25) && (row == 25)) {
 
             gp.getWarpS().initiateWarp(dt, 0, 0, 1, 1, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
             gp.getSoundS().playEffect("testEffect1");
-            return true;
-        }
-
-        // Trigger a cutscene.
-        if ((type == EventType.STEP) && (col == 22) && (row == 28)) {
-
-            gp.getCutsceneM().initiateCutscene(1);
-//            gp.getCameraS().setCameraScroll(0, 0, 5);
-            return true;
-        }
-
-        // Trigger combat.
-        if ((type == EventType.STEP) && (col == 25) && (row == 28)) {
-
-            gp.getCombatM().initiateCombat(18, 18, EnterCombatTransitionType.BASIC, "testTrack3",
-                    gp.getEntityM().getEntityById(4), gp.getEntityM().getEntityById(8));
             return true;
         }
 

@@ -71,8 +71,8 @@ public class Evt_Map000 extends EventMapBase {
         }
 
         // Test basic warp,
-        if ((type == EventType.STEP) && (col == 14) && (row == 1) && (direction == EntityDirection.RIGHT)) {
-            gp.getWarpS().initiateWarp(0, 0, 1, 1);
+        if ((type == EventType.STEP) && (col == 14) && (row == 3) && (direction == EntityDirection.RIGHT)) {
+            gp.getWarpS().initiateWarp(0, 0, 1, 3);
             return true;
         }
 
