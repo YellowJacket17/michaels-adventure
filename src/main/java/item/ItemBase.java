@@ -85,8 +85,8 @@ public abstract class ItemBase extends Drawable {
      * Adds an item to the render pipeline.
      *
      * @param renderer Renderer instance
-     * @param screenX screen x-coordinate of the item (leftmost, normalized between 0 and 1)
-     * @param screenY screen y-coordinate of the item (topmost, normalized between 0 and 1)
+     * @param screenX screen x-coordinate of the item (leftmost, normalized from 0 to 1, both inclusive)
+     * @param screenY screen y-coordinate of the item (topmost, normalized from 0 to 1, both inclusive)
      */
     public void addToRenderPipeline(Renderer renderer, float screenX, float screenY) {
 

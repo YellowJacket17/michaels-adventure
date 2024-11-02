@@ -57,8 +57,8 @@ public class GuiIconManager {
      *
      * @param renderer Renderer instance
      * @param iconId ID of the icon to be rendered
-     * @param screenX screen x-coordinate of the icon (leftmost, normalized between 0 and 1)
-     * @param screenY screen y-coordinate of the icon (topmost, normalized between 0 and 1)
+     * @param screenX screen x-coordinate of the icon (leftmost, normalized from 0 to 1, both inclusive)
+     * @param screenY screen y-coordinate of the icon (topmost, normalized from 0 to 1, both inclusive)
      */
     public void addToRenderPipeline(Renderer renderer, int iconId, float screenX, float screenY) {
 

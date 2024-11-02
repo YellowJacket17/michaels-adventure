@@ -229,7 +229,7 @@ public class TileManager {
 
             addSprite(6, AssetPool.getSpritesheet("tiles").getSprite(11));                                              // water2_4
 
-        setup(7, AssetPool.getSpritesheet("tiles").getSprite(15), true);                                                // water3_1
+        setup(7, AssetPool.getSpritesheet("tiles").getSprite(15), true, 3);                                             // water3_1
 
             addSprite(7, AssetPool.getSpritesheet("tiles").getSprite(16));                                              // water3_2
 

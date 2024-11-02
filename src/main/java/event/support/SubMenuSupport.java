@@ -32,7 +32,7 @@ public class SubMenuSupport {
     private int tempSubMenuId;
 
     /**
-     * Stored sub-menu screen position (top-left), normalized between 0 and 1.
+     * Stored sub-menu screen position (top-left), normalized from 0 to 1, both inclusive.
      * This is used for a sub-menu to be displayed after a corresponding dialogue prompt has been read.
      * The default value is zero.
      */
@@ -97,8 +97,8 @@ public class SubMenuSupport {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      * @param disabledOptions set of indices of disabled sub-menu options
      */
@@ -114,8 +114,8 @@ public class SubMenuSupport {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      */
     public void displaySubMenuBasic(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
@@ -158,8 +158,8 @@ public class SubMenuSupport {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param disabledOptions set of indices of disabled sub-menu options
      */
     public void displaySubMenuBasic(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
@@ -174,8 +174,8 @@ public class SubMenuSupport {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      */
     public void displaySubMenuBasic(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY) {
 
@@ -215,8 +215,8 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      * @param disabledOptions set of indices of disabled sub-menu options
      */
@@ -237,8 +237,8 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      */
     public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuScreenX, int subMenuScreenY,
@@ -296,8 +296,8 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param disabledOptions set of indices of disabled sub-menu options
      */
     public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuScreenX, int subMenuScreenY,
@@ -317,8 +317,8 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      */
     public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuScreenX, int subMenuScreenY) {
 

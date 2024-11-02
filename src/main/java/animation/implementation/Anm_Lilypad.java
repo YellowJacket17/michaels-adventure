@@ -1,12 +1,11 @@
 package animation.implementation;
 
 import animation.AnimationBase;
-import utility.UtilityTool;
 
 /**
- * This class handles animation of the sparkle animation group.
+ * This class handles animation of the lilypad animation group.
  */
-public class Anm_Sparkle extends AnimationBase {
+public class Anm_Lilypad extends AnimationBase {
 
     // FIELDS
     /**
@@ -17,29 +16,10 @@ public class Anm_Sparkle extends AnimationBase {
      */
     private final double[][] baseTiles = new double[10][10];
 
-    /**
-     * Time to fade the sparkle in and out (seconds).
-     * The fade in and out durations will each take this amount of time.
-     * It is assumed that there are two dedicated frames of animation for both fade in and fade out.
-     */
-    private final double fadeInOutDuration;
-
-    /**
-     * Time that the full sparkle will be visible (seconds).
-     * It is assumed that there is only one frame of animation where the full sparkle is visible.
-     */
-    private final double fullVisibleDuration;
-
 
     // CONSTRUCTOR
-    public Anm_Sparkle(double counterMax, double fadeInOutDuration, double fullVisibleDuration) {
+    public Anm_Lilypad(double counterMax) {
         super(counterMax);
-        if (((fadeInOutDuration * 2) + fullVisibleDuration) > counterMax) {
-            UtilityTool.logWarning("'(fadeInOutDuration * 2) + fullVisibleDuration)' for sparkle animation is greater"
-                    + " than 'counterMax'; animation will behave strangely.");
-        }
-        this.fadeInOutDuration = fadeInOutDuration;
-        this.fullVisibleDuration = fullVisibleDuration;
         initBaseArray(counterMax);
     }
 
@@ -60,28 +40,22 @@ public class Anm_Sparkle extends AnimationBase {
             difference = counter - baseTiles[moduloCol][moduloRow];
         }
 
-        if (difference > 0) {
+         if (difference > 0) {
 
-            if (difference <= fadeInOutDuration * 0.5) {
-                return 2;
-
-            } else if (difference <= fadeInOutDuration) {
+            if (difference <= counterMax * 0.015) {
                 return 1;
 
-            } else if (difference <= fadeInOutDuration + fullVisibleDuration) {
-                return 0;
-
-            } else if (difference <= (fadeInOutDuration * 1.5) + fullVisibleDuration) {
-                return 1;
-
-            } else if (difference <= (fadeInOutDuration * 2) + fullVisibleDuration) {
+            } else if (difference <= counterMax * 0.5) {
                 return 2;
+
+            } else if (difference <= counterMax * 0.515) {
+                return 1;
 
             } else {
-                return 3;
+                return 0;
             }
         }
-        return 3;
+        return 0;
     }
 
 

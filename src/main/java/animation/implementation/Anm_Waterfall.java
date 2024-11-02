@@ -3,7 +3,7 @@ package animation.implementation;
 import animation.AnimationBase;
 
 /**
- * This class handles the animation of the "waterfall" animation group.
+ * This class handles the animation of the waterfall animation group.
  */
 public class Anm_Waterfall extends AnimationBase {
 

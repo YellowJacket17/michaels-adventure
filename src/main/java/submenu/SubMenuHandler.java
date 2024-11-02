@@ -32,7 +32,7 @@ public class SubMenuHandler {
     private int subMenuId = -1;
 
     /**
-     * Sub-menu's screen position, normalized between 0 and 1.
+     * Sub-menu's screen position, normalized from 0 to 1, both inclusive.
      * This is the coordinate of the top-left corner of the sub-menu window currently being displayed.
      * The default value is zero.
      */
@@ -82,8 +82,8 @@ public class SubMenuHandler {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      * @param disabledOptions set of indices of disabled sub-menu options
      * @throws IllegalArgumentException if either an illegal number of options is passed as argument
@@ -104,8 +104,8 @@ public class SubMenuHandler {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      * @throws IllegalArgumentException if either an illegal number of options is passed as argument
      */
@@ -163,8 +163,8 @@ public class SubMenuHandler {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param disabledOptions set of indices of disabled sub-menu options
      * @throws IllegalArgumentException if either an illegal number of options is passed as argument
      */
@@ -184,8 +184,8 @@ public class SubMenuHandler {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized between 0 and 1)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized between 0 and 1)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @throws IllegalArgumentException if either an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY) {

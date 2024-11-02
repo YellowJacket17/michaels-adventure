@@ -1037,7 +1037,7 @@ public class UserInterface {
      * Adds a string of text to the render pipeline.
      *
      * @param text text to be drawn
-     * @param screenCoords screen coordinates of the text (leftmost and topmost, normalized between 0 and 1)
+     * @param screenCoords screen coordinates of the text (leftmost and topmost, normalized from 0 to 1, both inclusive)
      * @param size size at which to draw the text
      * @param color text color (r, g, b)
      * @param font name of font to use
@@ -1056,7 +1056,7 @@ public class UserInterface {
      * Adds a string of text with a black drop shadow to the render pipeline.
      *
      * @param text text to be drawn
-     * @param screenCoords screen coordinates of the text (leftmost and topmost, normalized between 0 and 1)
+     * @param screenCoords screen coordinates of the text (leftmost and topmost, normalized from 0 to 1, both inclusive)
      * @param size size at which to draw the text
      * @param color text color (r, g, b)
      * @param font name of font to use
@@ -1073,7 +1073,7 @@ public class UserInterface {
      * Adds a block of text with a specified line character limit to the render pipeline.
      *
      * @param text complete text to be printed
-     * @param screenCoords screen coordinates of the text block (lefmost and topmost, normalized between 0 and 1).
+     * @param screenCoords screen coordinates of the text block (lefmost and topmost, normalized from 0 to 1, both inclusive).
      * @param maxLineLength maximum number of characters allowed in a printed line of text
      * @param lineSpacing space between each printed line of text
      * @param size size at which to draw the text

@@ -28,7 +28,7 @@ public class Act_GenerateSubMenu extends ActionBase {
     private final List<String> options = new ArrayList<>();
 
     /**
-     * Sub-menu's screen position, normalized between 0 and 1.
+     * Sub-menu's screen position, normalized from 0 to 1, both inclusive.
      * This is the coordinate of the top-left corner of the sub-menu window currently being displayed.
      * The default value is zero.
      */
