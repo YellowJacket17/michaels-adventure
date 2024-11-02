@@ -195,7 +195,7 @@ public class TileManager {
 
         setup(1, AssetPool.getSpritesheet("tiles").getSprite(1), false);                                                // floor1
 
-        setup(2, AssetPool.getSpritesheet("tiles").getSprite(2), false);                                                // floor2_1
+        setup(2, AssetPool.getSpritesheet("tiles").getSprite(2), false, 0);                                             // floor2_1
 
             addSprite(2, AssetPool.getSpritesheet("tiles").getSprite(3));                                               // floor2_2
 
@@ -203,7 +203,7 @@ public class TileManager {
 
             addSprite(2, AssetPool.getSpritesheet("tiles").getSprite(1));                                               // floor2_4
 
-        setup(3, AssetPool.getSpritesheet("tiles").getSprite(5), false);                                                // floor3_1
+        setup(3, AssetPool.getSpritesheet("tiles").getSprite(5), false, 0);                                             // floor3_1
 
             addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(6));                                               // floor3_2
 
@@ -211,7 +211,7 @@ public class TileManager {
 
             addSprite(3, AssetPool.getSpritesheet("tiles").getSprite(1));                                               // floor3_4
 
-        setup(4, AssetPool.getSpritesheet("tiles").getSprite(8), false);                                                // floor4_1
+        setup(4, AssetPool.getSpritesheet("tiles").getSprite(8), false, 0);                                             // floor4_1
 
             addSprite(4, AssetPool.getSpritesheet("tiles").getSprite(9));                                               // floor4_2
 
@@ -221,13 +221,13 @@ public class TileManager {
 
         setup(5, AssetPool.getSpritesheet("tiles").getSprite(11), true);                                                // water1
 
-        setup(6, AssetPool.getSpritesheet("tiles").getSprite(12), true);                                                // water2_1
+        setup(6, AssetPool.getSpritesheet("tiles").getSprite(12), true, 0);                                             // water2_1
 
             addSprite(6, AssetPool.getSpritesheet("tiles").getSprite(13));                                              // water2_2
 
             addSprite(6, AssetPool.getSpritesheet("tiles").getSprite(14));                                              // water2_3
 
-            addSprite(6, AssetPool.getSpritesheet("tiles").getSprite(1));                                               // water2_4
+            addSprite(6, AssetPool.getSpritesheet("tiles").getSprite(11));                                              // water2_4
 
         setup(7, AssetPool.getSpritesheet("tiles").getSprite(15), true);                                                // water3_1
 
@@ -379,7 +379,7 @@ public class TileManager {
 
         setup(78, AssetPool.getSpritesheet("tiles").getSprite(89), false);                                              // bridgeLatitude1
 
-        setup(79, AssetPool.getSpritesheet("tiles").getSprite(90), false);                                              // bridgeLatitude2_1
+        setup(79, AssetPool.getSpritesheet("tiles").getSprite(90), false, 0);                                           // bridgeLatitude2_1
 
             addSprite(79, AssetPool.getSpritesheet("tiles").getSprite(91));                                             // bridgeLatitude2_2
 
@@ -389,7 +389,7 @@ public class TileManager {
 
         setup(80, AssetPool.getSpritesheet("tiles").getSprite(93), true);                                               // bridgeLatitude3
 
-        setup(81, AssetPool.getSpritesheet("tiles").getSprite(94), true);                                               // bridgeLatitude4_1
+        setup(81, AssetPool.getSpritesheet("tiles").getSprite(94), true, 0);                                            // bridgeLatitude4_1
 
             addSprite(81, AssetPool.getSpritesheet("tiles").getSprite(95));                                             // bridgeLatitude4_2
 
@@ -399,7 +399,7 @@ public class TileManager {
 
         setup(82, AssetPool.getSpritesheet("tiles").getSprite(97), false);                                              // bridgeLatitude5
 
-        setup(83, AssetPool.getSpritesheet("tiles").getSprite(98), false);                                              // bridgeLatitude6_1
+        setup(83, AssetPool.getSpritesheet("tiles").getSprite(98), false, 0);                                           // bridgeLatitude6_1
 
             addSprite(83, AssetPool.getSpritesheet("tiles").getSprite(99));                                             // bridgeLatitude6_2
 
@@ -409,7 +409,7 @@ public class TileManager {
 
         setup(84, AssetPool.getSpritesheet("tiles").getSprite(101), false);                                             // bridgeLatitude7
 
-        setup(85, AssetPool.getSpritesheet("tiles").getSprite(102), false);                                             // bridgeLatitude8_1
+        setup(85, AssetPool.getSpritesheet("tiles").getSprite(102), false, 0);                                          // bridgeLatitude8_1
 
             addSprite(85, AssetPool.getSpritesheet("tiles").getSprite(103));                                            // bridgeLatitude8_2
 
@@ -419,7 +419,7 @@ public class TileManager {
 
         setup(86, AssetPool.getSpritesheet("tiles").getSprite(105), true);                                              // bridgeLatitude9
 
-        setup(87, AssetPool.getSpritesheet("tiles").getSprite(106), true);                                              // bridgeLatitude10_1
+        setup(87, AssetPool.getSpritesheet("tiles").getSprite(106), true, 0);                                           // bridgeLatitude10_1
 
             addSprite(87, AssetPool.getSpritesheet("tiles").getSprite(107));                                            // bridgeLatitude10_2
 
@@ -429,7 +429,7 @@ public class TileManager {
 
         setup(88, AssetPool.getSpritesheet("tiles").getSprite(109), false);                                             // bridgeLatitude11
 
-        setup(89, AssetPool.getSpritesheet("tiles").getSprite(110), false);                                             // bridgeLatitude12_1
+        setup(89, AssetPool.getSpritesheet("tiles").getSprite(110), false, 0);                                          // bridgeLatitude12_1
 
             addSprite(89, AssetPool.getSpritesheet("tiles").getSprite(111));                                            // bridgeLatitude12_2
 
@@ -439,7 +439,7 @@ public class TileManager {
 
         setup(90, AssetPool.getSpritesheet("tiles").getSprite(113), true);                                              // bridgeLatitude13
 
-        setup(91, AssetPool.getSpritesheet("tiles").getSprite(114), true);                                              // bridgeLatitude14_1
+        setup(91, AssetPool.getSpritesheet("tiles").getSprite(114), true, 0);                                           // bridgeLatitude14_1
 
             addSprite(91, AssetPool.getSpritesheet("tiles").getSprite(115));                                            // bridgeLatitude14_2
 
@@ -449,7 +449,7 @@ public class TileManager {
 
         setup(92, AssetPool.getSpritesheet("tiles").getSprite(117), false);                                             // bridgeLatitude15
 
-        setup(93, AssetPool.getSpritesheet("tiles").getSprite(118), false);                                             // bridgeLatitude16_1
+        setup(93, AssetPool.getSpritesheet("tiles").getSprite(118), false, 0);                                          // bridgeLatitude16_1
 
             addSprite(93, AssetPool.getSpritesheet("tiles").getSprite(119));                                            // bridgeLatitude16_2
 
@@ -459,7 +459,7 @@ public class TileManager {
 
         setup(94, AssetPool.getSpritesheet("tiles").getSprite(121), true);                                              // bridgeLatitude17
 
-        setup(95, AssetPool.getSpritesheet("tiles").getSprite(122), true);                                              // bridgeLatitude18_1
+        setup(95, AssetPool.getSpritesheet("tiles").getSprite(122), true, 0);                                           // bridgeLatitude18_1
 
             addSprite(95, AssetPool.getSpritesheet("tiles").getSprite(123));                                            // bridgeLatitude18_2
 
@@ -489,7 +489,7 @@ public class TileManager {
 
         setup(103, AssetPool.getSpritesheet("tiles").getSprite(134), true);                                             // bridgeLongitude3
 
-        setup(104, AssetPool.getSpritesheet("tiles").getSprite(135), true);                                             // bridgeLongitude4_1
+        setup(104, AssetPool.getSpritesheet("tiles").getSprite(135), true, 0);                                          // bridgeLongitude4_1
 
             addSprite(104, AssetPool.getSpritesheet("tiles").getSprite(136));                                           // bridgeLongitude4_2
 
@@ -499,7 +499,7 @@ public class TileManager {
 
         setup(105, AssetPool.getSpritesheet("tiles").getSprite(138), false);                                            // bridgeLongitude5
 
-        setup(106, AssetPool.getSpritesheet("tiles").getSprite(139), false);                                            // bridgeLongitude6_1
+        setup(106, AssetPool.getSpritesheet("tiles").getSprite(139), false, 0);                                         // bridgeLongitude6_1
 
             addSprite(106, AssetPool.getSpritesheet("tiles").getSprite(140));                                           // bridgeLongitude6_2
 
@@ -509,7 +509,7 @@ public class TileManager {
 
         setup(107, AssetPool.getSpritesheet("tiles").getSprite(142), false);                                            // bridgeLongitude7
 
-        setup(108, AssetPool.getSpritesheet("tiles").getSprite(143), false);                                            // bridgeLongitude8_1
+        setup(108, AssetPool.getSpritesheet("tiles").getSprite(143), false, 0);                                         // bridgeLongitude8_1
 
             addSprite(108, AssetPool.getSpritesheet("tiles").getSprite(144));                                           // bridgeLongitude8_2
 
@@ -519,7 +519,7 @@ public class TileManager {
 
         setup(109, AssetPool.getSpritesheet("tiles").getSprite(146), true);                                             // bridgeLongitude9
 
-        setup(110, AssetPool.getSpritesheet("tiles").getSprite(147), true);                                             // bridgeLongitude10_1
+        setup(110, AssetPool.getSpritesheet("tiles").getSprite(147), true, 0);                                          // bridgeLongitude10_1
 
             addSprite(110, AssetPool.getSpritesheet("tiles").getSprite(148));                                           // bridgeLongitude10_2
 
@@ -529,7 +529,7 @@ public class TileManager {
 
         setup(111, AssetPool.getSpritesheet("tiles").getSprite(150), false);                                            // bridgeLongitude11
 
-        setup(112, AssetPool.getSpritesheet("tiles").getSprite(151), false);                                            // bridgeLongitude12_1
+        setup(112, AssetPool.getSpritesheet("tiles").getSprite(151), false, 0);                                         // bridgeLongitude12_1
 
             addSprite(112, AssetPool.getSpritesheet("tiles").getSprite(152));                                           // bridgeLongitude12_2
 
@@ -539,7 +539,7 @@ public class TileManager {
 
         setup(113, AssetPool.getSpritesheet("tiles").getSprite(154), true);                                             // bridgeLongitude13
 
-        setup(114, AssetPool.getSpritesheet("tiles").getSprite(155), true);                                             // bridgeLongitude14_1
+        setup(114, AssetPool.getSpritesheet("tiles").getSprite(155), true, 0);                                          // bridgeLongitude14_1
 
             addSprite(114, AssetPool.getSpritesheet("tiles").getSprite(156));                                           // bridgeLongitude14_2
 
@@ -549,7 +549,7 @@ public class TileManager {
 
         setup(115, AssetPool.getSpritesheet("tiles").getSprite(158), false);                                            // bridgeLongitude15
 
-        setup(116, AssetPool.getSpritesheet("tiles").getSprite(159), false);                                            // bridgeLongitude16_1
+        setup(116, AssetPool.getSpritesheet("tiles").getSprite(159), false, 0);                                         // bridgeLongitude16_1
 
             addSprite(116, AssetPool.getSpritesheet("tiles").getSprite(160));                                           // bridgeLongitude16_2
 
@@ -559,7 +559,7 @@ public class TileManager {
 
         setup(117, AssetPool.getSpritesheet("tiles").getSprite(162), true);                                             // bridgeLongitude17
 
-        setup(118, AssetPool.getSpritesheet("tiles").getSprite(163), true);                                             // bridgeLongitude18_1
+        setup(118, AssetPool.getSpritesheet("tiles").getSprite(163), true, 0);                                          // bridgeLongitude18_1
 
             addSprite(118, AssetPool.getSpritesheet("tiles").getSprite(164));                                           // bridgeLongitude18_2
 

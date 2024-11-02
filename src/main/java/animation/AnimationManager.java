@@ -1,7 +1,8 @@
 package animation;
 
-import animation.implementation.tile.Anm_cave1;
-import animation.implementation.tile.Anm_water1;
+import animation.implementation.Anm_Sparkle;
+import animation.implementation.Anm_Foam;
+import animation.implementation.Anm_Waterfall;
 
 /**
  * This class handles the animation of tiles that have multiple sprites attached to them.
@@ -10,14 +11,20 @@ public class AnimationManager {
 
     // ANIMATION FIELDS
     /**
-     * "water1" animation group.
+     * "sparkle" animation group.
      */
-    private final Anm_water1 anm_water1;
+    private final Anm_Sparkle anm_sparkle;
 
     /**
-     * "cave1" animation group.
+     * "waterfall" animation group.
      */
-    private final Anm_cave1 anm_cave1;
+    private final Anm_Waterfall anm_waterfall;
+
+
+    /**
+     * "foam" animation group.
+     */
+    private final Anm_Foam anm_foam;
 
 
     // CONSTRUCTOR
@@ -25,8 +32,9 @@ public class AnimationManager {
      * Constructs an AnimationManager instance.
      */
     public AnimationManager() {
-        anm_water1 = new Anm_water1(2.65);
-        anm_cave1 = new Anm_cave1(3.65);
+        anm_sparkle = new Anm_Sparkle(6.0, 0.15, 0.3);
+        anm_waterfall = new Anm_Waterfall(1.26);
+        anm_foam = new Anm_Foam(0.45);
     }
 
 
@@ -38,8 +46,9 @@ public class AnimationManager {
      */
     public void update(double dt) {
 
-        anm_water1.update(dt);
-        anm_cave1.update(dt);
+        anm_sparkle.update(dt);
+        anm_waterfall.update(dt);
+        anm_foam.update(dt);
     }
 
 
@@ -57,9 +66,11 @@ public class AnimationManager {
 
         switch (group) {
             case 0:
-                return anm_water1.getSprite(worldCol, worldRow);
+                return anm_sparkle.getSprite(worldCol, worldRow);
             case 1:
-                return anm_cave1.getSprite(worldCol, worldRow);
+                return anm_waterfall.getSprite(worldCol, worldRow);
+            case 2:
+                return anm_foam.getSprite(worldCol, worldRow);
             default:
                 return 0;
         }

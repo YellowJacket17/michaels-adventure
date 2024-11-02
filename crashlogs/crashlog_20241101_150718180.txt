@@ -1,0 +1,11 @@
+11/01/2024 15:07:10:572  INFO     Application started.
+11/01/2024 15:07:18:156  INFO     Starting game loop.
+11/01/2024 15:07:18:175  ERROR    An unhandled exception has occurred!
+java.lang.ArrayIndexOutOfBoundsException: Index 9 out of bounds for length 9
+	at animation.implementation.Anm_Sparkle.getSprite(Anm_Sparkle.java:33)
+	at animation.AnimationManager.getSprite(AnimationManager.java:69)
+	at tile.TileManager.addToRenderPipeline(TileManager.java:91)
+	at core.GamePanel.render(GamePanel.java:274)
+	at core.Window.generateFrame(Window.java:365)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)

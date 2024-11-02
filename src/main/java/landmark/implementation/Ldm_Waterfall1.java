@@ -54,6 +54,7 @@ public class Ldm_Waterfall1 extends LandmarkBase {
         sprite = sprites.get(0);
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
+        animationGroup = 1;
 
         setAlpha(180);
     }

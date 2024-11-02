@@ -94,7 +94,7 @@ public abstract class LandmarkBase extends Drawable {
      * Animation groups can have values of 0, 1, 2, etc.
      * A value of -1 means that this landmark is not animated.
      */
-    private int animationGroup = -1;
+    protected int animationGroup = -1;
 
     /**
      * Boolean to track whether a render error has occurred.
