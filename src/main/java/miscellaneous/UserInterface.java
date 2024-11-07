@@ -29,14 +29,14 @@ public class UserInterface {
     private int partySlotSelected;
 
     /**
-     * Top and bottom screen padding of the main window of the in-game menu.
+     * World (absolute) width of the main window of the in-game menu.
      */
-    private final float mainWindowScreenTopBottomPadding = 0.06f;
+    private final float mainWindowWorldWidth = 676.0f;
 
     /**
-     * Left and right screen padding of the main window of the in-game menu.
+     * World (absolute) height of the main window of the in-game menu.
      */
-    private final float mainWindowScreenLeftRightPadding = 0.06f;
+    private final float mainWindowWorldHeight = 380.0f;
 
     /**
      * Sets the maximum number of item slot rows that can be displayed at once in the inventory menu.
@@ -182,13 +182,13 @@ public class UserInterface {
 
         // Set position and dimensions of main dialogue window.
         float mainWindowScreenWidth = 1f;                                                                               // Main dialogue window will span the entre width of the screen.
-        float mainWindowScreenHeight = 0.2f;
+        float mainWindowWorldWidth = gp.getCamera().screenWidthToWorldWidth(mainWindowScreenWidth);
+        float mainWindowWorldHeight = 86.4f;                                                                            // Hard coded as an absolute (non-screen) height since dialogue window height is fixed, regardless of native screen height.
+        float mainWindowScreenHeight = gp.getCamera().worldHeightToScreenHeight(mainWindowWorldHeight);
         Vector2f mainWindowScreenCoords = new Vector2f(0f, 1 - mainWindowScreenHeight);
+        Vector2f mainWindowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(mainWindowScreenCoords);
 
         // Render main dialogue window.
-        Vector2f mainWindowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(mainWindowScreenCoords);
-        float mainWindowWorldWidth = gp.getCamera().screenWidthToWorldWidth(mainWindowScreenWidth);
-        float mainWindowWorldHeight = gp.getCamera().screenHeightToWorldHeight(mainWindowScreenHeight);
         renderer.addRectangle(
                 new Vector4f(0, 0, 0, 180),
                 new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
@@ -199,25 +199,25 @@ public class UserInterface {
                 && !gp.getDialogueR().getActiveDialogueEntityName().equals("")) {
 
             // Set position and dimensions of dialogue sub-window.
-            float subWindowScreenX = 0.03f;
-            float subWindowScreenTopBottomPadding = 0.02f;
-            float subWindowScreenLeftRightPadding = 0.02f;
+            float subWindowScreenX = gp.getCamera().worldWidthToScreenWidth(23.0f);
+            float subWindowWorldLeftRightPadding = 15.3f;                                                               // Hard coded as an absolute (non-screen) width since dialogue sub-window width is fixed, regardless of native screen width.
+            float subWindowScreenLeftRightPadding = gp.getCamera().worldWidthToScreenWidth(subWindowWorldLeftRightPadding);
+            float subWindowWorldTopBottomPadding = 8.6f;                                                                // Hard coded as an absolute (non-screen) height since dialogue sub-window height is fixed, regardless of native screen height.
+            float subWindowScreenTopBottomPadding = gp.getCamera().worldHeightToScreenHeight(subWindowWorldTopBottomPadding);
             String entityName = gp.getDialogueR().getActiveDialogueEntityName();
-            float entityNameWidth = 0;
+            float entityNameWorldWidth = 0;
             for (int i = 0; i < entityName.length(); i++) {
                 char optionCharacter = entityName.charAt(i);
-                entityNameWidth += renderer.getFont("Arimo").getCharacter(optionCharacter).getWidth() * fontScale;
+                entityNameWorldWidth += renderer.getFont("Arimo").getCharacter(optionCharacter).getWidth() * fontScale;
             }
-            float subWindowScreenWidth = gp.getCamera().worldWidthToScreenWidth(entityNameWidth)
-                    + (2 * subWindowScreenLeftRightPadding);
-            float subWindowScreenHeight = characterScreenHeight + (2 * subWindowScreenTopBottomPadding);
+            float subWindowWorldWidth = entityNameWorldWidth + (2 * subWindowWorldLeftRightPadding);                    // Hard coded as an absolute (non-screen) width since dialogue sub-window width is fixed, regardless of native screen width.
+            float subWindowWorldHeight = characterWorldHeight + (2 * subWindowWorldTopBottomPadding);                   // Hard coded as an absolute (non-screen) height since dialogue sub-window height is fixed, regardless of native screen height.
+            float subWindowScreenHeight = gp.getCamera().worldHeightToScreenHeight(subWindowWorldHeight);
             Vector2f subWindowScreenCoords = new Vector2f(subWindowScreenX,
                     mainWindowScreenCoords.y - subWindowScreenHeight);
+            Vector2f subWindowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(subWindowScreenCoords);
 
             // Render dialogue sub-window.
-            Vector2f subWindowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(subWindowScreenCoords);
-            float subWindowWorldWidth = gp.getCamera().screenWidthToWorldWidth(subWindowScreenWidth);
-            float subWindowWorldHeight = gp.getCamera().screenHeightToWorldHeight(subWindowScreenHeight);
             renderer.addRectangle(
                     new Vector4f(0, 0, 0, 180),
                     new Transform(subWindowWorldCoords, new Vector2f(subWindowWorldWidth, subWindowWorldHeight)),
@@ -235,13 +235,18 @@ public class UserInterface {
         // Dialogue progress arrow, if applicable.
         if ((gp.getDialogueR().isDialoguePaused())
                 || (!gp.getDialogueR().isReadingDialogue() && (gp.getDialogueR().isAlwaysShowArrow()))) {
-            Vector2f arrowScreenCoords = new Vector2f(mainWindowScreenCoords.x + mainWindowScreenWidth - 0.02f,
-                    mainWindowScreenCoords.y + mainWindowScreenHeight - 0.03f);
+            float arrowRightWorldAdjustment = 15.4f;                                                                    // Hard coded as an absolute (non-screen) width since dialogue window height is fixed, regardless of native screen width.
+            float arrowRightScreenAdjustment = gp.getCamera().worldWidthToScreenWidth(arrowRightWorldAdjustment);
+            float arrowBottomWorldAdjustment =13.0f;                                                                    // Hard coded as an absolute (non-screen) height since dialogue window height is fixed, regardless of native screen height.
+            float arrowBottomScreenAdjustment = gp.getCamera().worldHeightToScreenHeight(arrowBottomWorldAdjustment);
+            Vector2f arrowScreenCoords = new Vector2f(
+                    mainWindowScreenCoords.x + mainWindowScreenWidth - arrowRightScreenAdjustment,
+                    mainWindowScreenCoords.y + mainWindowScreenHeight - arrowBottomScreenAdjustment);
             gp.getDialogueA().addToRenderPipeline(renderer, arrowScreenCoords.x, arrowScreenCoords.y);
         }
 
         // Set position of main dialogue text (lines 1 and 2) and render it.
-        float mainTextScreenLeftPadding = 0.03f;
+        float mainTextScreenLeftPadding = gp.getCamera().worldWidthToScreenWidth(23.0f);
         float mainTextScreenSpacing = (mainWindowScreenHeight - (2 * characterScreenHeight)) / 3;
         Vector2f mainTextScreenCoords = new Vector2f(mainTextScreenLeftPadding, mainWindowScreenCoords.y + mainTextScreenSpacing);
         renderString(gp.getDialogueR().getDialoguePrint1(), mainTextScreenCoords, fontScale,
@@ -260,11 +265,11 @@ public class UserInterface {
     private void renderInGameMenuMainWindowScreen() {
 
         // Prepare main window position and dimensions.
+        float mainWindowScreenWidth = gp.getCamera().worldWidthToScreenWidth(mainWindowWorldWidth);                     // Normalized (screen) width of the in-game menu.
+        float mainWindowScreenHeight = gp.getCamera().worldHeightToScreenHeight(mainWindowWorldHeight);                 // Normalized (screen) height of the in-game menu.
         Vector2f mainWindowScreenCoords = new Vector2f(
-                mainWindowScreenLeftRightPadding,
-                mainWindowScreenTopBottomPadding);
-        float mainWindowScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding);
-        float mainWindowScreenHeight = 1 - (2 * mainWindowScreenTopBottomPadding);
+                0.5f - (mainWindowScreenWidth / 2),
+                0.5f - (mainWindowScreenHeight / 2));
 
         // Render main window.
         Vector2f mainWindowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(mainWindowScreenCoords);
@@ -277,21 +282,23 @@ public class UserInterface {
                 (int)mainWindowWorldHeight / 16);
 
         // Prepare header section icon (party, inventory, and settings) positions and render.
-        float menuIconScreenX = 1 - mainWindowScreenLeftRightPadding - 0.1f;
-        float menuIconScreenY = mainWindowScreenTopBottomPadding + 0.03f;
+        float mainWindowScreenLeftRightPadding = (1 - mainWindowScreenWidth) / 2;                                       // Normalized (screen) left and right padding of the main window of the in-game menu.
+        float mainWindowScreenTopBottomPadding = (1 - mainWindowScreenHeight) / 2;                                      // Normalized (screen) top and bottom padding of the main window of the in-game menu.
+        float menuIconScreenX = 1 - mainWindowScreenLeftRightPadding - gp.getCamera().worldWidthToScreenWidth(76.8f);
+        float menuIconScreenY = mainWindowScreenTopBottomPadding + gp.getCamera().worldHeightToScreenHeight(13.0f);
         gp.getGuiIconM().addToRenderPipeline(renderer, 2, menuIconScreenX, menuIconScreenY);                            // Settings menu icon.
-        menuIconScreenX -= 0.05f;
+        menuIconScreenX -= gp.getCamera().worldWidthToScreenWidth(45f);
         gp.getGuiIconM().addToRenderPipeline(renderer, 1, menuIconScreenX, menuIconScreenY);                            // Inventory menu icon.
-        menuIconScreenX -= 0.05f;
+        menuIconScreenX -= gp.getCamera().worldWidthToScreenWidth(45f);
         gp.getGuiIconM().addToRenderPipeline(renderer, 0, menuIconScreenX, menuIconScreenY);                            // Party menu icon.
 
         // Prepare header divider (horizontal line beneath header) position and dimensions and render.
-        float dividerScreenThickness = 0.004f;                                                                          // Normalized (screen) thickness of horizontal line.
-        float dividerScreenLeftRightGap = 0.055f;                                                                       // Normalized (screen) space on either side of horizontal line between main window edge.
+        float dividerWorldThickness = 1.7f;                                                                             // World (absolute) thickness of horizontal line.
+        float dividerWorldLeftRightGap = 42.0f;                                                                         // World (absolute) space on either side of horizontal line between main window edge (i.e., NOT including main window left/right padding).
+        float dividerScreenLeftRightGap = gp.getCamera().worldWidthToScreenWidth(dividerWorldLeftRightGap);
         float dividerScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding) - (2 * dividerScreenLeftRightGap);
-        float dividerWorldThickness = gp.getCamera().screenHeightToWorldHeight(dividerScreenThickness);
         float dividerWorldWidth = gp.getCamera().screenWidthToWorldWidth(dividerScreenWidth);
-        float menuIconWorldHeight = gp.getGuiIconM().getIconById(0).getNativeSpriteHeight();                            // Get native (world) height of menu icons; all are same height, so doesn't matter which is used here.
+        float menuIconWorldHeight = gp.getGuiIconM().getIconById(0).getNativeSpriteHeight();                            // Native (world/absolute) height of menu icons; all are same height, so doesn't matter which is used here.
         float menuIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(menuIconWorldHeight);
         Vector2f dividerScreenCoords = new Vector2f(
                 mainWindowScreenLeftRightPadding + dividerScreenLeftRightGap,
@@ -309,7 +316,7 @@ public class UserInterface {
         float titleScreenTopBottomPadding = (dividerScreenCoords.y - mainWindowScreenTopBottomPadding
                 - optionsCharacterScreenHeight) / 2;
         Vector2f titleScreenCoords = new Vector2f(
-                mainWindowScreenLeftRightPadding + 0.065f,
+                mainWindowScreenLeftRightPadding + gp.getCamera().worldWidthToScreenWidth(50.0f),
                 mainWindowScreenTopBottomPadding + titleScreenTopBottomPadding);
         String title = "???";
         switch (gp.getPrimaryGameState()) {
@@ -344,58 +351,56 @@ public class UserInterface {
     private void renderPartyMemberStatusIcons() {
 
         // Prepare slot icon positions (i.e., background sprite of each stat icon).
-        float slotIconWorldHeight = gp.getGuiIconM().getIconById(3).getNativeSpriteHeight();                            // Get native (world) height of slot icons; all are same height, so doesn't matter which is used here.
+        float slotIconWorldHeight = gp.getGuiIconM().getIconById(3).getNativeSpriteHeight();                            // Native (world/absolute) height of slot icons; all are same height, so doesn't matter which is used here.
         float slotIconScreenHeight = gp.getCamera().worldHeightToScreenHeight(slotIconWorldHeight);
-        float bottomSlotIconScreenY = 1 - mainWindowScreenTopBottomPadding - 0.081f - slotIconScreenHeight;             // Normalized (screen) y-position of the bottommost slot.
-        float slotIconScreenX = mainWindowScreenLeftRightPadding + 0.055f;
-        float slotIconScreenY = bottomSlotIconScreenY;
-        float slotIconVerticalSpacing = 0.1f;                                                                           // Normalized (screen) spacing between each slot (does not include height of slot icon itself).
-
-        // Render slot icon 2 (bottommost).
-        gp.getGuiIconM().addToRenderPipeline(renderer, 5, slotIconScreenX, slotIconScreenY);
-
-        // Render slot icon 1.
-        slotIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
-        gp.getGuiIconM().addToRenderPipeline(renderer, 4, slotIconScreenX, slotIconScreenY);
-
-        // Render slot icon 0 (topmost, player entity).
-        slotIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
-        gp.getGuiIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
+        float mainWindowScreenWidth = gp.getCamera().worldWidthToScreenWidth(mainWindowWorldWidth);                     // Normalized (screen) width of the in-game menu.
+        float mainWindowScreenLeftRightPadding = (1 - mainWindowScreenWidth) / 2;                                       // Normalized (screen) left and right padding of the main window of the in-game menu.
+        float mainWindowScreenHeight = gp.getCamera().worldHeightToScreenHeight(mainWindowWorldHeight);                 // Normalized (screen) height of the in-game menu.
+        float mainWindowScreenTopBottomPadding = (1 - mainWindowScreenHeight) / 2;                                      // Normalized (screen) top and bottom padding of the main window of the in-game menu.
+        float topSlotIconScreenY = mainWindowScreenTopBottomPadding + gp.getCamera().worldHeightToScreenHeight(91.0f);  // Normalized (screen) y-position of the topmost (i.e., player entity) slot icon.
+        float slotIconScreenX = mainWindowScreenLeftRightPadding + gp.getCamera().worldWidthToScreenWidth(42.0f);
+        float slotIconScreenY = topSlotIconScreenY;
+        float slotIconScreenVerticalSpacing = gp.getCamera().worldHeightToScreenHeight(40.0f);                          // Normalized (screen) spacing between each slot (does not include height of slot icon itself).
 
         // Extract keys from party map.
         Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
 
         // Prepare entity icon and status information text positions to render on top of respective slot icons.
-        float entityIconScreenX = slotIconScreenX + 0.01f;
-        float entityIconScreenY = bottomSlotIconScreenY - 0.009f;
-        float statusInfoTextScreenX = slotIconScreenX + 0.07f;
-        float statusInfoTextScreenY = bottomSlotIconScreenY + 0.014f;
+        float entityIconScreenX = slotIconScreenX + gp.getCamera().worldWidthToScreenWidth(7.68f);
+        float entityIconScreenY = topSlotIconScreenY - gp.getCamera().worldHeightToScreenHeight(4.00f);
+        float statusInfoTextScreenX = slotIconScreenX + gp.getCamera().worldWidthToScreenWidth(53.76f);
+        float statusInfoTextScreenY = topSlotIconScreenY + gp.getCamera().worldHeightToScreenHeight(6.05f);
 
-        // Render entity icon 2 (bottommost).
-        if ((gp.getEntityM().getParty().size() > 1) && (gp.getEntityM().getParty().get(keyArray[1]) != null)) {
-            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getParty().get(keyArray[1]).getEntityId(),
-                    entityIconScreenX, entityIconScreenY);
-            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[1]),
-                    statusInfoTextScreenX, statusInfoTextScreenY);
-        }
+        // Render slot 0 (topmost, player entity).
+        gp.getGuiIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
+        gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getPlayer().getEntityId(),
+                entityIconScreenX, entityIconScreenY);
+        renderPartyMemberStatusInformation(gp.getEntityM().getPlayer(), statusInfoTextScreenX, statusInfoTextScreenY);
 
-        // Render entity icon 1.
-        entityIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
-        statusInfoTextScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
+        // Render slot 1.
+        entityIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
+        statusInfoTextScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
         if ((gp.getEntityM().getParty().size() > 0) && (gp.getEntityM().getParty().get(keyArray[0]) != null)) {
+            slotIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
+            gp.getGuiIconM().addToRenderPipeline(renderer, 4, slotIconScreenX, slotIconScreenY);
             gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getParty().get(keyArray[0]).getEntityId(),
                     entityIconScreenX, entityIconScreenY);
             renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[0]),
                     statusInfoTextScreenX, statusInfoTextScreenY);
         }
 
-        // Render entity icon 0 (topmost, player entity).
-        entityIconScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
-        statusInfoTextScreenY -= slotIconVerticalSpacing + slotIconScreenHeight;
-        gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getPlayer().getEntityId(),
-                entityIconScreenX, entityIconScreenY);
-        renderPartyMemberStatusInformation(gp.getEntityM().getPlayer(), statusInfoTextScreenX, statusInfoTextScreenY);
+        // Render slot 2 (bottommost).
+        entityIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
+        statusInfoTextScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
+        if ((gp.getEntityM().getParty().size() > 1) && (gp.getEntityM().getParty().get(keyArray[1]) != null)) {
+            slotIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
+            gp.getGuiIconM().addToRenderPipeline(renderer, 5, slotIconScreenX, slotIconScreenY);
+            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getParty().get(keyArray[1]).getEntityId(),
+                    entityIconScreenX, entityIconScreenY);
+            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[1]),
+                    statusInfoTextScreenX, statusInfoTextScreenY);
+        }
     }
 
 
@@ -420,23 +425,23 @@ public class UserInterface {
 
         // Render text for name, level, and life label.
         renderStringShadow(name, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), "Arimo Bold");
-        textScreenCoords.y += 0.04f;
+        textScreenCoords.y += gp.getCamera().worldHeightToScreenHeight(17.28f);
         renderStringShadow(level, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), "Arimo Bold");
-        textScreenCoords.y += 0.04f;
+        textScreenCoords.y += gp.getCamera().worldHeightToScreenHeight(17.28f);
         renderStringShadow(lifeLabel, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), "Arimo Bold");
 
         // Render life bar.
-        float barScreenX = textScreenCoords.x + 0.03f;
-        float barScreenY = textScreenCoords.y + 0.002f;
-        float barScreenWidth = 0.055f;                                                                                  // The maximum normalized (screen) width of the life bar interior (corresponds with maximum life).
-        float barScreenHeight = 0.023f;                                                                                 // The normalized (screen) thickness of the life bar.
+        float barScreenX = textScreenCoords.x + gp.getCamera().worldWidthToScreenWidth(23.04f);
+        float barScreenY = textScreenCoords.y + gp.getCamera().worldHeightToScreenHeight(.864f);
+        float barScreenWidth = gp.getCamera().worldWidthToScreenWidth(42.24f);
+        float barScreenHeight = gp.getCamera().worldHeightToScreenHeight(9.936f);
         Vector4f barBorderColor = new Vector4f(255, 255, 255, 255);
         renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight,
                 barScreenX, barScreenY, barBorderColor);
 
         // Draw remaining life points text with a shadowed effect.
-        textScreenCoords.x += 0.074f;
-        textScreenCoords.y -= 0.008f;
+        textScreenCoords.x += gp.getCamera().worldWidthToScreenWidth(56.832f);
+        textScreenCoords.y -= gp.getCamera().worldHeightToScreenHeight(3.456f);
         renderStringShadow(lifeValue, textScreenCoords, 0.08f, new Vector3f(255, 255, 255), "Arimo Bold");
     }
 
@@ -532,14 +537,20 @@ public class UserInterface {
     private void renderItemIcons() {
 
         // Initializations.
-        int itemBackdropWorldWidth = gp.getGuiIconM().getIconById(6).getNativeSpriteWidth();                            // Both stackable and non-stackable background icons have same width, so doesn't matter which is used here.
-        int itemBackdropWorldHeight = gp.getGuiIconM().getIconById(6).getNativeSpriteHeight();                          // Both stackable and non-stackable background icons have same height, so doesn't matter which is used here.
+        int itemBackdropWorldWidth = gp.getGuiIconM().getIconById(6).getNativeSpriteWidth();                            // Native (world/absolute) width of the item/slot backdrop; both stackable and non-stackable background icons have same width, so doesn't matter which is used here.
+        int itemBackdropWorldHeight = gp.getGuiIconM().getIconById(6).getNativeSpriteHeight();                          // Native (world/absolute) height of the item/slot backdrop; both stackable and non-stackable background icons have same height, so doesn't matter which is used here.
         float itemBackdropScreenWidth = gp.getCamera().worldWidthToScreenWidth(itemBackdropWorldWidth);                 // Normalized (screen) width of the item/slot backdrop (both stackable and non-stackable are the same).
         float itemBackdropScreenHeight = gp.getCamera().worldHeightToScreenHeight(itemBackdropWorldHeight);             // Normalized (screen) height of the item/slot backdrop (both stackable and non-stackable are the same).
-        float horizontalScreenSpacing = itemBackdropScreenWidth + 0.03f;                                                // Normalized (screen) horizontal spacing between each item slot/icon backdrop.
-        float verticalScreenSpacing = itemBackdropScreenHeight + 0.05f;                                                 // Normalized (screen) vertical spacing between each item slot/icon backdrop.
-        float leftmostItemBackdropScreenX = mainWindowScreenLeftRightPadding + 0.055f;                                  // Normalized (screen) x-position of the leftmost item slot/icon backdrop.
-        float topmostItemBackdropScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;                                 // Normalized (screen) y-position of the topmost item slot/icon backdrop.
+        float horizontalScreenSpacing = itemBackdropScreenWidth + gp.getCamera().worldWidthToScreenWidth(23.0f);        // Normalized (screen) horizontal spacing between each item slot/icon backdrop (includes length of actual item/slot backdrop).
+        float verticalScreenSpacing = itemBackdropScreenHeight + gp.getCamera().worldHeightToScreenHeight(21.6f);       // Normalized (screen) vertical spacing between each item slot/icon backdrop.
+        float mainWindowScreenWidth = gp.getCamera().worldWidthToScreenWidth(mainWindowWorldWidth);                     // Normalized (screen) width of the in-game menu.
+        float mainWindowScreenLeftRightPadding = (1 - mainWindowScreenWidth) / 2;                                       // Normalized (screen) left and right padding of the main window of the in-game menu.
+        float mainWindowScreenHeight = gp.getCamera().worldHeightToScreenHeight(mainWindowWorldHeight);                 // Normalized (screen) height of the in-game menu.
+        float mainWindowScreenTopBottomPadding = (1 - mainWindowScreenHeight) / 2;                                      // Normalized (screen) top and bottom padding of the main window of the in-game menu.
+        float leftmostItemBackdropScreenX =
+                mainWindowScreenLeftRightPadding + gp.getCamera().worldWidthToScreenWidth(42.0f);                       // Normalized (screen) x-position of the leftmost item slot/icon backdrop.
+        float topmostItemBackdropScreenY =
+                1 - mainWindowScreenTopBottomPadding - gp.getCamera().worldHeightToScreenHeight(302.4f);                // Normalized (screen) y-position of the topmost item slot/icon backdrop.
         float itemBackdropScreenX;
         float itemBackdropScreenY;
         float itemIconScreenX;
@@ -575,8 +586,10 @@ public class UserInterface {
                 if (gp.getEntityM().getPlayer().getInventory().get(itemIndex).isStackable()) {
 
                     quantity = Integer.toString(gp.getEntityM().getPlayer().getInventory().get(itemIndex).getAmount());
-                    quantityScreenCoords.x = itemBackdropScreenX + (itemBackdropScreenWidth * 0.9f);
-                    quantityScreenCoords.y = itemBackdropScreenY + (itemBackdropScreenHeight * 0.9f);
+                    quantityScreenCoords.x = itemBackdropScreenX
+                            + gp.getCamera().worldWidthToScreenWidth(itemBackdropWorldWidth * 0.9f);
+                    quantityScreenCoords.y = itemBackdropScreenY
+                            + (gp.getCamera().worldHeightToScreenHeight(itemBackdropWorldHeight * 0.9f));
 
                     gp.getGuiIconM().addToRenderPipeline(renderer, 6, itemBackdropScreenX, itemBackdropScreenY);
                     gp.getEntityM().getPlayer().getInventory().get(itemIndex)
@@ -622,9 +635,15 @@ public class UserInterface {
             Vector3f nameColor = new Vector3f(121, 149, 255);
             Vector3f quantityColor = new Vector3f(244, 154, 45);
             Vector3f descriptionColor = new Vector3f(255, 255, 255);
+            float mainWindowScreenWidth = gp.getCamera().worldWidthToScreenWidth(mainWindowWorldWidth);                 // Normalized (screen) width of the in-game menu.
+            float mainWindowScreenLeftRightPadding = (1 - mainWindowScreenWidth) / 2;                                   // Normalized (screen) left and right padding of the main window of the in-game menu.
+            float mainWindowScreenHeight = gp.getCamera().worldHeightToScreenHeight(mainWindowWorldHeight);             // Normalized (screen) height of the in-game menu.
+            float mainWindowScreenTopBottomPadding = (1 - mainWindowScreenHeight) / 2;                                  // Normalized (screen) top and bottom padding of the main window of the in-game menu.
             float leftmostScreenX = mainWindowScreenLeftRightPadding
-                    + ((1 - (2 * mainWindowScreenLeftRightPadding)) / 2) + 0.05f;
-            float topmostScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;
+                    + ((1 - (2 * mainWindowScreenLeftRightPadding)) / 2)
+                    + gp.getCamera().worldWidthToScreenWidth(38.4f);
+            float topmostScreenY = 1 - mainWindowScreenTopBottomPadding
+                    - gp.getCamera().worldHeightToScreenHeight(302.4f);
             Vector2f screenCoords = new Vector2f(leftmostScreenX, topmostScreenY);
             String name = gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getName();
             String quantity = "Quantity: "
@@ -632,11 +651,13 @@ public class UserInterface {
             String description = gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getDescription();
 
             // Render name, quantity, and description.
+            float sectionScreenSpacing = gp.getCamera().worldHeightToScreenHeight(38.9f);
+            float blockScreenSpacing = gp.getCamera().worldHeightToScreenHeight(28.0f);
             renderStringShadow(name, screenCoords, 0.15f, nameColor, "Arimo Bold");
-            screenCoords.y += 0.090f;
+            screenCoords.y += sectionScreenSpacing;
             renderStringShadow(quantity, screenCoords, 0.15f, quantityColor, "Arimo Bold");
-            screenCoords.y += 0.090f;
-            renderStringBlock(description, screenCoords, 23, 0.065f, 0.15f, descriptionColor, "Arimo", true);
+            screenCoords.y += sectionScreenSpacing;
+            renderStringBlock(description, screenCoords, 23, blockScreenSpacing, 0.15f, descriptionColor, "Arimo", true);
         }
     }
 
@@ -649,10 +670,17 @@ public class UserInterface {
 
         // Initializations.
         float fontScale = 0.15f;                                                                                        // Font size (multiplies native height).
-        float settingLabelLeftScreenPadding = mainWindowScreenLeftRightPadding + 0.055f;                                // Normalized (screen) padding between the leftmost edge of the screen and setting labels.
-        float settingLabelTopmostScreenY = 1 - mainWindowScreenTopBottomPadding - 0.7f;                                 // Normalized (screen) y-position of topmost setting.
-        float settingScreenSpacing = 0.082f;                                                                            // Normalized (screen) vertical spacing between each setting.
-        float settingLabelValueScreenGap = 0.4f;                                                                        // Normalized (screen) horizontal gap between a setting's label and its active option.
+
+        float mainWindowScreenWidth = gp.getCamera().worldWidthToScreenWidth(mainWindowWorldWidth);                     // Normalized (screen) width of the in-game menu.
+        float mainWindowScreenLeftRightPadding = (1 - mainWindowScreenWidth) / 2;                                       // Normalized (screen) left and right padding of the main window of the in-game menu.
+        float mainWindowScreenHeight = gp.getCamera().worldHeightToScreenHeight(mainWindowWorldHeight);                 // Normalized (screen) height of the in-game menu.
+        float mainWindowScreenTopBottomPadding = (1 - mainWindowScreenHeight) / 2;                                      // Normalized (screen) top and bottom padding of the main window of the in-game menu.
+        float settingLabelLeftScreenPadding =
+                mainWindowScreenLeftRightPadding + gp.getCamera().worldWidthToScreenWidth(42.0f);                       // Normalized (screen) padding between the leftmost edge of the screen and setting labels.
+        float settingLabelTopmostScreenY =
+                1 - mainWindowScreenTopBottomPadding - gp.getCamera().worldHeightToScreenHeight(302.4f);                // Normalized (screen) y-position of topmost setting.
+        float settingScreenSpacing = gp.getCamera().worldHeightToScreenHeight(35.4f);                                   // Normalized (screen) vertical spacing between each setting.
+        float settingLabelValueScreenGap = gp.getCamera().worldWidthToScreenWidth(307.2f);                              // Normalized (screen) horizontal gap between a setting's label and its active option.
         float scrollArrowWorldWidth = gp.getGuiIconM().getIconById(9).getNativeSpriteWidth();                           // Both the left and right scroll arrows have the same width, so either height can be retrieved.
         float scrollArrowScreenWidth = gp.getCamera().worldWidthToScreenWidth(scrollArrowWorldWidth);                   // Normalized (screen) width of scroll arrows.
         float scrollArrowWorldHeight = gp.getGuiIconM().getIconById(9).getNativeSpriteHeight();                         // Both the left and right scroll arrows have the same height, so either height can be retrieved.
@@ -716,8 +744,10 @@ public class UserInterface {
             float characterScreenHeight = gp.getCamera().worldHeightToScreenHeight(characterWorldHeight);
             float scrollArrowScreenY = settingValueScreenCoords.y
                     + ((characterScreenHeight - scrollArrowScreenHeight) / 2);
-            float rightScrollArrowScreenX = settingValueScreenCoords.x - 0.02f - scrollArrowScreenWidth;
-            float leftScrollArrowScreenX = rightScrollArrowScreenX - 0.015f - scrollArrowScreenWidth;
+            float rightScrollArrowScreenX =
+                    settingValueScreenCoords.x - gp.getCamera().worldWidthToScreenWidth(15.4f) - scrollArrowScreenWidth;
+            float leftScrollArrowScreenX =
+                    rightScrollArrowScreenX - gp.getCamera().worldWidthToScreenWidth(11.1f) - scrollArrowScreenWidth;
             gp.getGuiIconM().addToRenderPipeline(renderer, 9, leftScrollArrowScreenX, scrollArrowScreenY);
             gp.getGuiIconM().addToRenderPipeline(renderer, 10, rightScrollArrowScreenX, scrollArrowScreenY);
         }
@@ -780,18 +810,18 @@ public class UserInterface {
         // Prepare window dimensions (other than window width).
         // The following information is assuming use of the font Arimo (normal/non-bold).
         float fontScale = 0.15f;                                                                                        // Font size (multiplies native height).
-        float optionsScreenTopBottomPadding = 0.02f;                                                                    // Normalized (screen) padding on top and bottom of sub-menu window.
-        float optionsScreenSpacing = 0.022f;                                                                            // Normalized (screen) spacing between options text.
+        float optionsScreenTopBottomPadding = gp.getCamera().worldHeightToScreenHeight(8.6f);                           // Normalized (screen) padding on top and bottom of sub-menu window.
+        float optionsScreenSpacing = gp.getCamera().worldHeightToScreenHeight(9.5f);                                    // Normalized (screen) spacing between options text.
         float optionsCharacterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;        // It doesn't matter which character is used, since all characters in a font have the same height.
         float optionsCharacterScreenHeight = gp.getCamera().worldHeightToScreenHeight(optionsCharacterWorldHeight);     // Normalized (screen) character height.
         float windowScreenHeight = (optionsScreenSpacing * (gp.getSubMenuH().getOptions().size() - 1))                  // Spacing between options text.
                 + (2 * optionsScreenTopBottomPadding)                                                                   // Padding on top and bottom of sub-menu window.
                 + (optionsCharacterScreenHeight * gp.getSubMenuH().getOptions().size());                                // Character height for each option.
 
-        // Prepare window width to width of widest option.
+        // Prepare window width to that of widest option.
         // The following information is assuming use of the font Arimo (normal/non-bold).
-        float optionsScreenLeftPadding = 0.03f;
-        float optionsScreenRightPadding = 0.02f;
+        float optionsScreenLeftPadding = gp.getCamera().worldWidthToScreenWidth(23.0f);
+        float optionsScreenRightPadding = gp.getCamera().worldWidthToScreenWidth(15.36f);
         float maxOptionWorldWidth = 0;
         for (int i = 0; i < gp.getSubMenuH().getOptions().size(); i++) {
             String option = gp.getSubMenuH().getOptions().get(i);
@@ -810,7 +840,9 @@ public class UserInterface {
         // Calculate window position.
         Vector2f windowScreenCoords;                                                                                    // Declare variable to store window screen coordinates (initialized immediately below).
         if (gp.getSubMenuH().isSubMenuDefaultPosition()) {                                                              // This is where the default position of the sub-menu window is defined.
-            windowScreenCoords = new Vector2f(1 - 0.03f - windowScreenWidth, 1 - 0.2f - 0.03f - windowScreenHeight);    // The 0.2f in the y-component is the height of the main dialogue window in the `renderDialogueScreen()` method.
+            windowScreenCoords = new Vector2f(
+                    1 - gp.getCamera().worldWidthToScreenWidth(23.0f) - windowScreenWidth,
+                    1 - gp.getCamera().worldHeightToScreenHeight(86.4f + 13.0f) - windowScreenHeight);                  // The 86.4f in the y-component is the height of the main dialogue window in the `renderDialogueScreen()` method.
         } else {
             windowScreenCoords = new Vector2f(
                     gp.getSubMenuH().getSubMenuScreenX(), gp.getSubMenuH().getSubMenuScreenY());
@@ -844,7 +876,7 @@ public class UserInterface {
                         gp.getSelectionA().getNativeSpriteHeight());
                 float selectionArrowScreenY = optionsScreenCoords.y + (optionsCharacterScreenHeight / 2)
                         - (selectionArrowScreenHeight / 2);
-                gp.getSelectionA().addToRenderPipeline(renderer, optionsScreenCoords.x - 0.02f, selectionArrowScreenY);
+                gp.getSelectionA().addToRenderPipeline(renderer, optionsScreenCoords.x - gp.getCamera().worldWidthToScreenWidth(15.36f), selectionArrowScreenY);
             }
             optionsScreenCoords.y += optionsCharacterScreenHeight + optionsScreenSpacing;
         }
@@ -989,10 +1021,11 @@ public class UserInterface {
     private void renderDebug() {
 
         float fontScale = 0.18f;
-        float screenX = 0.01f;
+        float screenX = gp.getCamera().worldWidthToScreenWidth(7.7f);
+        float spacingScreenY = gp.getCamera().worldHeightToScreenHeight(25.9f);
 
         // Memory usage by Java Runtime.
-        Vector2f screenCoords = new Vector2f(screenX, 0.01f);
+        Vector2f screenCoords = new Vector2f(screenX, gp.getCamera().worldHeightToScreenHeight(7.7f));
         Long totalMemoryBytes = Runtime.getRuntime().totalMemory();
         Long freeMemoryBytes = Runtime.getRuntime().freeMemory();
         Long usedMemoryMegabytes = (totalMemoryBytes - freeMemoryBytes) / 1000000;
@@ -1000,33 +1033,33 @@ public class UserInterface {
         renderStringShadow(memoryUsage, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // VSync.
-        screenCoords = new Vector2f(screenX, 0.07f);
+        screenCoords.y += spacingScreenY;
         String vSync = "VSync: " + ((gp.getSystemSetting(0).getActiveOption() == 0) ? "Disabled" : "Enabled");
         renderStringShadow(vSync, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Frame rate.
-        screenCoords = new Vector2f(screenX, 0.13f);
+        screenCoords.y += spacingScreenY;
         String fps = "FPS: " + fpsTracker;
         renderStringShadow(fps, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Player column.
-        screenCoords = new Vector2f(screenX, 0.19f);
+        screenCoords.y += spacingScreenY;
         String col = "Player Col: " + gp.getEntityM().getPlayer().getCol();
         renderStringShadow(col, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Player row.
-        screenCoords = new Vector2f(screenX, 0.25f);
+        screenCoords.y += spacingScreenY;
         String row = "Player Row: " + gp.getEntityM().getPlayer().getRow();
         renderStringShadow(row, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Camera center (x).
-        screenCoords = new Vector2f(screenX, 0.31f);
+        screenCoords.y += spacingScreenY;
         String centerX = "Camera Center X: "
                 + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
         renderStringShadow(centerX, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
 
         // Camera center (y).
-        screenCoords = new Vector2f(screenX, 0.37f);
+        screenCoords.y += spacingScreenY;
         String centerY = "Camera Center Y: "
                 + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
         renderStringShadow(centerY, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
@@ -1063,7 +1096,9 @@ public class UserInterface {
      */
     private void renderStringShadow(String text, Vector2f screenCoords, float size, Vector3f color, String font) {
 
-        Vector2f shadowScreenCoords = new Vector2f(screenCoords.x + 0.0015f, screenCoords.y + 0.0015f);
+        Vector2f shadowScreenCoords = new Vector2f(
+                screenCoords.x + gp.getCamera().worldWidthToScreenWidth(0.8f),                                          // Hard coded as an absolute (non-screen) width since shadow cast is fixed, regardless of native screen width.
+                screenCoords.y + gp.getCamera().worldHeightToScreenHeight(0.8f));                                       // Hard coded as an absolute (non-screen) height since shadow cast is fixed, regardless of native screen height.
         renderString(text, shadowScreenCoords, size, new Vector3f(0, 0, 0), font);
         renderString(text, screenCoords, size, color, font);
     }
@@ -1073,9 +1108,9 @@ public class UserInterface {
      * Adds a block of text with a specified line character limit to the render pipeline.
      *
      * @param text complete text to be printed
-     * @param screenCoords screen coordinates of the text block (lefmost and topmost, normalized from 0 to 1, both inclusive).
+     * @param screenCoords screen coordinates of the text block (lefmost and topmost, normalized from 0 to 1, both inclusive)
      * @param maxLineLength maximum number of characters allowed in a printed line of text
-     * @param lineSpacing space between each printed line of text
+     * @param lineSpacing screen space between each printed line of text (normalized from 0 to 1, both inclusive)
      * @param size size at which to draw the text
      * @param color color of the printed text (r, g, b)
      * @param font name of font to use

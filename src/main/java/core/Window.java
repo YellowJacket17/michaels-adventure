@@ -109,7 +109,7 @@ public class Window {
     /**
      * Viewport aspect ratio.
      */
-    private final Vector2f aspectRatio = new Vector2f(16f, 9f);
+    private final Vector2f aspectRatio = new Vector2f(GamePanel.NATIVE_SCREEN_WIDTH, GamePanel.NATIVE_SCREEN_HEIGHT);
 
     /**
      * Window title.
@@ -387,7 +387,7 @@ public class Window {
         } else {
 
             viewportWidth = width;
-            viewportHeight = (int)((aspectRatio.y/ aspectRatio.x) * width);
+            viewportHeight = (int)((aspectRatio.y / aspectRatio.x) * width);
         }
         glfwSetWindowSize(glfwWindow, width, height);
         glViewport(((width - viewportWidth) / 2), ((height - viewportHeight) / 2), viewportWidth, viewportHeight);
