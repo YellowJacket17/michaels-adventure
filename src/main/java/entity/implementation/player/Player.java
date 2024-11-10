@@ -534,7 +534,9 @@ public class Player extends EntityBase {
 
             boolean interaction = false;                                                                                // Initialize a variable to determine if an object or npc is being interacted with or not.
 
-            if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER)) && (interactionCountdown <= 0)) {
+            if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER)
+                    || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E)))
+                    && (interactionCountdown <= 0)) {
 
                 interaction = checkClickInteraction(dt);                                                                // Check if any interactions triggered by a click (i.e., hitting the Enter key or other manual selection) have been hit.
             }
@@ -595,7 +597,8 @@ public class Player extends EntityBase {
      */
     private void updateDialogueInput() {
 
-        if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER))
+        if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER)
+                || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E)))
                 && (gp.getDialogueR().getActiveConv() != null)
                 && (!gp.getDialogueR().isReadingDialogue())
                 && (interactionCountdown <= 0)) {
@@ -637,7 +640,7 @@ public class Player extends EntityBase {
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
+            else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
@@ -681,7 +684,7 @@ public class Player extends EntityBase {
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
+            else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
@@ -722,7 +725,7 @@ public class Player extends EntityBase {
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
+            else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
@@ -773,7 +776,8 @@ public class Player extends EntityBase {
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)
+                    || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
                 gp.getEventM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected());
                 interactionCountdown = stagedMenuInteractionCountdown;
             }

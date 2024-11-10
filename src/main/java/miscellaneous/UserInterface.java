@@ -432,7 +432,7 @@ public class UserInterface {
             float slotIconScreenWidth = gp.getCamera().worldWidthToScreenWidth(slotIconWorldWidth);
             float scrollEllipsesScreenX = slotIconScreenX + (slotIconScreenWidth / 2) - (scrollEllipsesScreenWidth / 2);
             float scrollEllipsesScreenY = topSlotIconScreenY - scrollEllipsesScreenHeight
-                    - gp.getCamera().worldHeightToScreenHeight(15.5f);
+                    - gp.getCamera().worldHeightToScreenHeight(15.0f);
             gp.getScrollE().addToRenderPipeline(renderer, scrollEllipsesScreenX, scrollEllipsesScreenY);
         }
 
@@ -444,7 +444,7 @@ public class UserInterface {
             float slotIconScreenWidth = gp.getCamera().worldWidthToScreenWidth(slotIconWorldWidth);
             float scrollEllipsesScreenX = slotIconScreenX + (slotIconScreenWidth / 2) - (scrollEllipsesScreenWidth / 2);
             float scrollEllipsesScreenY = slotIconScreenY + slotIconScreenHeight
-                    + gp.getCamera().worldHeightToScreenHeight(15.5f);
+                    + gp.getCamera().worldHeightToScreenHeight(15.0f);
             gp.getScrollE().addToRenderPipeline(renderer, scrollEllipsesScreenX, scrollEllipsesScreenY);
         }
     }
@@ -758,6 +758,12 @@ public class UserInterface {
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
         renderSystemSetting(3, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
+                scrollArrowScreenWidth, scrollArrowScreenHeight);
+
+        // Fifth setting ('E' equals 'Enter').
+        settingLabelScreenCoords.y += settingScreenSpacing;
+        settingValueScreenCoords.y += settingScreenSpacing;
+        renderSystemSetting(4, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
                 scrollArrowScreenWidth, scrollArrowScreenHeight);
     }
 

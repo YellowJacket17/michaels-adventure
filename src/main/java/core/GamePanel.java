@@ -203,6 +203,11 @@ public class GamePanel {
         fullScreenSetting.addOption("Enabled");
         systemSettings.add(fullScreenSetting);
 
+        Setting eEqualsEnterSetting = new Setting("'E' Equals 'Enter'", "Sets the 'E' key to function the same as the 'Enter' key.");
+        eEqualsEnterSetting.addOption("Disabled");
+        eEqualsEnterSetting.addOption("Enabled");
+        systemSettings.add(eEqualsEnterSetting);
+
         // Initialize player.
         entityM.initPlayer();
 

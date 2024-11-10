@@ -6,6 +6,7 @@ import event.enumeration.FadeState;
 import miscellaneous.KeyListener;
 import org.joml.Vector3f;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER;
 
 /**
@@ -46,7 +47,8 @@ public class Cts_000 extends CutsceneBase {
                 }
                 break;
             case 3:
-                if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
+                if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)
+                        || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
                     gp.getFadeS().initiateFlash(0.15, 0.15, 0.02, new Vector3f(0, 0, 0));
                     progressCutscene();
                 }
