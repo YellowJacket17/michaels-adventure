@@ -1,0 +1,17 @@
+11/09/2024 11:41:29:654  INFO     Application started.
+11/09/2024 11:41:36:747  INFO     Starting game loop.
+11/09/2024 11:41:36:759  WARNING  Unrecognized key with code '-1' was detected.
+11/09/2024 11:41:41:700  ERROR    An unhandled exception has occurred!
+java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0
+	at miscellaneous.UserInterface.setSelectionStatusPartySlot1(UserInterface.java:1265)
+	at miscellaneous.UserInterface.updateSelectedPartyMenuEntity(UserInterface.java:1207)
+	at miscellaneous.UserInterface.setPartySlotSelected(UserInterface.java:1360)
+	at core.GamePanel.primaryGameStateInit(GamePanel.java:441)
+	at core.GamePanel.setPrimaryGameState(GamePanel.java:618)
+	at entity.implementation.player.Player.updateExploreInput(Player.java:530)
+	at entity.implementation.player.Player.updateInput(Player.java:155)
+	at entity.EntityManager.updateInput(EntityManager.java:117)
+	at core.GamePanel.update(GamePanel.java:229)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)

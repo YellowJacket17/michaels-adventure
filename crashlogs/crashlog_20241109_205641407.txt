@@ -1,0 +1,16 @@
+11/09/2024 20:56:34:179  INFO     Application started.
+11/09/2024 20:56:41:404  ERROR    An unhandled exception has occurred!
+java.lang.IndexOutOfBoundsException: Index 7 out of bounds for length 7
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:64)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:70)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:266)
+	at java.base/java.util.Objects.checkIndex(Objects.java:361)
+	at java.base/java.util.ArrayList.get(ArrayList.java:427)
+	at asset.Spritesheet.getSprite(Spritesheet.java:164)
+	at entity.implementation.player.Player.setSprites(Player.java:448)
+	at entity.EntityBase.<init>(EntityBase.java:447)
+	at entity.implementation.player.Player.<init>(Player.java:103)
+	at entity.EntityManager.initPlayer(EntityManager.java:128)
+	at core.GamePanel.init(GamePanel.java:207)
+	at core.Window.initGame(Window.java:239)
+	at core.App.main(App.java:19)

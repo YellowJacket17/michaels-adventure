@@ -632,23 +632,31 @@ public class Player extends EntityBase {
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_2)) {
-                gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
-                interactionCountdown = stagedMenuInteractionCountdown;
-            }
-
-            else if (KeyListener.isKeyPressed(GLFW_KEY_3)) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
                 gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
+            else if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
+                gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
+                interactionCountdown = stagedMenuInteractionCountdown;
+            }
+
             else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-                gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() - 1);
+                if (gp.getUi().getPartySlotSelected() == 0) {
+                    gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() - 1);
+                } else {
+                    gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() - 1);
+                }
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
-                gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() + 1);
+                if (gp.getUi().getPartySlotSelected() == 2) {
+                    gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() + 1);
+                } else {
+                    gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() + 1);
+                }
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
         }
@@ -668,12 +676,12 @@ public class Player extends EntityBase {
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_1)) {
+            if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
                 gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_3)) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
@@ -714,12 +722,12 @@ public class Player extends EntityBase {
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_1)) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_2)) {
+            else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
                 gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
                 interactionCountdown = stagedMenuInteractionCountdown;
             }
@@ -780,11 +788,11 @@ public class Player extends EntityBase {
      */
     private void updateDebugInput() {
 
-        if ((debugActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_Q))) {
+        if ((debugActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_P))) {
             debugActioned = false;                                                                                      // Enable the ability of the player to enable the debug mode by pressing the Q key.
         }
 
-        if ((KeyListener.isKeyPressed(GLFW_KEY_Q)) && (!debugActioned)) {
+        if ((KeyListener.isKeyPressed(GLFW_KEY_P)) && (!debugActioned)) {
 
             if ((gp.isDebugActive())
                     && (gp.getPrimaryGameState() == PrimaryGameState.EXPLORE)

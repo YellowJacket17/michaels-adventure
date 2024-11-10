@@ -23,12 +23,6 @@ public class UserInterface {
     private Renderer renderer;
 
     /**
-     * Variable to store current selected party member in the party menu.
-     * The default value is zero (first slot).
-     */
-    private int partySlotSelected;
-
-    /**
      * World (absolute) width of the main window of the in-game menu.
      */
     private final float mainWindowWorldWidth = 676.0f;
@@ -37,6 +31,17 @@ public class UserInterface {
      * World (absolute) height of the main window of the in-game menu.
      */
     private final float mainWindowWorldHeight = 380.0f;
+
+    /**
+     * Variable to store current selected party member in the party menu.
+     * The default value is zero (first slot).
+     */
+    private int partySlotSelected;
+
+    /**
+     * Variable to store current scroll level of displayed entities in the party member menu screen.
+     */
+    private int partyMenuScrollLevel = 0;
 
     /**
      * Sets the maximum number of item slot rows that can be displayed at once in the inventory menu.
@@ -190,7 +195,7 @@ public class UserInterface {
 
         // Render main dialogue window.
         renderer.addRectangle(
-                new Vector4f(0, 0, 0, 180),
+                new Vector4f(20, 20, 20, 180),
                 new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
                 ZIndex.SECOND_LAYER);
 
@@ -219,7 +224,7 @@ public class UserInterface {
 
             // Render dialogue sub-window.
             renderer.addRectangle(
-                    new Vector4f(0, 0, 0, 180),
+                    new Vector4f(20, 20, 20, 180),
                     new Transform(subWindowWorldCoords, new Vector2f(subWindowWorldWidth, subWindowWorldHeight)),
                     ZIndex.SECOND_LAYER);
 
@@ -276,7 +281,7 @@ public class UserInterface {
         float mainWindowWorldWidth = gp.getCamera().screenWidthToWorldWidth(mainWindowScreenWidth);
         float mainWindowWorldHeight = gp.getCamera().screenHeightToWorldHeight(mainWindowScreenHeight);
         renderer.addRoundRectangle(
-                new Vector4f(0, 0, 0, 220),
+                new Vector4f(20, 20, 20, 220),
                 new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
                 ZIndex.SECOND_LAYER,
                 (int)mainWindowWorldHeight / 16);
@@ -311,7 +316,7 @@ public class UserInterface {
 
         // Prepare menu section title position and dimensions and render.
         float fontScale = 0.17f;                                                                                        // Font size (multiplies native height).
-        float optionsCharacterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;        // It doesn't matter which character is used, since all characters in a font have the same height.
+        float optionsCharacterWorldHeight = renderer.getFont("Arimo Bold").getCharacter('A').getHeight() * fontScale;        // It doesn't matter which character is used, since all characters in a font have the same height.
         float optionsCharacterScreenHeight = gp.getCamera().worldHeightToScreenHeight(optionsCharacterWorldHeight);     // Normalized (screen) character height.
         float titleScreenTopBottomPadding = (dividerScreenCoords.y - mainWindowScreenTopBottomPadding
                 - optionsCharacterScreenHeight) / 2;
@@ -330,7 +335,7 @@ public class UserInterface {
                 title = "SETTINGS";
                 break;
         }
-        renderString(title, titleScreenCoords, fontScale, new Vector3f(121, 149, 255), "Arimo");
+        renderString(title, titleScreenCoords, fontScale, new Vector3f(121, 149, 255), "Arimo Bold");
     }
 
 
@@ -372,34 +377,75 @@ public class UserInterface {
         float statusInfoTextScreenX = slotIconScreenX + gp.getCamera().worldWidthToScreenWidth(53.76f);
         float statusInfoTextScreenY = topSlotIconScreenY + gp.getCamera().worldHeightToScreenHeight(6.05f);
 
-        // Render slot 0 (topmost, player entity).
-        gp.getGuiIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
-        gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getPlayer().getEntityId(),
-                entityIconScreenX, entityIconScreenY);
-        renderPartyMemberStatusInformation(gp.getEntityM().getPlayer(), statusInfoTextScreenX, statusInfoTextScreenY);
+        // Render slot 0 (topmost).
+        if (partyMenuScrollLevel == 0) {
+            gp.getGuiIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
+            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getPlayer().getEntityId(),
+                    entityIconScreenX, entityIconScreenY);
+            renderPartyMemberStatusInformation(gp.getEntityM().getPlayer(), statusInfoTextScreenX, statusInfoTextScreenY);
+
+        } else if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel - 1)
+                && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel - 1]) != null)) {
+            gp.getGuiIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
+            gp.getEntityIconM().addToRenderPipeline(renderer,
+                    gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel - 1]).getEntityId(),
+                    entityIconScreenX, entityIconScreenY);
+            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel - 1]),
+                    statusInfoTextScreenX, statusInfoTextScreenY);
+        }
 
         // Render slot 1.
-        entityIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
-        statusInfoTextScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
-        if ((gp.getEntityM().getParty().size() > 0) && (gp.getEntityM().getParty().get(keyArray[0]) != null)) {
+        if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel)
+                && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]) != null)) {
+            entityIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
+            statusInfoTextScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
             slotIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
             gp.getGuiIconM().addToRenderPipeline(renderer, 4, slotIconScreenX, slotIconScreenY);
-            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getParty().get(keyArray[0]).getEntityId(),
+            gp.getEntityIconM().addToRenderPipeline(renderer,
+                    gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]).getEntityId(),
                     entityIconScreenX, entityIconScreenY);
-            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[0]),
+            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]),
                     statusInfoTextScreenX, statusInfoTextScreenY);
         }
 
         // Render slot 2 (bottommost).
-        entityIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
-        statusInfoTextScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
-        if ((gp.getEntityM().getParty().size() > 1) && (gp.getEntityM().getParty().get(keyArray[1]) != null)) {
+        if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel + 1)
+                && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel + 1]) != null)) {
+            entityIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
+            statusInfoTextScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
             slotIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
             gp.getGuiIconM().addToRenderPipeline(renderer, 5, slotIconScreenX, slotIconScreenY);
-            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getParty().get(keyArray[1]).getEntityId(),
+            gp.getEntityIconM().addToRenderPipeline(renderer,
+                    gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel + 1]).getEntityId(),
                     entityIconScreenX, entityIconScreenY);
-            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[1]),
+            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel + 1]),
                     statusInfoTextScreenX, statusInfoTextScreenY);
+        }
+
+        // Render top scroll ellipses, if applicable.
+        if (partyMenuScrollLevel > 0) {
+            float scrollEllipsesWorldWidth = gp.getScrollE().getNativeSpriteWidth();                                    // Native (world/absolute) width of scroll ellipses.
+            float scrollEllipsesScreenWidth = gp.getCamera().worldWidthToScreenWidth(scrollEllipsesWorldWidth);
+            float scrollEllipsesWorldHeight = gp.getScrollE().getNativeSpriteHeight();
+            float scrollEllipsesScreenHeight = gp.getCamera().worldHeightToScreenHeight(scrollEllipsesWorldHeight);
+            float slotIconWorldWidth = gp.getGuiIconM().getIconById(3).getNativeSpriteWidth();                          // Native (world/absolute) width of slot icons; all are same height, so doesn't matter which is used here.
+            float slotIconScreenWidth = gp.getCamera().worldWidthToScreenWidth(slotIconWorldWidth);
+            float scrollEllipsesScreenX = slotIconScreenX + (slotIconScreenWidth / 2) - (scrollEllipsesScreenWidth / 2);
+            float scrollEllipsesScreenY = topSlotIconScreenY - scrollEllipsesScreenHeight
+                    - gp.getCamera().worldHeightToScreenHeight(15.5f);
+            gp.getScrollE().addToRenderPipeline(renderer, scrollEllipsesScreenX, scrollEllipsesScreenY);
+        }
+
+        // Render bottom scroll ellipses, if applicable.
+        if (gp.getEntityM().getParty().size() > partyMenuScrollLevel + 2) {
+            float scrollEllipsesWorldWidth = gp.getScrollE().getNativeSpriteWidth();                                    // Native (world/absolute) width of scroll ellipses.
+            float scrollEllipsesScreenWidth = gp.getCamera().worldWidthToScreenWidth(scrollEllipsesWorldWidth);
+            float slotIconWorldWidth = gp.getGuiIconM().getIconById(3).getNativeSpriteWidth();                          // Native (world/absolute) width of slot icons; all are same height, so doesn't matter which is used here.
+            float slotIconScreenWidth = gp.getCamera().worldWidthToScreenWidth(slotIconWorldWidth);
+            float scrollEllipsesScreenX = slotIconScreenX + (slotIconScreenWidth / 2) - (scrollEllipsesScreenWidth / 2);
+            float scrollEllipsesScreenY = slotIconScreenY + slotIconScreenHeight
+                    + gp.getCamera().worldHeightToScreenHeight(15.5f);
+            gp.getScrollE().addToRenderPipeline(renderer, scrollEllipsesScreenX, scrollEllipsesScreenY);
         }
     }
 
@@ -853,7 +899,7 @@ public class UserInterface {
         float windowWorldWidth = gp.getCamera().screenWidthToWorldWidth(windowScreenWidth);
         float windowWorldHeight = gp.getCamera().screenHeightToWorldHeight(windowScreenHeight);
         renderer.addRectangle(
-                new Vector4f(0, 0, 0, 180),
+                new Vector4f(20, 20, 20, 180),
                 new Transform(windowWorldCoords, new Vector2f(windowWorldWidth, windowWorldHeight)),
                 ZIndex.SECOND_LAYER);
 
@@ -1180,26 +1226,32 @@ public class UserInterface {
 
         switch (partySlotSelected) {
             case 0:
-                setSelectionStatusPartySlot0(true);                                                                     // Set slot 0 (player entity) as selected.
-                setSelectionStatusPartySlot1(false);                                                                    // Set slot 1 as not selected.
-                setSelectionStatusPartySlot2(false);                                                                    // Set slot 2 as not selected.
+                if ((partyMenuScrollLevel == 0)
+                        || ((gp.getEntityM().getParty().size() > partyMenuScrollLevel - 1)
+                            && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel - 1]) != null))) {         // Check whether a party member or the player entity actually occupies this slot or not.
+                    setSelectionStatusPartySlot0(true);
+                    setSelectionStatusPartySlot1(false);
+                    setSelectionStatusPartySlot2(false);
+                }
                 break;
             case 1:
-                if ((gp.getEntityM().getParty().size() > 0) && (gp.getEntityM().getParty().get(keyArray[0]) != null)) { // Check whether a party member actually occupies this slot or not.
-                    setSelectionStatusPartySlot0(false);                                                                // Set slot 0 (player entity) as not selected.
-                    setSelectionStatusPartySlot1(true);                                                                 // Set slot 1 as selected.
-                    setSelectionStatusPartySlot2(false);                                                                // Set slot 2 as not selected.
+                if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel)
+                        && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]) != null)) {                  // Check whether a party member actually occupies this slot or not.
+                    setSelectionStatusPartySlot0(false);
+                    setSelectionStatusPartySlot1(true);
+                    setSelectionStatusPartySlot2(false);
                 } else {
-                    setPartySlotSelected(partySlotSelected - 1);                                                        // No party member exists in this slot, so move up to the slot above.
+                    setPartySlotSelected(partySlotSelected - 1);                                                        // No party member exists in this slot, so try moving up to the slot above.
                 }
                 break;
             case 2:
-                if ((gp.getEntityM().getParty().size() > 1) && (gp.getEntityM().getParty().get(keyArray[1]) != null)) { // Check whether a part member actually occupies this slot or not.
-                    setSelectionStatusPartySlot0(false);                                                                // Set slot 0 (player entity) as not selected.
-                    setSelectionStatusPartySlot1(false);                                                                // Set slot 1 as not selected.
-                    setSelectionStatusPartySlot2(true);                                                                 // Set slot 2 as selected.
+                if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel + 1)
+                        && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel + 1]) != null)) {              // Check whether a part member actually occupies this slot or not.
+                    setSelectionStatusPartySlot0(false);
+                    setSelectionStatusPartySlot1(false);
+                    setSelectionStatusPartySlot2(true);
                 } else {
-                    setPartySlotSelected(partySlotSelected - 1);                                                        // No party member exists in this slot, so move up to the slot above.
+                    setPartySlotSelected(partySlotSelected - 1);                                                        // No party member exists in this slot, so try moving up to the slot above.
                 }
                 break;
         }
@@ -1213,7 +1265,21 @@ public class UserInterface {
      */
     private void setSelectionStatusPartySlot0(boolean selected) {
 
-        gp.getEntityIconM().getEntityIconById(gp.getEntityM().getPlayer().getEntityId()).setSelected(selected);
+        if (partyMenuScrollLevel == 0) {
+
+            gp.getEntityIconM().getEntityIconById(gp.getEntityM().getPlayer().getEntityId()).setSelected(selected);
+        } else {
+
+            Set<Integer> keySet = gp.getEntityM().getParty().keySet();
+            Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
+
+            if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel - 1)
+                    && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel - 1]) != null)) {
+
+                gp.getEntityIconM().getEntityIconById(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel - 1])
+                        .getEntityId()).setSelected(selected);
+            }
+        }
         gp.getGuiIconM().getIconById(3).setSelected(selected);
     }
 
@@ -1228,10 +1294,11 @@ public class UserInterface {
         Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
 
-        if ((gp.getEntityM().getParty().size() > 0) && (gp.getEntityM().getParty().get(keyArray[0]) != null)) {         // Safeguard in case the `party` map is either too small or contains a null value.
+        if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel)
+                && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]) != null)) {
 
-            gp.getEntityIconM().getEntityIconById(gp.getEntityM().getParty().get(keyArray[0]).getEntityId())
-                    .setSelected(selected);
+            gp.getEntityIconM().getEntityIconById(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel])
+                    .getEntityId()).setSelected(selected);
         }
         gp.getGuiIconM().getIconById(4).setSelected(selected);
     }
@@ -1247,10 +1314,11 @@ public class UserInterface {
         Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
 
-        if ((gp.getEntityM().getParty().size() > 1) && (gp.getEntityM().getParty().get(keyArray[1]) != null)) {         // Safeguard in case the `party` map is either too small or contains a null value.
+        if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel + 1)
+                && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel + 1]) != null)) {
 
-            gp.getEntityIconM().getEntityIconById(gp.getEntityM().getParty().get(keyArray[1]).getEntityId())
-                    .setSelected(selected);
+            gp.getEntityIconM().getEntityIconById(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel + 1])
+                    .getEntityId()).setSelected(selected);
         }
         gp.getGuiIconM().getIconById(5).setSelected(selected);
     }
@@ -1282,6 +1350,10 @@ public class UserInterface {
     // GETTERS
     public int getPartySlotSelected() {
         return partySlotSelected;
+    }
+
+    public int getPartyMenuScrollLevel() {
+        return partyMenuScrollLevel;
     }
 
     public int getMaxNumItemRow() {
@@ -1325,6 +1397,17 @@ public class UserInterface {
             this.partySlotSelected = 2;
         } else {
             this.partySlotSelected = partySlotSelected;
+        }
+        updateSelectedPartyMenuEntity();
+    }
+
+    public void setPartyMenuScrollLevel(int partyMenuScrollLevel) {
+        if ((partyMenuScrollLevel < 0) || (gp.getEntityM().getParty().size() < 3)) {
+            this.partyMenuScrollLevel = 0;
+        } else if (partyMenuScrollLevel > (gp.getEntityM().getParty().size() - 2)) {
+            this.partyMenuScrollLevel = gp.getEntityM().getParty().size() - 2;
+        } else {
+            this.partyMenuScrollLevel = partyMenuScrollLevel;
         }
         updateSelectedPartyMenuEntity();
     }

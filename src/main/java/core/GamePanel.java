@@ -152,6 +152,11 @@ public class GamePanel {
      */
     private TargetArrow targetA;
 
+    /**
+     * Ellipses that appear when there are more party members available to scroll to in the party menu screen.
+     */
+    private ScrollEllipsis scrollE;
+
 
     // CONSTRUCTOR
     /**
@@ -177,6 +182,7 @@ public class GamePanel {
         dialogueA = new DialogueArrow(this);
         selectionA = new SelectionArrow(this);
         targetA = new TargetArrow(this);
+        scrollE = new ScrollEllipsis(this);
 
         // Initialize system settings.
         Setting vSyncSetting = new Setting("VSync", "Syncs frame rate with monitor refresh rate to prevent screen tearing.");
@@ -378,9 +384,9 @@ public class GamePanel {
 
         // Miscellaneous spritesheet (spritesheet 6).
         filePath = "/spritesheets/miscellaneous.png";
-        widths = new int[] {6, 10, 12};
-        heights = new int[] {10, 6, 8};
-        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 3, widths, heights, 1));
+        widths = new int[] {6, 10, 12, 28};
+        heights = new int[] {10, 6, 8, 4};
+        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 4, widths, heights, 1));
 
         // Sounds.
         AssetPool.addSound("testTrack1", "sound/tracks/testTrack1.ogg", "sound/tracks/testTrack1.ogg");
@@ -409,6 +415,7 @@ public class GamePanel {
             case PARTY_MENU:
                 guiIconM.getIconById(0).setSelected(false);                                                             // Deselect the party menu icon.
                 ui.setPartySlotSelected(0);                                                                             // Set the selected party member stat icon back to its default.
+                ui.setPartyMenuScrollLevel(0);                                                                          // Set the list of party members back to its default scroll level.
                 entityIconM.purgeAllEntityIcons();
                 break;
 
@@ -438,7 +445,8 @@ public class GamePanel {
                 entityIconM.createPartyEntityIcons();                                                                   // Create entity icons for the party members.
                 entityIconM.getEntityIconById(entityM.getPlayer().getEntityId()).setSelected(true);                     // Set the player icon as being selected (will animate the player icon).
                 guiIconM.getIconById(3).setSelected(true);                                                              // Set the background icon for the player as being selected (will darken the background).
-                ui.setPartySlotSelected(0);                                                                             // Set the player's party member stat icon as being selected in the UI.
+                ui.setPartySlotSelected(0);                                                                             // Set the player entity's party member stat icon as being selected in the UI.
+                ui.setPartyMenuScrollLevel(0);                                                                          // Set the list of party members back to the top.
                 break;
 
             case INVENTORY_MENU:
@@ -610,6 +618,10 @@ public class GamePanel {
 
     public TargetArrow getTargetA() {
         return targetA;
+    }
+
+    public ScrollEllipsis getScrollE() {
+        return scrollE;
     }
 
 
