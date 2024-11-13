@@ -152,11 +152,6 @@ public class GamePanel {
      */
     private TargetArrow targetA;
 
-    /**
-     * Ellipses that appear when there are more party members available to scroll to in the party menu screen.
-     */
-    private ScrollEllipsis scrollE;
-
 
     // CONSTRUCTOR
     /**
@@ -182,7 +177,6 @@ public class GamePanel {
         dialogueA = new DialogueArrow(this);
         selectionA = new SelectionArrow(this);
         targetA = new TargetArrow(this);
-        scrollE = new ScrollEllipsis(this);
 
         // Initialize system settings.
         Setting vSyncSetting = new Setting("VSync", "Syncs frame rate with monitor refresh rate to prevent screen tearing.");
@@ -203,7 +197,7 @@ public class GamePanel {
         fullScreenSetting.addOption("Enabled");
         systemSettings.add(fullScreenSetting);
 
-        Setting eEqualsEnterSetting = new Setting("'E' Equals 'Enter'", "Sets the 'E' key to function the same as the 'Enter' key.");
+        Setting eEqualsEnterSetting = new Setting("E = Enter", "Sets the 'E' key to function the same as the 'Enter' key.");
         eEqualsEnterSetting.addOption("Disabled");
         eEqualsEnterSetting.addOption("Enabled");
         systemSettings.add(eEqualsEnterSetting);
@@ -389,9 +383,9 @@ public class GamePanel {
 
         // Miscellaneous spritesheet (spritesheet 6).
         filePath = "/spritesheets/miscellaneous.png";
-        widths = new int[] {6, 10, 12, 28};
-        heights = new int[] {10, 6, 8, 4};
-        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 4, widths, heights, 1));
+        widths = new int[] {6, 10, 12};
+        heights = new int[] {10, 6, 8};
+        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 3, widths, heights, 1));
 
         // Sounds.
         AssetPool.addSound("testTrack1", "sound/tracks/testTrack1.ogg", "sound/tracks/testTrack1.ogg");
@@ -623,10 +617,6 @@ public class GamePanel {
 
     public TargetArrow getTargetA() {
         return targetA;
-    }
-
-    public ScrollEllipsis getScrollE() {
-        return scrollE;
     }
 
 

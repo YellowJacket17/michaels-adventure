@@ -35,6 +35,10 @@ public class UserInterface {
     /**
      * Variable to store current selected party member in the party menu.
      * The default value is zero (first slot).
+     * Note that this is only representative of the three slots that can be rendered on screen at the same time.
+     * The value will always be between zero and two, even if there are more than three party members (including the
+     * player entity).
+     * This simply indicates which of those three visible slots is currently selected.
      */
     private int partySlotSelected;
 
@@ -362,10 +366,22 @@ public class UserInterface {
         float mainWindowScreenLeftRightPadding = (1 - mainWindowScreenWidth) / 2;                                       // Normalized (screen) left and right padding of the main window of the in-game menu.
         float mainWindowScreenHeight = gp.getCamera().worldHeightToScreenHeight(mainWindowWorldHeight);                 // Normalized (screen) height of the in-game menu.
         float mainWindowScreenTopBottomPadding = (1 - mainWindowScreenHeight) / 2;                                      // Normalized (screen) top and bottom padding of the main window of the in-game menu.
-        float topSlotIconScreenY = mainWindowScreenTopBottomPadding + gp.getCamera().worldHeightToScreenHeight(91.0f);  // Normalized (screen) y-position of the topmost (i.e., player entity) slot icon.
+        float centerLineScreenY = mainWindowScreenTopBottomPadding + gp.getCamera().worldHeightToScreenHeight(218.0f);  // Normalized (screen) center line of group of slot icons.
+        float slotIconScreenVerticalSpacing = gp.getCamera().worldHeightToScreenHeight(40.0f);                          // Normalized (screen) spacing between each slot (does not include height of slot icon itself).
+        float topSlotIconScreenY;                                                                                       // Normalized (screen) y-position of the topmost slot icon.
+
+        switch (gp.getEntityM().getParty().size()) {
+            case 0:
+                topSlotIconScreenY = centerLineScreenY - (slotIconScreenHeight / 2);
+                break;
+            case 1:
+                topSlotIconScreenY = centerLineScreenY - (slotIconScreenHeight) - (slotIconScreenVerticalSpacing / 2);
+                break;
+            default:
+                topSlotIconScreenY = centerLineScreenY - (slotIconScreenHeight * 1.5f) - slotIconScreenVerticalSpacing;
+        }
         float slotIconScreenX = mainWindowScreenLeftRightPadding + gp.getCamera().worldWidthToScreenWidth(42.0f);
         float slotIconScreenY = topSlotIconScreenY;
-        float slotIconScreenVerticalSpacing = gp.getCamera().worldHeightToScreenHeight(40.0f);                          // Normalized (screen) spacing between each slot (does not include height of slot icon itself).
 
         // Extract keys from party map.
         Set<Integer> keySet = gp.getEntityM().getParty().keySet();
@@ -422,30 +438,44 @@ public class UserInterface {
                     statusInfoTextScreenX, statusInfoTextScreenY);
         }
 
-        // Render top scroll ellipses, if applicable.
-        if (partyMenuScrollLevel > 0) {
-            float scrollEllipsesWorldWidth = gp.getScrollE().getNativeSpriteWidth();                                    // Native (world/absolute) width of scroll ellipses.
-            float scrollEllipsesScreenWidth = gp.getCamera().worldWidthToScreenWidth(scrollEllipsesWorldWidth);
-            float scrollEllipsesWorldHeight = gp.getScrollE().getNativeSpriteHeight();
-            float scrollEllipsesScreenHeight = gp.getCamera().worldHeightToScreenHeight(scrollEllipsesWorldHeight);
-            float slotIconWorldWidth = gp.getGuiIconM().getIconById(3).getNativeSpriteWidth();                          // Native (world/absolute) width of slot icons; all are same height, so doesn't matter which is used here.
-            float slotIconScreenWidth = gp.getCamera().worldWidthToScreenWidth(slotIconWorldWidth);
-            float scrollEllipsesScreenX = slotIconScreenX + (slotIconScreenWidth / 2) - (scrollEllipsesScreenWidth / 2);
-            float scrollEllipsesScreenY = topSlotIconScreenY - scrollEllipsesScreenHeight
-                    - gp.getCamera().worldHeightToScreenHeight(15.0f);
-            gp.getScrollE().addToRenderPipeline(renderer, scrollEllipsesScreenX, scrollEllipsesScreenY);
-        }
+        // Render side scroll indicators.
+        int numMiniIcons = gp.getEntityM().getParty().size() + 1;
+        float miniIconWorldVerticalSpacing = 12.0f;                                                                     // Normalized (screen) spacing between each inactive mini icon (does not include height of slot icon itself).
+        float miniIconScreenVerticalSpacing = gp.getCamera().worldHeightToScreenHeight(miniIconWorldVerticalSpacing);
+        float miniIconInactiveWorldSize = 4.0f;                                                                         // World (absolute) width and height of mini icons in their inactive (unselected) state.
+        float miniIconInactiveScreenHeight = gp.getCamera().worldHeightToScreenHeight(miniIconInactiveWorldSize);       // Normalized (screen) width and height of the mini icons in their inactive state.
+        float miniIconActiveWorldSize = 6.0f;                                                                           // World (absolute) width and height of mini icons in their active (selected) state.
+        Vector4f miniIconInactiveColor = new Vector4f(174, 231, 255, 255);
+        Vector4f miniIconActiveColor = new Vector4f(100, 193, 255, 255);
+        float groupMiniIconScreenHeight =
+                (miniIconInactiveScreenHeight * numMiniIcons) + (miniIconScreenVerticalSpacing * (numMiniIcons - 1));   // Normalized (screen) height of the entire set of rendered mini icons (from top edge of top mini icon to bottom edge of bottom mini icon).
+        Vector2f miniIconScreenCoords = new Vector2f(
+                mainWindowScreenLeftRightPadding + gp.getCamera().worldWidthToScreenWidth(21.0f),
+                centerLineScreenY - (groupMiniIconScreenHeight / 2));
+        Vector2f miniIconWorldCoords = gp.getCamera().screenCoordsToWorldCoords(miniIconScreenCoords);
+        Vector2f miniIconInactiveWorldScale = new Vector2f(miniIconInactiveWorldSize, miniIconInactiveWorldSize);
+        Vector2f miniIconActiveWorldScale = new Vector2f(miniIconActiveWorldSize, miniIconActiveWorldSize);
 
-        // Render bottom scroll ellipses, if applicable.
-        if (gp.getEntityM().getParty().size() > partyMenuScrollLevel + 2) {
-            float scrollEllipsesWorldWidth = gp.getScrollE().getNativeSpriteWidth();                                    // Native (world/absolute) width of scroll ellipses.
-            float scrollEllipsesScreenWidth = gp.getCamera().worldWidthToScreenWidth(scrollEllipsesWorldWidth);
-            float slotIconWorldWidth = gp.getGuiIconM().getIconById(3).getNativeSpriteWidth();                          // Native (world/absolute) width of slot icons; all are same height, so doesn't matter which is used here.
-            float slotIconScreenWidth = gp.getCamera().worldWidthToScreenWidth(slotIconWorldWidth);
-            float scrollEllipsesScreenX = slotIconScreenX + (slotIconScreenWidth / 2) - (scrollEllipsesScreenWidth / 2);
-            float scrollEllipsesScreenY = slotIconScreenY + slotIconScreenHeight
-                    + gp.getCamera().worldHeightToScreenHeight(15.0f);
-            gp.getScrollE().addToRenderPipeline(renderer, scrollEllipsesScreenX, scrollEllipsesScreenY);
+        for (int i = 0; i < numMiniIcons; i++) {
+
+            if (i == (partySlotSelected + partyMenuScrollLevel)) {                                                      // Check which entity is actually selected (i.e., not just which of the three visible party slots is selected).
+
+                miniIconWorldCoords.x -= (miniIconActiveWorldSize / 2) - (miniIconInactiveWorldSize / 2);
+                miniIconWorldCoords.y -= (miniIconActiveWorldSize / 2) - (miniIconInactiveWorldSize / 2);
+                renderer.addRectangle(
+                        miniIconActiveColor,
+                        new Transform(miniIconWorldCoords, miniIconActiveWorldScale),
+                        ZIndex.FIRST_LAYER);
+                miniIconWorldCoords.x += (miniIconActiveWorldSize / 2) - (miniIconInactiveWorldSize / 2);
+                miniIconWorldCoords.y += miniIconWorldVerticalSpacing + miniIconActiveWorldSize;
+            } else {
+
+                renderer.addRectangle(
+                        miniIconInactiveColor,
+                        new Transform(miniIconWorldCoords, miniIconInactiveWorldScale),
+                        ZIndex.FIRST_LAYER);
+                miniIconWorldCoords.y += miniIconWorldVerticalSpacing + miniIconInactiveWorldSize;
+            }
         }
     }
 
