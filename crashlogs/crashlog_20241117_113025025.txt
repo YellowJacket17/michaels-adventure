@@ -1,0 +1,9 @@
+11/17/2024 11:29:51:773  INFO     Application started.
+11/17/2024 11:29:57:710  INFO     Starting game loop.
+11/17/2024 11:30:25:012  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "event.support.StagedEntityFadeEffect.update(double)" because "stagedEntityFadeEffect" is null
+	at event.support.PartySupport.update(PartySupport.java:111)
+	at core.GamePanel.update(GamePanel.java:262)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)

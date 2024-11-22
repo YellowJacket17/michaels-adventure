@@ -179,6 +179,10 @@ public class Player extends EntityBase {
     public void update(double dt) {
 
         // These are core actions that take precedent over all others.
+        if (activeFadeEffect != null) {
+            updateFadeEffect(dt);
+        }
+
         if (playingCombatAttackAnimation) {
             updateCombatAttackAnimation(dt);
             return;
@@ -793,7 +797,7 @@ public class Player extends EntityBase {
     private void updateDebugInput() {
 
         if ((debugActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_P))) {
-            debugActioned = false;                                                                                      // Enable the ability of the player to enable the debug mode by pressing the Q key.
+            debugActioned = false;                                                                                      // Enable the ability of the player to enable the debug mode by pressing the P key.
         }
 
         if ((KeyListener.isKeyPressed(GLFW_KEY_P)) && (!debugActioned)) {

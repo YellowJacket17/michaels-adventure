@@ -37,6 +37,20 @@ public class Evt_Map000 extends EventMapBase {
                     return true;                                                                                        // An NPC is being interacted with.
                 }
                 break;
+            case 7:
+                if ((type == EventType.CLICK) && (!target.isOnEntity())) {
+
+                    gp.getEventM().talkToNpc(target, 6);                                                                // Initiate the conversation with the NPC.
+                    return true;                                                                                        // An NPC is being interacted with.
+                }
+                break;
+            case 6:
+                if ((type == EventType.CLICK) && (!target.isOnEntity())) {
+
+                    gp.getEventM().talkToNpc(target, 8);                                                                // Initiate the conversation with the NPC.
+                    return true;                                                                                        // An NPC is being interacted with.
+                }
+                break;
         }
         return false;
     }
@@ -53,6 +67,24 @@ public class Evt_Map000 extends EventMapBase {
 
                     gp.getEventM().talkToNpc(target, 2);                                                                // Initiate the conversation with the NPC.
                     return true;                                                                                        // A party member is being interacted with.
+                }
+                break;
+            case 7:
+                if ((type == EventType.CLICK)
+                        && (target.isOnEntity())
+                        && (target.getOnEntityId() == gp.getEntityM().getPlayer().getEntityId())) {
+
+                    gp.getEventM().talkToNpc(target, 7);
+                    return true;
+                }
+                break;
+            case 6:
+                if ((type == EventType.CLICK)
+                        && (target.isOnEntity())
+                        && (target.getOnEntityId() == gp.getEntityM().getPlayer().getEntityId())) {
+
+                    gp.getEventM().talkToNpc(target, 9);
+                    return true;
                 }
                 break;
         }

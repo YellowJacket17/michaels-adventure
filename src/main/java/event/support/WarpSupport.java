@@ -112,7 +112,8 @@ public class WarpSupport {
                     break;
             }
         }
-        warpFollowersToFollowed(gp.getEntityM().getPlayer(), gp.getEntityM().getParty());                               // Check party members.
+        warpActivePartyMembersToPlayer();                                                                               // Check party members.
+        warpInactivePartyMembersToPlayer();                                                                             // ^^^
 
         if (newMap) {                                                                                                   // If a new map is loaded, warp all party members to the player and have them follow the player.
 
@@ -279,6 +280,60 @@ public class WarpSupport {
                 entity.setDirectionCurrent(followed.getDirectionCurrent());
                 entity.setCol(followed.getCol());
                 entity.setRow(followed.getRow());
+            }
+        }
+    }
+
+
+    /**
+     * Warp active party members (regardless of hidden state) to the player entity.
+     * Warped entities will be placed on the same tile as the player entity, facing the same direction as the player
+     * entity.
+     * Any action that the entities were performing will be cancelled.
+     */
+    public void warpActivePartyMembersToPlayer() {
+
+        int i = 0;
+
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {
+
+            if ((i < gp.getEntityM().getNumActivePartyMembers()) && (entity != null)) {
+
+                entity.cancelAction();
+                entity.setDirectionCurrent(gp.getEntityM().getPlayer().getDirectionCurrent());
+                entity.setCol(gp.getEntityM().getPlayer().getCol());
+                entity.setRow(gp.getEntityM().getPlayer().getRow());
+            } else {
+
+                break;
+            }
+            i++;
+        }
+    }
+
+
+    /**
+     * Warp inactive party members (regardless of hidden state) to the player entity.
+     * Warped entities will be placed on the same tile as the player entity, facing the same direction as the player
+     * entity.
+     * Any action that the entities were performing will be cancelled.
+     */
+    public void warpInactivePartyMembersToPlayer() {
+
+        if (gp.getEntityM().getParty().size() > gp.getEntityM().getNumActivePartyMembers()) {
+
+            int i = 0;
+
+            for (EntityBase entity : gp.getEntityM().getParty().values()) {
+
+                if ((i >= gp.getEntityM().getNumActivePartyMembers()) && (entity != null)) {
+
+                    entity.cancelAction();
+                    entity.setDirectionCurrent(gp.getEntityM().getPlayer().getDirectionCurrent());
+                    entity.setCol(gp.getEntityM().getPlayer().getCol());
+                    entity.setRow(gp.getEntityM().getPlayer().getRow());
+                }
+                i++;
             }
         }
     }

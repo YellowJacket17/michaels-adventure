@@ -42,7 +42,7 @@ public class IllustrationSupport {
 
     // CONSTRUCTOR
     /**
-     * Constructs an Illustration instance.
+     * Constructs an IllustrationSupport instance.
      *
      * @param gp GamePanel instance
      */

@@ -1,0 +1,10 @@
+11/21/2024 20:15:40:436  INFO     Application started.
+11/21/2024 20:15:46:391  INFO     Starting game loop.
+11/21/2024 20:15:46:395  WARNING  Unrecognized key with code '-1' was detected.
+11/21/2024 20:20:07:073  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "entity.EntityBase.initiateFadeEffect(entity.enumeration.FadeEffectType, double)" because the return value of "entity.EntityManager.getEntityById(int)" is null
+	at event.support.PartySupport.update(PartySupport.java:112)
+	at core.GamePanel.update(GamePanel.java:262)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)

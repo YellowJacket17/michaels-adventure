@@ -29,6 +29,9 @@ public class CombatManager {
      *    - Upon exiting combat, the track tied to the loaded map will be swapped back in, according to map state.
      *    - If Sound.RETAIN_TRACK is passed as argument to the `initiateCombat()` method, then the playing track prior
      *      to combat will keep playing during and after combat without interruption.
+     *
+     * A combating entity's hidden state determine whether it will actively participate in combat or not.
+     * If a combating entity is hidden, its turn will be skipped.
      */
 
     // FIELDS
@@ -559,7 +562,7 @@ public class CombatManager {
             }
 
             if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getStatus() != EntityStatus.FAINT)
-                    && (!gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).isHidden())) {                             // If hidden, entity is not actively participating in combat (ex. party member in reserve).
+                    && (!gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).isHidden())) {                // If hidden, entity is not actively participating in combat (ex. party member in reserve).
 
                 viableEntity = true;
 
@@ -1096,7 +1099,8 @@ public class CombatManager {
         // This is because, when the follower chain is rebuilt in `swapEntityInParty()`, the last tile position of the
         // followed is set to the follower's combat position since the warp to player hasn't happened yet, causing this
         // issue.
-        gp.getWarpS().warpFollowersToFollowed(gp.getEntityM().getPlayer(), gp.getEntityM().getParty());
+        gp.getWarpS().warpActivePartyMembersToPlayer();
+        gp.getWarpS().warpInactivePartyMembersToPlayer();
 
         // Warp non-party member followers to the player entity.
         // Note that followers of all other combating entities are NOT warped to their followers and will be left at
@@ -1107,7 +1111,38 @@ public class CombatManager {
         // Restore pre-combat ordering of party members (run before restoring pre-combat party hidden states).
         for (int i = 0; i < partyOrdering.size(); i++) {
             gp.getPartyS().swapEntityInParty(partyOrdering.get(i),
-                    (int)gp.getEntityM().getParty().keySet().toArray()[i]);
+                    (int)gp.getEntityM().getParty().keySet().toArray()[i],
+                    false);
+        }
+
+        // Restore pre-combat positions and directions of inactive party members.
+        // Must run after warping party members to player entity and restoring pre-combat ordering of party members.
+        // This is because
+        if (gp.getEntityM().getParty().size() > gp.getEntityM().getNumActivePartyMembers()) {
+            LimitedArrayList<Integer> inactivePartyMembersIds =
+                    new LimitedArrayList<>(gp.getEntityM().getParty().size() - gp.getEntityM().getNumActivePartyMembers());
+            int i = 0;
+            for (EntityBase entity : gp.getEntityM().getParty().values()) {
+                if ((i >= gp.getEntityM().getNumActivePartyMembers()) && (entity != null)) {
+                    inactivePartyMembersIds.add(entity.getEntityId());
+                }
+                i++;
+            }
+            for (int entityId : storedEntityCols.keySet()) {
+                if (inactivePartyMembersIds.contains(entityId)) {
+                    gp.getEntityM().getEntityById(entityId).setCol(storedEntityCols.get(entityId));
+                }
+            }
+            for (int entityId : storedEntityRows.keySet()) {
+                if (inactivePartyMembersIds.contains(entityId)) {
+                    gp.getEntityM().getEntityById(entityId).setRow(storedEntityRows.get(entityId));
+                }
+            }
+            for (int entityId : storedEntityDirections.keySet()) {
+                if (inactivePartyMembersIds.contains(entityId)) {
+                    gp.getEntityM().getEntityById(entityId).setDirectionCurrent(storedEntityDirections.get(entityId));
+                }
+            }
         }
 
         // Reset all combating entities back to pre-combat hidden state.
@@ -1158,6 +1193,8 @@ public class CombatManager {
         gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
 
         int placedPartyMembers = 0;
+        int colOffsetFromPlayerEntity = 1;                                                                              // Offset of position that active party member will be placed relative to player entity.
+        int rowOffsetFromPlayerEntity = 2;                                                                              // ^^^
 
         for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
@@ -1165,21 +1202,30 @@ public class CombatManager {
 
                 setCombating(entity);
                 entity.setDirectionCurrent(EntityDirection.RIGHT);
-                entity.setCol(fieldCenterCol - 5);
 
-                if (placedPartyMembers == 0) {
+                if (placedPartyMembers >= gp.getEntityM().getNumActivePartyMembers()) {
 
-                    entity.setRow(fieldCenterRow - 2);
-                    entity.setHidden(false);
-                } else if (placedPartyMembers == 1) {
-
-                    entity.setRow(fieldCenterRow + 2);
-                    entity.setHidden(false);
-                } else {
-
+                    entity.setCol(gp.getEntityM().getPlayer().getCol());                                                // For non-active party members, set default position to be player entity's position.
+                    entity.setRow(gp.getEntityM().getPlayer().getRow());                                                // ^^^
                     entity.setHidden(true);                                                                             // Set inactive party members as hidden.
+                } else if ((placedPartyMembers % 2) == 0) {
+
+                    entity.setCol(gp.getEntityM().getPlayer().getCol() - colOffsetFromPlayerEntity);
+                    entity.setRow(gp.getEntityM().getPlayer().getRow() - rowOffsetFromPlayerEntity);
+                    entity.setHidden(false);
+                } else if ((placedPartyMembers % 2) == 1) {
+
+                    entity.setCol(gp.getEntityM().getPlayer().getCol() - colOffsetFromPlayerEntity);
+                    entity.setRow(gp.getEntityM().getPlayer().getRow() + rowOffsetFromPlayerEntity);
+                    entity.setHidden(false);
                 }
                 placedPartyMembers++;
+
+                if ((placedPartyMembers % 2) == 0) {
+
+                    colOffsetFromPlayerEntity += 1;                                                                     // Iterate offset from player entity to stagger active party member placement.
+                    rowOffsetFromPlayerEntity += 2;                                                                     // ^^^
+                }
             }
         }
     }
@@ -1198,6 +1244,10 @@ public class CombatManager {
             handleNonCombatingFollowers(gp.getEntityM().getEntityById(nonPlayerSideEntityId));
         }
         int placedNonPlayerSideEntities = 0;
+        int centerEntityCol = fieldCenterCol + 4;
+        int centerEntityRow = fieldCenterRow;
+        int colOffsetFromCenterEntity = 1;                                                                              // Offset of position that the entity will be placed relative to center entity.
+        int rowOffsetFromCenterEntity = 2;                                                                              // ^^^
 
         for (int entityId : nonPlayerSideEntities) {
 
@@ -1209,22 +1259,31 @@ public class CombatManager {
 
                 if (placedNonPlayerSideEntities == 0) {
 
-                    opponent.setCol(fieldCenterCol + 4);
-                    opponent.setRow(fieldCenterRow);
-                } else if (placedNonPlayerSideEntities == 1) {
+                    opponent.setCol(centerEntityCol);
+                    opponent.setRow(centerEntityRow);
+                } else if ((placedNonPlayerSideEntities % 2) == 1) {
 
-                    opponent.setCol(fieldCenterCol + 5);
-                    opponent.setRow(fieldCenterRow - 2);
+                    opponent.setCol(centerEntityCol - colOffsetFromCenterEntity);
+                    opponent.setRow(centerEntityRow - rowOffsetFromCenterEntity);
                 } else {
+
+                    opponent.setCol(centerEntityCol - colOffsetFromCenterEntity);
+                    opponent.setRow(centerEntityRow + rowOffsetFromCenterEntity);
 
                     opponent.setCol(fieldCenterCol + 5);
                     opponent.setRow(fieldCenterRow + 2);
                 }
                 opponent.setHidden(false);
                 placedNonPlayerSideEntities++;
+
+                if (((placedNonPlayerSideEntities % 2) == 1) && (placedNonPlayerSideEntities != 1)) {
+
+                    colOffsetFromCenterEntity += 1;                                                                     // Iterate offset from player entity to stagger active party member placement.
+                    rowOffsetFromCenterEntity += 2;                                                                     // ^^^
+                }
             } else {
 
-                nonPlayerSideEntities.remove(entityId);
+                nonPlayerSideEntities.remove(entityId);                                                                 // Cleanup any null (non-existent) entities.
             }
         }
     }

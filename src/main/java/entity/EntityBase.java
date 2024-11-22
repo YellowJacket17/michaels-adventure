@@ -2,10 +2,7 @@ package entity;
 
 import combat.MoveBase;
 import core.GamePanel;
-import entity.enumeration.DefaultIdleAction;
-import entity.enumeration.EntityDirection;
-import entity.enumeration.EntityStatus;
-import entity.enumeration.EntityType;
+import entity.enumeration.*;
 import render.Renderer;
 import asset.Sprite;
 import render.enumeration.ZIndex;
@@ -259,6 +256,18 @@ public abstract class EntityBase extends Drawable {
     protected static final int NO_ENTITY_FOLLOWED = 33712339;
 
 
+    // FADE EFFECT
+    /**
+     * Variable to store the active fade effect type being performed by this entity (null if none).
+     */
+    protected FadeEffectType activeFadeEffect;
+
+    /**
+     * Variable to store the calculated alpha change that will occur per second during an active fade effect.
+     */
+    protected double fadeEffectAlphaPerSecond;
+
+
     // COUNTERS/BUFFERS
     /**
      * Counts the number of world units this entity has moved thus far while in a state of motion.
@@ -459,6 +468,10 @@ public abstract class EntityBase extends Drawable {
         // These are core actions that take precedent over all others.
         if (hidden) {return;}
 
+        if (activeFadeEffect != null) {
+            updateFadeEffect(dt);
+        }
+
         if (playingCombatAttackAnimation) {
             updateCombatAttackAnimation(dt);
             return;
@@ -605,7 +618,7 @@ public abstract class EntityBase extends Drawable {
 
             walkSpriteNumCurrent = 1;
 
-            if (walkSpriteNumLast == 2) {                                                                                   // Swap which foot will step forward for the next walking cycle.
+            if (walkSpriteNumLast == 2) {                                                                               // Swap which foot will step forward for the next walking cycle.
 
                 walkSpriteNumLast = 3;
             } else {
@@ -677,6 +690,35 @@ public abstract class EntityBase extends Drawable {
 
             playingCombatAttackAnimation = true;
             animationCounter = 0;
+        }
+    }
+
+
+    /**
+     * Initiates a fade effect (up or down).
+     * At the beginning of a fade up effect, this entity will be set to a visible state (i.e., not hidden).
+     * At the end of a fade down effect, this entity will be set to a hidden state.
+     * If a fade effect is already active, then nothing will happen.
+     *
+     * @param type type of fade effect (up or down)
+     * @param duration fade effect duration (seconds)
+     */
+    public void initiateFadeEffect(FadeEffectType type, double duration) {
+
+        if (activeFadeEffect == null) {
+
+            switch (type) {
+                case FADE_UP:
+                    setAlpha(0);
+                    activeFadeEffect = FadeEffectType.FADE_UP;
+                    fadeEffectAlphaPerSecond = (255 - color.w) / duration;
+                    hidden = false;
+                    break;
+                case FADE_DOWN:
+                    activeFadeEffect = FadeEffectType.FADE_DOWN;
+                    fadeEffectAlphaPerSecond = color.w / duration;
+                    break;
+            }
         }
     }
 
@@ -944,6 +986,41 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
+     * Updates an active fade effect (up or down) by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    protected void updateFadeEffect(double dt) {
+
+        float alphaCandidate;
+
+        switch (activeFadeEffect) {
+            case FADE_UP:
+                alphaCandidate = color.w + (float)(dt * fadeEffectAlphaPerSecond);
+                if (alphaCandidate >= 255) {
+                    setAlpha(255);
+                    activeFadeEffect = null;
+                    fadeEffectAlphaPerSecond = 0;
+                } else {
+                    color.w = alphaCandidate;
+                }
+                break;
+            case FADE_DOWN:
+                alphaCandidate = color.w - (float)(dt * fadeEffectAlphaPerSecond);
+                if (alphaCandidate < 0) {
+                    hidden = true;
+                    setAlpha(255);
+                    activeFadeEffect = null;
+                    fadeEffectAlphaPerSecond = 0;
+                } else {
+                    color.w = alphaCandidate;
+                }
+                break;
+        }
+    }
+
+
+    /**
      * Sets this entity's behavior.
      * Override this method in implemented entity classes if custom actions are desired.
      *
@@ -1008,7 +1085,7 @@ public abstract class EntityBase extends Drawable {
             if ((startCol != goalCol) && (startRow != goalRow)) {                                                       // Check if a path could not be found for a reason other than already arrived at destination.
 
                 UtilityTool.logError("Entity"
-                        + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
+                        + (((name != null) && (!name.equals(""))) ? (" '" + name + "'") : "")
                         + " with ID '"
                         + entityId
                         + "' was not able to find a path to the following destination: row '"
@@ -1498,6 +1575,10 @@ public abstract class EntityBase extends Drawable {
 
     public int getOnEntityId() {
         return onEntityId;
+    }
+
+    public FadeEffectType getActiveFadeEffect() {
+        return activeFadeEffect;
     }
 
     public String getName() {

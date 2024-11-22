@@ -74,7 +74,7 @@ public class Evt_Map001 extends EventMapBase {
                 }
                 break;
             case 8:
-                if (type == EventType.STEP) {
+                if (type == EventType.CLICK) {
                     gp.getEventM().talkToNpc(target, 4);
                     return true;
                 }
@@ -94,6 +94,24 @@ public class Evt_Map001 extends EventMapBase {
                         && (target.getOnEntityId() == gp.getEntityM().getPlayer().getEntityId())) {
 
                     gp.getEventM().talkToNpc(target, 3);
+                    return true;
+                }
+                break;
+            case 7:
+                if ((type == EventType.CLICK)
+                        && (target.isOnEntity())
+                        && (target.getOnEntityId() == gp.getEntityM().getPlayer().getEntityId())) {
+
+                    gp.getEventM().talkToNpc(target, 10);
+                    return true;
+                }
+                break;
+            case 6:
+                if ((type == EventType.CLICK)
+                        && (target.isOnEntity())
+                        && (target.getOnEntityId() == gp.getEntityM().getPlayer().getEntityId())) {
+
+                    gp.getEventM().talkToNpc(target, 11);
                     return true;
                 }
                 break;

@@ -1,0 +1,14 @@
+11/17/2024 10:48:21:085  INFO     Application started.
+11/17/2024 10:48:25:095  INFO     Starting game loop.
+11/17/2024 10:49:00:162  ERROR    An unhandled exception has occurred!
+java.lang.IndexOutOfBoundsException: Index 1 out of bounds for length 1
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:64)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:70)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:266)
+	at java.base/java.util.Objects.checkIndex(Objects.java:361)
+	at java.base/java.util.ArrayList.remove(ArrayList.java:504)
+	at event.support.PartySupport.update(PartySupport.java:120)
+	at core.GamePanel.update(GamePanel.java:262)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)

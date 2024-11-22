@@ -1,7 +1,6 @@
 package event.implementation.conversation;
 
 import core.GamePanel;
-import entity.EntityBase;
 import event.EventConvBase;
 
 /**
@@ -19,18 +18,10 @@ public class Evt_Conv002 extends EventConvBase {
     @Override
     public void run() {
 
-//        if (gp.getParty().get(7) != null) {
-//            gp.getPartyS().removeEntityFromParty(7, true);
-//        }
-//
-//        if (gp.getParty().get(6) != null) {
-//            gp.getPartyS().removeEntityFromParty(6, false);
-//        }
-//
-//        if (gp.getParty().get(5) != null) {
-//            gp.getPartyS().removeEntityFromParty(5, false);
-//        }
-        gp.getPartyS().removeAllEntitiesFromParty(true);
+        if (gp.getEntityM().getParty().get(5) != null) {
+
+            gp.getPartyS().removeEntityFromParty(5, true, true, true);
+        }
         gp.getEventM().cleanupConversation(1);
     }
 }

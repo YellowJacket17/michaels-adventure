@@ -155,7 +155,7 @@
         "class": "Npc_Test1",
         "collision": true,
         "map": 1,
-        "defaultAction": "randomTurns",
+        "defaultAction": "static",
         "attributes": {
             "name": "Test Enemy 2",
             "speed": 120,

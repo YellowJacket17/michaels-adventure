@@ -49,7 +49,7 @@
             },
             "1": {
                 "speakerName": "Joe",
-                "text": "Mind if we look around with you for a bit?"
+                "text": "Mind if I look around with you for a bit?"
             }
         }
     },
@@ -75,7 +75,7 @@
         "dialogue": {
             "0": {
                 "speakerName": "Joe",
-                "text": "Would you mind taking us back to where you found us?"
+                "text": "Would you mind taking me back to where you found me?"
             },
             "1": {
                 "speakerName": "Mary",
@@ -98,6 +98,85 @@
             "2": {
                 "speakerName": "Test Enemy 2",
                 "text": "You've ruined my day. Prepare to be pulverized, punk!"
+            }
+        }   
+    },
+
+    "5": {
+        "map": 1,
+        "dialogue": {
+            "0": {
+                "speakerName": "Test Enemy 2",
+                "text": "Please don't walk into me. Would hate that..."
+            },
+            "1": {
+                "speakerName": "Mary",
+                "text": "Okay..."
+            }
+        }   
+    },
+
+    "6": {
+        "map": 0,
+        "dialogue": {
+            "0": {
+                "speakerName": "Logan",
+                "text": "My turn to join!"
+            }
+        }   
+    },
+
+    "7": {
+        "map": 0,
+        "dialogue": {
+            "0": {
+                "speakerName": "Logan",
+                "text": "My turn to leave!"
+            }
+        }   
+    },
+
+    "8": {
+        "map": 0,
+        "dialogue": {
+            "0": {
+                "speakerName": "Howie",
+                "text": "Please, help me find my way home."
+            }
+        }   
+    },
+
+    "9": {
+        "map": 0,
+        "dialogue": {
+            "0": {
+                "speakerName": "Howie",
+                "text": "Well, maybe we'll find our way out next time."
+            }
+        }   
+    },
+
+    "10": {
+        "map": 1,
+        "dialogue": {
+            "0": {
+                "speakerName": "Logan",
+                "text": "This place is scary, take me back to that other room!"
+            }
+        }   
+    },
+
+    "11": {
+        "map": 1,
+        "dialogue": {
+            "0": {
+                "speakerName": "Howie",
+                "text": "Hmmm, I think I'd like to go back to where you found me."
+            },
+
+            "1": {
+                "speakerName": "Mary",
+                "text": "I thought you wanted to go home, but whatever you say..."
             }
         }   
     }

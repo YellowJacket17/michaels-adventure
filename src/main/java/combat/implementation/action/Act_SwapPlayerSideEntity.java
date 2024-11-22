@@ -37,7 +37,7 @@ public class Act_SwapPlayerSideEntity extends ActionBase {
 
             gp.getCombatM().getGuardingEntities().remove(entityId2);
         }
-        gp.getPartyS().swapEntityInParty(entityId1, entityId2);
+        gp.getPartyS().swapEntityInParty(entityId1, entityId2, true);
         gp.getCombatM().progressCombat();
     }
 }

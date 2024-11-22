@@ -258,6 +258,9 @@ public class GamePanel {
         // Environment.
 //        environmentM.update();
 
+        // Party.
+        partyS.update(dt);
+
         // Camera.
         cameraS.update(dt);
 
@@ -388,9 +391,12 @@ public class GamePanel {
         AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 3, widths, heights, 1));
 
         // Sounds.
-        AssetPool.addSound("testTrack1", "sound/tracks/testTrack1.ogg", "sound/tracks/testTrack1.ogg");
-        AssetPool.addSound("testTrack2", "sound/tracks/testIntro.ogg", "sound/tracks/testLoop.ogg");
-        AssetPool.addSound("testTrack3", "sound/tracks/testTrack3.ogg", "sound/tracks/testTrack3.ogg");
+        AssetPool.addSound("testTrack1", "sound/tracks/carvingCanyons_intro.ogg", "sound/tracks/carvingCanyons_loop.ogg");
+        AssetPool.addSound("testTrack2", "sound/tracks/dissipate_intro.ogg", "sound/tracks/dissipate_loop.ogg");
+        AssetPool.addSound("testTrack3", "sound/tracks/runningLate_intro.ogg", "sound/tracks/runningLate_loop.ogg");
+        AssetPool.addSound("testTrack4", "sound/tracks/riftInTime_intro.ogg", "sound/tracks/riftInTime_loop.ogg");
+        AssetPool.addSound("testTrack5", "sound/tracks/endOfTheLine_intro.ogg", "sound/tracks/endOfTheLine_loop.ogg");
+        AssetPool.addSound("testTrack6", "sound/tracks/yesteryear_intro.ogg", "sound/tracks/yesteryear_loop.ogg");
         AssetPool.addSound("testEffect1", "sound/effects/testEffect1.ogg");
 
         // Illustrations.

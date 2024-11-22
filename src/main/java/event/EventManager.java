@@ -1,14 +1,12 @@
 package event;
 
 import event.enumeration.EventType;
+import event.implementation.conversation.*;
 import miscellaneous.CollisionInspector;
 import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
 import core.GamePanel;
 import entity.enumeration.EntityDirection;
-import event.implementation.conversation.Evt_Conv001;
-import event.implementation.conversation.Evt_Conv002;
-import event.implementation.conversation.Evt_Conv004;
 import event.implementation.map.Evt_Map000;
 import event.implementation.map.Evt_Map001;
 import event.implementation.submenu.Evt_SubMenu000;
@@ -43,6 +41,10 @@ public class EventManager {
     private final Evt_Conv001 evt_conv001;
     private final Evt_Conv002 evt_conv002;
     private final Evt_Conv004 evt_conv004;
+    private final Evt_Conv006 evt_conv006;
+    private final Evt_Conv007 evt_conv007;
+    private final Evt_Conv008 evt_conv008;
+    private final Evt_Conv009 evt_conv009;
 
 
     // SUB-MENU EVENT FIELDS
@@ -65,6 +67,10 @@ public class EventManager {
         evt_conv001 = new Evt_Conv001(gp);
         evt_conv002 = new Evt_Conv002(gp);
         evt_conv004 = new Evt_Conv004(gp);
+        evt_conv006 = new Evt_Conv006(gp);
+        evt_conv007 = new Evt_Conv007(gp);
+        evt_conv008 = new Evt_Conv008(gp);
+        evt_conv009 = new Evt_Conv009(gp);
 
         evt_subMenu000 = new Evt_SubMenu000(gp);
         evt_subMenu001 = new Evt_SubMenu001(gp);
@@ -233,6 +239,18 @@ public class EventManager {
                 break;
             case 4:
                 evt_conv004.run();
+                break;
+            case 6:
+                evt_conv006.run();
+                break;
+            case 7:
+                evt_conv007.run();
+                break;
+            case 8:
+                evt_conv008.run();
+                break;
+            case 9:
+                evt_conv009.run();
                 break;
             default:
                 cleanupConversation(1);

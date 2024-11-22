@@ -1,0 +1,14 @@
+11/15/2024 21:47:52:759  INFO     Application started.
+11/15/2024 21:47:59:101  INFO     Starting game loop.
+11/15/2024 21:48:11:794  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "entity.EntityBase.isHidden()" because the return value of "utility.LimitedLinkedHashMap.get(Object)" is null
+	at event.support.PartySupport.removeAllEntitiesFromParty(PartySupport.java:254)
+	at event.implementation.conversation.Evt_Conv002.run(Evt_Conv002.java:33)
+	at event.EventManager.handlePostConversation(EventManager.java:232)
+	at entity.implementation.player.Player.updateDialogueInput(Player.java:619)
+	at entity.implementation.player.Player.updateInput(Player.java:158)
+	at entity.EntityManager.updateInput(EntityManager.java:117)
+	at core.GamePanel.update(GamePanel.java:234)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)
