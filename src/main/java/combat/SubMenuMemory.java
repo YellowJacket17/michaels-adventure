@@ -2,6 +2,7 @@ package combat;
 
 import combat.enumeration.SubMenuType;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -19,6 +20,12 @@ public class SubMenuMemory {
      * Type of sub-menu that was actioned.
      */
     private final SubMenuType type;
+
+    /**
+     * Map to store descriptions for each sub-menu option; option index is the key, description is the value.
+     * The default map is empty.
+     */
+    private final HashMap<Integer, String> descriptions = new HashMap<>();
 
     /**
      * Index of the sub-menu option that was selected.
@@ -52,12 +59,14 @@ public class SubMenuMemory {
      *
      * @param options list of sub-menu options that were displayed
      * @param type type of sub-menu that was actioned
-     * @param selectedOption index of sub-menu option that was selected
+     * @param descriptions map of sub-menu option descriptions
      */
-    public SubMenuMemory(List<String> options, SubMenuType type, int selectedOption) {
+    public SubMenuMemory(List<String> options, SubMenuType type, HashMap<Integer, String> descriptions) {
         this.options = options;
         this.type = type;
-        this.selectedOption = selectedOption;
+        for (int key : descriptions.keySet()) {
+            this.descriptions.put(key, descriptions.get(key));
+        }
     }
 
 
@@ -68,6 +77,10 @@ public class SubMenuMemory {
 
     public SubMenuType getType() {
         return type;
+    }
+
+    public HashMap<Integer, String> getDescriptions() {
+        return descriptions;
     }
 
     public int getSelectedOption() {

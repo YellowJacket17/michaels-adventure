@@ -179,6 +179,41 @@ public class UserInterface {
 
 
     /**
+     * Calculates the world (absolute) length of a string of text.
+     * Text is assumed to be rendered horizontally (screen width).
+     *
+     * @param text text whose world length is to be calculated
+     * @param scale scale factor at which to render text compared to native font size
+     * @param font name of font to use
+     */
+    public float calculateStringWorldLength(String text, float scale, String font) {
+
+        float textWorldWidth = 0;
+
+        for (int i = 0; i < text.length(); i++) {
+
+            char character = text.charAt(i);
+            textWorldWidth += renderer.getFont(font).getCharacter(character).getWidth() * scale;
+        }
+        return textWorldWidth;
+    }
+
+
+    /**
+     * Calculates the normalized (screen) length of a string of text.
+     * Text is assumed to be rendered horizontally (screen width).
+     *
+     * @param text text whose screen length is to be calculated
+     * @param scale scale factor at which to render text compared to native font size
+     * @param font name of font to use
+     */
+    public float calculateStringScreenLength(String text, float scale, String font) {
+
+        return gp.getCamera().worldWidthToScreenWidth(calculateStringWorldLength(text, scale, font));
+    }
+
+
+    /**
      * Adds dialogue components (window and text) to the render pipeline.
      */
     private void renderDialogueScreen() {
@@ -727,13 +762,16 @@ public class UserInterface {
             String description = gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getDescription();
 
             // Render name, quantity, and description.
-            float sectionScreenSpacing = gp.getCamera().worldHeightToScreenHeight(38.9f);
-            float blockScreenSpacing = gp.getCamera().worldHeightToScreenHeight(28.0f);
-            renderStringShadow(name, screenCoords, 0.15f, nameColor, "Arimo Bold");
+            System.out.println(gp.getCamera().worldWidthToScreenWidth(42));
+            float sectionScreenSpacing = gp.getCamera().worldHeightToScreenHeight(38.9f);                               // Normalized (screen) spacing between each section (name, quantity, description).
+            float blockScreenSpacing = gp.getCamera().worldHeightToScreenHeight(28.0f);                                 // Normalized (Screen) spacing between each line of text in a block of text in a section.
+            float maxLineScreenLength = 1 - leftmostScreenX - mainWindowScreenLeftRightPadding
+                    - gp.getCamera().worldWidthToScreenWidth(42.0f);                                                    // 42 is the value of `dividerWorldLeftRightGap` in the `renderInGameMenuMainWindowScreen()` method in this class.
+            renderString(name, screenCoords, 0.15f, nameColor, "Arimo Bold");
             screenCoords.y += sectionScreenSpacing;
-            renderStringShadow(quantity, screenCoords, 0.15f, quantityColor, "Arimo Bold");
+            renderString(quantity, screenCoords, 0.15f, quantityColor, "Arimo Bold");
             screenCoords.y += sectionScreenSpacing;
-            renderStringBlock(description, screenCoords, 23, blockScreenSpacing, 0.15f, descriptionColor, "Arimo", true);
+            renderStringBlock(description, screenCoords, maxLineScreenLength, blockScreenSpacing, 0.15f, descriptionColor, "Arimo", true);
         }
     }
 
@@ -891,33 +929,29 @@ public class UserInterface {
 
         // Prepare window dimensions (other than window width).
         // The following information is assuming use of the font Arimo (normal/non-bold).
+        String font = "Arimo";
         float fontScale = 0.15f;                                                                                        // Font size (multiplies native height).
-        float optionsScreenTopBottomPadding = gp.getCamera().worldHeightToScreenHeight(8.6f);                           // Normalized (screen) padding on top and bottom of sub-menu window.
-        float optionsScreenSpacing = gp.getCamera().worldHeightToScreenHeight(9.5f);                                    // Normalized (screen) spacing between options text.
-        float optionsCharacterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;        // It doesn't matter which character is used, since all characters in a font have the same height.
+        float windowScreenTopBottomPadding = gp.getCamera().worldHeightToScreenHeight(8.6f);                            // Normalized (screen) padding on top and bottom of sub-menu window between window and text.
+        float optionsScreenSpacing = gp.getCamera().worldHeightToScreenHeight(9.5f);                                    // Normalized (screen) vertical spacing between options text (does NOT include character height).
+        float optionsCharacterWorldHeight = renderer.getFont(font).getCharacter('A').getHeight() * fontScale;           // It doesn't matter which character is used, since all characters in a font have the same height.
         float optionsCharacterScreenHeight = gp.getCamera().worldHeightToScreenHeight(optionsCharacterWorldHeight);     // Normalized (screen) character height.
         float windowScreenHeight = (optionsScreenSpacing * (gp.getSubMenuH().getOptions().size() - 1))                  // Spacing between options text.
-                + (2 * optionsScreenTopBottomPadding)                                                                   // Padding on top and bottom of sub-menu window.
+                + (2 * windowScreenTopBottomPadding)                                                                    // Padding on top and bottom of sub-menu window between window and text.
                 + (optionsCharacterScreenHeight * gp.getSubMenuH().getOptions().size());                                // Character height for each option.
 
         // Prepare window width to that of widest option.
         // The following information is assuming use of the font Arimo (normal/non-bold).
-        float optionsScreenLeftPadding = gp.getCamera().worldWidthToScreenWidth(23.0f);
-        float optionsScreenRightPadding = gp.getCamera().worldWidthToScreenWidth(15.36f);
+        float windowScreenLeftPadding = gp.getCamera().worldWidthToScreenWidth(23.0f);                                  // Normalized (screen) padding on left of sub-menu window between window and text.
+        float windowScreenRightPadding = gp.getCamera().worldWidthToScreenWidth(15.36f);                                // Normalized (screen) padding on right of sub-menu window between window and text.
         float maxOptionWorldWidth = 0;
         for (int i = 0; i < gp.getSubMenuH().getOptions().size(); i++) {
-            String option = gp.getSubMenuH().getOptions().get(i);
-            float optionWorldWidth = 0;
-            for (int j = 0; j < option.length(); j++) {
-                char optionCharacter = option.charAt(j);
-                optionWorldWidth += renderer.getFont("Arimo").getCharacter(optionCharacter).getWidth() * fontScale;
-            }
+            float optionWorldWidth = calculateStringWorldLength(gp.getSubMenuH().getOptions().get(i), fontScale, font);
             if (optionWorldWidth > maxOptionWorldWidth) {
                 maxOptionWorldWidth = optionWorldWidth;
             }
         }
         float windowScreenWidth = gp.getCamera().worldWidthToScreenWidth(maxOptionWorldWidth)
-                + optionsScreenLeftPadding + optionsScreenRightPadding;
+                + windowScreenLeftPadding + windowScreenRightPadding;
 
         // Calculate window position.
         Vector2f windowScreenCoords;                                                                                    // Declare variable to store window screen coordinates (initialized immediately below).
@@ -941,8 +975,8 @@ public class UserInterface {
 
         // Calculate position of text for first option.
         Vector2f optionsScreenCoords = new Vector2f(
-                windowScreenCoords.x + optionsScreenLeftPadding,
-                windowScreenCoords.y + optionsScreenTopBottomPadding);
+                windowScreenCoords.x + windowScreenLeftPadding,
+                windowScreenCoords.y + windowScreenTopBottomPadding);
 
         // Render text for each option and selection arrow next to selected option.
         Vector3f color;
@@ -978,6 +1012,11 @@ public class UserInterface {
         // Target arrow.
         if (gp.getCombatM().isTargetArrowVisible()) {
             renderCombatTargetArrow();
+        }
+
+        // Sub-menu option descriptions.
+        if (gp.getSubMenuH().getSubMenuId() != -1) {
+            renderCombatSubMenuDescriptionScreen();
         }
     }
 
@@ -1098,6 +1137,58 @@ public class UserInterface {
 
 
     /**
+     * Adds combat sub-menu option descriptions to the render pipeline.
+     */
+    private void renderCombatSubMenuDescriptionScreen() {
+
+        if (!gp.getCombatM().getLatestSubMenuDescriptionByIndex(gp.getSubMenuH().getIndexSelected()).equals("")) {
+
+            // Prepare window dimensions.
+            String font = "Arimo";
+            float fontScale = 0.15f;                                                                                    // Font size (multiplies native height).
+            float windowScreenLeftRightPadding = gp.getCamera().worldHeightToScreenHeight(7.0f);                        // Normalized (screen) padding on left and right of description window between window and text.
+            float windowScreenTopBottomPadding = gp.getCamera().worldHeightToScreenHeight(8.6f);                        // Normalized (screen) padding on top and bottom of description window between window and text.
+            float textScreenSpacing = gp.getCamera().worldHeightToScreenHeight(9.5f);                                   // Normalized (screen) vertical spacing between line of description text (does NOT include character height).
+            float textCharacterWorldHeight = renderer.getFont(font).getCharacter('A').getHeight() * fontScale;          // It doesn't matter which character is used, since all characters in a font have the same height.
+            float textCharacterScreenHeight =
+                    gp.getCamera().worldHeightToScreenHeight(textCharacterWorldHeight);                                 // Normalized (screen) character height.
+            float windowWorldWidth = 185.0f;                                                                            // World (absolute) total width of the description window.
+            float windowScreenWidth = gp.getCamera().worldWidthToScreenWidth(windowWorldWidth);
+            float windowScreenHeight = (textScreenSpacing * 2)                                                          // Spacing between description text (assuming three lines of text).
+                    + (2 * windowScreenTopBottomPadding)                                                                // Padding on top and bottom of description window.
+                    + (textCharacterScreenHeight * 3);                                                                  // Character height for each option (assuming three lines of text)
+            float windowWorldHeight = gp.getCamera().screenHeightToWorldHeight(windowScreenHeight);
+
+            // Calculate window position.
+            Vector2f windowScreenCoords = new Vector2f(
+                    gp.getCamera().worldWidthToScreenWidth(23.0f),
+                    1 - gp.getCamera().worldHeightToScreenHeight(86.4f + 13.0f) - windowScreenHeight);                  // The 86.4f in the y-component is the height of the main dialogue window in the `renderDialogueScreen()` method.
+
+            // Render description window.
+            Vector2f windowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(windowScreenCoords);
+            renderer.addRectangle(
+                    new Vector4f(20, 20, 20, 180),
+                    new Transform(windowWorldCoords, new Vector2f(windowWorldWidth, windowWorldHeight)),
+                    ZIndex.SECOND_LAYER);
+
+            // Render text.
+            Vector2f textScreenCoords = new Vector2f(
+                    windowScreenCoords.x + windowScreenLeftRightPadding,
+                    windowScreenCoords.y + windowScreenTopBottomPadding);
+            renderStringBlock(
+                    gp.getCombatM().getLatestSubMenuDescriptionByIndex(gp.getSubMenuH().getIndexSelected()),
+                    textScreenCoords,
+                    windowScreenWidth - (windowScreenLeftRightPadding * 2),
+                    textScreenSpacing + textCharacterScreenHeight,
+                    fontScale,
+                    new Vector3f(255, 255, 255),
+                    font,
+                    false);
+        }
+    }
+
+
+    /**
      * Adds debug information components to the render pipeline.
      */
     private void renderDebug() {
@@ -1153,16 +1244,16 @@ public class UserInterface {
      *
      * @param text text to be drawn
      * @param screenCoords screen coordinates of the text (leftmost and topmost, normalized from 0 to 1, both inclusive)
-     * @param size size at which to draw the text
+     * @param scale scale factor at which to render text compared to native font size
      * @param color text color (r, g, b)
      * @param font name of font to use
      */
-    private void renderString(String text, Vector2f screenCoords, float size, Vector3f color, String font) {
+    private void renderString(String text, Vector2f screenCoords, float scale, Vector3f color, String font) {
 
         if (text != null) {
 
             Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
-            renderer.addString(text, worldCoords.x, worldCoords.y, size, color, font);
+            renderer.addString(text, worldCoords.x, worldCoords.y, scale, color, font);
         }
     }
 
@@ -1172,17 +1263,17 @@ public class UserInterface {
      *
      * @param text text to be drawn
      * @param screenCoords screen coordinates of the text (leftmost and topmost, normalized from 0 to 1, both inclusive)
-     * @param size size at which to draw the text
+     * @param scale scale factor at which to render text compared to native font size
      * @param color text color (r, g, b)
      * @param font name of font to use
      */
-    private void renderStringShadow(String text, Vector2f screenCoords, float size, Vector3f color, String font) {
+    private void renderStringShadow(String text, Vector2f screenCoords, float scale, Vector3f color, String font) {
 
         Vector2f shadowScreenCoords = new Vector2f(
                 screenCoords.x + gp.getCamera().worldWidthToScreenWidth(0.8f),                                          // Hard coded as an absolute (non-screen) width since shadow cast is fixed, regardless of native screen width.
                 screenCoords.y + gp.getCamera().worldHeightToScreenHeight(0.8f));                                       // Hard coded as an absolute (non-screen) height since shadow cast is fixed, regardless of native screen height.
-        renderString(text, shadowScreenCoords, size, new Vector3f(0, 0, 0), font);
-        renderString(text, screenCoords, size, color, font);
+        renderString(text, shadowScreenCoords, scale, new Vector3f(0, 0, 0), font);
+        renderString(text, screenCoords, scale, color, font);
     }
 
 
@@ -1191,15 +1282,15 @@ public class UserInterface {
      *
      * @param text complete text to be printed
      * @param screenCoords screen coordinates of the text block (lefmost and topmost, normalized from 0 to 1, both inclusive)
-     * @param maxLineLength maximum number of characters allowed in a printed line of text
-     * @param lineSpacing screen space between each printed line of text (normalized from 0 to 1, both inclusive)
-     * @param size size at which to draw the text
+     * @param maxLineScreenLength maximum normalized (screen) length of text permitted in a printed line of text
+     * @param lineScreenSpacing normalized (screen) space between each printed line of text (normalized from 0 to 1, both inclusive)
+     * @param scale scale factor at which to render text compared to native font size
      * @param color color of the printed text (r, g, b)
      * @param font name of font to use
      * @param dropShadow whether a drop shadow should be drawn (true) or not (false)
      */
-    private void renderStringBlock(String text, Vector2f screenCoords, int maxLineLength, float lineSpacing,
-                                   float size, Vector3f color, String font, boolean dropShadow) {
+    private void renderStringBlock(String text, Vector2f screenCoords, float maxLineScreenLength, float lineScreenSpacing,
+                                   float scale, Vector3f color, String font, boolean dropShadow) {
 
         String[] words = text.split(" ");                                                                               // An array of each word in the complete text, split by spaces.
         int wordsIndex = 0;                                                                                             // Track which index of the words array is currently being checked.
@@ -1221,14 +1312,14 @@ public class UserInterface {
                     build = line + " " + words[wordsIndex];
                 }
 
-                if (build.length() > maxLineLength) {
+                if (calculateStringScreenLength(build, scale, font) > maxLineScreenLength) {
 
                     limitExceeded = true;                                                                               // Character length of the line has been exceeded.
 
-                    if (words[wordsIndex].length() > maxLineLength) {
-
-                        words[wordsIndex] = "???";                                                                      // If the number of characters in a single word exceeds the maximum number of characters that can be printed in a line of text, skip the word to avoid getting stuck in an infinite loop.
-                    }
+//                    if (calculateStringScreenLength(words[wordsIndex], scale, font) > maxLineScreenLength) {
+//
+//                        words[wordsIndex] = "???";                                                                      // If the number of characters in a single word exceeds the maximum number of characters that can be printed in a line of text, skip the word to avoid getting stuck in an infinite loop.
+//                    }
                 } else {
 
                     line = build;                                                                                       // Set the next line of text to be rendered.
@@ -1238,15 +1329,15 @@ public class UserInterface {
 
             if (dropShadow) {
 
-                renderStringShadow(line, screenCoords, size, color, font);                                              // Render the line of text with a drop shadow.
+                renderStringShadow(line, screenCoords, scale, color, font);                                              // Render the line of text with a drop shadow.
             } else {
 
-                renderString(line, screenCoords, size, color, font);                                                    // Render the line of text without a drop shadow.
+                renderString(line, screenCoords, scale, color, font);                                                    // Render the line of text without a drop shadow.
             }
 
             if (wordsIndex != words.length) {
 
-                screenCoords.y += lineSpacing;                                                                          // Spacing between lines of text.
+                screenCoords.y += lineScreenSpacing;                                                                    // Spacing between lines of text.
             }
         }
     }

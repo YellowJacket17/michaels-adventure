@@ -510,8 +510,8 @@ public class DialogueReader {
                 }
             }
 
-            if ((dialoguePrintTemp + " " + nextWord).length() >
-                    (int)(3.4 * (GamePanel.NATIVE_SCREEN_WIDTH / GamePanel.NATIVE_TILE_SIZE))) {
+            if (gp.getUi().calculateStringScreenLength((dialoguePrintTemp + " " + nextWord), 0.15f, "Arimo") >
+                    (1 - gp.getCamera().worldWidthToScreenWidth(46))) {                                                 // 46 is 2x the value of `mainTextScreenLeftPadding` in the `renderDialogueScreen()` method in the UserInterface class.
 
                 printLine++;                                                                                            // Start printing character on the next line of the dialogue window.
 

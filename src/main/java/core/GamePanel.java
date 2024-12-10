@@ -400,8 +400,8 @@ public class GamePanel {
         AssetPool.addSound("testEffect1", "sound/effects/testEffect1.ogg");
 
         // Illustrations.
-        filePath = "/illustrations/illustration1.png";
-        AssetPool.addIllustration("illustration1", new Illustration(AssetPool.getTexture(filePath)));
+        filePath = "/illustrations/illustration3.png";
+        AssetPool.addIllustration("illustration3", new Illustration(AssetPool.getTexture(filePath)));
     }
 
 

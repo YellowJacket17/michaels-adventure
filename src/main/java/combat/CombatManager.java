@@ -60,7 +60,7 @@ public class CombatManager {
     private final HashMap<Integer, Integer> storedEntityRows = new HashMap<>();
 
     /**
-     * Map to store the direction the all combating entities were facing in before combat was initiated; entity ID is
+     * Map to store the direction that all combating entities were facing in before combat was initiated; entity ID is
      * the key, direction is the value.
      */
     private final HashMap<Integer, EntityDirection> storedEntityDirections = new HashMap<>();
@@ -902,7 +902,7 @@ public class CombatManager {
                 addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PLAYER_SIDE_SWAP, playerSideOptions, colors));
             } else if (selectedSwapOption.equals("Swap Out")) {
 
-                ArrayList<String> playerSideOptions = generatedInactivePlayerSideOptions();
+                ArrayList<String> playerSideOptions = generateInactivePlayerSideOptions();
                 playerSideOptions.add("Back");
                 HashMap<Integer, Vector3f> colors = new HashMap<>();
                 colors.put(playerSideOptions.size() - 1, backOptionColor);
@@ -1461,7 +1461,7 @@ public class CombatManager {
      *
      * @return list of names of selectable inactive player-side entities
      */
-    private ArrayList<String> generatedInactivePlayerSideOptions() {
+    private ArrayList<String> generateInactivePlayerSideOptions() {
 
         ArrayList<String> inactivePlayerSideOptions = new ArrayList<>();
         lastGeneratedInactivePlayerSideOptions.clear();
@@ -1487,9 +1487,11 @@ public class CombatManager {
 
         HashSet<Integer> disabledOptions = new HashSet<>();
         disabledOptions.add(3);                                                                                         // Disable the 'Inventory' option since it's not been developed yet.
+        HashMap<Integer, String> optionDescriptions = buildRootMenuDescriptions();
         HashMap<Integer, Vector3f> colors = new HashMap<>();
         colors.put(3, disabledOptionColor);
-        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT, rootCombatOptions, colors, disabledOptions));
+        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT,
+                rootCombatOptions, colors, disabledOptions, optionDescriptions));
     }
 
 
@@ -1886,6 +1888,30 @@ public class CombatManager {
 
 
     /**
+     * Builds option descriptions for the root combat menu.
+     *
+     * @return map of root combat menu option descriptions
+     */
+    private HashMap<Integer, String> buildRootMenuDescriptions() {
+
+        HashMap<Integer, String> rootMenuDescriptions = new HashMap<>();
+        rootMenuDescriptions.put(0,
+                "Defend to reduce damage taken.");
+        rootMenuDescriptions.put(1,
+                "Attack an enemy.");
+        rootMenuDescriptions.put(2,
+                "Use a special skill.");
+        rootMenuDescriptions.put(3,
+                "Use an item.");
+        rootMenuDescriptions.put(4,
+                "Manage party members.");
+        rootMenuDescriptions.put(5,
+                "Flee from combat.");
+        return rootMenuDescriptions;
+    }
+
+
+    /**
      * Remove all buffs from stats (attack, defense, magic, agility) for all combating entities.
      */
     private void resetAllCombatingEntityStats() {
@@ -1963,6 +1989,15 @@ public class CombatManager {
 
     public LinkedHashSet<Integer> getNonPlayerSideEntities() {
         return nonPlayerSideEntities;
+    }
+
+    public String getLatestSubMenuDescriptionByIndex(int index) {
+
+        if (getLatestSubMenuMemory().getDescriptions().get(index) != null) {
+            return getLatestSubMenuMemory().getDescriptions().get(index);
+        } else {
+            return "";
+        }
     }
 
     public boolean isCombatUiVisible() {

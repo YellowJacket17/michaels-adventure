@@ -35,7 +35,7 @@ public class Cts_000 extends CutsceneBase {
                 progressCutscene();
             case 1:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
-                    gp.getIllustrationS().displayIllustration("illustration1");
+                    gp.getIllustrationS().displayIllustration("illustration3");
                     progressCutscene();
                 }
                 break;
