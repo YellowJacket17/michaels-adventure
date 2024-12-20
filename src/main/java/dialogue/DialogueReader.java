@@ -3,6 +3,7 @@ package dialogue;
 import core.GamePanel;
 import core.enumeration.PrimaryGameState;
 import utility.JsonParser;
+import utility.LimitedLinkedHashMap;
 import utility.exceptions.ConversationNotFoundException;
 
 import java.util.HashMap;
@@ -77,9 +78,9 @@ public class DialogueReader {
 
     /**
      * Variable to track which line of the dialogue window text is currently being printed on.
-     * In practice, this will always have a value of either 1 or 2.
+     * This value will always be a key from the `dialoguePrint` map.
      */
-    private int printLine = 1;
+    private int activePrintLine = 0;
 
     /**
      * Variable to store the current piece of dialogue being read.
@@ -92,15 +93,16 @@ public class DialogueReader {
     private String activeDialogueEntityName = "";
 
     /**
-     * Variable to store the characters that have been printed on the first/top line from the current piece of dialogue.
+     * Maximum number of printed dialogue lines that can be displayed at a time.
      */
-    private String dialoguePrint1 = "";
+    private final int maxNumPrintLines = 2;
 
     /**
-     * Variable to store the characters that have been printed on the second/bottom line from the current piece of
-     * dialogue.
+     * Map to store the characters that have been printed on each line of dialogue; line number is the key, string of
+     * printed characters is the value.
+     * The first line of printed dialogue's key will be 0, the second will be 1, etc.
      */
-    private String dialoguePrint2 = "";
+    private final LimitedLinkedHashMap<Integer, String> dialoguePrint;
 
     /**
      * Variable to store the total characters that have been printed to the screen from the current piece of dialogue.
@@ -109,6 +111,7 @@ public class DialogueReader {
 
     /**
      * Boolean to track whether a piece of dialogue is actively being printed to the screen or not.
+     * This can be used to control reading player inputs for initiating/progressing dialogue, etc.
      */
     private boolean readingDialogue = false;
 
@@ -133,6 +136,10 @@ public class DialogueReader {
      */
     public DialogueReader(GamePanel gp) {
         this.gp = gp;
+        this.dialoguePrint = new LimitedLinkedHashMap<>(maxNumPrintLines);
+        for (int i = 0; i < maxNumPrintLines; i++) {
+            dialoguePrint.put(i, "");
+        }
     }
 
 
@@ -325,8 +332,15 @@ public class DialogueReader {
 
             if (dialoguePaused) {
 
+                for (int key = 0; key < dialoguePrint.keySet().size() - 1; key++) {                                     // Shift each print line "down" a level, setting the topmost line as an empty string to be freshly written to.
+
+                    dialoguePrint.replace(key, dialoguePrint.get(key + 1));
+                }
+                dialoguePrint.replace(maxNumPrintLines - 1, "");
+                activePrintLine = maxNumPrintLines - 1;                                                                 // Set the active print line to the topmost (maximum) line.
+                printCountdown = 0;                                                                                     // Zero character print countdown for the next line to be printed out.
                 readingDialogue = true;                                                                                 // Resume reading the rest of the currently staged piece of dialogue.
-                stagedPrintCountdown = defaultPrintCountdown;                                                           // Reset to the default number of seconds passed between each printed character.
+                dialoguePaused = false;
             } else {
 
                 stageDialogue(activeConv.getDialogueList().get(nextDialogueIndex));                                     // Stage the next piece of dialogue in the conversation to be read.
@@ -346,14 +360,6 @@ public class DialogueReader {
 
         if (readingDialogue) {
 
-            if (dialoguePaused) {
-
-                dialoguePrint1 = dialoguePrint2;                                                                        // If a new line of dialogue is needed after two have already been printed, replace the first line with the existing second.
-                dialoguePrint2 = "";                                                                                    // Reset the second line of dialogue so that new characters can be printed to it.
-                printLine = 2;                                                                                          // Set the active print line to line 2.
-                dialoguePaused = false;                                                                                 // Resume reading the rest of the current piece of dialogue as normal now that the lines have been moved up (i.e., exit paused state).
-            }
-
             if (printCountdown > 0) {
 
                 printCountdown -= dt;                                                                                   // Decrease character print countdown by frame time each time a new frame is drawn.
@@ -364,37 +370,57 @@ public class DialogueReader {
                 progressionCountdown -= dt;                                                                             // Decrease progression countdown by frame time each time a new frame is drawn.
             } else {
 
-                while ((printCountdown <= 0) && (progressionCountdown <= 0)) {
+                if (dialoguePrintTotal.length() == activeDialogueText.length()) {                                       // All dialogue must be printed to the screen and there must be no time buffer on progression.
 
-                    int i = dialoguePrintTotal.length();                                                                // Fetch the index of the next character to be printed.
-                    i = checkNextCharacter(i);
+                    readingDialogue = false;
+                    gp.getDialogueA().reset();                                                                          // Reset the dialogue arrow to its default state (i.e., default position).
 
-                    if (printLine == 1) {
+                    if (nextDialogueIndex >= activeConv.getDialogueList().size()){
 
-                        dialoguePrint1 += activeDialogueText.charAt(i);                                                 // Add the next dialogue character to be printed (line 1).
-                    } else if (printLine == 2) {
-
-                        dialoguePrint2 += activeDialogueText.charAt(i);                                                 // Add the next dialogue character to be printed (line 2).
+                        readingConversation = false;                                                                    // All dialogue in the conversation has finished being read.
+                        gp.getDialogueA().reset();                                                                      // Reset the dialogue arrow to its default state (i.e., default position).
                     }
-                    dialoguePrintTotal += activeDialogueText.charAt(i);
-                    printCountdown += stagedPrintCountdown;                                                             // Iterate `printCounter` to wait a number of seconds until the next character is printed; if negative after iteration, the next character must immediately be printed.
+                } else if (dialoguePaused) {
 
-                    if (dialoguePrintTotal.length() == activeDialogueText.length()) {
+                    readingDialogue = false;
+                } else {
 
-                        progressionCountdown = stagedProgressionCountdown;                                              // Force the player to wait a number of seconds determined by `stagedProgressionCountdown` before progressing (prevents accidental skipping of dialogue).
-                        printCountdown = stagedPrintCountdown;                                                          // Reset character print countdown for the next batch to be printed out.
+                    String nextWord;
+
+                    while ((printCountdown <= 0) && (progressionCountdown <= 0)) {
+
+                        int i = dialoguePrintTotal.length();                                                            // Fetch the index of the next character to be printed.
+                        nextWord = checkNextWord(i);
+
+                        if (!nextWord.equals("")
+                                && gp.getUi().calculateStringScreenLength(
+                                (dialoguePrint.get(activePrintLine) + " " + nextWord), 0.15f, "Arimo")                  // Assume that the used font for dialogue is Arimo.
+                                > (1 - gp.getCamera().worldWidthToScreenWidth(46))) {                                   // 46 is 2x the value of `mainTextScreenLeftPadding` in the `renderDialogueScreen()` method in the UserInterface class.
+
+                            activePrintLine++;                                                                          // Start printing character on the next line, if next line exists.
+                            dialoguePrintTotal += ' ';                                                                  // Add a space to the total dialogue printed to compensate for skipping over the space when printing the next character on the next line.
+                            i++;                                                                                        // Skip over the space when printing the next character.
+                        }
+
+                        if (activePrintLine < maxNumPrintLines) {
+
+                            dialoguePrint.replace(
+                                    activePrintLine, dialoguePrint.get(activePrintLine) + activeDialogueText.charAt(i));// Add the next dialogue character to be printed.
+                            dialoguePrintTotal += activeDialogueText.charAt(i);
+                        } else {                                                                                        // Dialogue is long enough to spill beyond maximum number of allowable printed lines.
+
+                            dialoguePaused = true;                                                                      // Pause the current piece of dialogue until the player progresses to the next line (i.e., enter paused state).
+                            progressionCountdown = stagedProgressionCountdown;                                          // Force the player to wait a number of seconds determined by `stagedProgressionCountdown` before progressing (prevents accidental skipping of dialogue).
+                        }
+
+                        if (dialoguePrintTotal.length() == activeDialogueText.length()) {                               // If the entire piece of dialogue has been read, stop printing characters.
+
+                            progressionCountdown = stagedProgressionCountdown;                                          // Force the player to wait a number of seconds determined by `stagedProgressionCountdown` before progressing (prevents accidental skipping of dialogue).
+                        } else {
+
+                            printCountdown += stagedPrintCountdown;                                                     // Iterate `printCountdown` to wait a number of seconds until the next character is printed; if negative after iteration, the next character must immediately be printed.
+                        }
                     }
-                }
-            }
-
-            if ((dialoguePrintTotal.length() == activeDialogueText.length()) && (progressionCountdown <= 0)) {          // All dialogue must be printed to the screen and there must be no time buffer on progression.
-
-                readingDialogue = false;
-                gp.getDialogueA().reset();                                                                              // Reset the dialogue arrow to its default state (i.e., default position).
-
-                if (nextDialogueIndex >= activeConv.getDialogueList().size()){
-
-                    readingConversation = false;                                                                        // All dialogue in the conversation has finished being read.
                 }
             }
         }
@@ -413,15 +439,16 @@ public class DialogueReader {
         stagedPrintCountdown = defaultPrintCountdown;
         progressionCountdown = 0;
         printCountdown = 0;
-        printLine = 1;
+        activePrintLine = 0;
         activeDialogueText = "";
         activeDialogueEntityName = "";
-        dialoguePrint1 = "";
-        dialoguePrint2 = "";
         dialoguePrintTotal = "";
         readingDialogue = false;
         dialoguePaused = false;
         alwaysShowArrow = false;
+        for (int key : dialoguePrint.keySet()) {
+            dialoguePrint.replace(key, "");
+        }
     }
 
 
@@ -457,77 +484,58 @@ public class DialogueReader {
         this.stagedPrintCountdown = defaultPrintCountdown;
         this.progressionCountdown = 0;
         this.printCountdown = 0;
-        this.printLine = 1;
+        this.activePrintLine = 0;
         this.activeDialogueText = dialogue.getText();
         this.activeDialogueEntityName = dialogue.getEntityName();
-        this.dialoguePrint1 = "";
-        this.dialoguePrint2 = "";
         this.dialoguePrintTotal = "";
         this.readingDialogue = true;
         this.dialoguePaused = false;
+        for (int key : dialoguePrint.keySet()) {
+            dialoguePrint.replace(key, "");
+        }
     }
 
 
     /**
-     * Checks if the next text character in the staged piece of dialogue is a space.
-     * If it is and the next word in the text exceeds the maximum allowed character length for a line of text printed
-     * to the screen, then a new line is initiated.
+     * Checks to see if the index passed as argument represents a space character in the staged piece of dialogue.
+     * If it does, then the next word following the index / space character will be extracted and returned.
+     * Words are assumed to be surrounded by a single space character both in front and behind, or in the case of the
+     * last word in a piece, a single space character in front.
+     * If the index passed as argument does not represent a space character, then an empty string will be returned.
+     * If the index passed as argument represents a space character that is immediately followed by another space
+     * character, then a string containing a single space character will be returned.
      *
-     * @param i character index in the staged dialogue to be checked
-     * @return next character index to print
+     * @param i character index in the staged piece of dialogue to be checked
+     * @return next word, if applicable
      */
-    private int checkNextCharacter(int i) {
+    public String checkNextWord(int i) {
 
-        if (activeDialogueText.charAt(i) == ' ') {                                                                      // Check if the next character to be printed is a space.
+        if ((activeDialogueText.charAt(i) == ' ') && (i < activeDialogueText.length() - 1)) {                           // Check if the next character to be printed is a space AND is not the last character in the piece of dialogue.
 
             StringBuilder nextWord = new StringBuilder();                                                               // Initialize a string for the next word in the dialogue.
-            int nextWordCounter = i + 1;                                                                                // Skip over the space to get to the next word.
+            int nextCharacterCounter = i + 1;                                                                           // Skip over the space to get to the next word.
             boolean readingNextWord = true;
-            String dialoguePrintTemp;                                                                                   // Initialize a temporary string to store the current line of dialogue that we're checking.
-
-            if (printLine == 1) {
-
-                dialoguePrintTemp = dialoguePrint1;
-            } else {
-
-                dialoguePrintTemp = dialoguePrint2;
-            }
 
             while (readingNextWord) {
 
-                if (activeDialogueText.charAt(nextWordCounter) == ' ') {
+                if (nextCharacterCounter >= (activeDialogueText.length())                                               // If true, have reached the end of the piece of dialogue.
+                        || (activeDialogueText.charAt(nextCharacterCounter) == ' ')) {                                  // If true, have reached the next space, signaling that the end of the word being read has been reached.
 
-                    readingNextWord = false;                                                                            // We have reached the next space, signaling that we've reached the end of the next word.
+                    readingNextWord = false;
                 } else {
 
-                    nextWord.append(activeDialogueText.charAt(nextWordCounter));
-                    nextWordCounter++;
-
-                    if (nextWordCounter >= activeDialogueText.length() ) {
-
-                        readingNextWord = false;                                                                        // We have reached the end of the dialogue, signaling that we've reached the end of the next word.
-                    }
+                    nextWord.append(activeDialogueText.charAt(nextCharacterCounter));
+                    nextCharacterCounter++;
                 }
             }
 
-            if (gp.getUi().calculateStringScreenLength((dialoguePrintTemp + " " + nextWord), 0.15f, "Arimo") >
-                    (1 - gp.getCamera().worldWidthToScreenWidth(46))) {                                                 // 46 is 2x the value of `mainTextScreenLeftPadding` in the `renderDialogueScreen()` method in the UserInterface class.
+            if (nextWord.isEmpty()) {                                                                                   // If true, there must have been two adjacent spaces; so, make `nextWord` a single space.
 
-                printLine++;                                                                                            // Start printing character on the next line of the dialogue window.
-
-                if (printLine > 2) {
-
-                    readingDialogue = false;
-                    dialoguePaused = true;                                                                              // Pause the current piece of dialogue until the player progresses to the next line (i.e., enter paused state).
-                    gp.getDialogueA().reset();                                                                          // Reset the dialogue arrow to its default state (i.e., default position).
-                } else {
-
-                    dialoguePrintTotal += ' ';                                                                          // Add a space to the total dialogue printed to compensate for skipping over the space when printing the next character.
-                    i++;                                                                                                // Skip over the space when printing the next character.
-                }
+                nextWord.append(' ');
             }
+            return nextWord.toString();
         }
-        return i;                                                                                                       // Return the index of the next character to be printed; this may have increased by 1 from the inputted value if a space (and hence a new word) was detected.
+        return "";
     }
 
 
@@ -544,20 +552,16 @@ public class DialogueReader {
         return readingConversation;
     }
 
-    public String getActiveDialogueText() {
-        return activeDialogueText;
-    }
-
     public String getActiveDialogueEntityName() {
         return activeDialogueEntityName;
     }
 
-    public String getDialoguePrint1() {
-        return dialoguePrint1;
+    public int getMaxNumPrintLines() {
+        return maxNumPrintLines;
     }
 
-    public String getDialoguePrint2() {
-        return dialoguePrint2;
+    public String getDialoguePrint(int key) {
+        return dialoguePrint.get(key);
     }
 
     public boolean isReadingDialogue() {

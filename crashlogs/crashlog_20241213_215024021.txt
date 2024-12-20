@@ -1,0 +1,15 @@
+12/13/2024 21:50:06:134  INFO     Application started.
+12/13/2024 21:50:12:116  INFO     Starting game loop.
+12/13/2024 21:50:24:019  ERROR    An unhandled exception has occurred!
+java.lang.IllegalStateException: Map attempted to exceed its maximum allowed capacity
+	at utility.LimitedLinkedHashMap.put(LimitedLinkedHashMap.java:55)
+	at dialogue.DialogueReader.reset(DialogueReader.java:459)
+	at event.EventManager.cleanupConversation(EventManager.java:352)
+	at event.EventManager.handlePostConversation(EventManager.java:256)
+	at entity.implementation.player.Player.updateDialogueInput(Player.java:619)
+	at entity.implementation.player.Player.updateInput(Player.java:158)
+	at entity.EntityManager.updateInput(EntityManager.java:117)
+	at core.GamePanel.update(GamePanel.java:234)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)

@@ -277,7 +277,7 @@ public class UserInterface {
         }
 
         // Dialogue progress arrow, if applicable.
-        if ((gp.getDialogueR().isDialoguePaused())
+        if ((!gp.getDialogueR().isReadingDialogue() && gp.getDialogueR().isDialoguePaused())
                 || (!gp.getDialogueR().isReadingDialogue() && (gp.getDialogueR().isAlwaysShowArrow()))) {
             float arrowRightWorldAdjustment = 15.4f;                                                                    // Hard coded as an absolute (non-screen) width since dialogue window height is fixed, regardless of native screen width.
             float arrowRightScreenAdjustment = gp.getCamera().worldWidthToScreenWidth(arrowRightWorldAdjustment);
@@ -289,15 +289,15 @@ public class UserInterface {
             gp.getDialogueA().addToRenderPipeline(renderer, arrowScreenCoords.x, arrowScreenCoords.y);
         }
 
-        // Set position of main dialogue text (lines 1 and 2) and render it.
+        // Set position of main dialogue text print lines and render them.
         float mainTextScreenLeftPadding = gp.getCamera().worldWidthToScreenWidth(23.0f);
         float mainTextScreenSpacing = (mainWindowScreenHeight - (2 * characterScreenHeight)) / 3;
         Vector2f mainTextScreenCoords = new Vector2f(mainTextScreenLeftPadding, mainWindowScreenCoords.y + mainTextScreenSpacing);
-        renderString(gp.getDialogueR().getDialoguePrint1(), mainTextScreenCoords, fontScale,
-                new Vector3f(255, 255, 255), "Arimo");
-        mainTextScreenCoords.y += characterScreenHeight + mainTextScreenSpacing;
-        renderString(gp.getDialogueR().getDialoguePrint2(), mainTextScreenCoords, fontScale,
-                new Vector3f(255, 255, 255), "Arimo");
+        for (int key = 0; key < gp.getDialogueR().getMaxNumPrintLines(); key++) {
+            renderString(gp.getDialogueR().getDialoguePrint(key), mainTextScreenCoords, fontScale,
+                    new Vector3f(255, 255, 255), "Arimo");
+            mainTextScreenCoords.y += characterScreenHeight + mainTextScreenSpacing;
+        }
     }
 
 
