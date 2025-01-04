@@ -53,7 +53,7 @@ public class Evt_Map001 extends EventMapBase {
                             gp.getCutsceneM().initiateCutscene(0);
                         }
                     } else {
-                        gp.getDialogueR().initiateStandardMessage("A key is needed to open this chest.");
+                        gp.getDialogueR().initiateStandardMessage("A key is needed to open this chest.", true);
                     }
                     return true;
                 }

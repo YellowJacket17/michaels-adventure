@@ -19,12 +19,19 @@ public class Act_ReadMessage extends ActionBase {
      */
     private final boolean interactive;
 
+    /**
+     * Boolean indicating whether all visible text will be printed to the screen character by character (true) or
+     * whether it will be printed all at once (false).
+     */
+    private final boolean charByChar;
+
 
     // CONSTRUCTOR
-    public Act_ReadMessage(GamePanel gp, String message, boolean interactive) {
+    public Act_ReadMessage(GamePanel gp, String message, boolean interactive, boolean charByChar) {
         super(gp);
         this.message = message;
         this.interactive = interactive;
+        this.charByChar = charByChar;
     }
 
 
@@ -39,14 +46,14 @@ public class Act_ReadMessage extends ActionBase {
     /**
      * Stages and initiates a single message to be read to the dialogue screen during combat.
      */
-    public void displayMessage() {
+    private void displayMessage() {
 
         if (interactive) {
 
-            gp.getDialogueR().initiateInteractiveCombatMessage(message);
+            gp.getDialogueR().initiateInteractiveCombatMessage(message, charByChar);
         } else {
 
-            gp.getDialogueR().initiateNoninteractiveCombatMessage(message);
+            gp.getDialogueR().initiateNoninteractiveCombatMessage(message, charByChar);
         }
     }
 

@@ -51,13 +51,6 @@ public class DialogueReader {
     private double stagedPrintCountdown = defaultPrintCountdown;
 
     /**
-     * Number of seconds that must pass before the player can proceed after a piece of dialogue has been read.
-     * The value of this variable will be set to `progressionCountdown` whenever a pause in player progression is
-     * needed.
-     */
-    private final double stagedProgressionCountdown = 0.1;
-
-    /**
      * Variable to store the number of seconds that must pass before the next character in a piece of dialogue can be
      * printed to the screen.
      * On each frame where `progressDialogue()` is called, this variable is decremented by the frame time if greater
@@ -69,12 +62,16 @@ public class DialogueReader {
     private double printCountdown = 0;
 
     /**
-     * Variable to store the number of seconds that must pass before the player can proceed after a piece of dialogue has
+     * Number of seconds that must pass before the player can proceed with interaction after a piece of dialogue has
      * been read.
-     * On each frame where `progressDialogue()` is called, this variable is decremented by the frame time if greater
-     * than zero.
      */
-    private double progressionCountdown = 0;
+    private final double stagedProgressionCountdown = 0.1;
+
+    /**
+     * Boolean setting whether all visible text will be printed to the screen character by character or whether it will
+     * all be printed at once.
+     */
+    private boolean printCharByChar = true;
 
     /**
      * Variable to track which line of the dialogue window text is currently being printed on.
@@ -194,10 +191,11 @@ public class DialogueReader {
      * The primary game state is set to dialogue.
      *
      * @param message text to be read
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      */
-    public void initiateStandardMessage(String message) {
+    public void initiateStandardMessage(String message, boolean charByChar) {
 
-        initiateStandardMessage(message, false);
+        initiateStandardMessage(message, charByChar, false);
     }
 
 
@@ -207,12 +205,14 @@ public class DialogueReader {
      * The primary game state is set to dialogue.
      *
      * @param message text to be read
-     * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false)
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
+     * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false), regardless of pause
      */
-    public void initiateStandardMessage(String message, boolean showArrow) {
+    public void initiateStandardMessage(String message, boolean charByChar, boolean showArrow) {
 
         gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -1);                                                                                      // Instantiate a temporary conversation with an ID of -1 to indicate that this is a message.
+        printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
         alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
     }
 
@@ -223,12 +223,14 @@ public class DialogueReader {
      * The primary game state is set to dialogue.
      *
      * @param message text to be read
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      */
-    public void initiateSubMenuMessage(String message) {
+    public void initiateSubMenuMessage(String message, boolean charByChar) {
 
         gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -2);                                                                                      // Instantiate a temporary conversation with an ID of -2 to indicate that this is a sub-menu prompt.
         activeConv.setPlayerInputToEnd(false);                                                                          // This is so the sub-menu appears instantly once the dialogue has finished being read without player input.
+        printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
         alwaysShowArrow = false;                                                                                        // Ensure that the dialogue arrow is not shown each time user input is required.
     }
 
@@ -239,10 +241,11 @@ public class DialogueReader {
      * The primary game state is set to dialogue.
      *
      * @param message text to be read
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      */
-    public void initiateInteractiveCombatMessage(String message) {
+    public void initiateInteractiveCombatMessage(String message, boolean charByChar) {
 
-        initiateInteractiveCombatMessage(message, true);
+        initiateInteractiveCombatMessage(message, charByChar, true);
     }
 
 
@@ -252,12 +255,14 @@ public class DialogueReader {
      * The primary game state is set to dialogue.
      *
      * @param message text to be read
-     * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false)
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
+     * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false), regardless of pause
      */
-    public void initiateInteractiveCombatMessage(String message, boolean showArrow) {
+    public void initiateInteractiveCombatMessage(String message, boolean charByChar, boolean showArrow) {
 
         gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -3);                                                                                      // Instantiate a temporary conversation with an ID of -3 to indicate that this is an interactive combat message.
+        printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
         alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
     }
 
@@ -269,10 +274,11 @@ public class DialogueReader {
      * The primary game state is set to dialogue.
      *
      * @param message text to be read
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      */
-    public void initiateNoninteractiveCombatMessage(String message) {
+    public void initiateNoninteractiveCombatMessage(String message, boolean charByChar) {
 
-        initiateNoninteractiveCombatMessage(message, false);
+        initiateNoninteractiveCombatMessage(message, charByChar, false);
     }
 
 
@@ -283,13 +289,15 @@ public class DialogueReader {
      * The primary game state is set to dialogue.
      *
      * @param message text to be read
-     * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false)
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
+     * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false), regardless of pause
      */
-    public void initiateNoninteractiveCombatMessage(String message, boolean showArrow) {
+    public void initiateNoninteractiveCombatMessage(String message, boolean charByChar, boolean showArrow) {
 
         gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -4);                                                                                      // Instantiate a temporary conversation with an ID of -4 to indicate that this is a noninteractive combat message.
         activeConv.setPlayerInputToEnd(false);                                                                          // This is so logic following the dialogue once it has finished being read is run immediately without player input.
+        printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
         alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
     }
 
@@ -350,6 +358,9 @@ public class DialogueReader {
     }
 
 
+    // TODO : Need to reset DialaogueArrow after InteractionCounter goes to zero.
+
+
     /**
      * Stages text characters from the staged piece of dialogue to be drawn by the UI class.
      * Characters are added one at a time to give a letter-by-letter printing effect.
@@ -364,63 +375,47 @@ public class DialogueReader {
 
                 printCountdown -= dt;                                                                                   // Decrease character print countdown by frame time each time a new frame is drawn.
             }
+            String nextWord;
 
-            if (progressionCountdown > 0) {
+            while ((printCountdown <= 0) && readingDialogue) {
 
-                progressionCountdown -= dt;                                                                             // Decrease progression countdown by frame time each time a new frame is drawn.
-            } else {
+                int i = dialoguePrintTotal.length();                                                                    // Fetch the index of the next character to be printed.
+                nextWord = checkNextWord(i);
 
-                if (dialoguePrintTotal.length() == activeDialogueText.length()) {                                       // All dialogue must be printed to the screen and there must be no time buffer on progression.
+                if (!nextWord.equals("")
+                        && gp.getUi().calculateStringScreenLength(
+                        (dialoguePrint.get(activePrintLine) + " " + nextWord), 0.15f, "Arimo")                          // Assume that the used font for dialogue is Arimo.
+                        > (1 - gp.getCamera().worldWidthToScreenWidth(46))) {                                           // 46 is 2x the value of `mainTextScreenLeftPadding` in the `renderDialogueScreen()` method in the UserInterface class.
+
+                    activePrintLine++;                                                                                  // Start printing character on the next line, if next line exists.
+                    dialoguePrintTotal += ' ';                                                                          // Add a space to the total dialogue printed to compensate for skipping over the space when printing the next character on the next line.
+                    i++;                                                                                                // Skip over the space when printing the next character.
+                }
+
+                if (activePrintLine < maxNumPrintLines) {
+
+                    dialoguePrint.replace(
+                            activePrintLine, dialoguePrint.get(activePrintLine) + activeDialogueText.charAt(i));        // Add the next dialogue character to be printed.
+                    dialoguePrintTotal += activeDialogueText.charAt(i);
+                } else {                                                                                                // Dialogue is long enough to spill beyond maximum number of allowable printed lines.
 
                     readingDialogue = false;
-                    gp.getDialogueA().reset();                                                                          // Reset the dialogue arrow to its default state (i.e., default position).
+                    dialoguePaused = true;                                                                              // Pause the current piece of dialogue until the player progresses to the next line (i.e., enter paused state).
+                    gp.getEntityM().getPlayer().setInteractionCountdown(stagedProgressionCountdown);                    // Force the player to wait before further progressing the dialogue screen or any other interaction (prevents instantly progressing next menu action, for example).
+                }
+
+                if (dialoguePrintTotal.length() == activeDialogueText.length()) {                                       // If the entire piece of dialogue has been read, stop printing characters.
+
+                    readingDialogue = false;
+                    gp.getEntityM().getPlayer().setInteractionCountdown(stagedProgressionCountdown);                    // Force the player to wait before further progressing the dialogue screen or any other interaction (prevents instantly progressing next menu action, for example).
 
                     if (nextDialogueIndex >= activeConv.getDialogueList().size()){
 
                         readingConversation = false;                                                                    // All dialogue in the conversation has finished being read.
-                        gp.getDialogueA().reset();                                                                      // Reset the dialogue arrow to its default state (i.e., default position).
                     }
-                } else if (dialoguePaused) {
+                } else if (printCharByChar) {
 
-                    readingDialogue = false;
-                } else {
-
-                    String nextWord;
-
-                    while ((printCountdown <= 0) && (progressionCountdown <= 0)) {
-
-                        int i = dialoguePrintTotal.length();                                                            // Fetch the index of the next character to be printed.
-                        nextWord = checkNextWord(i);
-
-                        if (!nextWord.equals("")
-                                && gp.getUi().calculateStringScreenLength(
-                                (dialoguePrint.get(activePrintLine) + " " + nextWord), 0.15f, "Arimo")                  // Assume that the used font for dialogue is Arimo.
-                                > (1 - gp.getCamera().worldWidthToScreenWidth(46))) {                                   // 46 is 2x the value of `mainTextScreenLeftPadding` in the `renderDialogueScreen()` method in the UserInterface class.
-
-                            activePrintLine++;                                                                          // Start printing character on the next line, if next line exists.
-                            dialoguePrintTotal += ' ';                                                                  // Add a space to the total dialogue printed to compensate for skipping over the space when printing the next character on the next line.
-                            i++;                                                                                        // Skip over the space when printing the next character.
-                        }
-
-                        if (activePrintLine < maxNumPrintLines) {
-
-                            dialoguePrint.replace(
-                                    activePrintLine, dialoguePrint.get(activePrintLine) + activeDialogueText.charAt(i));// Add the next dialogue character to be printed.
-                            dialoguePrintTotal += activeDialogueText.charAt(i);
-                        } else {                                                                                        // Dialogue is long enough to spill beyond maximum number of allowable printed lines.
-
-                            dialoguePaused = true;                                                                      // Pause the current piece of dialogue until the player progresses to the next line (i.e., enter paused state).
-                            progressionCountdown = stagedProgressionCountdown;                                          // Force the player to wait a number of seconds determined by `stagedProgressionCountdown` before progressing (prevents accidental skipping of dialogue).
-                        }
-
-                        if (dialoguePrintTotal.length() == activeDialogueText.length()) {                               // If the entire piece of dialogue has been read, stop printing characters.
-
-                            progressionCountdown = stagedProgressionCountdown;                                          // Force the player to wait a number of seconds determined by `stagedProgressionCountdown` before progressing (prevents accidental skipping of dialogue).
-                        } else {
-
-                            printCountdown += stagedPrintCountdown;                                                     // Iterate `printCountdown` to wait a number of seconds until the next character is printed; if negative after iteration, the next character must immediately be printed.
-                        }
-                    }
+                    printCountdown += stagedPrintCountdown;                                                             // Iterate `printCountdown` to wait a number of seconds until the next character is printed; if negative after iteration, the next character must immediately be printed.
                 }
             }
         }
@@ -437,8 +432,8 @@ public class DialogueReader {
         activeConv = null;
         readingConversation = false;
         stagedPrintCountdown = defaultPrintCountdown;
-        progressionCountdown = 0;
         printCountdown = 0;
+        printCharByChar = true;
         activePrintLine = 0;
         activeDialogueText = "";
         activeDialogueEntityName = "";
@@ -482,7 +477,6 @@ public class DialogueReader {
     private void stageDialogue(Dialogue dialogue) {
 
         this.stagedPrintCountdown = defaultPrintCountdown;
-        this.progressionCountdown = 0;
         this.printCountdown = 0;
         this.activePrintLine = 0;
         this.activeDialogueText = dialogue.getText();

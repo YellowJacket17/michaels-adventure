@@ -277,8 +277,12 @@ public class UserInterface {
         }
 
         // Dialogue progress arrow, if applicable.
-        if ((!gp.getDialogueR().isReadingDialogue() && gp.getDialogueR().isDialoguePaused())
-                || (!gp.getDialogueR().isReadingDialogue() && (gp.getDialogueR().isAlwaysShowArrow()))) {
+        if ((!gp.getDialogueR().isReadingDialogue()
+                    && gp.getDialogueR().isDialoguePaused()
+                    && (gp.getEntityM().getPlayer().getInteractionCountdown() <= 0))
+                || (!gp.getDialogueR().isReadingDialogue()
+                    && (gp.getDialogueR().isAlwaysShowArrow())
+                    && (gp.getEntityM().getPlayer().getInteractionCountdown() <= 0))) {
             float arrowRightWorldAdjustment = 15.4f;                                                                    // Hard coded as an absolute (non-screen) width since dialogue window height is fixed, regardless of native screen width.
             float arrowRightScreenAdjustment = gp.getCamera().worldWidthToScreenWidth(arrowRightWorldAdjustment);
             float arrowBottomWorldAdjustment =13.0f;                                                                    // Hard coded as an absolute (non-screen) height since dialogue window height is fixed, regardless of native screen height.

@@ -126,7 +126,7 @@ public class Act_UseMove extends ActionBase {
                 gp.getCombatM().getGuardingEntities().remove(targetEntityId);
                 String message = gp.getEntityM()
                         .getEntityById(targetEntityId).getName() + "'s defensive stance was broken!";
-                gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+                gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
             } else {
 
                 targetGuarding = false;

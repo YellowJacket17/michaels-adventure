@@ -231,7 +231,7 @@ public class CombatManager {
 
                 String message = buildRootMenuPrompt(
                         gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getName());
-                addQueuedActionBack(new Act_ReadMessage(gp, message, false));
+                addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
                 generateRootSubMenuAction();
                 runNextQueuedAction();
             }
@@ -467,7 +467,7 @@ public class CombatManager {
 
         // Stage a message action.
         String message = build + " would like to fight!";
-        addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+        addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
         addQueuedActionBack(new Act_ToggleCombatUi(gp, true));
 
         // Enter the main method for progressing combat.
@@ -570,7 +570,7 @@ public class CombatManager {
 
                     String message = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getName()
                             + " reverted from a defensive stance.";
-                    addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+                    addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
                 }
             }
         }
@@ -602,7 +602,7 @@ public class CombatManager {
             String message = gp.getEntityM().getPlayer().getName() + " won the fight!";
             addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
             addQueuedActionFront(new Act_ToggleCombatUi(gp, false));
-            addQueuedActionFront(new Act_ReadMessage(gp, message, true));
+            addQueuedActionFront(new Act_ReadMessage(gp, message, true, true));
         }
 
         if (checkPlayerFainted()) {                                                                                     // Combat is only lost if the player entity has fainted.
@@ -610,7 +610,7 @@ public class CombatManager {
             String message = gp.getEntityM().getPlayer().getName() + " lost the fight.";
             addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
             addQueuedActionFront(new Act_ToggleCombatUi(gp, false));
-            addQueuedActionFront(new Act_ReadMessage(gp, message, true));
+            addQueuedActionFront(new Act_ReadMessage(gp, message, true, true));
         }
     }
 
@@ -766,7 +766,7 @@ public class CombatManager {
         guardingEntities.add(queuedEntityTurnOrder.peekFirst());
         String message = gp.getEntityM()
                 .getEntityById(queuedEntityTurnOrder.peekFirst()).getName() + " assumed a defensive stance.";
-        addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+        addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
         addQueuedActionBack(new Act_EndEntityTurn(gp));
     }
 
@@ -826,7 +826,7 @@ public class CombatManager {
     private void runRootSubMenuSelectionFlee() {
 
         String message = "Fleeing the fight!";
-        addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+        addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
         addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
         addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
     }
@@ -970,7 +970,7 @@ public class CombatManager {
                             getLatestSubMenuMemory().getSelectedOption()));
             String message;
             message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
-            addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+            addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
             addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
             addQueuedActionBack(new Act_EndEntityTurn(gp));
         }
@@ -1390,7 +1390,7 @@ public class CombatManager {
 
         // Add move action.
         String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
-        addQueuedActionBack(new Act_ReadMessage(gp, message, true));
+        addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
         addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
         addQueuedActionBack(new Act_EndEntityTurn(gp));
         runNextQueuedAction();
@@ -1776,7 +1776,7 @@ public class CombatManager {
                 stagedName = targetEntity.getName();
             }
             String message = stagedName + " has no energy left to fight!";
-            addQueuedActionFront(new Act_ReadMessage(gp, message, true));
+            addQueuedActionFront(new Act_ReadMessage(gp, message, true, true));
         }
     }
 

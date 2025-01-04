@@ -215,18 +215,63 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
      * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      * @param disabledOptions set of indices of disabled sub-menu options
      */
-    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuScreenX, int subMenuScreenY,
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, boolean charByChar,
+                                     int subMenuScreenX, int subMenuScreenY, HashMap<Integer, Vector3f> colors,
+                                     HashSet<Integer> disabledOptions) {
+
+        for (int item : disabledOptions) {
+            this.tempDisabledOptions.add(item);
+        }
+        displaySubMenuPrompt(prompt, options, subMenuId, charByChar, subMenuScreenX, subMenuScreenY, colors);
+    }
+
+
+    /**
+     * Initiates a sub-menu to appear after an accompanying prompt is read.
+     * The primary game state is set to dialogue.
+     *
+     * @param prompt text to be displayed
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
+     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
+     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
+     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
+     */
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, boolean charByChar,
+                                     int subMenuScreenX, int subMenuScreenY, HashMap<Integer, Vector3f> colors) {
+
+        for (Integer key : colors.keySet()) {
+            tempColors.put(key, colors.get(key));
+        }
+        displaySubMenuPrompt(prompt, options, subMenuId, charByChar, subMenuScreenX, subMenuScreenY);
+    }
+
+
+    /**
+     * Initiates a sub-menu to appear after an accompanying prompt is read.
+     * The primary game state is set to dialogue.
+     *
+     * @param prompt text to be displayed
+     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
+     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
+     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
+     * @param disabledOptions set of indices of disabled sub-menu options
+     */
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, boolean charByChar,
                                      HashMap<Integer, Vector3f> colors, HashSet<Integer> disabledOptions) {
 
         for (int item : disabledOptions) {
             this.tempDisabledOptions.add(item);
         }
-        displaySubMenuPrompt(prompt, options, subMenuId, subMenuScreenX, subMenuScreenY, colors);
+        displaySubMenuPrompt(prompt, options, subMenuId, charByChar, colors);
     }
 
 
@@ -237,17 +282,16 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
-     * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      */
-    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuScreenX, int subMenuScreenY,
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, boolean charByChar,
                                      HashMap<Integer, Vector3f> colors) {
 
         for (Integer key : colors.keySet()) {
             tempColors.put(key, colors.get(key));
         }
-        displaySubMenuPrompt(prompt, options, subMenuId, subMenuScreenX, subMenuScreenY);
+        displaySubMenuPrompt(prompt, options, subMenuId, charByChar);
     }
 
 
@@ -258,55 +302,18 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
-     * @param disabledOptions set of indices of disabled sub-menu options
-     */
-    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors,
-                                     HashSet<Integer> disabledOptions) {
-
-        for (int item : disabledOptions) {
-            this.tempDisabledOptions.add(item);
-        }
-        displaySubMenuPrompt(prompt, options, subMenuId, colors);
-    }
-
-
-    /**
-     * Initiates a sub-menu to appear after an accompanying prompt is read.
-     * The primary game state is set to dialogue.
-     *
-     * @param prompt text to be displayed
-     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
-     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
-     */
-    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors) {
-
-        for (Integer key : colors.keySet()) {
-            tempColors.put(key, colors.get(key));
-        }
-        displaySubMenuPrompt(prompt, options, subMenuId);
-    }
-
-
-    /**
-     * Initiates a sub-menu to appear after an accompanying prompt is read.
-     * The primary game state is set to dialogue.
-     *
-     * @param prompt text to be displayed
-     * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
-     * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
      * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param disabledOptions set of indices of disabled sub-menu options
      */
-    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuScreenX, int subMenuScreenY,
-                                     HashSet<Integer> disabledOptions) {
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, boolean charByChar,
+                                     int subMenuScreenX, int subMenuScreenY, HashSet<Integer> disabledOptions) {
 
         for (int item : disabledOptions) {
             this.tempDisabledOptions.add(item);
         }
-        displaySubMenuPrompt(prompt, options, subMenuId, subMenuScreenX, subMenuScreenY);
+        displaySubMenuPrompt(prompt, options, subMenuId, charByChar, subMenuScreenX, subMenuScreenY);
     }
 
 
@@ -317,15 +324,17 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
      * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      */
-    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, int subMenuScreenX, int subMenuScreenY) {
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, boolean charByChar,
+                                     int subMenuScreenX, int subMenuScreenY) {
 
         tempSubMenuScreenX = subMenuScreenX;
         tempSubMenuScreenY = subMenuScreenY;
         tempSubMenuDefaultPosition = false;
-        displaySubMenuPrompt(prompt, options, subMenuId);
+        displaySubMenuPrompt(prompt, options, subMenuId, charByChar);
     }
 
 
@@ -336,14 +345,16 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      * @param disabledOptions set of indices of disabled sub-menu options
      */
-    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, HashSet<Integer> disabledOptions) {
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, boolean charByChar,
+                                     HashSet<Integer> disabledOptions) {
 
         for (int item : disabledOptions) {
             this.tempDisabledOptions.add(item);
         }
-        displaySubMenuPrompt(prompt, options, subMenuId);
+        displaySubMenuPrompt(prompt, options, subMenuId, charByChar);
     }
 
 
@@ -353,14 +364,15 @@ public class SubMenuSupport {
      * @param prompt text to be displayed
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      */
-    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId) {
+    public void displaySubMenuPrompt(String prompt, List<String> options, int subMenuId, boolean charByChar) {
 
         for (String item : options) {
             tempOptions.add(item);
         }
         tempSubMenuId = subMenuId;
-        gp.getDialogueR().initiateSubMenuMessage(prompt);
+        gp.getDialogueR().initiateSubMenuMessage(prompt, charByChar);
     }
 
 

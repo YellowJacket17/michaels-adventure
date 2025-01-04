@@ -687,7 +687,7 @@ public class EventManager {
                 text = "Player cannot carry anymore!";
             }
         }
-        displayMessage(text);
+        displayMessage(text, true);
         return added;
     }
 
@@ -696,10 +696,11 @@ public class EventManager {
      * Initiates a single message to display on the screen.
      *
      * @param message text to be displayed
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
      */
-    public void displayMessage(String message) {
+    public void displayMessage(String message, boolean charByChar) {
 
-        gp.getDialogueR().initiateStandardMessage(message);
+        gp.getDialogueR().initiateStandardMessage(message, charByChar);
     }
 
 
@@ -707,11 +708,12 @@ public class EventManager {
      * Initiates a single message to display on the screen.
      *
      * @param message text to be displayed
-     * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false)
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
+     * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false), regardless of pause
      */
-    public void displayMessage(String message, boolean showArrow) {
+    public void displayMessage(String message, boolean charByChar, boolean showArrow) {
 
-        gp.getDialogueR().initiateStandardMessage(message, showArrow);
+        gp.getDialogueR().initiateStandardMessage(message, charByChar, showArrow);
     }
 
 

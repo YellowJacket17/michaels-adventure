@@ -120,6 +120,9 @@ public class Player extends EntityBase {
 
         if (interactionCountdown > 0) {                                                                                 // Decrease interaction frame countdown by one each time a new frame is drawn.
             interactionCountdown -= dt;
+            if ((interactionCountdown <= 0) && (gp.getDialogueR().getActiveConv() != null)) {                           // Reset dialogue arrow position to display, if applicable.
+                gp.getDialogueA().reset();
+            }
         }
 
         if (fullScreenCountdown > 0) {                                                                                  // Decrease full screen mode frame countdown by one each time a new frame is drawn.
@@ -808,7 +811,7 @@ public class Player extends EntityBase {
 
                 List<String> options = List.of("Yes", "No");                                                            // Immutable list.
                 String prompt = "Reset camera back to player?";
-                gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 0);
+                gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 0, true);
             }
             gp.setDebugActive(!gp.isDebugActive());
             debugActioned = true;                                                                                       // Disable the ability of the player to enable the debug mode by pressing the Q key.
@@ -971,12 +974,12 @@ public class Player extends EntityBase {
 
 
     // GETTERS
-    public double getStagedMoveCountdown() {
-        return stagedMoveCountdown;
-    }
-
     public double getStagedMenuInteractionCountdown() {
         return stagedMenuInteractionCountdown;
+    }
+
+    public double getInteractionCountdown() {
+        return interactionCountdown;
     }
 
     public ArrayList<ItemBase> getInventory() {
