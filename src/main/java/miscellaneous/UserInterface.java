@@ -1212,6 +1212,13 @@ public class UserInterface {
             Vector2f skillLabelScreenCoords = gp.getCamera().worldCoordsToScreenCoords(skillLabelWorldCoords);
             renderString("SP", skillLabelScreenCoords, 0.1f, new Vector3f(255, 255, 255), standardBoldFont);
         }
+
+        if (gp.getCombatM().getGuardingEntities().contains(entityId)) {
+
+            Vector2f shieldWorldCoords = new Vector2f(bannerWorldX + 46.0f, bannerWorldY);
+            Vector2f shieldScreenCoords = gp.getCamera().worldCoordsToScreenCoords(shieldWorldCoords);
+            gp.getGuardingShield().addToRenderPipeline(renderer, shieldScreenCoords.x, shieldScreenCoords.y);
+        }
     }
 
 

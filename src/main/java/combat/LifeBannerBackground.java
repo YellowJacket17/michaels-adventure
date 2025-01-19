@@ -58,7 +58,7 @@ public class LifeBannerBackground extends Drawable {
             Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
             this.transform.position.x = worldCoords.x;
             this.transform.position.y = worldCoords.y;
-            renderer.addDrawable(this, ZIndex.FIRST_LAYER);
+            renderer.addDrawable(this, ZIndex.SECOND_LAYER);
         } else if (!renderError) {
 
             UtilityTool.logError("Failed to add life banner background to the render pipeline: sprite may not have been properly loaded upon initialization.");

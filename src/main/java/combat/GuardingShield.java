@@ -9,10 +9,10 @@ import render.enumeration.ZIndex;
 import utility.UtilityTool;
 
 /**
- * This class defines the life/skill banner background, which appears above an entity during combat as the background
- * of their life and skill point meters.
+ * This class defines the guarding shield, which appears next to an entities combat status banner when in a guarding
+ * state during combat.
  */
-public class LifeSkillBannerBackground extends Drawable {
+public class GuardingShield extends Drawable {
 
     // FIELDS
     GamePanel gp;
@@ -26,30 +26,26 @@ public class LifeSkillBannerBackground extends Drawable {
 
     // CONSTRUCTOR
     /**
-     * Constructs a LifeSkillBannerBackground instance.
+     * Constructs a GuardingShield instance.
      *
      * @param gp GamePanel instance
      */
-    public LifeSkillBannerBackground(GamePanel gp) {
+    public GuardingShield(GamePanel gp) {
         super();
         this.gp = gp;
-        this.sprite = AssetPool.getSpritesheet("miscellaneous").getSprite(0);
+        this.sprite = AssetPool.getSpritesheet("miscellaneous").getSprite(2);
         this.transform.scale.x = this.sprite.getNativeWidth();
         this.transform.scale.y = this.sprite.getNativeHeight();
-        this.color.x = 20; // 46
-        this.color.y = 20; // 74
-        this.color.z = 20; // 123
-        this.color.w = 180;
     }
 
 
     // METHOD
     /**
-     * Adds the life/skill banner background to the render pipeline.
+     * Adds the guarding shield to the render pipeline.
      *
      * @param renderer Renderer instance
-     * @param screenX screen x-coordinate of the background (leftmost, normalized from 0 to 1, both inclusive)
-     * @param screenY screen y-coordinate of the background (topmost, normalized from 0 to 1, both inclusive)
+     * @param screenX screen x-coordinate of the shield (leftmost, normalized from 0 to 1, both inclusive)
+     * @param screenY screen y-coordinate of the shield (topmost, normalized from 0 to 1, both inclusive)
      */
     public void addToRenderPipeline(Renderer renderer, float screenX, float screenY) {
 
@@ -58,10 +54,10 @@ public class LifeSkillBannerBackground extends Drawable {
             Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
             this.transform.position.x = worldCoords.x;
             this.transform.position.y = worldCoords.y;
-            renderer.addDrawable(this, ZIndex.SECOND_LAYER);
+            renderer.addDrawable(this, ZIndex.FIRST_LAYER);
         } else if (!renderError) {
 
-            UtilityTool.logError("Failed to add life/skill banner background to the render pipeline: sprite may not have been properly loaded upon initialization.");
+            UtilityTool.logError("Failed to add guarding shield to the render pipeline: sprite may not have been properly loaded upon initialization.");
             renderError = true;
         }
     }

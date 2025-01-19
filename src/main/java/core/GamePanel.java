@@ -4,10 +4,7 @@ import ai.PathFinder;
 import animation.AnimationManager;
 import asset.AssetPool;
 import asset.Illustration;
-import combat.CombatManager;
-import combat.LifeBannerBackground;
-import combat.LifeSkillBannerBackground;
-import combat.TargetArrow;
+import combat.*;
 import core.enumeration.PrimaryGameState;
 import cutscene.CutsceneManager;
 import dialogue.DialogueArrow;
@@ -150,6 +147,11 @@ public class GamePanel {
     private LifeBannerBackground lifeBannerBackground;
 
     /**
+     * Guarding shield that appears next to an entities combat status banner when in a guarding state during combat.
+     */
+    private GuardingShield guardingShield;
+
+    /**
      * Arrow that appears when the player is required to progress a piece of dialogue.
      */
     private DialogueArrow dialogueA;
@@ -188,6 +190,7 @@ public class GamePanel {
         itemM = new ItemManager(this);
         lifeSkillBannerBackground = new LifeSkillBannerBackground(this);
         lifeBannerBackground = new LifeBannerBackground(this);
+        guardingShield = new GuardingShield(this);
         dialogueA = new DialogueArrow(this);
         selectionA = new SelectionArrow(this);
         targetA = new TargetArrow(this);
@@ -633,6 +636,10 @@ public class GamePanel {
 
     public LifeBannerBackground getLifeBannerBackground() {
         return lifeBannerBackground;
+    }
+
+    public GuardingShield getGuardingShield() {
+        return guardingShield;
     }
 
     public DialogueArrow getDialogueA() {
