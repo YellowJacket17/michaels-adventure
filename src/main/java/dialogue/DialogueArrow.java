@@ -43,7 +43,7 @@ public class DialogueArrow extends Drawable {
     public DialogueArrow(GamePanel gp) {
         super();
         this.gp = gp;
-        this.sprite = AssetPool.getSpritesheet("miscellaneous").getSprite(1);
+        this.sprite = AssetPool.getSpritesheet("miscellaneous").getSprite(4);
         this.transform.scale.x = this.sprite.getNativeWidth();
         this.transform.scale.y = this.sprite.getNativeHeight();
     }
@@ -89,7 +89,7 @@ public class DialogueArrow extends Drawable {
             Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
             this.transform.position.x = worldCoords.x;
             this.transform.position.y = worldCoords.y;
-            renderer.addDrawable(this, ZIndex.SECOND_LAYER);
+            renderer.addDrawable(this, ZIndex.FIRST_LAYER);
         } else if (!renderError) {
 
             UtilityTool.logError("Failed to add dialogue arrow to the render pipeline: sprite may not have been properly loaded upon initialization.");

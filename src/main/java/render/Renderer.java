@@ -280,10 +280,10 @@ public class Renderer {
      */
     private void initializeFonts() {
 
-        CFont font = new CFont("/fonts/Arimo-mO92.ttf", 128);
+        CFont font = new CFont("/fonts/PixelOperator.ttf", 128);
         fonts.put(font.getName(), font);
 
-        font = new CFont("/fonts/ArimoBold-dVDx.ttf", 128);
+        font = new CFont("/fonts/PixelOperator-Bold.ttf", 128);
         fonts.put(font.getName(), font);
     }
 }

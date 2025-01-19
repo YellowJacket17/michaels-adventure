@@ -1,0 +1,13 @@
+01/11/2025 12:41:33:851  INFO     Application started.
+01/11/2025 12:41:41:409  ERROR    An unhandled exception has occurred!
+java.lang.IndexOutOfBoundsException: Index 3 out of bounds for length 3
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:64)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:70)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:266)
+	at java.base/java.util.Objects.checkIndex(Objects.java:361)
+	at java.base/java.util.ArrayList.get(ArrayList.java:427)
+	at asset.Spritesheet.getSprite(Spritesheet.java:164)
+	at dialogue.DialogueArrow.<init>(DialogueArrow.java:46)
+	at core.GamePanel.init(GamePanel.java:177)
+	at core.Window.initGame(Window.java:239)
+	at core.App.main(App.java:19)

@@ -103,6 +103,7 @@ public abstract class EntityBase extends Drawable {
     // STATE
     /**
      * Entity's current world position.
+     * This is the top-leftmost corner of the tile (i.e., column/row) occupied by this entity.
      */
     protected float worldX, worldY;
 
@@ -266,6 +267,20 @@ public abstract class EntityBase extends Drawable {
      * Variable to store the calculated alpha change that will occur per second during an active fade effect.
      */
     protected double fadeEffectAlphaPerSecond;
+
+
+    // PULSATE EFFECT
+    /**
+     * Boolean setting whether this entity is pulsating or not.
+     * Pulsation is defined as an enemy sprite flashing white at a set frequency.
+     */
+    protected boolean pulsating;
+
+    /**
+     * Counts time passed (seconds) while this entity is pulsating.
+     * This counter resets upon completion of a single full pulsation cycle.
+     */
+    protected double pulsatingCounter;
 
 
     // COUNTERS/BUFFERS

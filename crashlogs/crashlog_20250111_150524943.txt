@@ -1,0 +1,12 @@
+01/11/2025 15:05:18:794  INFO     Application started.
+01/11/2025 15:05:23:293  INFO     Starting game loop.
+01/11/2025 15:05:24:940  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "render.font.CFont.getCharacter(int)" because the return value of "render.Renderer.getFont(String)" is null
+	at miscellaneous.UserInterface.calculateStringWorldLength(UserInterface.java:196)
+	at miscellaneous.UserInterface.calculateStringScreenLength(UserInterface.java:212)
+	at dialogue.DialogueReader.progressDialogue(DialogueReader.java:386)
+	at dialogue.DialogueReader.update(DialogueReader.java:155)
+	at core.GamePanel.update(GamePanel.java:257)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)

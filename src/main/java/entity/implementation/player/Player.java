@@ -811,7 +811,7 @@ public class Player extends EntityBase {
 
                 List<String> options = List.of("Yes", "No");                                                            // Immutable list.
                 String prompt = "Reset camera back to player?";
-                gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 0, true);
+                gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 0, false);
             }
             gp.setDebugActive(!gp.isDebugActive());
             debugActioned = true;                                                                                       // Disable the ability of the player to enable the debug mode by pressing the Q key.

@@ -384,7 +384,9 @@ public class DialogueReader {
 
                 if (!nextWord.equals("")
                         && gp.getUi().calculateStringScreenLength(
-                        (dialoguePrint.get(activePrintLine) + " " + nextWord), 0.15f, "Arimo")                          // Assume that the used font for dialogue is Arimo.
+                            (dialoguePrint.get(activePrintLine) + " " + nextWord),
+                            gp.getUi().getStandardFontScale(),
+                            gp.getUi().getStandardNormalFont())
                         > (1 - gp.getCamera().worldWidthToScreenWidth(46))) {                                           // 46 is 2x the value of `mainTextScreenLeftPadding` in the `renderDialogueScreen()` method in the UserInterface class.
 
                     activePrintLine++;                                                                                  // Start printing character on the next line, if next line exists.

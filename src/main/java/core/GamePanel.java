@@ -5,6 +5,8 @@ import animation.AnimationManager;
 import asset.AssetPool;
 import asset.Illustration;
 import combat.CombatManager;
+import combat.LifeBannerBackground;
+import combat.LifeSkillBannerBackground;
 import combat.TargetArrow;
 import core.enumeration.PrimaryGameState;
 import cutscene.CutsceneManager;
@@ -138,6 +140,16 @@ public class GamePanel {
     private final ArrayList<EntityBase> entityList = new ArrayList<>();
 
     /**
+     * Background of the life/skill point meters that appear above an entity during combat.
+     */
+    private LifeSkillBannerBackground lifeSkillBannerBackground;
+
+    /**
+     * Background of the life meter that appears above an entity during combat.
+     */
+    private LifeBannerBackground lifeBannerBackground;
+
+    /**
      * Arrow that appears when the player is required to progress a piece of dialogue.
      */
     private DialogueArrow dialogueA;
@@ -174,6 +186,8 @@ public class GamePanel {
         tileM = new TileManager(this);
         guiIconM = new GuiIconManager(this);
         itemM = new ItemManager(this);
+        lifeSkillBannerBackground = new LifeSkillBannerBackground(this);
+        lifeBannerBackground = new LifeBannerBackground(this);
         dialogueA = new DialogueArrow(this);
         selectionA = new SelectionArrow(this);
         targetA = new TargetArrow(this);
@@ -386,9 +400,9 @@ public class GamePanel {
 
         // Miscellaneous spritesheet (spritesheet 6).
         filePath = "/spritesheets/miscellaneous.png";
-        widths = new int[] {6, 10, 12};
-        heights = new int[] {10, 6, 8};
-        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 3, widths, heights, 1));
+        widths = new int[] {48, 48, 14, 6, 10, 12};
+        heights = new int[] {20, 10, 18, 10, 6, 8};
+        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 6, widths, heights, 1));
 
         // Sounds.
         AssetPool.addSound("testTrack1", "sound/tracks/carvingCanyons_intro.ogg", "sound/tracks/carvingCanyons_loop.ogg");
@@ -611,6 +625,14 @@ public class GamePanel {
             return systemSettings.get(setting);
         }
         return null;
+    }
+
+    public combat.LifeSkillBannerBackground getLifeSkillBannerBackground() {
+        return lifeSkillBannerBackground;
+    }
+
+    public LifeBannerBackground getLifeBannerBackground() {
+        return lifeBannerBackground;
     }
 
     public DialogueArrow getDialogueA() {

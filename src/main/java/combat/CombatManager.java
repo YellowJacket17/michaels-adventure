@@ -214,7 +214,6 @@ public class CombatManager {
      */
     public void progressCombat() {
 
-
         if (lastActionSubmenu) {                                                                                        // If last action was a sub-menu, handle result of user selection.
 
             runSubMenuSelection();

@@ -33,7 +33,7 @@ public class SelectionArrow extends Drawable {
     public SelectionArrow(GamePanel gp) {
         super();
         this.gp = gp;
-        this.sprite = AssetPool.getSpritesheet("miscellaneous").getSprite(0);
+        this.sprite = AssetPool.getSpritesheet("miscellaneous").getSprite(3);
         this.transform.scale.x = this.sprite.getNativeWidth();
         this.transform.scale.y = this.sprite.getNativeHeight();
     }
@@ -54,7 +54,7 @@ public class SelectionArrow extends Drawable {
             Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
             this.transform.position.x = worldCoords.x;
             this.transform.position.y = worldCoords.y;
-            renderer.addDrawable(this, ZIndex.SECOND_LAYER);
+            renderer.addDrawable(this, ZIndex.FIRST_LAYER);
         } else if (!renderError) {
 
             UtilityTool.logError("Failed to add selection arrow to the render pipeline: sprite may not have been properly loaded upon initialization.");

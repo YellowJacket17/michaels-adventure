@@ -23,6 +23,24 @@ public class UserInterface {
     private Renderer renderer;
 
     /**
+     * Standard normal font to use when rendering UI text (dialogue, sub-menu, etc.).
+     */
+    private final String standardNormalFont = "Pixel Operator";
+
+    /**
+     * Standard bold font to use when rendering UI text (dialogue, sub-menu, etc.).
+     */
+    private final String standardBoldFont = "Pixel Operator Bold";
+
+    /**
+     * Standard scaling applied to native font size when rendering UI text (dialogue, sub-menu, etc.).
+     * This value multiplies the native height of the rendered font.
+     * The larger the value, the larger the rendered text.
+     * Note that this variable does not apply to "specialized" UI text ("HP" label next to life bar, etc.).
+     */
+    private final float standardFontScale = 0.18f;
+
+    /**
      * World (absolute) width of the main window of the in-game menu.
      */
     private final float mainWindowWorldWidth = 676.0f;
@@ -135,6 +153,12 @@ public class UserInterface {
             this.renderer = renderer;                                                                                   // Makes it easier to access current renderer across entire class.
         }
 
+        // COMBAT
+        if (gp.getCombatM().isCombatActive()) {
+            renderCombatScreen();
+        }
+
+        // STANDARD
         switch (gp.getPrimaryGameState()) {
             case EXPLORE:
                 // Nothing here.
@@ -166,12 +190,7 @@ public class UserInterface {
             renderFadeScreen();
         }
 
-        // COMBAT
-        if (gp.getCombatM().isCombatActive()) {
-            renderCombatScreen();
-        }
-
-        // DEBUG.
+        // DEBUG
         if (gp.isDebugActive()) {
             renderDebug();
         }
@@ -219,9 +238,8 @@ public class UserInterface {
     private void renderDialogueScreen() {
 
         // Font preparations.
-        // The following information is assuming use of the font Arimo (normal/non-bold).
-        float fontScale = 0.15f;                                                                                        // Font size (multiplies native height).
-        float characterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;               // It doesn't matter which character is used, since all characters in a font have the same height.
+        float characterWorldHeight =
+                renderer.getFont(standardNormalFont).getCharacter('A').getHeight() * standardFontScale;                 // It doesn't matter which character is used, since all characters in a font have the same height.
         float characterScreenHeight = gp.getCamera().worldHeightToScreenHeight(characterWorldHeight);                   // Normalized (screen) character height.
 
         // Set position and dimensions of main dialogue window.
@@ -245,14 +263,17 @@ public class UserInterface {
             // Set position and dimensions of dialogue sub-window.
             float subWindowScreenX = gp.getCamera().worldWidthToScreenWidth(23.0f);
             float subWindowWorldLeftRightPadding = 15.3f;                                                               // Hard coded as an absolute (non-screen) width since dialogue sub-window width is fixed, regardless of native screen width.
-            float subWindowScreenLeftRightPadding = gp.getCamera().worldWidthToScreenWidth(subWindowWorldLeftRightPadding);
+            float subWindowScreenLeftRightPadding =
+                    gp.getCamera().worldWidthToScreenWidth(subWindowWorldLeftRightPadding);
             float subWindowWorldTopBottomPadding = 8.6f;                                                                // Hard coded as an absolute (non-screen) height since dialogue sub-window height is fixed, regardless of native screen height.
-            float subWindowScreenTopBottomPadding = gp.getCamera().worldHeightToScreenHeight(subWindowWorldTopBottomPadding);
+            float subWindowScreenTopBottomPadding =
+                    gp.getCamera().worldHeightToScreenHeight(subWindowWorldTopBottomPadding);
             String entityName = gp.getDialogueR().getActiveDialogueEntityName();
             float entityNameWorldWidth = 0;
             for (int i = 0; i < entityName.length(); i++) {
                 char optionCharacter = entityName.charAt(i);
-                entityNameWorldWidth += renderer.getFont("Arimo").getCharacter(optionCharacter).getWidth() * fontScale;
+                entityNameWorldWidth +=
+                        renderer.getFont(standardNormalFont).getCharacter(optionCharacter).getWidth() * standardFontScale;
             }
             float subWindowWorldWidth = entityNameWorldWidth + (2 * subWindowWorldLeftRightPadding);                    // Hard coded as an absolute (non-screen) width since dialogue sub-window width is fixed, regardless of native screen width.
             float subWindowWorldHeight = characterWorldHeight + (2 * subWindowWorldTopBottomPadding);                   // Hard coded as an absolute (non-screen) height since dialogue sub-window height is fixed, regardless of native screen height.
@@ -272,8 +293,8 @@ public class UserInterface {
                     subWindowScreenCoords.y + subWindowScreenTopBottomPadding);
 
             // Render dialogue entity name.
-            renderString(gp.getDialogueR().getActiveDialogueEntityName(), subTextScreenCoords, fontScale,
-                    new Vector3f(121, 149, 255), "Arimo");
+            renderString(gp.getDialogueR().getActiveDialogueEntityName(), subTextScreenCoords, standardFontScale,
+                    new Vector3f(121, 149, 255), standardNormalFont);
         }
 
         // Dialogue progress arrow, if applicable.
@@ -296,10 +317,11 @@ public class UserInterface {
         // Set position of main dialogue text print lines and render them.
         float mainTextScreenLeftPadding = gp.getCamera().worldWidthToScreenWidth(23.0f);
         float mainTextScreenSpacing = (mainWindowScreenHeight - (2 * characterScreenHeight)) / 3;
-        Vector2f mainTextScreenCoords = new Vector2f(mainTextScreenLeftPadding, mainWindowScreenCoords.y + mainTextScreenSpacing);
+        Vector2f mainTextScreenCoords =
+                new Vector2f(mainTextScreenLeftPadding, mainWindowScreenCoords.y + mainTextScreenSpacing);
         for (int key = 0; key < gp.getDialogueR().getMaxNumPrintLines(); key++) {
-            renderString(gp.getDialogueR().getDialoguePrint(key), mainTextScreenCoords, fontScale,
-                    new Vector3f(255, 255, 255), "Arimo");
+            renderString(gp.getDialogueR().getDialoguePrint(key), mainTextScreenCoords, standardFontScale,
+                    new Vector3f(255, 255, 255), standardNormalFont);
             mainTextScreenCoords.y += characterScreenHeight + mainTextScreenSpacing;
         }
     }
@@ -359,7 +381,8 @@ public class UserInterface {
 
         // Prepare menu section title position and dimensions and render.
         float fontScale = 0.17f;                                                                                        // Font size (multiplies native height).
-        float optionsCharacterWorldHeight = renderer.getFont("Arimo Bold").getCharacter('A').getHeight() * fontScale;        // It doesn't matter which character is used, since all characters in a font have the same height.
+        float optionsCharacterWorldHeight =
+                renderer.getFont(standardBoldFont).getCharacter('A').getHeight() * fontScale;                           // It doesn't matter which character is used, since all characters in a font have the same height.
         float optionsCharacterScreenHeight = gp.getCamera().worldHeightToScreenHeight(optionsCharacterWorldHeight);     // Normalized (screen) character height.
         float titleScreenTopBottomPadding = (dividerScreenCoords.y - mainWindowScreenTopBottomPadding
                 - optionsCharacterScreenHeight) / 2;
@@ -378,7 +401,7 @@ public class UserInterface {
                 title = "SETTINGS";
                 break;
         }
-        renderString(title, titleScreenCoords, fontScale, new Vector3f(121, 149, 255), "Arimo Bold");
+        renderString(title, titleScreenCoords, fontScale, new Vector3f(121, 149, 255), standardBoldFont);
     }
 
 
@@ -539,44 +562,38 @@ public class UserInterface {
         Vector2f textScreenCoords = new Vector2f(textScreenX, topTextScreenY);
 
         // Render text for name, level, and life label.
-        renderStringShadow(name, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), "Arimo Bold");
+        renderStringShadow(name, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), standardBoldFont);
         textScreenCoords.y += gp.getCamera().worldHeightToScreenHeight(17.28f);
-        renderStringShadow(level, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), "Arimo Bold");
+        renderStringShadow(level, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), standardBoldFont);
         textScreenCoords.y += gp.getCamera().worldHeightToScreenHeight(17.28f);
-        renderStringShadow(lifeLabel, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), "Arimo Bold");
+        renderStringShadow(lifeLabel, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), standardBoldFont);
 
         // Render life bar.
         float barScreenX = textScreenCoords.x + gp.getCamera().worldWidthToScreenWidth(23.04f);
         float barScreenY = textScreenCoords.y + gp.getCamera().worldHeightToScreenHeight(.864f);
         float barScreenWidth = gp.getCamera().worldWidthToScreenWidth(42.24f);
-        float barScreenHeight = gp.getCamera().worldHeightToScreenHeight(9.936f);
-        Vector4f barBorderColor = new Vector4f(255, 255, 255, 255);
-        renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenHeight,
-                barScreenX, barScreenY, barBorderColor);
+        renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenX, barScreenY);
 
         // Draw remaining life points text with a shadowed effect.
-        textScreenCoords.x += gp.getCamera().worldWidthToScreenWidth(56.832f);
-        textScreenCoords.y -= gp.getCamera().worldHeightToScreenHeight(3.456f);
-        renderStringShadow(lifeValue, textScreenCoords, 0.08f, new Vector3f(255, 255, 255), "Arimo Bold");
+//        textScreenCoords.x += gp.getCamera().worldWidthToScreenWidth(56.832f);
+//        textScreenCoords.y -= gp.getCamera().worldHeightToScreenHeight(3.456f);
+//        renderStringShadow(lifeValue, textScreenCoords, 0.08f, new Vector3f(255, 255, 255), standardBoldFont);
     }
 
 
     /**
      * Adds a life bar to the render pipeline.
+     * Note that this renders both the border and the "fill" of the life bar.
      *
      * @param life number of remaining life points
      * @param maxLife maximum number of life points
      * @param screenWidth normalized (screen) width of the life bar
-     * @param screenHeight normalized (screen) height of the life bar
      * @param screenX screen x-coordinate of the life bar (leftmost)
      * @param screenY screen y-coordinate of the life bar (topmost)
-     * @param borderColor bar border color (r, g, b, a)
      */
-    private void renderLifeBar(int life, int maxLife, float screenWidth, float screenHeight,
-                               float screenX, float screenY, Vector4f borderColor) {
+    private void renderLifeBar(int life, int maxLife, float screenWidth, float screenX, float screenY) {
 
-        // Prepare life bar.
-        float borderScreenThickness = screenWidth * 0.04f;                                                              // Normalized (screen) thickness of border surrounding life bar interior.
+        // Calculate remaining life percent (0 to 1, both inclusive).
         float remainingLifePercentage = (float)life/ (float)maxLife;                                                    // Decimal percentage of life that the entity has relative to its maximum life.
         if (remainingLifePercentage > 1) {
             remainingLifePercentage = 1;                                                                                // Prevent the life bar from over-filling.
@@ -584,50 +601,117 @@ public class UserInterface {
             remainingLifePercentage = 0;                                                                                // Prevent the life bar from using a negative value.
         }
 
-        // Render life bar background/border.
-        Vector4f color = borderColor;
-        Vector2f screenCoords = new Vector2f(screenX, screenY);
-        Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
-        float worldWidth = gp.getCamera().screenWidthToWorldWidth(screenWidth);
-        float worldHeight = gp.getCamera().screenHeightToWorldHeight(screenHeight);
-        renderer.addRectangle(
-                color,
-                new Transform(
-                        worldCoords,
-                        new Vector2f(worldWidth, worldHeight)
-                ),
-                ZIndex.FIRST_LAYER
-        );
+        // Calculate exterior (i.e., border) dimensions and color.
+        Vector2f screenCoordsExterior = new Vector2f(screenX, screenY);
+        Vector2f worldCoordsExterior = gp.getCamera().screenCoordsToWorldCoords(screenCoordsExterior);
+        float worldWidthExterior = gp.getCamera().screenWidthToWorldWidth(screenWidth);
+        float worldHeightExterior = 6.0f;
+        Vector4f colorExterior = new Vector4f(230, 250, 255, 255);
 
-        // Render empty life bar interior.
-        color = new Vector4f(0, 0, 0, 255);
-        screenCoords = new Vector2f(screenX + borderScreenThickness, screenY + borderScreenThickness);
-        worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
-        worldWidth = gp.getCamera().screenWidthToWorldWidth(screenWidth - (borderScreenThickness * 2));
-        worldHeight = gp.getCamera().screenHeightToWorldHeight(screenHeight - (borderScreenThickness * 2));
-        renderer.addRectangle(
-                color,
-                new Transform(
-                        worldCoords,
-                        new Vector2f(worldWidth, worldHeight)
-                ),
-                ZIndex.FIRST_LAYER
-        );
-
-        // Render filled life bar interior.
-        worldWidth = worldWidth * remainingLifePercentage;
+        // Calculate interior (i.e., fill) dimensions and color (both primary and secondary).
+        // Primary is bar that changes with life.
+        // Secondary is background to primary that occupies void left by depleted life.
+        Vector2f worldCoordsInterior = new Vector2f(worldCoordsExterior.x + 1.0f, worldCoordsExterior.y + 1.0f);
+        float worldWidthInterior = worldWidthExterior - 2.0f;
+        float worldHeightInterior = 4.0f;
+        Vector4f colorInteriorPrimary;
         if (remainingLifePercentage <= 0.125f) {                                                                        // Eighth of life or less remaining.
-            color = new Vector4f(255, 46, 102, 220);
+            colorInteriorPrimary = new Vector4f(255, 46, 102, 220);
         } else if (remainingLifePercentage <= 0.5f) {                                                                   // Half of life or less remaining.
-            color = new Vector4f(255, 251, 78, 220);
+
+            colorInteriorPrimary = new Vector4f(255, 242, 78, 220);
         } else {                                                                                                        // Greater than half of life remaining.
-            color = new Vector4f(46, 255, 139, 220);
+
+            colorInteriorPrimary = new Vector4f(46, 255, 139, 220);
         }
-        renderer.addRectangle(
-                color,
+        Vector4f colorInteriorSecondary = new Vector4f(53, 64, 68, 255);
+
+        // Add exterior and interior (primary and secondary) to render pipeline.
+        renderer.addRectangle(                                                                                          // Render life bar top/bottom border (exterior).
+                colorExterior,
                 new Transform(
-                        worldCoords,
-                        new Vector2f(worldWidth, worldHeight)
+                        worldCoordsExterior,
+                        new Vector2f(worldWidthExterior, worldHeightExterior)
+                ),
+                ZIndex.FIRST_LAYER
+        );
+        renderer.addRectangle(                                                                                          // Render life bar fill (interior).
+                colorInteriorSecondary,
+                new Transform(
+                        worldCoordsInterior,
+                        new Vector2f(worldWidthInterior, worldHeightInterior)
+                ),
+                ZIndex.FIRST_LAYER
+        );
+        renderer.addRectangle(                                                                                          // Render life bar fill (interior).
+                colorInteriorPrimary,
+                new Transform(
+                        worldCoordsInterior,
+                        new Vector2f(worldWidthInterior * remainingLifePercentage, worldHeightInterior)
+                ),
+                ZIndex.FIRST_LAYER
+        );
+    }
+
+
+    /**
+     * Adds a skill bar to the render pipeline.
+     * Note that this renders both the border and the "fill" of the skill bar.
+     *
+     * @param skill number of remaining skill points
+     * @param maxSkill maximum number of skill points
+     * @param screenWidth normalized (screen) width of the skill bar
+     * @param screenX screen x-coordinate of the skill bar (leftmost)
+     * @param screenY screen y-coordinate of the skill bar (topmost)
+     */
+    private void renderSkillBar(int skill, int maxSkill, float screenWidth, float screenX, float screenY) {
+
+        // Calculate remaining skill percent (0 to 1, both inclusive).
+        float remainingLifePercentage = (float)skill/ (float)maxSkill;                                                  // Decimal percentage of life that the entity has relative to its maximum skill.
+        if (remainingLifePercentage > 1) {
+            remainingLifePercentage = 1;                                                                                // Prevent the skill bar from over-filling.
+        } else if (remainingLifePercentage < 0) {
+            remainingLifePercentage = 0;                                                                                // Prevent the skill bar from using a negative value.
+        }
+
+        // Calculate exterior (i.e., border) dimensions and color.
+        Vector2f screenCoordsExterior = new Vector2f(screenX, screenY);
+        Vector2f worldCoordsExterior = gp.getCamera().screenCoordsToWorldCoords(screenCoordsExterior);
+        float worldWidthExterior = gp.getCamera().screenWidthToWorldWidth(screenWidth);
+        float worldHeightExterior = 6.0f;
+        Vector4f colorExterior = new Vector4f(230, 250, 255, 255);
+
+        // Calculate interior (i.e., fill) dimensions and color (both primary and secondary).
+        // Primary is bar that changes with skill.
+        // Secondary is background to primary that occupies void left by depleted skill.
+        Vector2f worldCoordsInterior = new Vector2f(worldCoordsExterior.x + 1.0f, worldCoordsExterior.y + 1.0f);
+        float worldWidthInterior = worldWidthExterior - 2.0f;
+        float worldHeightInterior = 4.0f;
+        Vector4f colorInteriorPrimary = new Vector4f(192, 47, 255, 255);
+        Vector4f colorInteriorSecondary = new Vector4f(53, 64, 68, 255);
+
+        // Add exterior and interior (primary and secondary) to render pipeline.
+        renderer.addRectangle(                                                                                          // Render life bar top/bottom border (exterior).
+                colorExterior,
+                new Transform(
+                        worldCoordsExterior,
+                        new Vector2f(worldWidthExterior, worldHeightExterior)
+                ),
+                ZIndex.FIRST_LAYER
+        );
+        renderer.addRectangle(                                                                                          // Render life bar fill (interior).
+                colorInteriorSecondary,
+                new Transform(
+                        worldCoordsInterior,
+                        new Vector2f(worldWidthInterior, worldHeightInterior)
+                ),
+                ZIndex.FIRST_LAYER
+        );
+        renderer.addRectangle(                                                                                          // Render life bar fill (interior).
+                colorInteriorPrimary,
+                new Transform(
+                        worldCoordsInterior,
+                        new Vector2f(worldWidthInterior * remainingLifePercentage, worldHeightInterior)
                 ),
                 ZIndex.FIRST_LAYER
         );
@@ -710,7 +794,7 @@ public class UserInterface {
                     gp.getEntityM().getPlayer().getInventory().get(itemIndex)
                             .addToRenderPipeline(renderer, itemIconScreenX, itemIconScreenY);
                     renderStringShadow(
-                            quantity, quantityScreenCoords, 0.12f, new Vector3f(255, 255, 255), "Arimo Bold");
+                            quantity, quantityScreenCoords, 0.12f, new Vector3f(255, 255, 255), standardBoldFont);
                 } else {
 
                     gp.getGuiIconM().addToRenderPipeline(renderer, 7, itemBackdropScreenX, itemBackdropScreenY);
@@ -766,16 +850,23 @@ public class UserInterface {
             String description = gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getDescription();
 
             // Render name, quantity, and description.
-            System.out.println(gp.getCamera().worldWidthToScreenWidth(42));
             float sectionScreenSpacing = gp.getCamera().worldHeightToScreenHeight(38.9f);                               // Normalized (screen) spacing between each section (name, quantity, description).
             float blockScreenSpacing = gp.getCamera().worldHeightToScreenHeight(28.0f);                                 // Normalized (Screen) spacing between each line of text in a block of text in a section.
             float maxLineScreenLength = 1 - leftmostScreenX - mainWindowScreenLeftRightPadding
                     - gp.getCamera().worldWidthToScreenWidth(42.0f);                                                    // 42 is the value of `dividerWorldLeftRightGap` in the `renderInGameMenuMainWindowScreen()` method in this class.
-            renderString(name, screenCoords, 0.15f, nameColor, "Arimo Bold");
+            renderString(name, screenCoords, standardFontScale, nameColor, standardBoldFont);
             screenCoords.y += sectionScreenSpacing;
-            renderString(quantity, screenCoords, 0.15f, quantityColor, "Arimo Bold");
+            renderString(quantity, screenCoords, standardFontScale, quantityColor, standardBoldFont);
             screenCoords.y += sectionScreenSpacing;
-            renderStringBlock(description, screenCoords, maxLineScreenLength, blockScreenSpacing, 0.15f, descriptionColor, "Arimo", true);
+            renderStringBlock(
+                    description,
+                    screenCoords,
+                    maxLineScreenLength,
+                    blockScreenSpacing,
+                    standardFontScale,
+                    descriptionColor,
+                    standardNormalFont,
+                    true);
         }
     }
 
@@ -787,8 +878,6 @@ public class UserInterface {
     private void renderSettingsMenuScreen() {
 
         // Initializations.
-        float fontScale = 0.15f;                                                                                        // Font size (multiplies native height).
-
         float mainWindowScreenWidth = gp.getCamera().worldWidthToScreenWidth(mainWindowWorldWidth);                     // Normalized (screen) width of the in-game menu.
         float mainWindowScreenLeftRightPadding = (1 - mainWindowScreenWidth) / 2;                                       // Normalized (screen) left and right padding of the main window of the in-game menu.
         float mainWindowScreenHeight = gp.getCamera().worldHeightToScreenHeight(mainWindowWorldHeight);                 // Normalized (screen) height of the in-game menu.
@@ -811,31 +900,31 @@ public class UserInterface {
                 settingLabelScreenCoords.y);
 
         // First setting (VSync).
-        renderSystemSetting(0, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
+        renderSystemSetting(0, settingLabelScreenCoords, settingValueScreenCoords, standardFontScale,
                 scrollArrowScreenWidth, scrollArrowScreenHeight);
 
         // Second setting (frame rate limit).
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
-        renderSystemSetting(1, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
+        renderSystemSetting(1, settingLabelScreenCoords, settingValueScreenCoords, standardFontScale,
                 scrollArrowScreenWidth, scrollArrowScreenHeight);
 
         // Third setting (tether game speed).
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
-        renderSystemSetting(2, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
+        renderSystemSetting(2, settingLabelScreenCoords, settingValueScreenCoords, standardFontScale,
                 scrollArrowScreenWidth, scrollArrowScreenHeight);
 
         // Fourth setting (full screen).
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
-        renderSystemSetting(3, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
+        renderSystemSetting(3, settingLabelScreenCoords, settingValueScreenCoords, standardFontScale,
                 scrollArrowScreenWidth, scrollArrowScreenHeight);
 
         // Fifth setting ('E' equals 'Enter').
         settingLabelScreenCoords.y += settingScreenSpacing;
         settingValueScreenCoords.y += settingScreenSpacing;
-        renderSystemSetting(4, settingLabelScreenCoords, settingValueScreenCoords, fontScale,
+        renderSystemSetting(4, settingLabelScreenCoords, settingValueScreenCoords, standardFontScale,
                 scrollArrowScreenWidth, scrollArrowScreenHeight);
     }
 
@@ -856,15 +945,15 @@ public class UserInterface {
         Setting setting = gp.getSystemSetting(index);
         if (systemSettingSelected == index) {
             renderString(setting.getLabel(), settingLabelScreenCoords, fontScale,
-                    new Vector3f(244, 154, 45), "Arimo Bold");
+                    new Vector3f(244, 154, 45), standardBoldFont);
         } else {
             renderString(setting.getLabel(), settingLabelScreenCoords, fontScale,
-                    new Vector3f(255, 255, 255), "Arimo");
+                    new Vector3f(255, 255, 255), standardNormalFont);
         }
         renderString(setting.getOption(setting.getActiveOption()), settingValueScreenCoords, fontScale,
-                new Vector3f(255, 255, 255), "Arimo");
+                new Vector3f(255, 255, 255), standardNormalFont);
         if (systemSettingSelected == index) {
-            float characterWorldHeight = renderer.getFont("Arimo").getCharacter('A').getHeight() * fontScale;
+            float characterWorldHeight = renderer.getFont(standardNormalFont).getCharacter('A').getHeight() * fontScale;
             float characterScreenHeight = gp.getCamera().worldHeightToScreenHeight(characterWorldHeight);
             float scrollArrowScreenY = settingValueScreenCoords.y
                     + ((characterScreenHeight - scrollArrowScreenHeight) / 2);
@@ -898,7 +987,7 @@ public class UserInterface {
                                 gp.getFadeS().getColor().z,
                                 alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.SECOND_LAYER);
+                        ZIndex.FIRST_LAYER);
                 break;
             case ACTIVE:                                                                                                // Wait on colored screen.
                 renderer.addRectangle(
@@ -908,7 +997,7 @@ public class UserInterface {
                                 gp.getFadeS().getColor().z,
                                 alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.SECOND_LAYER);
+                        ZIndex.FIRST_LAYER);
                 break;
             case FADE_FROM:                                                                                             // Fade from color.
                 alpha = 255 - ((float)(gp.getFadeS().getFadeCounter()
@@ -920,7 +1009,7 @@ public class UserInterface {
                                 gp.getFadeS().getColor().z,
                                 alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.SECOND_LAYER);
+                        ZIndex.FIRST_LAYER);
                 break;
         }
     }
@@ -932,24 +1021,22 @@ public class UserInterface {
     private void renderSubMenuScreen() {
 
         // Prepare window dimensions (other than window width).
-        // The following information is assuming use of the font Arimo (normal/non-bold).
-        String font = "Arimo";
-        float fontScale = 0.15f;                                                                                        // Font size (multiplies native height).
         float windowScreenTopBottomPadding = gp.getCamera().worldHeightToScreenHeight(8.6f);                            // Normalized (screen) padding on top and bottom of sub-menu window between window and text.
         float optionsScreenSpacing = gp.getCamera().worldHeightToScreenHeight(9.5f);                                    // Normalized (screen) vertical spacing between options text (does NOT include character height).
-        float optionsCharacterWorldHeight = renderer.getFont(font).getCharacter('A').getHeight() * fontScale;           // It doesn't matter which character is used, since all characters in a font have the same height.
+        float optionsCharacterWorldHeight =
+                renderer.getFont(standardNormalFont).getCharacter('A').getHeight() * standardFontScale;                 // It doesn't matter which character is used, since all characters in a font have the same height.
         float optionsCharacterScreenHeight = gp.getCamera().worldHeightToScreenHeight(optionsCharacterWorldHeight);     // Normalized (screen) character height.
         float windowScreenHeight = (optionsScreenSpacing * (gp.getSubMenuH().getOptions().size() - 1))                  // Spacing between options text.
                 + (2 * windowScreenTopBottomPadding)                                                                    // Padding on top and bottom of sub-menu window between window and text.
                 + (optionsCharacterScreenHeight * gp.getSubMenuH().getOptions().size());                                // Character height for each option.
 
         // Prepare window width to that of widest option.
-        // The following information is assuming use of the font Arimo (normal/non-bold).
         float windowScreenLeftPadding = gp.getCamera().worldWidthToScreenWidth(23.0f);                                  // Normalized (screen) padding on left of sub-menu window between window and text.
         float windowScreenRightPadding = gp.getCamera().worldWidthToScreenWidth(15.36f);                                // Normalized (screen) padding on right of sub-menu window between window and text.
         float maxOptionWorldWidth = 0;
         for (int i = 0; i < gp.getSubMenuH().getOptions().size(); i++) {
-            float optionWorldWidth = calculateStringWorldLength(gp.getSubMenuH().getOptions().get(i), fontScale, font);
+            float optionWorldWidth =
+                    calculateStringWorldLength(gp.getSubMenuH().getOptions().get(i), standardFontScale, standardNormalFont);
             if (optionWorldWidth > maxOptionWorldWidth) {
                 maxOptionWorldWidth = optionWorldWidth;
             }
@@ -990,13 +1077,15 @@ public class UserInterface {
             } else {
                 color = new Vector3f(255, 255, 255);
             }
-            renderString(gp.getSubMenuH().getOptions().get(i), optionsScreenCoords, fontScale, color, "Arimo");
+            renderString(gp.getSubMenuH().getOptions().get(i), optionsScreenCoords, standardFontScale, color, standardNormalFont);
             if (i == gp.getSubMenuH().getIndexSelected()) {
                 float selectionArrowScreenHeight = gp.getCamera().worldHeightToScreenHeight(
                         gp.getSelectionA().getNativeSpriteHeight());
                 float selectionArrowScreenY = optionsScreenCoords.y + (optionsCharacterScreenHeight / 2)
                         - (selectionArrowScreenHeight / 2);
-                gp.getSelectionA().addToRenderPipeline(renderer, optionsScreenCoords.x - gp.getCamera().worldWidthToScreenWidth(15.36f), selectionArrowScreenY);
+                gp.getSelectionA().addToRenderPipeline(
+                        renderer, optionsScreenCoords.x - gp.getCamera().worldWidthToScreenWidth(15.36f),
+                        selectionArrowScreenY);
             }
             optionsScreenCoords.y += optionsCharacterScreenHeight + optionsScreenSpacing;
         }
@@ -1010,7 +1099,7 @@ public class UserInterface {
 
         // Combat banners.
         if (gp.getCombatM().isCombatUiVisible()) {
-            renderEntityCombatBanners();
+            renderCombatStatusBanners();
         }
 
         // Target arrow.
@@ -1026,85 +1115,103 @@ public class UserInterface {
 
 
     /**
-     * Adds entity combat banners (i.e., rectangle that contains name, health bar, etc. during combat) for all combating
-     * entities to the render pipeline.
+     * Adds combat status banners (i.e., banner above entity during combat displaying life, etc.) for all
+     * combating entities to the render pipeline.
      */
-    private void renderEntityCombatBanners() {
-
-        // Opposing entities.
-        float bannerScreenY = 0;
-        for (int entityId : gp.getCombatM().getNonPlayerSideEntities()) {
-            EntityBase entity = gp.getEntityM().getEntityById(entityId);
-            if (entity.getStatus() != EntityStatus.FAINT) {
-                renderEntityCombatBanner(entity.getEntityId(), 1 - 0.15f, bannerScreenY);
-            }
-            bannerScreenY += 0.08f;
-        }
+    private void renderCombatStatusBanners() {
 
         // Player entity.
-        bannerScreenY = 0;
         if (gp.getEntityM().getPlayer().getStatus() != EntityStatus.FAINT) {
-            renderEntityCombatBanner(gp.getEntityM().getPlayer().getEntityId(), 0, 0);
+            renderCombatStatusBanner(gp.getEntityM().getPlayer().getEntityId(), true);
         }
-        bannerScreenY += 0.08f;
 
-        // Party members.
+        // Party entities.
         int entityIndex = 0;
-        for (EntityBase entity : gp.getEntityM().getParty().values()) {                                                 // Only render banners for active party members.
+        for (int entityId : gp.getEntityM().getParty().keySet()) {                                                      // Only render banners for active party members.
             if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
-                if (entity.getStatus() != EntityStatus.FAINT) {
-                    renderEntityCombatBanner(entity.getEntityId(), 0, bannerScreenY);
+                if (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT) {
+                    renderCombatStatusBanner(gp.getEntityM().getEntityById(entityId).getEntityId(), true);
                 }
-                bannerScreenY += 0.08f;
                 entityIndex++;
             } else {
                 break;
+            }
+        }
+
+        // Opposing entities.
+        for (int entityId : gp.getCombatM().getNonPlayerSideEntities()) {
+            if (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT) {
+                renderCombatStatusBanner(gp.getEntityM().getEntityById(entityId).getEntityId(), false);
             }
         }
     }
 
 
     /**
-     * Adds an entity combat banner (i.e., rectangle that contains name, health bar, etc. during combat) to the render
-     * pipeline.
+     * Adds a combat status banner (i.e., banner above an entity during combat displaying life, etc.) for an entity to
+     * the render pipeline.
      *
-     * @param entityId ID of entity whose banner to render
-     * @param bannerScreenX screen x-coordinate of the banner (leftmost)
-     * @param bannerScreenY screen y-coordinate of the banner (topmost)
+     * @param entityId ID of entity to render banner for
+     * @param includeSkill whether the entity's skill point bar will be included (true) or not (false) in the banner
      */
-    private void renderEntityCombatBanner(int entityId, float bannerScreenX, float bannerScreenY) {
+    private void renderCombatStatusBanner(int entityId, boolean includeSkill) {
 
-        Vector2f bannerScreenCoords = new Vector2f(bannerScreenX, bannerScreenY);
-        Vector2f bannerWorldCoords = gp.getCamera().screenCoordsToWorldCoords(bannerScreenCoords);
-        float bannerScreenWidth = 0.15f;
-        float bannerScreenHeight = 0.07f;
-        float bannerWorldWidth = gp.getCamera().screenWidthToWorldWidth(bannerScreenWidth);
-        float bannerWorldHeight = gp.getCamera().screenHeightToWorldHeight(bannerScreenHeight);
+        EntityBase entity = gp.getEntityM().getEntityById(entityId);
+        float bannerWorldX;
+        float bannerWorldY;
 
-        renderer.addRectangle(
-                new Vector4f(255, 255, 255, 255),
-                new Transform(
-                        bannerWorldCoords,
-                        new Vector2f(bannerWorldWidth, bannerWorldHeight)
-                ),
-                ZIndex.THIRD_LAYER
-        );
-        Vector2f nameScreenCoords = new Vector2f(bannerScreenX, bannerScreenY);
-        renderString(gp.getEntityM().getEntityById(entityId).getName(),
-                nameScreenCoords, 0.11f, new Vector3f(0, 0, 0), "Arimo Bold");
+        if (includeSkill) {
 
-        float barScreenWidth = 0.11f;
-        float barScreenHeight = 0.03f;
-        float barScreenX = bannerScreenX + 0.03f;
-        float barScreenY = bannerScreenY + bannerScreenHeight - barScreenHeight;
-        renderLifeBar(gp.getEntityM().getEntityById(entityId).getLife(),
-                gp.getEntityM().getEntityById(entityId).getMaxLife(), barScreenWidth, barScreenHeight,
-                barScreenX, barScreenY, new Vector4f(0, 0, 0, 255));
+            bannerWorldX = entity.getWorldX() + (entity.getNativeSpriteWidth() / 2)
+                    - (gp.getLifeSkillBannerBackground().getNativeSpriteWidth() / 2);                                   // Render banner centered horizontally above target entity sprite.
+            bannerWorldY = entity.getWorldY() - entity.getNativeSpriteHeight()
+                    + GamePanel.NATIVE_TILE_SIZE - gp.getLifeSkillBannerBackground().getNativeSpriteHeight() + 2;       // Render banner directly above target entity sprite (minus 2 pixels down).
+        } else {
 
-        Vector2f lifeLabelScreenCoords = new Vector2f(bannerScreenX, barScreenY);
-        renderString("HP", lifeLabelScreenCoords, 0.11f, new Vector3f(190, 97, 104), "Arimo Bold");
-        renderString(gp.getEntityM().getEntityById(entityId).getName(),
-                nameScreenCoords, 0.11f, new Vector3f(0, 0, 0), "Arimo Bold");
+            bannerWorldX = entity.getWorldX() + (entity.getNativeSpriteWidth() / 2)
+                    - (gp.getLifeBannerBackground().getNativeSpriteWidth() / 2);                                        // Render banner centered horizontally above target entity sprite.
+            bannerWorldY = entity.getWorldY() - entity.getNativeSpriteHeight()
+                    + GamePanel.NATIVE_TILE_SIZE - gp.getLifeBannerBackground().getNativeSpriteHeight() + 2;            // Render banner directly above target entity sprite (minus 2 pixels down).
+        }
+        Vector2f bannerWorldCoords = new Vector2f(bannerWorldX, bannerWorldY);
+        Vector2f bannerScreenCoords = gp.getCamera().worldCoordsToScreenCoords(bannerWorldCoords);
+        Vector2f lifeBarWorldCoords = new Vector2f(bannerWorldX + 16.0f, bannerWorldY + 2.0f);
+        Vector2f lifeBarScreenCoords = gp.getCamera().worldCoordsToScreenCoords(lifeBarWorldCoords);
+
+        if (includeSkill) {
+
+            gp.getLifeSkillBannerBackground().addToRenderPipeline(renderer, bannerScreenCoords.x, bannerScreenCoords.y);
+        }else {
+
+            gp.getLifeBannerBackground().addToRenderPipeline(renderer, bannerScreenCoords.x, bannerScreenCoords.y);
+        }
+        renderLifeBar(
+                entity.getLife(),
+                entity.getMaxLife(),
+                gp.getCamera().worldWidthToScreenWidth(30.0f),
+                lifeBarScreenCoords.x,
+                lifeBarScreenCoords.y);
+
+        Vector2f lifeLabelWorldCoords = new Vector2f(bannerWorldX + 1.5f, bannerWorldY);
+        Vector2f lifeLabelScreenCoords = gp.getCamera().worldCoordsToScreenCoords(lifeLabelWorldCoords);
+        renderString("HP", lifeLabelScreenCoords, 0.1f, new Vector3f(255, 255, 255), standardBoldFont);
+
+        if (includeSkill) {
+
+            Vector2f skillBarWorldCoords = new Vector2f(bannerWorldX + 16.0f, bannerWorldY + 12.0f);
+            Vector2f skillBarScreenCoords = gp.getCamera().worldCoordsToScreenCoords(skillBarWorldCoords);
+
+            renderSkillBar(
+                    entity.getSkillPoints(),
+                    entity.getMaxSkillPoints(),
+                    gp.getCamera().worldWidthToScreenWidth(30.0f),
+                    skillBarScreenCoords.x,
+                    skillBarScreenCoords.y);
+
+            Vector2f skillLabelWorldCoords = new Vector2f(bannerWorldX + 1.5f, bannerWorldY + 10.0f);
+            Vector2f skillLabelScreenCoords = gp.getCamera().worldCoordsToScreenCoords(skillLabelWorldCoords);
+            renderString("SP", skillLabelScreenCoords, 0.1f, new Vector3f(255, 255, 255), standardBoldFont);
+        }
     }
 
 
@@ -1119,13 +1226,11 @@ public class UserInterface {
 
             if (i == gp.getSubMenuH().getIndexSelected()) {                                                             // If combating entity that's currently being considered to target.
 
-                float entityWorldX = gp.getEntityM().getEntityById(entityId).getWorldX();
-                float entityWorldY = gp.getEntityM().getEntityById(entityId).getWorldY();
-                float entitySpriteHeight = gp.getEntityM().getEntityById(entityId).getNativeSpriteHeight();
-                float targetArrowWorldX = entityWorldX + (GamePanel.NATIVE_TILE_SIZE / 2)
-                        - (gp.getTargetA().getNativeSpriteWidth() / 2);                                                 // Render arrow centered horizontally above target entity sprite.
-                float targetArrowWorldY = entityWorldY + GamePanel.NATIVE_TILE_SIZE - entitySpriteHeight
-                        - gp.getTargetA().getNativeSpriteHeight() - 4;                                                  // Render arrow slightly above target entity sprite.
+                EntityBase entity = gp.getEntityM().getEntityById(entityId);
+                float targetArrowWorldX = entity.getWorldX() + (entity.getNativeSpriteWidth() / 2)                      // Render arrow centered horizontally above target entity sprite.
+                        - (gp.getTargetA().getNativeSpriteWidth() / 2);
+                float targetArrowWorldY = entity.getWorldY() - entity.getNativeSpriteHeight()
+                        + GamePanel.NATIVE_TILE_SIZE - gp.getTargetA().getNativeSpriteHeight() - 4;                     // Render arrow slightly above target entity sprite.
                 Vector2f targetArrowWorldCoords = new Vector2f(
                         targetArrowWorldX,
                         targetArrowWorldY);
@@ -1148,15 +1253,14 @@ public class UserInterface {
         if (!gp.getCombatM().getLatestSubMenuDescriptionByIndex(gp.getSubMenuH().getIndexSelected()).equals("")) {
 
             // Prepare window dimensions.
-            String font = "Arimo";
-            float fontScale = 0.15f;                                                                                    // Font size (multiplies native height).
             float windowScreenLeftRightPadding = gp.getCamera().worldHeightToScreenHeight(7.0f);                        // Normalized (screen) padding on left and right of description window between window and text.
             float windowScreenTopBottomPadding = gp.getCamera().worldHeightToScreenHeight(8.6f);                        // Normalized (screen) padding on top and bottom of description window between window and text.
             float textScreenSpacing = gp.getCamera().worldHeightToScreenHeight(9.5f);                                   // Normalized (screen) vertical spacing between line of description text (does NOT include character height).
-            float textCharacterWorldHeight = renderer.getFont(font).getCharacter('A').getHeight() * fontScale;          // It doesn't matter which character is used, since all characters in a font have the same height.
+            float textCharacterWorldHeight =
+                    renderer.getFont(standardNormalFont).getCharacter('A').getHeight() * standardFontScale;             // It doesn't matter which character is used, since all characters in a font have the same height.
             float textCharacterScreenHeight =
                     gp.getCamera().worldHeightToScreenHeight(textCharacterWorldHeight);                                 // Normalized (screen) character height.
-            float windowWorldWidth = 185.0f;                                                                            // World (absolute) total width of the description window.
+            float windowWorldWidth = 177.0f;                                                                            // World (absolute) total width of the description window.
             float windowScreenWidth = gp.getCamera().worldWidthToScreenWidth(windowWorldWidth);
             float windowScreenHeight = (textScreenSpacing * 2)                                                          // Spacing between description text (assuming three lines of text).
                     + (2 * windowScreenTopBottomPadding)                                                                // Padding on top and bottom of description window.
@@ -1184,9 +1288,9 @@ public class UserInterface {
                     textScreenCoords,
                     windowScreenWidth - (windowScreenLeftRightPadding * 2),
                     textScreenSpacing + textCharacterScreenHeight,
-                    fontScale,
+                    standardFontScale,
                     new Vector3f(255, 255, 255),
-                    font,
+                    standardNormalFont,
                     false);
         }
     }
@@ -1197,7 +1301,6 @@ public class UserInterface {
      */
     private void renderDebug() {
 
-        float fontScale = 0.18f;
         float screenX = gp.getCamera().worldWidthToScreenWidth(7.7f);
         float spacingScreenY = gp.getCamera().worldHeightToScreenHeight(25.9f);
 
@@ -1207,39 +1310,39 @@ public class UserInterface {
         Long freeMemoryBytes = Runtime.getRuntime().freeMemory();
         Long usedMemoryMegabytes = (totalMemoryBytes - freeMemoryBytes) / 1000000;
         String memoryUsage = "JVM Memory Usage: " + usedMemoryMegabytes + " MB";
-        renderStringShadow(memoryUsage, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderStringShadow(memoryUsage, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
 
         // VSync.
         screenCoords.y += spacingScreenY;
         String vSync = "VSync: " + ((gp.getSystemSetting(0).getActiveOption() == 0) ? "Disabled" : "Enabled");
-        renderStringShadow(vSync, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderStringShadow(vSync, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
 
         // Frame rate.
         screenCoords.y += spacingScreenY;
         String fps = "FPS: " + fpsTracker;
-        renderStringShadow(fps, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderStringShadow(fps, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
 
         // Player column.
         screenCoords.y += spacingScreenY;
         String col = "Player Col: " + gp.getEntityM().getPlayer().getCol();
-        renderStringShadow(col, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderStringShadow(col, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
 
         // Player row.
         screenCoords.y += spacingScreenY;
         String row = "Player Row: " + gp.getEntityM().getPlayer().getRow();
-        renderStringShadow(row, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderStringShadow(row, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
 
         // Camera center (x).
         screenCoords.y += spacingScreenY;
         String centerX = "Camera Center X: "
                 + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
-        renderStringShadow(centerX, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderStringShadow(centerX, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
 
         // Camera center (y).
         screenCoords.y += spacingScreenY;
         String centerY = "Camera Center Y: "
                 + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
-        renderStringShadow(centerY, screenCoords, fontScale, new Vector3f(255, 255, 255), "Arimo");
+        renderStringShadow(centerY, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
     }
 
 
@@ -1322,7 +1425,7 @@ public class UserInterface {
 
 //                    if (calculateStringScreenLength(words[wordsIndex], scale, font) > maxLineScreenLength) {
 //
-//                        words[wordsIndex] = "???";                                                                      // If the number of characters in a single word exceeds the maximum number of characters that can be printed in a line of text, skip the word to avoid getting stuck in an infinite loop.
+//                        words[wordsIndex] = "???";                                                                    // If the number of characters in a single word exceeds the maximum number of characters that can be printed in a line of text, skip the word to avoid getting stuck in an infinite loop.
 //                    }
                 } else {
 
@@ -1479,6 +1582,19 @@ public class UserInterface {
 
 
     // GETTERS
+
+    public String getStandardNormalFont() {
+        return standardNormalFont;
+    }
+
+    public String getStandardBoldFont() {
+        return standardBoldFont;
+    }
+
+    public float getStandardFontScale() {
+        return standardFontScale;
+    }
+
     public int getPartySlotSelected() {
         return partySlotSelected;
     }

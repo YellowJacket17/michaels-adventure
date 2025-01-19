@@ -1,17 +1,18 @@
 package combat;
 
+import asset.AssetPool;
 import core.GamePanel;
 import org.joml.Vector2f;
 import render.Renderer;
-import render.enumeration.ZIndex;
 import render.drawable.Drawable;
-import asset.AssetPool;
+import render.enumeration.ZIndex;
 import utility.UtilityTool;
 
 /**
- * This class defines the target selection arrow, which appears when selecting an entity to target with a move.
+ * This class defines the life banner background, which appears above an entity during combat as the background of their
+ * life point meter.
  */
-public class TargetArrow extends Drawable {
+public class LifeBannerBackground extends Drawable {
 
     // FIELDS
     GamePanel gp;
@@ -25,26 +26,30 @@ public class TargetArrow extends Drawable {
 
     // CONSTRUCTOR
     /**
-     * Constructs a TargetArrow instance.
+     * Constructs a LifeBannerBackground instance.
      *
      * @param gp GamePanel instance
      */
-    public TargetArrow(GamePanel gp) {
+    public LifeBannerBackground(GamePanel gp) {
         super();
         this.gp = gp;
-        this.sprite = AssetPool.getSpritesheet("miscellaneous").getSprite(5);
+        this.sprite = AssetPool.getSpritesheet("miscellaneous").getSprite(1);
         this.transform.scale.x = this.sprite.getNativeWidth();
         this.transform.scale.y = this.sprite.getNativeHeight();
+        this.color.x = 20;
+        this.color.y = 20;
+        this.color.z = 20;
+        this.color.w = 180;
     }
 
 
     // METHOD
     /**
-     * Adds the target arrow to the render pipeline.
+     * Adds the life banner background to the render pipeline.
      *
      * @param renderer Renderer instance
-     * @param screenX screen x-coordinate of the selection arrow (leftmost, normalized from 0 and 1, both inclusive)
-     * @param screenY screen y-coordinate of the selection arrow (topmost, normalized from 0 and 1, both inclusive)
+     * @param screenX screen x-coordinate of the background (leftmost, normalized from 0 to 1, both inclusive)
+     * @param screenY screen y-coordinate of the background (topmost, normalized from 0 to 1, both inclusive)
      */
     public void addToRenderPipeline(Renderer renderer, float screenX, float screenY) {
 
@@ -56,7 +61,7 @@ public class TargetArrow extends Drawable {
             renderer.addDrawable(this, ZIndex.FIRST_LAYER);
         } else if (!renderError) {
 
-            UtilityTool.logError("Failed to add target arrow to the render pipeline: sprite may not have been properly loaded upon initialization.");
+            UtilityTool.logError("Failed to add life banner background to the render pipeline: sprite may not have been properly loaded upon initialization.");
             renderError = true;
         }
     }
