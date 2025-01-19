@@ -12,6 +12,7 @@ import render.enumeration.ZIndex;
 import render.drawable.Transform;
 
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * This class handles the drawing of all on-screen user interface (UI) elements.
@@ -449,55 +450,34 @@ public class UserInterface {
         Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
 
-        // Prepare entity icon and status information text positions to render on top of respective slot icons.
-        float entityIconScreenX = slotIconScreenX + gp.getCamera().worldWidthToScreenWidth(7.68f);
-        float entityIconScreenY = topSlotIconScreenY - gp.getCamera().worldHeightToScreenHeight(4.00f);
-        float statusInfoTextScreenX = slotIconScreenX + gp.getCamera().worldWidthToScreenWidth(53.76f);
-        float statusInfoTextScreenY = topSlotIconScreenY + gp.getCamera().worldHeightToScreenHeight(6.05f);
-
         // Render slot 0 (topmost).
         if (partyMenuScrollLevel == 0) {
             gp.getGuiIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
-            gp.getEntityIconM().addToRenderPipeline(renderer, gp.getEntityM().getPlayer().getEntityId(),
-                    entityIconScreenX, entityIconScreenY);
-            renderPartyMemberStatusInformation(gp.getEntityM().getPlayer(), statusInfoTextScreenX, statusInfoTextScreenY);
+            renderPartyMemberStatusIconInterior(gp.getEntityM().getPlayer(), slotIconScreenX, slotIconScreenY);
 
         } else if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel - 1)
                 && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel - 1]) != null)) {
             gp.getGuiIconM().addToRenderPipeline(renderer, 3, slotIconScreenX, slotIconScreenY);
-            gp.getEntityIconM().addToRenderPipeline(renderer,
-                    gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel - 1]).getEntityId(),
-                    entityIconScreenX, entityIconScreenY);
-            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel - 1]),
-                    statusInfoTextScreenX, statusInfoTextScreenY);
+            renderPartyMemberStatusIconInterior(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel - 1]),
+                    slotIconScreenX, slotIconScreenY);
         }
 
         // Render slot 1.
         if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel)
                 && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]) != null)) {
-            entityIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
-            statusInfoTextScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
             slotIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
             gp.getGuiIconM().addToRenderPipeline(renderer, 4, slotIconScreenX, slotIconScreenY);
-            gp.getEntityIconM().addToRenderPipeline(renderer,
-                    gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]).getEntityId(),
-                    entityIconScreenX, entityIconScreenY);
-            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]),
-                    statusInfoTextScreenX, statusInfoTextScreenY);
+            renderPartyMemberStatusIconInterior(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]),
+                    slotIconScreenX, slotIconScreenY);
         }
 
         // Render slot 2 (bottommost).
         if ((gp.getEntityM().getParty().size() > partyMenuScrollLevel + 1)
                 && (gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel + 1]) != null)) {
-            entityIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
-            statusInfoTextScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
             slotIconScreenY += slotIconScreenVerticalSpacing + slotIconScreenHeight;
             gp.getGuiIconM().addToRenderPipeline(renderer, 5, slotIconScreenX, slotIconScreenY);
-            gp.getEntityIconM().addToRenderPipeline(renderer,
-                    gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel + 1]).getEntityId(),
-                    entityIconScreenX, entityIconScreenY);
-            renderPartyMemberStatusInformation(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel + 1]),
-                    statusInfoTextScreenX, statusInfoTextScreenY);
+            renderPartyMemberStatusIconInterior(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel + 1]),
+                    slotIconScreenX, slotIconScreenY);
         }
 
         // Render side scroll indicators.
@@ -543,41 +523,69 @@ public class UserInterface {
 
 
     /**
-     * Adds components of the status information to the status icon of a party member in the party menu section of the
-     * in-game menu to the render pipeline.
-     * Specifically, the party member's name, level, and health bar are added.
-     * This is to be rendered on top of a slot icon.
+     * Adds contents of a party member status icon in the party menu section of the in-game menu to the render pipeline.
      *
-     * @param entity party member whose status information to render
-     * @param textScreenX screen x-coordinate of all lines of text to render within the status information
-     * @param topTextScreenY screen y-coordinate of the topmost line of text to render within the status information
+     * @param entity party member whose contents to render
+     * @param baseScreenX screen x-coordinate of the target party member status icon
+     * @param baseScreenY screen y-coordinate of the target party member status icon
      */
-    private void renderPartyMemberStatusInformation(EntityBase entity, float textScreenX, float topTextScreenY) {
+    private void renderPartyMemberStatusIconInterior(EntityBase entity, float baseScreenX, float baseScreenY) {
 
-        // Prepare text.
-        String name = entity.getName();
-        String level = "Lv." + entity.getLevel();
-        String lifeLabel = "HP";
-        String lifeValue = entity.getLife() + "/" + entity.getMaxLife();
-        Vector2f textScreenCoords = new Vector2f(textScreenX, topTextScreenY);
+        Vector2f baseWorldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(baseScreenX, baseScreenY));
+        Vector2f workingWorldCoords = new Vector2f();
+        Vector2f workingScreenCoords;
 
-        // Render text for name, level, and life label.
-        renderStringShadow(name, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), standardBoldFont);
-        textScreenCoords.y += gp.getCamera().worldHeightToScreenHeight(17.28f);
-        renderStringShadow(level, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), standardBoldFont);
-        textScreenCoords.y += gp.getCamera().worldHeightToScreenHeight(17.28f);
-        renderStringShadow(lifeLabel, textScreenCoords, 0.11f, new Vector3f(255, 255, 255), standardBoldFont);
+        // Render entity icon.
+        workingWorldCoords.x = baseWorldCoords.x + 6.0f;
+        workingWorldCoords.y = baseWorldCoords.y - 4.0f;
+        workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
+        gp.getEntityIconM().addToRenderPipeline(renderer, entity.getEntityId(), workingScreenCoords.x, workingScreenCoords.y);
+
+        // Render name.
+        workingWorldCoords.x = baseWorldCoords.x + 45.5f;
+        workingWorldCoords.y = baseWorldCoords.y + 7.0f;
+        workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
+        renderStringShadow(entity.getName(), workingScreenCoords, 0.12f, new Vector3f(255, 255, 255), standardBoldFont);
 
         // Render life bar.
-        float barScreenX = textScreenCoords.x + gp.getCamera().worldWidthToScreenWidth(23.04f);
-        float barScreenY = textScreenCoords.y + gp.getCamera().worldHeightToScreenHeight(.864f);
-        float barScreenWidth = gp.getCamera().worldWidthToScreenWidth(42.24f);
-        renderLifeBar(entity.getLife(), entity.getMaxLife(), barScreenWidth, barScreenX, barScreenY);
+        workingWorldCoords.x = baseWorldCoords.x + 64.0f;
+        workingWorldCoords.y = baseWorldCoords.y + 26.0f;
+        workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
+        renderLifeBar(
+                entity.getLife(),
+                entity.getMaxLife(),
+                gp.getCamera().worldWidthToScreenWidth(30.0f),
+                workingScreenCoords.x,
+                workingScreenCoords.y);
+        workingWorldCoords.x -= 18.5f;
+        workingWorldCoords.y -= 3.0f;
+        workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
+        renderStringShadow("HP", workingScreenCoords, 0.12f, new Vector3f(255, 255, 255), standardBoldFont);
 
-        // Draw remaining life points text with a shadowed effect.
-//        textScreenCoords.x += gp.getCamera().worldWidthToScreenWidth(56.832f);
-//        textScreenCoords.y -= gp.getCamera().worldHeightToScreenHeight(3.456f);
-//        renderStringShadow(lifeValue, textScreenCoords, 0.08f, new Vector3f(255, 255, 255), standardBoldFont);
+        workingWorldCoords.x += 50.0f;
+        workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
+        renderStringShadow(entity.getLife() + "/" + entity.getMaxLife(), workingScreenCoords, 0.12f,
+                new Vector3f(255, 255, 255), standardBoldFont);
+
+        // Render skill bar.
+        workingWorldCoords.x = baseWorldCoords.x + 64.0f;
+        workingWorldCoords.y = baseWorldCoords.y + 42.0f;
+        workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
+        renderSkillBar(
+                entity.getSkillPoints(),
+                entity.getMaxSkillPoints(),
+                gp.getCamera().worldWidthToScreenWidth(30.0f),
+                workingScreenCoords.x,
+                workingScreenCoords.y);
+        workingWorldCoords.x -= 18.5f;
+        workingWorldCoords.y -= 3.0f;
+        workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
+        renderStringShadow("SP", workingScreenCoords, 0.12f, new Vector3f(255, 255, 255), standardBoldFont);
+
+        workingWorldCoords.x += 50.0f;
+        workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
+        renderStringShadow(entity.getSkillPoints() + "/" + entity.getMaxSkillPoints(), workingScreenCoords, 0.12f,
+                new Vector3f(255, 255, 255), standardBoldFont);
     }
 
 
@@ -1195,6 +1203,7 @@ public class UserInterface {
         Vector2f lifeLabelWorldCoords = new Vector2f(bannerWorldX + 1.5f, bannerWorldY);
         Vector2f lifeLabelScreenCoords = gp.getCamera().worldCoordsToScreenCoords(lifeLabelWorldCoords);
         renderString("HP", lifeLabelScreenCoords, 0.1f, new Vector3f(255, 255, 255), standardBoldFont);
+        // NOTE: If "HP" label is increased to scale 0.12f, then world coords needs to be adjusted by -1.0f.
 
         if (includeSkill) {
 
