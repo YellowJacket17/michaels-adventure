@@ -1402,8 +1402,9 @@ public class UserInterface {
 
     /**
      * Adds a block of text with a specified line character limit to the render pipeline.
+     * Note that any '\n' characters will force a new line in the rendered block of text.
      *
-     * @param text complete text to be printed
+     * @param text block of text to be printed
      * @param screenCoords screen coordinates of the text block (lefmost and topmost, normalized from 0 to 1, both inclusive)
      * @param maxLineScreenLength maximum normalized (screen) length of text permitted in a printed line of text
      * @param lineScreenSpacing normalized (screen) space between each printed line of text (normalized from 0 to 1, both inclusive)
@@ -1415,7 +1416,21 @@ public class UserInterface {
     private void renderStringBlock(String text, Vector2f screenCoords, float maxLineScreenLength, float lineScreenSpacing,
                                    float scale, Vector3f color, String font, boolean dropShadow) {
 
-        String[] words = text.split(" ");                                                                               // An array of each word in the complete text, split by spaces.
+        String parsedText = "";
+        int charIndex = 0;
+
+        while (charIndex < text.length()) {
+
+            if (text.charAt(charIndex) == '\n') {                                                                       // Check if "\n" appears anywhere in the text; if so, it will be parsed out as its own word for later use.
+
+                    parsedText += " \\n ";
+            } else {
+
+                parsedText += text.charAt(charIndex);
+            }
+            charIndex++;
+        }
+        String[] words = parsedText.split(" ");                                                                         // An array of each word in the complete text, split by spaces.
         int wordsIndex = 0;                                                                                             // Track which index of the words array is currently being checked.
 
         while (wordsIndex < words.length) {                                                                             // Print each line of text.
@@ -1425,28 +1440,35 @@ public class UserInterface {
 
             while ((!limitExceeded) && (wordsIndex < words.length)) {                                                   // Add words to a line of text until either the maximum character length is exceeded OR there are no more words to print.
 
-                String build;                                                                                           // Create a string that will be a candidate for the next line of text to be printed.
+                if (words[wordsIndex].equals("\\n")) {                                                                  // Check if a new line is forced.
 
-                if (line.equals("")) {
-
-                    build = words[wordsIndex];
+                    limitExceeded = true;
+                    wordsIndex++;
                 } else {
 
-                    build = line + " " + words[wordsIndex];
-                }
+                    String build;                                                                                       // Create a string that will be a candidate for the next line of text to be printed.
 
-                if (calculateStringScreenLength(build, scale, font) > maxLineScreenLength) {
+                    if (line.equals("") && !words[wordsIndex].equals("")) {
 
-                    limitExceeded = true;                                                                               // Character length of the line has been exceeded.
+                        build = words[wordsIndex];
+                    } else {
 
-//                    if (calculateStringScreenLength(words[wordsIndex], scale, font) > maxLineScreenLength) {
+                        build = line + " " + words[wordsIndex];
+                    }
+
+                    if (calculateStringScreenLength(build, scale, font) > maxLineScreenLength) {
+
+                        limitExceeded = true;                                                                           // Character length of the line has been exceeded.
+
+//                        if (calculateStringScreenLength(words[wordsIndex], scale, font) > maxLineScreenLength) {
 //
-//                        words[wordsIndex] = "???";                                                                    // If the number of characters in a single word exceeds the maximum number of characters that can be printed in a line of text, skip the word to avoid getting stuck in an infinite loop.
-//                    }
-                } else {
+//                            words[wordsIndex] = "???";                                                                  // If the number of characters in a single word exceeds the maximum number of characters that can be printed in a line of text, skip the word to avoid getting stuck in an infinite loop.
+//                        }
+                    } else {
 
-                    line = build;                                                                                       // Set the next line of text to be rendered.
-                    wordsIndex++;                                                                                       // Iterate to the next word.
+                        line = build;                                                                                   // Set the next line of text to be rendered.
+                        wordsIndex++;                                                                                   // Iterate to the next word.
+                    }
                 }
             }
 
