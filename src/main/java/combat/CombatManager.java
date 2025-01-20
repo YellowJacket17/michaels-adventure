@@ -228,7 +228,7 @@ public class CombatManager {
                 generateNpcTurn();
             } else {                                                                                                    // If entity at the front of the turn order queue is a party member/player.
 
-                String message = buildRootMenuPrompt(
+                String message = buildRootSubMenuPrompt(
                         gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getName());
                 addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
                 generateRootSubMenuAction();
@@ -695,7 +695,7 @@ public class CombatManager {
         if (queuedActions.peekFirst() != null) {
             queuedActions.pollFirst().run();
         } else {
-            progressCombat();                                                                                           // If no actions are queued, force back to the root combat menu.
+            progressCombat();                                                                                           // If no actions are queued, force back to the root combat sub-menu.
         }
     }
 
@@ -710,6 +710,9 @@ public class CombatManager {
         switch (getLatestSubMenuMemory().getType()) {
             case ROOT:
                 runRootSubMenuSelection();
+                break;
+            case GUARD:
+                runGuardSubMenuSelection();
                 break;
             case SKILL:
                 runSkillSubMenuSelection();
@@ -762,11 +765,14 @@ public class CombatManager {
      */
     private void runRootSubMenuSelectionGuard() {
 
-        guardingEntities.add(queuedEntityTurnOrder.peekFirst());
-        String message = gp.getEntityM()
-                .getEntityById(queuedEntityTurnOrder.peekFirst()).getName() + " assumed a defensive stance.";
-        addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
-        addQueuedActionBack(new Act_EndEntityTurn(gp));
+        ArrayList<String> guardOptions = new ArrayList<>();
+        HashMap<Integer, Vector3f> colors = new HashMap<>();
+        HashMap<Integer, String> optionDescriptions = new HashMap<>();
+        guardOptions.add("Confirm");
+        guardOptions.add("Back");
+        colors.put(guardOptions.size() - 1, backOptionColor);
+        optionDescriptions.put(0, "Confirm stance selection.");
+        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.GUARD, guardOptions, colors, optionDescriptions));
     }
 
 
@@ -787,6 +793,7 @@ public class CombatManager {
         ArrayList<String> moveOptions = new ArrayList<>();
         HashMap<Integer, Vector3f> colors = new HashMap<>();
         HashSet<Integer> disabledOptions = new HashSet<>();
+        HashMap<Integer, String> optionDescriptions = new HashMap<>();
 
         for (MoveBase move : gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves()) {
 
@@ -798,10 +805,12 @@ public class CombatManager {
                 colors.put(moveOptions.size() - 1, disabledOptionColor);
                 disabledOptions.add(moveOptions.size() - 1);
             }
+            optionDescriptions.put(moveOptions.size() - 1, buildMoveDescription(move));
         }
         moveOptions.add("Back");
         colors.put(moveOptions.size() - 1, backOptionColor);
-        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.SKILL, moveOptions, colors, disabledOptions));
+        addQueuedActionBack(new Act_GenerateSubMenu(
+                gp, SubMenuType.SKILL, moveOptions, colors, disabledOptions, optionDescriptions));
     }
 
 
@@ -815,7 +824,8 @@ public class CombatManager {
         HashMap<Integer, Vector3f> colors = new HashMap<>();
         playerSideOptions.add("Back");
         colors.put(playerSideOptions.size() - 1, backOptionColor);
-        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PARTY, playerSideOptions, colors));
+        addQueuedActionBack(new Act_GenerateSubMenu(
+                gp, SubMenuType.PARTY, playerSideOptions, colors, buildPartySubMenuDescriptions()));
     }
 
 
@@ -828,6 +838,24 @@ public class CombatManager {
         addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
         addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
         addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
+    }
+
+    /**
+     * Runs logic based on the last option that was selected in the guard combat sub-menu.
+     */
+    private void runGuardSubMenuSelection() {
+
+        if (getLatestSubMenuMemory().getSelectedOption() == (getLatestSubMenuMemory().getOptions().size() - 1)) {       // Determine whether the 'Back' option was selected or not.
+
+            revertSubMenuSelection();
+        } else {
+
+            guardingEntities.add(queuedEntityTurnOrder.peekFirst());
+            String message = gp.getEntityM()
+                    .getEntityById(queuedEntityTurnOrder.peekFirst()).getName() + " assumed a defensive stance.";
+            addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
+            addQueuedActionBack(new Act_EndEntityTurn(gp));
+        }
     }
 
 
@@ -857,6 +885,7 @@ public class CombatManager {
         } else {
 
             ArrayList<String> playerSideOptions = new ArrayList<>();
+            HashMap<Integer, String> optionDescriptions = new HashMap<>();
             EntityBase entity = gp.getEntityM()
                     .getEntityById(lastGeneratedPlayerSideOptions.get(getLatestSubMenuMemory().getSelectedOption()));
 
@@ -866,16 +895,21 @@ public class CombatManager {
 
                     // TODO : Consider disabling option is entity is fainted.
                     playerSideOptions.add("Swap Out");
+                    optionDescriptions.put(0, "Swap " + (entity.getName().equals("") ? "???" : entity.getName())
+                            + " out for an inactive party member.");
                 }
             } else {
 
                 // TODO : Consider disabling option is entity is fainted.
                 playerSideOptions.add("Swap In");
+                optionDescriptions.put(0, "Swap " + (entity.getName().equals("") ? "???" : entity.getName())
+                        + " in for an active party member.");
             }
             playerSideOptions.add("Back");
             HashMap<Integer, Vector3f> colors = new HashMap<>();
             colors.put(playerSideOptions.size() - 1, backOptionColor);
-            addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PLAYER_SIDE_MANAGE, playerSideOptions, colors));
+            addQueuedActionBack(new Act_GenerateSubMenu(
+                    gp, SubMenuType.PLAYER_SIDE_MANAGE, playerSideOptions, colors, optionDescriptions));
         }
     }
 
@@ -898,14 +932,16 @@ public class CombatManager {
                 playerSideOptions.add("Back");
                 HashMap<Integer, Vector3f> colors = new HashMap<>();
                 colors.put(playerSideOptions.size() - 1, backOptionColor);
-                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PLAYER_SIDE_SWAP, playerSideOptions, colors));
+                addQueuedActionBack(new Act_GenerateSubMenu(
+                        gp, SubMenuType.PLAYER_SIDE_SWAP, playerSideOptions, colors, buildPlayerSideSwapInSubMenuDescriptions()));
             } else if (selectedSwapOption.equals("Swap Out")) {
 
                 ArrayList<String> playerSideOptions = generateInactivePlayerSideOptions();
                 playerSideOptions.add("Back");
                 HashMap<Integer, Vector3f> colors = new HashMap<>();
                 colors.put(playerSideOptions.size() - 1, backOptionColor);
-                addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.PLAYER_SIDE_SWAP, playerSideOptions, colors));
+                addQueuedActionBack(new Act_GenerateSubMenu(
+                        gp, SubMenuType.PLAYER_SIDE_SWAP, playerSideOptions, colors, buildPlayerSideSwapOutSubMenuDescriptions()));
             }
         }
     }
@@ -1001,6 +1037,9 @@ public class CombatManager {
                 switch (getLatestSubMenuMemory().getType()) {                                                           // Return to the outcome of the sub-menu that generated the previous sub-menu IF within same entity turn.
                     case ROOT:
                         runRootSubMenuSelection();
+                        break;
+                    case GUARD:
+                        runGuardSubMenuSelection();
                         break;
                     case SKILL:
                         runSkillSubMenuSelection();
@@ -1486,7 +1525,7 @@ public class CombatManager {
 
         HashSet<Integer> disabledOptions = new HashSet<>();
         disabledOptions.add(3);                                                                                         // Disable the 'Inventory' option since it's not been developed yet.
-        HashMap<Integer, String> optionDescriptions = buildRootMenuDescriptions();
+        HashMap<Integer, String> optionDescriptions = buildRootSubMenuDescriptions();
         HashMap<Integer, Vector3f> colors = new HashMap<>();
         colors.put(3, disabledOptionColor);
         addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT,
@@ -1516,7 +1555,8 @@ public class CombatManager {
         targetOptions.add("Back");
         HashMap<Integer, Vector3f> colors = new HashMap<>();
         colors.put(targetOptions.size() - 1, backOptionColor);
-        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.TARGET_SELECT, targetOptions, colors));
+        addQueuedActionBack(new Act_GenerateSubMenu(
+                gp, SubMenuType.TARGET_SELECT, targetOptions, colors, buildTargetSelectSubMenuDescriptions()));
     }
 
 
@@ -1646,7 +1686,10 @@ public class CombatManager {
             if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
                     && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
+                targetOptions.add(
+                        gp.getEntityM().getEntityById(entityId).getName().equals("")
+                                ? "???"
+                                : gp.getEntityM().getEntityById(entityId).getName());
                 lastGeneratedTargetOptions.add(entityId);
             }
         }
@@ -1672,7 +1715,9 @@ public class CombatManager {
                     != gp.getEntityM().getPlayer().getEntityId())
                 && (gp.getEntityM().getPlayer().getStatus() != EntityStatus.FAINT)) {
 
-            targetOptions.add(gp.getEntityM().getPlayer().getName());
+            targetOptions.add(gp.getEntityM().getPlayer().getName().equals("")
+                    ? "???"
+                    : gp.getEntityM().getPlayer().getName());
             lastGeneratedTargetOptions.add(gp.getEntityM().getPlayer().getEntityId());
         }
         int entityIndex = 0;
@@ -1684,7 +1729,9 @@ public class CombatManager {
                 if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
                         && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
+                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName().equals("")
+                            ? "???"
+                            : gp.getEntityM().getEntityById(entityId).getName());
                     lastGeneratedTargetOptions.add(entityId);
                 }
             } else {
@@ -1713,7 +1760,9 @@ public class CombatManager {
                     == gp.getEntityM().getPlayer().getEntityId())                                                       // Check if player entity is the self.
                 && (gp.getEntityM().getPlayer().getStatus() != EntityStatus.FAINT)) {
 
-            targetOptions.add(gp.getEntityM().getPlayer().getName());
+            targetOptions.add(gp.getEntityM().getPlayer().getName().equals("")
+                    ? "???"
+                    : gp.getEntityM().getPlayer().getName());
             lastGeneratedTargetOptions.add(gp.getEntityM().getPlayer().getEntityId());
             return;                                                                                                     // The single target entity has been added.
         }
@@ -1726,7 +1775,9 @@ public class CombatManager {
                 if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)        // Check if a party member entity is the self.
                         && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
+                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName().equals("")
+                            ? "???"
+                            : gp.getEntityM().getEntityById(entityId).getName());
                     lastGeneratedTargetOptions.add(entityId);
                     return;                                                                                             // The single target entity has been added.
                 }
@@ -1742,7 +1793,9 @@ public class CombatManager {
             if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)            // Check if a non-player-side entity is the self.
                     && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
+                targetOptions.add(gp.getEntityM().getEntityById(entityId).getName().equals("")
+                        ? "???"
+                        : gp.getEntityM().getEntityById(entityId).getName());
                 lastGeneratedTargetOptions.add(entityId);
                 return;                                                                                                 // The single target entity has been added.
             }
@@ -1845,20 +1898,14 @@ public class CombatManager {
 
 
     /**
-     * Builds a string for the root combat menu prompt according to the passed entity name.
+     * Builds a string for the root combat sub-menu prompt according to the passed entity name.
      *
      * @param entityName entity whose turn it is
      * @return built string
      */
-    private String buildRootMenuPrompt(String entityName) {
+    private String buildRootSubMenuPrompt(String entityName) {
 
-        if ((entityName != null) && (!entityName.equals(""))) {
-
-            return "What will " + entityName + " do?";
-        } else {
-
-            return "What will ??? do?";
-        }
+        return "What will " + (entityName.equals("") ? "???" : entityName) + " do?";
     }
 
 
@@ -1874,39 +1921,177 @@ public class CombatManager {
         String buildEntityName = "???";
         String buildMoveName = "???";
 
-        if ((entityName != null) && (!entityName.equals(""))) {
+        if (!entityName.equals("")) {
             buildEntityName = entityName;
         }
 
-        if ((moveName != null) && (!moveName.equals(""))) {
+        if (!moveName.equals("")) {
             buildMoveName = moveName;
         }
-
         return buildEntityName + " used " + buildMoveName + "!";
     }
 
 
     /**
-     * Builds option descriptions for the root combat menu.
+     * Builds option descriptions for the root combat sub-menu.
      *
-     * @return map of root combat menu option descriptions
+     * @return map of option descriptions
      */
-    private HashMap<Integer, String> buildRootMenuDescriptions() {
+    private HashMap<Integer, String> buildRootSubMenuDescriptions() {
 
-        HashMap<Integer, String> rootMenuDescriptions = new HashMap<>();
-        rootMenuDescriptions.put(0,
+        HashMap<Integer, String> rootSubMenuDescriptions = new HashMap<>();
+        rootSubMenuDescriptions.put(0,
                 "Defend to reduce damage taken.");
-        rootMenuDescriptions.put(1,
+        rootSubMenuDescriptions.put(1,
                 "Attack an enemy.");
-        rootMenuDescriptions.put(2,
+        rootSubMenuDescriptions.put(2,
                 "Use a special skill.");
-        rootMenuDescriptions.put(3,
+        rootSubMenuDescriptions.put(3,
                 "Use an item.");
-        rootMenuDescriptions.put(4,
+        rootSubMenuDescriptions.put(4,
                 "Manage party members.");
-        rootMenuDescriptions.put(5,
+        rootSubMenuDescriptions.put(5,
                 "Flee from combat.");
-        return rootMenuDescriptions;
+        return rootSubMenuDescriptions;
+    }
+
+
+    /**
+     * Builds an option description for a move.
+     * The entity whose turn it currently is will be used for determining remaining skill points.
+     *
+     * @param move move to build description for
+     * @return description
+     */
+    private String buildMoveDescription(MoveBase move) {
+
+        String categoryAbbreviation;
+        switch (move.getCategory()) {
+            case PHYSICAL:
+                categoryAbbreviation = "P";
+                break;
+            case MAGIC:
+                categoryAbbreviation = "M";
+                break;
+            case SUPPORT:
+                categoryAbbreviation = "S";
+                break;
+            default:
+                categoryAbbreviation = "???";
+        }
+        return "POWER: " + move.getPower() + " [" + categoryAbbreviation + "]\n"
+                + "ACCURACY: " + move.getAccuracy() + "\n"
+                + "SKILL: " + move.getSkillPoints() + "/"
+                + gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getSkillPoints();
+    }
+
+
+    /**
+     * Builds option descriptions for the target select combat sub-menu.
+     * The last generated target options are used to generate descriptions.
+     *
+     * @return map of option descriptions
+     */
+    private HashMap<Integer, String> buildTargetSelectSubMenuDescriptions() {
+
+        HashMap<Integer, String> descriptions = new HashMap<>();
+        EntityBase entity;
+        int i = 0;
+
+        for (int entityId : lastGeneratedTargetOptions) {
+
+            entity = gp.getEntityM().getEntityById(entityId);
+
+            if (nonPlayerSideEntities.contains(entityId)) {
+
+                descriptions.put(i, entity.getName());
+            } else {
+
+                descriptions.put(i,
+                        entity.getName().equals("") ? "???" : entity.getName() + "\n"
+                                + "HP: " + entity.getLife() + "/" + entity.getMaxLife() + "\n"
+                                + "SP: " + entity.getSkillPoints() + "/" + entity.getMaxSkillPoints());
+            }
+            i++;
+        }
+        return descriptions;
+    }
+
+
+    /**
+     * Builds option descriptions for the party combat sub-menu.
+     * The last generated player-side options are used to generate descriptions.
+     *
+     * @return map of option descriptions
+     */
+    private HashMap<Integer, String> buildPartySubMenuDescriptions() {
+
+        HashMap<Integer, String> descriptions = new HashMap<>();
+        EntityBase entity;
+        int i = 0;
+
+        for (int entityId : lastGeneratedPlayerSideOptions) {
+
+            entity = gp.getEntityM().getEntityById(entityId);
+            descriptions.put(i,
+                    entity.getName().equals("") ? "???" : entity.getName() + "\n"
+                            + "HP: " + entity.getLife() + "/" + entity.getMaxLife() + "\n"
+                            + "SP: " + entity.getSkillPoints() + "/" + entity.getMaxSkillPoints());
+            i++;
+        }
+        return descriptions;
+    }
+
+
+    /**
+     * Builds option descriptions for the player-side swap combat sub-menu (swap in).
+     * The last generated active player-side options are used to generate descriptions.
+     *
+     * @return map of option descriptions
+     */
+    private HashMap<Integer, String> buildPlayerSideSwapInSubMenuDescriptions() {
+
+        HashMap<Integer, String> descriptions = new HashMap<>();
+        String primaryEntityName = gp.getEntityM().getEntityById(lastGeneratedPlayerSideOptions
+                .get(subMenuLog.get(subMenuLog.size() - 2).getSelectedOption())).getName();
+        EntityBase secondaryEntity;
+        int i = 0;
+
+        for (int entityId : lastGeneratedActivePlayerSideOptions) {
+
+            secondaryEntity = gp.getEntityM().getEntityById(entityId);
+            descriptions.put(i,
+                    "Swap " + secondaryEntity.getName() + " out for "
+                            + (primaryEntityName.equals("") ? "???" : primaryEntityName + "."));
+            i++;
+        }
+        return descriptions;
+    }
+
+
+    /**
+     * Builds option descriptions for the player-side swap combat sub-menu (swap out).
+     * The last generated inactive player-side options are used to generate descriptions.
+     *
+     * @return map of option descriptions
+     */
+    private HashMap<Integer, String> buildPlayerSideSwapOutSubMenuDescriptions() {
+
+        HashMap<Integer, String> descriptions = new HashMap<>();
+        EntityBase secondaryEntity;
+        String primaryEntityName = gp.getEntityM().getEntityById(lastGeneratedPlayerSideOptions
+                        .get(subMenuLog.get(subMenuLog.size() - 2).getSelectedOption())).getName();
+        int i = 0;
+
+        for (int entityId : lastGeneratedInactivePlayerSideOptions) {
+
+            secondaryEntity = gp.getEntityM().getEntityById(entityId);
+            descriptions.put(i,
+                    "Swap " + secondaryEntity.getName() + " in for "
+                            + (primaryEntityName.equals("") ? "???" : primaryEntityName + "."));
+            i++;
+        }
+        return descriptions;
     }
 
 

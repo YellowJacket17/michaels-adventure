@@ -1373,11 +1373,8 @@ public class UserInterface {
      */
     private void renderString(String text, Vector2f screenCoords, float scale, Vector3f color, String font) {
 
-        if (text != null) {
-
-            Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
-            renderer.addString(text, worldCoords.x, worldCoords.y, scale, color, font);
-        }
+        Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
+        renderer.addString(text, worldCoords.x, worldCoords.y, scale, color, font);
     }
 
 

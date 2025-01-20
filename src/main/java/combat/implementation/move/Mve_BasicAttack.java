@@ -18,6 +18,7 @@ public class Mve_BasicAttack extends MoveBase {
     private static final String mveName = "Basic Attack";
     private static final String mveDescription = "Default attack.";
     private static final int mvePower = 10;
+    private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 0;
 
 
@@ -27,6 +28,7 @@ public class Mve_BasicAttack extends MoveBase {
         name = mveName;
         description = mveDescription;
         power = mvePower;
+        accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
     }
 

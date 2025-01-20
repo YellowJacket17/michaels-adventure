@@ -17,6 +17,7 @@ public class Mve_Punch extends MoveBase {
     private static final String mveName = "Punch";
     private static final String mveDescription = "The user punches the opponent.";
     private static final int mvePower = 25;
+    private static final int mveAccuracy = 90;
     private static final int mveSkillPoints = 2;
 
 
@@ -26,6 +27,7 @@ public class Mve_Punch extends MoveBase {
         name = mveName;
         description = mveDescription;
         power = mvePower;
+        accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
     }
 

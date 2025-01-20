@@ -11,6 +11,11 @@ public enum SubMenuType {
     ROOT,
 
     /**
+     * Select whether to confirm or cancel a guard selection.
+     */
+    GUARD,
+
+    /**
      * Select from a list of known moves that a player-side entity can use.
      */
     SKILL,

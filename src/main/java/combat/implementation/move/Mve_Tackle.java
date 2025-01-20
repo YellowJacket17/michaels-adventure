@@ -17,6 +17,7 @@ public class Mve_Tackle extends MoveBase {
     private static final String mveName = "Tackle";
     private static final String mveDescription = "Charge's the foe with a full-body tackle.";
     private static final int mvePower = 20;
+    private static final int mveAccuracy = 95;
     private static final int mveSkillPoints = 1;
 
 
@@ -26,6 +27,7 @@ public class Mve_Tackle extends MoveBase {
         name = mveName;
         description = mveDescription;
         power = mvePower;
+        accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
     }
 

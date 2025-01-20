@@ -57,6 +57,11 @@ public abstract class MoveBase {
     protected int power;
 
     /**
+     * Move base accuracy.
+     */
+    protected int accuracy;
+
+    /**
      * Skill points required to use this move.
      */
     protected int skillPoints;
@@ -109,6 +114,10 @@ public abstract class MoveBase {
 
     public int getPower() {
         return power;
+    }
+
+    public int getAccuracy() {
+        return accuracy;
     }
 
     public int getSkillPoints() {
