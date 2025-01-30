@@ -667,25 +667,10 @@ public class EventManager {
         if (added) {
 
             gp.getSoundS().playEffect("testEffect1");
-
-            if ((gp.getEntityM().getPlayer().getName() != null)
-                    && (!gp.getEntityM().getPlayer().getName().equals(""))) {
-
-                text = gp.getEntityM().getPlayer().getName() + " got a " + gp.getItemM().checkName(itemId) + "!";
-            } else {
-
-                text = "Player got a " + gp.getItemM().checkName(itemId) + "!";
-            }
+            text = gp.getEntityM().getPlayer().getName() + " got a " + gp.getItemM().checkName(itemId) + "!";
         } else {
 
-            if ((gp.getEntityM().getPlayer().getName() != null)
-                    && (!gp.getEntityM().getPlayer().getName().equals(""))) {
-
-                text = gp.getEntityM().getPlayer().getName() + " cannot carry anymore!";
-            } else {
-
-                text = "Player cannot carry anymore!";
-            }
+            text = gp.getEntityM().getPlayer().getName() + " cannot carry anymore!";
         }
         displayMessage(text, true);
         return added;

@@ -323,7 +323,7 @@ public abstract class EntityBase extends Drawable {
     /**
      * Entity name.
      */
-    protected String name;
+    protected String name = "???";
 
     /**
      * Entity world walking speed.

@@ -428,19 +428,9 @@ public class CombatManager {
 
         // Build first message to display at the start of the fight.
         String build = "";
-        String stagedName = "";
         int i = 0;
 
         for (int entityId : nonPlayerSideEntities) {
-
-            if ((gp.getEntityM().getEntityById(entityId) != null)
-                    && (!gp.getEntityM().getEntityById(entityId).getName().equals(""))) {
-
-                stagedName = gp.getEntityM().getEntityById(entityId).getName();
-            } else {
-
-                stagedName = "???";
-            }
 
             if (i == (nonPlayerSideEntities.size() - 1)) {
 
@@ -448,10 +438,10 @@ public class CombatManager {
 
                     build += "and ";
                 }
-                build += stagedName;
+                build += gp.getEntityM().getEntityById(entityId).getName();
             } else {
 
-                build += stagedName;
+                build += gp.getEntityM().getEntityById(entityId).getName();
 
                 if (nonPlayerSideEntities.size() > 2) {
 
@@ -895,15 +885,13 @@ public class CombatManager {
 
                     // TODO : Consider disabling option is entity is fainted.
                     playerSideOptions.add("Swap Out");
-                    optionDescriptions.put(0, "Swap " + (entity.getName().equals("") ? "???" : entity.getName())
-                            + " out for an inactive party member.");
+                    optionDescriptions.put(0, "Swap " + entity.getName() + " out for an inactive party member.");
                 }
             } else {
 
                 // TODO : Consider disabling option is entity is fainted.
                 playerSideOptions.add("Swap In");
-                optionDescriptions.put(0, "Swap " + (entity.getName().equals("") ? "???" : entity.getName())
-                        + " in for an active party member.");
+                optionDescriptions.put(0, "Swap " + entity.getName() + " in for an active party member.");
             }
             playerSideOptions.add("Back");
             HashMap<Integer, Vector3f> colors = new HashMap<>();
@@ -1226,7 +1214,7 @@ public class CombatManager {
             handleNonCombatingFollowers(partyEntityId);
         }
         setCombating(gp.getEntityM().getPlayer());
-        gp.getEntityM().getPlayer().setCol(fieldCenterCol - 4);
+        gp.getEntityM().getPlayer().setCol(fieldCenterCol - 3);
         gp.getEntityM().getPlayer().setRow(fieldCenterRow);
         gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
 
@@ -1282,7 +1270,7 @@ public class CombatManager {
             handleNonCombatingFollowers(gp.getEntityM().getEntityById(nonPlayerSideEntityId));
         }
         int placedNonPlayerSideEntities = 0;
-        int centerEntityCol = fieldCenterCol + 4;
+        int centerEntityCol = fieldCenterCol + 3;
         int centerEntityRow = fieldCenterRow;
         int colOffsetFromCenterEntity = 1;                                                                              // Offset of position that the entity will be placed relative to center entity.
         int rowOffsetFromCenterEntity = 2;                                                                              // ^^^
@@ -1301,11 +1289,11 @@ public class CombatManager {
                     opponent.setRow(centerEntityRow);
                 } else if ((placedNonPlayerSideEntities % 2) == 1) {
 
-                    opponent.setCol(centerEntityCol - colOffsetFromCenterEntity);
+                    opponent.setCol(centerEntityCol + colOffsetFromCenterEntity);
                     opponent.setRow(centerEntityRow - rowOffsetFromCenterEntity);
                 } else {
 
-                    opponent.setCol(centerEntityCol - colOffsetFromCenterEntity);
+                    opponent.setCol(centerEntityCol + colOffsetFromCenterEntity);
                     opponent.setRow(centerEntityRow + rowOffsetFromCenterEntity);
 
                     opponent.setCol(fieldCenterCol + 5);
@@ -1686,10 +1674,7 @@ public class CombatManager {
             if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
                     && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                targetOptions.add(
-                        gp.getEntityM().getEntityById(entityId).getName().equals("")
-                                ? "???"
-                                : gp.getEntityM().getEntityById(entityId).getName());
+                targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
                 lastGeneratedTargetOptions.add(entityId);
             }
         }
@@ -1715,9 +1700,7 @@ public class CombatManager {
                     != gp.getEntityM().getPlayer().getEntityId())
                 && (gp.getEntityM().getPlayer().getStatus() != EntityStatus.FAINT)) {
 
-            targetOptions.add(gp.getEntityM().getPlayer().getName().equals("")
-                    ? "???"
-                    : gp.getEntityM().getPlayer().getName());
+            targetOptions.add(gp.getEntityM().getPlayer().getName());
             lastGeneratedTargetOptions.add(gp.getEntityM().getPlayer().getEntityId());
         }
         int entityIndex = 0;
@@ -1729,9 +1712,7 @@ public class CombatManager {
                 if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
                         && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName().equals("")
-                            ? "???"
-                            : gp.getEntityM().getEntityById(entityId).getName());
+                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
                     lastGeneratedTargetOptions.add(entityId);
                 }
             } else {
@@ -1760,9 +1741,7 @@ public class CombatManager {
                     == gp.getEntityM().getPlayer().getEntityId())                                                       // Check if player entity is the self.
                 && (gp.getEntityM().getPlayer().getStatus() != EntityStatus.FAINT)) {
 
-            targetOptions.add(gp.getEntityM().getPlayer().getName().equals("")
-                    ? "???"
-                    : gp.getEntityM().getPlayer().getName());
+            targetOptions.add(gp.getEntityM().getPlayer().getName());
             lastGeneratedTargetOptions.add(gp.getEntityM().getPlayer().getEntityId());
             return;                                                                                                     // The single target entity has been added.
         }
@@ -1775,9 +1754,7 @@ public class CombatManager {
                 if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)        // Check if a party member entity is the self.
                         && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName().equals("")
-                            ? "???"
-                            : gp.getEntityM().getEntityById(entityId).getName());
+                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
                     lastGeneratedTargetOptions.add(entityId);
                     return;                                                                                             // The single target entity has been added.
                 }
@@ -1793,9 +1770,7 @@ public class CombatManager {
             if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)            // Check if a non-player-side entity is the self.
                     && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
 
-                targetOptions.add(gp.getEntityM().getEntityById(entityId).getName().equals("")
-                        ? "???"
-                        : gp.getEntityM().getEntityById(entityId).getName());
+                targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
                 lastGeneratedTargetOptions.add(entityId);
                 return;                                                                                                 // The single target entity has been added.
             }
@@ -1818,16 +1793,7 @@ public class CombatManager {
                 && (targetEntity.getStatus() != EntityStatus.FAINT)) {
 
             targetEntity.setStatus(EntityStatus.FAINT);
-            String stagedName = "";
-
-            if (targetEntity.getName().equals("")) {
-
-                stagedName = "???";
-            } else {
-
-                stagedName = targetEntity.getName();
-            }
-            String message = stagedName + " has no energy left to fight!";
+            String message = targetEntity.getName() + " has no energy left to fight!";
             addQueuedActionFront(new Act_ReadMessage(gp, message, true, true));
         }
     }
@@ -1968,13 +1934,13 @@ public class CombatManager {
         String categoryAbbreviation;
         switch (move.getCategory()) {
             case PHYSICAL:
-                categoryAbbreviation = "P";
+                categoryAbbreviation = "PHY";
                 break;
             case MAGIC:
-                categoryAbbreviation = "M";
+                categoryAbbreviation = "MAG";
                 break;
             case SUPPORT:
-                categoryAbbreviation = "S";
+                categoryAbbreviation = "SUP";
                 break;
             default:
                 categoryAbbreviation = "???";
@@ -2008,7 +1974,7 @@ public class CombatManager {
             } else {
 
                 descriptions.put(i,
-                        entity.getName().equals("") ? "???" : entity.getName() + "\n"
+                        entity.getName() + "\n"
                                 + "HP: " + entity.getLife() + "/" + entity.getMaxLife() + "\n"
                                 + "SP: " + entity.getSkillPoints() + "/" + entity.getMaxSkillPoints());
             }
@@ -2034,7 +2000,7 @@ public class CombatManager {
 
             entity = gp.getEntityM().getEntityById(entityId);
             descriptions.put(i,
-                    entity.getName().equals("") ? "???" : entity.getName() + "\n"
+                    entity.getName() + "\n"
                             + "HP: " + entity.getLife() + "/" + entity.getMaxLife() + "\n"
                             + "SP: " + entity.getSkillPoints() + "/" + entity.getMaxSkillPoints());
             i++;
@@ -2052,18 +2018,15 @@ public class CombatManager {
     private HashMap<Integer, String> buildPlayerSideSwapInSubMenuDescriptions() {
 
         HashMap<Integer, String> descriptions = new HashMap<>();
-        String primaryEntityName = gp.getEntityM().getEntityById(lastGeneratedPlayerSideOptions
+        String entityName = gp.getEntityM().getEntityById(lastGeneratedPlayerSideOptions
                 .get(subMenuLog.get(subMenuLog.size() - 2).getSelectedOption())).getName();
-        EntityBase secondaryEntity;
-        int i = 0;
 
-        for (int entityId : lastGeneratedActivePlayerSideOptions) {
+        for (int i = 0; i < lastGeneratedActivePlayerSideOptions.size(); i++) {
 
-            secondaryEntity = gp.getEntityM().getEntityById(entityId);
-            descriptions.put(i,
-                    "Swap " + secondaryEntity.getName() + " out for "
-                            + (primaryEntityName.equals("") ? "???" : primaryEntityName + "."));
-            i++;
+//            EntityBase secondaryEntity = gp.getEntityM().getEntityById(entityId);
+//            descriptions.put(i,
+//                    "Swap " + secondaryEntity.getName() + " out for " + primaryEntityName + ".");
+            descriptions.put(i, "Swap " + entityName + " in for who?");
         }
         return descriptions;
     }
@@ -2078,18 +2041,16 @@ public class CombatManager {
     private HashMap<Integer, String> buildPlayerSideSwapOutSubMenuDescriptions() {
 
         HashMap<Integer, String> descriptions = new HashMap<>();
-        EntityBase secondaryEntity;
-        String primaryEntityName = gp.getEntityM().getEntityById(lastGeneratedPlayerSideOptions
+        String entityName = gp.getEntityM().getEntityById(lastGeneratedPlayerSideOptions
                         .get(subMenuLog.get(subMenuLog.size() - 2).getSelectedOption())).getName();
-        int i = 0;
 
-        for (int entityId : lastGeneratedInactivePlayerSideOptions) {
+        for (int i = 0; i < lastGeneratedInactivePlayerSideOptions.size(); i++) {
 
-            secondaryEntity = gp.getEntityM().getEntityById(entityId);
+//            EntityBase secondaryEntity = gp.getEntityM().getEntityById(entityId);
+//            descriptions.put(i,
+//                    "Swap " + secondaryEntity.getName() + " in for " + primaryEntityName + ".");
             descriptions.put(i,
-                    "Swap " + secondaryEntity.getName() + " in for "
-                            + (primaryEntityName.equals("") ? "???" : primaryEntityName + "."));
-            i++;
+                    "Swap " + entityName + " out for who?");
         }
         return descriptions;
     }

@@ -489,8 +489,8 @@ public class Player extends EntityBase {
     private void setDefaultValues() {
 
         // World position.
-        setCol(23);                                                                                                     // Initial x position on map.  23  11
-        setRow(25);                                                                                                     // Initial y position on map.  25  22
+        setCol(23);
+        setRow(25);
 
         // Basic attributes.
         setName("Mary");
@@ -505,9 +505,6 @@ public class Player extends EntityBase {
         setBaseDefense(1);
         setBaseMagic(1);
         setBaseAgility(10);
-        setExp(0);
-        setLevel(12);
-        setNextLevelExp(5);
 
         // Combat moves.
         moves.add(new Mve_Tackle(gp));

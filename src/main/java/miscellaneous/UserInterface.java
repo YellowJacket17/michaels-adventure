@@ -1276,7 +1276,7 @@ public class UserInterface {
                     renderer.getFont(standardNormalFont).getCharacter('A').getHeight() * standardFontScale;             // It doesn't matter which character is used, since all characters in a font have the same height.
             float textCharacterScreenHeight =
                     gp.getCamera().worldHeightToScreenHeight(textCharacterWorldHeight);                                 // Normalized (screen) character height.
-            float windowWorldWidth = 177.0f;                                                                            // World (absolute) total width of the description window.
+            float windowWorldWidth = 179.0f;                                                                            // World (absolute) total width of the description window.
             float windowScreenWidth = gp.getCamera().worldWidthToScreenWidth(windowWorldWidth);
             float windowScreenHeight = (textScreenSpacing * 2)                                                          // Spacing between description text (assuming three lines of text).
                     + (2 * windowScreenTopBottomPadding)                                                                // Padding on top and bottom of description window.
