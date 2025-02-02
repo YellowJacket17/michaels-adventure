@@ -15,6 +15,7 @@ import item.ItemManager;
 import map.MapManager;
 import miscellaneous.*;
 import org.joml.Vector3f;
+import particle.ParticleEffectManager;
 import render.Camera;
 import render.Renderer;
 import asset.Spritesheet;
@@ -83,6 +84,7 @@ public class GamePanel {
     private final EnvironmentManager environmentM = new EnvironmentManager(this);
     private final CutsceneManager cutsceneM = new CutsceneManager(this);
     private final AnimationManager animationM = new AnimationManager();
+    private final ParticleEffectManager particleEffectM = new ParticleEffectManager();
     private final CombatManager combatM = new CombatManager(this);
     private final EventManager eventM = new EventManager(this);
     private final CameraSupport cameraS = new CameraSupport(this);
@@ -266,6 +268,9 @@ public class GamePanel {
         // Animation.
         animationM.update(dt);
 
+        // Particle Effect.
+        particleEffectM.update(dt);
+
         // Entities.
         entityM.update(dt);
 
@@ -341,6 +346,9 @@ public class GamePanel {
                 }
             }
         }
+
+        // Particle Effect.
+        particleEffectM.addToRenderPipeline(renderer);
 
         // Environment.
 //        environmentM.addToRenderPipeline(renderer);
@@ -553,6 +561,10 @@ public class GamePanel {
 
     public AnimationManager getAnimationM() {
         return animationM;
+    }
+
+    public ParticleEffectManager getParticleEffectM() {
+        return particleEffectM;
     }
 
     public CombatManager getCombatM() {

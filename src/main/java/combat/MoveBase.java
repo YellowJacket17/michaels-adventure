@@ -3,6 +3,7 @@ package combat;
 import combat.enumeration.MoveCategory;
 import combat.enumeration.MoveTargets;
 import core.GamePanel;
+import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -66,6 +67,16 @@ public abstract class MoveBase {
      */
     protected int skillPoints;
 
+    /**
+     * Particle effect color (i.e., splash animation color on target entities).
+     */
+    protected Vector3f particleEffectColor;
+
+    /**
+     * Sound effect (plays when move is used).
+     */
+    protected String soundEffect;
+
 
     // CONSTRUCTOR
     /**
@@ -122,5 +133,13 @@ public abstract class MoveBase {
 
     public int getSkillPoints() {
         return skillPoints;
+    }
+
+    public Vector3f getParticleEffectColor() {
+        return particleEffectColor;
+    }
+
+    public String getSoundEffect() {
+        return soundEffect;
     }
 }

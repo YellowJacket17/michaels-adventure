@@ -178,9 +178,9 @@ public class Camera {
      * visible screen), then this method will convert that desired position to world coordinates so that it is rendered
      * in the correct place.
      *
-     * @param screenCoords normalized screen coordinates (leftmost x and topmost y), where (0, 0)
-     *                     represents the top-left corner of the screen, (1, 1) the bottom-right
-     * @return world coordinates (leftmost x and topmost y)
+     * @param screenCoords normalized screen coordinates, where (0, 0) represents the top-left corner of the screen,
+     *                     (1, 1) the bottom-right
+     * @return world coordinates
      */
     public Vector2f screenCoordsToWorldCoords(Vector2f screenCoords) {
 
@@ -196,9 +196,9 @@ public class Camera {
      * the loaded map), then this method will convert that desired position to screen coordinates so that it can be
      * known where said position lays in respect to the viewport.
      *
-     * @param worldCoords world coordinates (leftmost x and topmost y)
-     * @return normalized screen coordinates (leftmost x and topmost y), where (0, 0) represents the top-left corner of
-     *         the screen, (1, 1) the bottom-right
+     * @param worldCoords world coordinates
+     * @return normalized screen coordinates, where (0, 0) represents the top-left corner of the screen, (1, 1) the
+     * bottom-right
      */
     public Vector2f worldCoordsToScreenCoords(Vector2f worldCoords) {
 

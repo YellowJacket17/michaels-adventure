@@ -761,7 +761,7 @@ public class CombatManager {
         guardOptions.add("Confirm");
         guardOptions.add("Back");
         colors.put(guardOptions.size() - 1, backOptionColor);
-        optionDescriptions.put(0, "Confirm stance selection.");
+        optionDescriptions.put(0, "Confirm stance selection?");
         addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.GUARD, guardOptions, colors, optionDescriptions));
     }
 
@@ -1215,12 +1215,33 @@ public class CombatManager {
         }
         setCombating(gp.getEntityM().getPlayer());
         gp.getEntityM().getPlayer().setCol(fieldCenterCol - 3);
-        gp.getEntityM().getPlayer().setRow(fieldCenterRow);
         gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
 
+        int numActivePartyMembers;
+
+        if (gp.getEntityM().getParty().size() >= gp.getEntityM().getNumActivePartyMembers()) {
+
+            numActivePartyMembers = gp.getEntityM().getNumActivePartyMembers();
+        } else {
+
+            numActivePartyMembers = gp.getEntityM().getParty().size();
+        }
+        int colOffsetFromPlayerEntity;                                                                                  // Offset of position that active party member will be placed relative to player entity.
+        int rowOffsetFromPlayerEntity;                                                                                  // ^^^
+
+        if ((numActivePartyMembers % 2) == 0) {
+
+            gp.getEntityM().getPlayer().setRow(fieldCenterRow);
+            colOffsetFromPlayerEntity = 1;
+            rowOffsetFromPlayerEntity = 2;
+        } else {
+
+            gp.getEntityM().getPlayer().setRow(fieldCenterRow - 1);
+            colOffsetFromPlayerEntity = 0;
+            rowOffsetFromPlayerEntity = 2;
+        }
+
         int placedPartyMembers = 0;
-        int colOffsetFromPlayerEntity = 1;                                                                              // Offset of position that active party member will be placed relative to player entity.
-        int rowOffsetFromPlayerEntity = 2;                                                                              // ^^^
 
         for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
@@ -1237,20 +1258,29 @@ public class CombatManager {
                 } else if ((placedPartyMembers % 2) == 0) {
 
                     entity.setCol(gp.getEntityM().getPlayer().getCol() - colOffsetFromPlayerEntity);
-                    entity.setRow(gp.getEntityM().getPlayer().getRow() - rowOffsetFromPlayerEntity);
+                    entity.setRow(gp.getEntityM().getPlayer().getRow() + rowOffsetFromPlayerEntity);
                     entity.setHidden(false);
-                } else if ((placedPartyMembers % 2) == 1) {
+                } else {
 
                     entity.setCol(gp.getEntityM().getPlayer().getCol() - colOffsetFromPlayerEntity);
-                    entity.setRow(gp.getEntityM().getPlayer().getRow() + rowOffsetFromPlayerEntity);
+                    entity.setRow(gp.getEntityM().getPlayer().getRow() - rowOffsetFromPlayerEntity);
                     entity.setHidden(false);
                 }
                 placedPartyMembers++;
 
-                if ((placedPartyMembers % 2) == 0) {
+                if (((numActivePartyMembers % 2) == 0) && (placedPartyMembers % 2) == 0) {
 
                     colOffsetFromPlayerEntity += 1;                                                                     // Iterate offset from player entity to stagger active party member placement.
                     rowOffsetFromPlayerEntity += 2;                                                                     // ^^^
+                } else if ((numActivePartyMembers % 2) == 1) {
+
+                    if ((placedPartyMembers % 2) == 1) {
+
+                        colOffsetFromPlayerEntity += 1;
+                    } else {
+
+                        rowOffsetFromPlayerEntity += 2;
+                    }
                 }
             }
         }
@@ -1270,10 +1300,18 @@ public class CombatManager {
             handleNonCombatingFollowers(gp.getEntityM().getEntityById(nonPlayerSideEntityId));
         }
         int placedNonPlayerSideEntities = 0;
-        int centerEntityCol = fieldCenterCol + 3;
-        int centerEntityRow = fieldCenterRow;
-        int colOffsetFromCenterEntity = 1;                                                                              // Offset of position that the entity will be placed relative to center entity.
-        int rowOffsetFromCenterEntity = 2;                                                                              // ^^^
+        int colOffsetFromFirstEntity = 0;                                                                               // Offset of position that the entity will be placed relative to first placed entity.
+        int rowOffsetFromFirstEntity = 0;                                                                               // ^^^
+        int firstEntityCol = fieldCenterCol + 3;
+        int firstEntityRow;
+
+        if ((nonPlayerSideEntities.size() % 2) == 0) {
+
+            firstEntityRow = fieldCenterRow - 1;
+        } else {
+
+            firstEntityRow = fieldCenterRow;
+        }
 
         for (int entityId : nonPlayerSideEntities) {
 
@@ -1285,27 +1323,33 @@ public class CombatManager {
 
                 if (placedNonPlayerSideEntities == 0) {
 
-                    opponent.setCol(centerEntityCol);
-                    opponent.setRow(centerEntityRow);
-                } else if ((placedNonPlayerSideEntities % 2) == 1) {
+                    opponent.setCol(firstEntityCol);
+                    opponent.setRow(firstEntityRow);
+                } else if ((placedNonPlayerSideEntities % 2) == 0) {
 
-                    opponent.setCol(centerEntityCol + colOffsetFromCenterEntity);
-                    opponent.setRow(centerEntityRow - rowOffsetFromCenterEntity);
+                    opponent.setCol(firstEntityCol + colOffsetFromFirstEntity);
+                    opponent.setRow(firstEntityRow - rowOffsetFromFirstEntity);
                 } else {
 
-                    opponent.setCol(centerEntityCol + colOffsetFromCenterEntity);
-                    opponent.setRow(centerEntityRow + rowOffsetFromCenterEntity);
-
-                    opponent.setCol(fieldCenterCol + 5);
-                    opponent.setRow(fieldCenterRow + 2);
+                    opponent.setCol(firstEntityCol + colOffsetFromFirstEntity);
+                    opponent.setRow(firstEntityRow + rowOffsetFromFirstEntity);
                 }
                 opponent.setHidden(false);
                 placedNonPlayerSideEntities++;
 
-                if (((placedNonPlayerSideEntities % 2) == 1) && (placedNonPlayerSideEntities != 1)) {
+                if (((nonPlayerSideEntities.size() % 2) == 1) && (placedNonPlayerSideEntities % 2) == 1) {
 
-                    colOffsetFromCenterEntity += 1;                                                                     // Iterate offset from player entity to stagger active party member placement.
-                    rowOffsetFromCenterEntity += 2;                                                                     // ^^^
+                    colOffsetFromFirstEntity += 1;                                                                      // Iterate offset from first placed entity to stagger entity placement.
+                    rowOffsetFromFirstEntity += 2;                                                                      // ^^^
+                } else if ((nonPlayerSideEntities.size() % 2) == 0) {
+
+                    if ((placedNonPlayerSideEntities % 2) == 0) {
+
+                        colOffsetFromFirstEntity += 1;
+                    } else {
+
+                        rowOffsetFromFirstEntity += 2;
+                    }
                 }
             } else {
 
@@ -1571,30 +1615,27 @@ public class CombatManager {
 
         switch (moveTargets) {
             case OPPONENT:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, false);
                 break;
             case ALLY:
-                addPlayerSideEntitiesToTargetOptions(targetOptions);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, false);
                 break;
             case SELF:
                 addSelfEntityToTargetOptions(targetOptions);
                 break;
             case OPPONENT_ALLY:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
-                addPlayerSideEntitiesToTargetOptions(targetOptions);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, false);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, false);
                 break;
             case OPPONENT_SELF:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
-                addSelfEntityToTargetOptions(targetOptions);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, true);
                 break;
             case ALLY_SELF:
-                addPlayerSideEntitiesToTargetOptions(targetOptions);
-                addSelfEntityToTargetOptions(targetOptions);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, true);
                 break;
             case OPPONENT_ALLY_SELF:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
-                addPlayerSideEntitiesToTargetOptions(targetOptions);
-                addSelfEntityToTargetOptions(targetOptions);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, true);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, true);
                 break;
         }
         return targetOptions;
@@ -1625,30 +1666,27 @@ public class CombatManager {
 
         switch (moveTargets) {
             case OPPONENT:
-                addPlayerSideEntitiesToTargetOptions(targetOptions);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, false);
                 break;
             case ALLY:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, false);
                 break;
             case SELF:
                 addSelfEntityToTargetOptions(targetOptions);
                 break;
             case OPPONENT_ALLY:
-                addPlayerSideEntitiesToTargetOptions(targetOptions);
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, false);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, false);
                 break;
             case OPPONENT_SELF:
-                addPlayerSideEntitiesToTargetOptions(targetOptions);
-                addSelfEntityToTargetOptions(targetOptions);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, true);
                 break;
             case ALLY_SELF:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
-                addSelfEntityToTargetOptions(targetOptions);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, true);
                 break;
             case OPPONENT_ALLY_SELF:
-                addPlayerSideEntitiesToTargetOptions(targetOptions);
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions);
-                addSelfEntityToTargetOptions(targetOptions);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, true);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, true);
                 break;
         }
         return targetOptions;
@@ -1665,17 +1703,28 @@ public class CombatManager {
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
      * return a value.
      *
-     * @param targetOptions list to add viable target options to (of String or Integer type)
+     * @param targetOptions list to add viable target options to (of String type)
+     * @param includeSelf whether the entity whose turn it is will be added to the list (true) or not (false)
      */
-    private void addNonPlayerSideEntitiesToTargetOptions(ArrayList targetOptions) {
+    private void addNonPlayerSideEntitiesToTargetOptions(ArrayList targetOptions, boolean includeSelf) {
+
+        ArrayList<EntityBase> tempNonPlayerSideEntities = new ArrayList<>();
 
         for (int entityId : nonPlayerSideEntities) {
 
-            if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
-                    && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
+            tempNonPlayerSideEntities.add(gp.getEntityM().getEntityById(entityId));
+        }
+        Collections.sort(tempNonPlayerSideEntities, (o1, o2) -> (int)(o1.getWorldY() - o2.getWorldY()));
 
-                targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
-                lastGeneratedTargetOptions.add(entityId);
+        for (EntityBase entity : tempNonPlayerSideEntities) {
+
+            if ((includeSelf
+                    || (gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
+                    != entity.getEntityId()))
+                    && (entity.getStatus() != EntityStatus.FAINT)) {
+
+                targetOptions.add(entity.getName());
+                lastGeneratedTargetOptions.add(entity.getEntityId());
             }
         }
     }
@@ -1686,40 +1735,43 @@ public class CombatManager {
      * This method may be used for either a player-side entity's turn or a non-player-side entity's turn.
      * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
      * Only non-fainted entities will be added.
-     * Additionally, if a player-side entity's turn is currently active, then said entity will not be added to the list.
      * The IDs of all added entities will also be added to the list of last generated selectable targets in the same
      * order.
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
      * return a value.
      *
-     * @param targetOptions list to add viable target options to (of String or Integer type)
+     * @param targetOptions list to add viable target options to (of String type)
+     * @param includeSelf whether the entity whose turn it is will be added to the list (true) or not (false)
      */
-    private void addPlayerSideEntitiesToTargetOptions(ArrayList targetOptions) {
+    private void addPlayerSideEntitiesToTargetOptions(ArrayList targetOptions, boolean includeSelf) {
 
-        if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
-                    != gp.getEntityM().getPlayer().getEntityId())
-                && (gp.getEntityM().getPlayer().getStatus() != EntityStatus.FAINT)) {
-
-            targetOptions.add(gp.getEntityM().getPlayer().getName());
-            lastGeneratedTargetOptions.add(gp.getEntityM().getPlayer().getEntityId());
-        }
+        ArrayList<EntityBase> tempPlayerSideEntities = new ArrayList<>();
+        tempPlayerSideEntities.add(gp.getEntityM().getPlayer());
         int entityIndex = 0;
 
         for (int entityId : gp.getEntityM().getParty().keySet()) {
 
             if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
-                if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() != entityId)
-                        && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
-
-                    targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
-                    lastGeneratedTargetOptions.add(entityId);
-                }
+                tempPlayerSideEntities.add(gp.getEntityM().getParty().get(entityId));
             } else {
 
                 break;
             }
             entityIndex++;
+        }
+        Collections.sort(tempPlayerSideEntities, (o1, o2) -> (int)(o1.getWorldY() - o2.getWorldY()));
+
+        for (EntityBase entity : tempPlayerSideEntities) {
+
+            if ((includeSelf
+                    || (gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
+                    != entity.getEntityId()))
+                    && (entity.getStatus() != EntityStatus.FAINT)) {
+
+                targetOptions.add(entity.getName());
+                lastGeneratedTargetOptions.add(entity.getEntityId());
+            }
         }
     }
 
@@ -1733,7 +1785,7 @@ public class CombatManager {
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
      * return a value.
      *
-     * @param targetOptions list to add viable target option to (of String or Integer type)
+     * @param targetOptions list to add viable target option to (of String type)
      */
     private void addSelfEntityToTargetOptions(ArrayList targetOptions) {
 
@@ -1817,7 +1869,6 @@ public class CombatManager {
             storedEntityHidden.put(target.getEntityId(), target.isHidden());
         }
     }
-
 
 
     /**

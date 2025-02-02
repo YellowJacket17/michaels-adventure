@@ -4,6 +4,8 @@ import combat.ActionBase;
 import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import core.GamePanel;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import utility.LimitedArrayList;
 
 import java.util.List;
@@ -93,7 +95,23 @@ public class Act_UseMove extends ActionBase {
         calculateDamage();
         gp.getEntityM().getEntityById(sourceEntityId).subtractSkillPoints(move.getSkillPoints());                       // Subtract skill points used by this move.
         move.runEffects(sourceEntityId, targetEntityIds);                                                               // Apply any additional affects that this move may have.
-        gp.getEntityM().getEntityById(sourceEntityId).initiateCombatAttackAnimation();
+        gp.getEntityM().getEntityById(sourceEntityId).initiateCombatAttackAnimation();                                  // Play attack animation for source entity.
+
+        for (int targetEntityId : targetEntityIds) {                                                                    // Play particle effect animation on target entities.
+
+            gp.getParticleEffectM().addParticleEffect(
+                    new Vector2f(
+                            gp.getEntityM().getEntityById(targetEntityId).getWorldX() + (GamePanel.NATIVE_TILE_SIZE / 2),
+                            gp.getEntityM().getEntityById(targetEntityId).getWorldY() + (GamePanel.NATIVE_TILE_SIZE / 4)),
+                    move.getParticleEffectColor() != null ? move.getParticleEffectColor() : new Vector3f(255, 255, 255),
+                    4.0f
+            );
+        }
+
+        if (move.getSoundEffect() != null) {                                                                            // Play move sound effect.
+
+            gp.getSoundS().playEffect(move.getSoundEffect());
+        }
 
         // TODO : Should fainting be polled before running effects as well?
 

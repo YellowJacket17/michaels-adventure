@@ -4,6 +4,7 @@ import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import combat.enumeration.MoveTargets;
 import core.GamePanel;
+import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class Mve_Tackle extends MoveBase {
     private static final int mvePower = 20;
     private static final int mveAccuracy = 95;
     private static final int mveSkillPoints = 1;
+    private static final Vector3f mveParticleEffectColor = new Vector3f(166, 255, 166);
 
 
     // CONSTRUCTOR
@@ -29,6 +31,7 @@ public class Mve_Tackle extends MoveBase {
         power = mvePower;
         accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
+        particleEffectColor = mveParticleEffectColor;
     }
 
 

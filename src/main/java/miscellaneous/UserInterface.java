@@ -199,7 +199,7 @@ public class UserInterface {
 
 
     /**
-     * Calculates the world (absolute) length of a string of text.
+     * Calculates the world length of a string of text.
      * Text is assumed to be rendered horizontally (screen width).
      *
      * @param text text whose world length is to be calculated
@@ -364,8 +364,8 @@ public class UserInterface {
         gp.getGuiIconM().addToRenderPipeline(renderer, 0, menuIconScreenX, menuIconScreenY);                            // Party menu icon.
 
         // Prepare header divider (horizontal line beneath header) position and dimensions and render.
-        float dividerWorldThickness = 1.7f;                                                                             // World (absolute) thickness of horizontal line.
-        float dividerWorldLeftRightGap = 42.0f;                                                                         // World (absolute) space on either side of horizontal line between main window edge (i.e., NOT including main window left/right padding).
+        float dividerWorldThickness = 1.7f;                                                                             // World thickness of horizontal line.
+        float dividerWorldLeftRightGap = 42.0f;                                                                         // World space on either side of horizontal line between main window edge (i.e., NOT including main window left/right padding).
         float dividerScreenLeftRightGap = gp.getCamera().worldWidthToScreenWidth(dividerWorldLeftRightGap);
         float dividerScreenWidth = 1 - (2 * mainWindowScreenLeftRightPadding) - (2 * dividerScreenLeftRightGap);
         float dividerWorldWidth = gp.getCamera().screenWidthToWorldWidth(dividerScreenWidth);
@@ -484,9 +484,9 @@ public class UserInterface {
         int numMiniIcons = gp.getEntityM().getParty().size() + 1;
         float miniIconWorldVerticalSpacing = 12.0f;                                                                     // Normalized (screen) spacing between each inactive mini icon (does not include height of slot icon itself).
         float miniIconScreenVerticalSpacing = gp.getCamera().worldHeightToScreenHeight(miniIconWorldVerticalSpacing);
-        float miniIconInactiveWorldSize = 4.0f;                                                                         // World (absolute) width and height of mini icons in their inactive (unselected) state.
+        float miniIconInactiveWorldSize = 4.0f;                                                                         // World width and height of mini icons in their inactive (unselected) state.
         float miniIconInactiveScreenHeight = gp.getCamera().worldHeightToScreenHeight(miniIconInactiveWorldSize);       // Normalized (screen) width and height of the mini icons in their inactive state.
-        float miniIconActiveWorldSize = 6.0f;                                                                           // World (absolute) width and height of mini icons in their active (selected) state.
+        float miniIconActiveWorldSize = 6.0f;                                                                           // World width and height of mini icons in their active (selected) state.
         Vector4f miniIconInactiveColor = new Vector4f(174, 231, 255, 255);
         Vector4f miniIconActiveColor = new Vector4f(100, 193, 255, 255);
         float groupMiniIconScreenHeight =

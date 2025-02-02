@@ -103,7 +103,7 @@ public abstract class EntityBase extends Drawable {
     // STATE
     /**
      * Entity's current world position.
-     * This is the top-leftmost corner of the tile (i.e., column/row) occupied by this entity.
+     * This is the top-left corner of the tile (i.e., column/row) occupied by this entity.
      */
     protected float worldX, worldY;
 
