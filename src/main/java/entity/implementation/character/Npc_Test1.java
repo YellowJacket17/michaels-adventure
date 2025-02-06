@@ -45,6 +45,18 @@ public class Npc_Test1 extends EntityBase {
         combatAttackLeft = AssetPool.getSpritesheet("characters").getSprite(104);
         combatAttackRight = AssetPool.getSpritesheet("characters").getSprite(107);
 
+        combatFaintLeft1 = AssetPool.getSpritesheet("characters").getSprite(117);
+        combatFaintLeft2 = AssetPool.getSpritesheet("characters").getSprite(118);
+        combatFaintLeft3 = AssetPool.getSpritesheet("characters").getSprite(119);
+        combatFaintLeft4 = AssetPool.getSpritesheet("characters").getSprite(120);
+        combatFaintLeft5 = AssetPool.getSpritesheet("characters").getSprite(121);
+
+        combatFaintRight1 = AssetPool.getSpritesheet("characters").getSprite(117);
+        combatFaintRight2 = AssetPool.getSpritesheet("characters").getSprite(118);
+        combatFaintRight3 = AssetPool.getSpritesheet("characters").getSprite(119);
+        combatFaintRight4 = AssetPool.getSpritesheet("characters").getSprite(120);
+        combatFaintRight5 = AssetPool.getSpritesheet("characters").getSprite(121);
+
         sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();

@@ -2,7 +2,6 @@ package particle;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import particle.ParticleEffect;
 import render.Renderer;
 import utility.LimitedArrayList;
 

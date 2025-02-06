@@ -383,7 +383,7 @@ public class GamePanel {
 
         // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";
-        AssetPool.addSpritesheet("characters", new Spritesheet(AssetPool.getTexture(filePath), 108, 32, 60, 1));
+        AssetPool.addSpritesheet("characters", new Spritesheet(AssetPool.getTexture(filePath), 122, 32, 60, 1));
 
         // Objects spritesheet (spritesheet 2).
         filePath = "/spritesheets/objects.png";
@@ -423,6 +423,7 @@ public class GamePanel {
         AssetPool.addSound("testTrack5", "sound/tracks/endOfTheLine_intro.ogg", "sound/tracks/endOfTheLine_loop.ogg");
         AssetPool.addSound("testTrack6", "sound/tracks/yesteryear_intro.ogg", "sound/tracks/yesteryear_loop.ogg");
         AssetPool.addSound("testEffect1", "sound/effects/testEffect1.ogg");
+        AssetPool.addSound("testEffect2", "sound/effects/testEffect2.ogg");
 
         // Illustrations.
         filePath = "/illustrations/illustration3.png";

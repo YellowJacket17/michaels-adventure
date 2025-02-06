@@ -154,9 +154,9 @@ public abstract class EntityBase extends Drawable {
      * Current walking sprite number to render for a given direction.
      * This is used for walking animation to distinguish whether the left or right foot should be forward,
      * regardless of direction of travel.
-     * A value of 1 represents idle.
-     * A value of 2 represents left foot forward.
-     * A value of 3 represents right foot forward.
+     * A value of '1' represents idle.
+     * A value of '2' represents left foot forward.
+     * A value of '3' represents right foot forward.
      */
     protected int walkSpriteNumCurrent = 1;
 
@@ -170,8 +170,8 @@ public abstract class EntityBase extends Drawable {
      * Current combat stance sprite number to render for a given direction.
      * This is used for combat stance animation to distinguish which frame of the animation to render, regardless of
      * whether this entity is facing left or right.
-     * A value of 1 represents first frame.
-     * A value of 2 represents second frame.
+     * A value of '1' represents first frame.
+     * A value of '2' represents second frame.
      */
     protected int combatStanceSpriteNumCurrent = 1;
 
@@ -182,6 +182,14 @@ public abstract class EntityBase extends Drawable {
      * In practice, there is only one frame for combat attack animation.
      */
     protected int combatAttackSpriteNumCurrent = 1;
+
+    /**
+     * Current combat faint sprite number to render for a given direction.
+     * This is used for combat faint animation to distinguish which frame of animation to render, regardless of whether
+     * this entity is facing left or right.
+     * A value of '1' represents the first frame, a value of '2' represents the second frame, etc.
+     */
+    protected int combatFaintSpriteNumCurrent = 1;
 
     /**
      * Boolean indicating whether this entity is currently in a state of motion or not (used for grid-based movement).
@@ -223,9 +231,19 @@ public abstract class EntityBase extends Drawable {
     protected DefaultIdleAction defaultIdleAction;
 
     /**
-     * Boolean indicating whether this entity is currently in a combat attack animation.
+     * Boolean indicating whether this entity is currently performing a combat attack animation.
      */
     protected boolean playingCombatAttackAnimation = false;
+
+    /**
+     * Boolean indicating whether this entity is currently performing a combat faint animation.
+     */
+    protected boolean playingCombatFaintAnimation = false;
+
+    /**
+     * Boolean indicating whether the combat animation is to be played in reverse or not.
+     */
+    protected boolean combatAnimationReverse = false;
 
 
     // PATHFINDING
@@ -269,20 +287,6 @@ public abstract class EntityBase extends Drawable {
     protected double fadeEffectAlphaPerSecond;
 
 
-    // PULSATE EFFECT
-    /**
-     * Boolean setting whether this entity is pulsating or not.
-     * Pulsation is defined as an enemy sprite flashing white at a set frequency.
-     */
-    protected boolean pulsating;
-
-    /**
-     * Counts time passed (seconds) while this entity is pulsating.
-     * This counter resets upon completion of a single full pulsation cycle.
-     */
-    protected double pulsatingCounter;
-
-
     // COUNTERS/BUFFERS
     /**
      * Counts the number of world units this entity has moved thus far while in a state of motion.
@@ -317,6 +321,13 @@ public abstract class EntityBase extends Drawable {
      * In other words, increasing this value will make the combat attack animation appear to run more slowly.
      */
     protected double animationCounterCombatAttackMax = 0.6;
+
+    /**
+     * Maximum number of seconds allocated to a full combat faint animation.
+     * Increasing this value will extend the duration of the combat faint animation.
+     * In other words, increasing this value will make the combat faint animation appear to run more slowly.
+     */
+    protected double animationCounterCombatFaintMax = 0.8;
 
 
     // BASIC ATTRIBUTES
@@ -492,6 +503,11 @@ public abstract class EntityBase extends Drawable {
             return;
         }
 
+        if (playingCombatFaintAnimation) {
+            updateCombatFaintAnimation(dt);
+            return;
+        }
+
         if (combating) {
             updateCombatStanceAnimation(dt);
             return;
@@ -524,6 +540,10 @@ public abstract class EntityBase extends Drawable {
         if (playingCombatAttackAnimation) {
 
             setCombatAttackSprite();
+        } else if (playingCombatFaintAnimation || (status == EntityStatus.FAINT)) {
+//        } else if (playingCombatFaintAnimation) {
+
+            setCombatFaintSprite();
         } else if (combating) {
 
             setCombatStanceSprite();
@@ -696,6 +716,34 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
+     * Stages this entity to render in a combat faint sprite.
+     * Note that this only stages the sprite number to be retrieved when rendering and does not set the actual sprite.
+     * This will only be rendered if this entity is playing a combat faint animation.
+     */
+    public void stageCombatFaintSprite() {
+
+        double oneFourthAnimationCounterMax = animationCounterCombatFaintMax / 4;
+
+        if (animationCounter < oneFourthAnimationCounterMax) {
+
+            combatFaintSpriteNumCurrent = 1;
+        } else if (animationCounter < (oneFourthAnimationCounterMax * 2)) {
+
+            combatFaintSpriteNumCurrent = 2;
+        } else if (animationCounter < (oneFourthAnimationCounterMax * 3)) {
+
+            combatFaintSpriteNumCurrent = 3;
+        } else if (animationCounter < (oneFourthAnimationCounterMax * 4)) {
+
+            combatFaintSpriteNumCurrent = 4;
+        } else {
+
+            combatFaintSpriteNumCurrent = 5;
+        }
+    }
+
+
+    /**
      * Initiates a combat attack animation for this entity.
      * If the animation is already playing, nothing will happen.
      */
@@ -703,7 +751,29 @@ public abstract class EntityBase extends Drawable {
 
         if (!playingCombatAttackAnimation) {
 
+            if (playingCombatFaintAnimation) {
+
+                playingCombatFaintAnimation = false;
+            }
             playingCombatAttackAnimation = true;
+            animationCounter = 0;
+        }
+    }
+
+
+    /**
+     * Initiates a combat faint animation for this entity.
+     * If the animation is already playing, nothing will happen.
+     */
+    public void initiateCombatFaintAnimation() {
+
+        if (!playingCombatFaintAnimation) {
+
+            if (playingCombatAttackAnimation) {
+
+                playingCombatAttackAnimation = false;
+            }
+            playingCombatFaintAnimation = true;
             animationCounter = 0;
         }
     }
@@ -839,6 +909,54 @@ public abstract class EntityBase extends Drawable {
                 break;
             case RIGHT:
                 sprite = combatAttackRight;
+                break;
+        }
+    }
+
+
+    /**
+     * Sets this entity's sprite to match this entity's current direction and staged combat faint sprite number.
+     */
+    protected void setCombatFaintSprite() {
+
+        switch (directionCurrent) {
+            case LEFT:
+                switch (combatFaintSpriteNumCurrent) {
+                    case 1:
+                        sprite = combatFaintLeft1;
+                        break;
+                    case 2:
+                        sprite = combatFaintLeft2;
+                        break;
+                    case 3:
+                        sprite = combatFaintLeft3;
+                        break;
+                    case 4:
+                        sprite = combatFaintLeft4;
+                        break;
+                    case 5:
+                        sprite = combatFaintLeft5;
+                        break;
+                }
+                break;
+            case RIGHT:
+                switch (combatFaintSpriteNumCurrent) {
+                    case 1:
+                        sprite = combatFaintRight1;
+                        break;
+                    case 2:
+                        sprite = combatFaintRight2;
+                        break;
+                    case 3:
+                        sprite = combatFaintRight3;
+                        break;
+                    case 4:
+                        sprite = combatFaintRight4;
+                        break;
+                    case 5:
+                        sprite = combatFaintRight5;
+                        break;
+                }
                 break;
         }
     }
@@ -995,8 +1113,29 @@ public abstract class EntityBase extends Drawable {
 
                 combatStanceSpriteNumCurrent = 1;                                                                       // Reset combat stance animation to first sprite in cycle, if applicable
             }
+        } else {
+
+            stageCombatAttackSprite();
         }
-        stageCombatAttackSprite();
+    }
+
+
+    /**
+     * Updates this entity's combat faint animation by one frame.
+     * If the animation has completed, then it is exited.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    protected void updateCombatFaintAnimation(double dt) {
+
+        animationCounter += dt;
+        stageCombatFaintSprite();
+
+        if (animationCounter >= animationCounterCombatFaintMax) {
+
+            playingCombatFaintAnimation = false;
+            animationCounter = 0;
+        }
     }
 
 

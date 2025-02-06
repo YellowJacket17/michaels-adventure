@@ -191,6 +191,11 @@ public class Player extends EntityBase {
             return;
         }
 
+        if (playingCombatFaintAnimation) {
+            updateCombatFaintAnimation(dt);
+            return;
+        }
+
         if (combating) {
             updateCombatStanceAnimation(dt);
             return;

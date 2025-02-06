@@ -111,6 +111,9 @@ public class Act_UseMove extends ActionBase {
         if (move.getSoundEffect() != null) {                                                                            // Play move sound effect.
 
             gp.getSoundS().playEffect(move.getSoundEffect());
+        } else {
+
+            gp.getSoundS().playEffect("testEffect2");
         }
 
         // TODO : Should fainting be polled before running effects as well?
