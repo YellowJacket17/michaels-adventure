@@ -4,10 +4,8 @@ import combat.ActionBase;
 import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import core.GamePanel;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import utility.LimitedArrayList;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -92,48 +90,21 @@ public class Act_UseMove extends ActionBase {
     @Override
     public void run() {
 
-        calculateDamage();
-        gp.getEntityM().getEntityById(sourceEntityId).subtractSkillPoints(move.getSkillPoints());                       // Subtract skill points used by this move.
-        move.runEffects(sourceEntityId, targetEntityIds);                                                               // Apply any additional affects that this move may have.
-        gp.getEntityM().getEntityById(sourceEntityId).initiateCombatAttackAnimation();                                  // Play attack animation for source entity.
-
-        for (int targetEntityId : targetEntityIds) {                                                                    // Play particle effect animation on target entities.
-
-            gp.getParticleEffectM().addParticleEffect(
-                    new Vector2f(
-                            gp.getEntityM().getEntityById(targetEntityId).getWorldX() + (GamePanel.NATIVE_TILE_SIZE / 2),
-                            gp.getEntityM().getEntityById(targetEntityId).getWorldY() + (GamePanel.NATIVE_TILE_SIZE / 4)),
-                    move.getParticleEffectColor() != null ? move.getParticleEffectColor() : new Vector3f(255, 255, 255),
-                    4.0f
-            );
-        }
-
-        if (move.getSoundEffect() != null) {                                                                            // Play move sound effect.
-
-            gp.getSoundS().playEffect(move.getSoundEffect());
-        } else {
-
-            gp.getSoundS().playEffect("testEffect2");
-        }
-
-        // TODO : Should fainting be polled before running effects as well?
-
-        // TODO : Think about at what point damaging status conditions would be applied.
-        //  These will likely be applied as the last thing in a turn.
-        //  Would these go in the action `endEntityTurn`?
-
-        gp.getCombatM().pollFainting();
-        gp.getCombatM().progressCombat();
+        HashMap<Integer, Integer> targetEntitiesFinalLife = calculateDamage();                                          // Calculate (but don't apply) final life values of each target entity.
+        gp.getCombatAnimationS().initiateStandardAttackAnimation(sourceEntityId, targetEntitiesFinalLife, move);        // Play standard attack animation (fainting + move affects applied afterward).
     }
 
 
     /**
-     * Calculates and applies damage to all entities targeted by this move.
+     * Calculates damage to all entities targeted by this move.
+     * Note that this method does not actually apply damage to an entity.
+     *
+     * @return final life points of each targeted entity after applying damage; entity ID is the key, life points is the
+     * value
      */
-    private void calculateDamage() {
+    private HashMap<Integer, Integer> calculateDamage() {
 
-        // TODO : Is the list `allDamage` necessary?
-        LimitedArrayList<Integer> allDamage = new LimitedArrayList<>(6);
+        HashMap<Integer, Integer> targetEntitiesFinalLife = new HashMap<>();
         int sourceEntityAttack = gp.getEntityM().getEntityById(sourceEntityId).getAttack();
         int sourceEntityMagic = gp.getEntityM().getEntityById(sourceEntityId).getMagic();
         int targetDamage = 0;
@@ -158,16 +129,20 @@ public class Act_UseMove extends ActionBase {
                 int targetEntityDefense = gp.getEntityM().getEntityById(targetEntityId).getDefense();
                 targetDamage = move.getPower() * (sourceEntityAttack / targetEntityDefense);
                 if (targetGuarding) {targetDamage /= 2;}
-                allDamage.add(targetDamage);
+                targetEntitiesFinalLife.put(
+                        targetEntityId,
+                        gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage);
             } else if (move.getCategory() == MoveCategory.MAGIC) {
 
                 int targetEntityMagic = gp.getEntityM().getEntityById(targetEntityId).getMagic();
                 targetDamage = move.getPower() * (sourceEntityMagic / targetEntityMagic);
                 if (targetGuarding) {targetDamage /= 2;}
-                allDamage.add(targetDamage);
+                targetEntitiesFinalLife.put(
+                        targetEntityId,
+                        gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage);
             }
-            gp.getEntityM().getEntityById(targetEntityId).subtractLife(targetDamage);
         }
+        return targetEntitiesFinalLife;
     }
 
 

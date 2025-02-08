@@ -6,6 +6,7 @@ import render.Renderer;
 import utility.LimitedArrayList;
 
 import java.util.Iterator;
+import java.util.UUID;
 
 /**
  * This class instantiates particle effects and handles their lifecycles.
@@ -73,5 +74,24 @@ public class ParticleEffectManager {
     public void addParticleEffect(Vector2f worldOriginPosition, Vector3f color, float size) {
 
         particleEffects.add(new ParticleEffect(worldOriginPosition, color, size));
+    }
+
+
+    /**
+     * Retrieves a particle effect instance by UUID.
+     *
+     * @param uuid uuid of target particle effect
+     * @return particle effect (null if no match found)
+     */
+    public ParticleEffect getParticleEffectByUuid(UUID uuid) {
+
+        for (ParticleEffect particleEffect : particleEffects) {
+
+            if (particleEffect.getUuid().equals(uuid)) {
+
+                return particleEffect;
+            }
+        }
+        return null;
     }
 }

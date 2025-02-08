@@ -209,8 +209,8 @@ public class CombatManager {
     /**
      * Progresses combat after the previous action has finished.
      * This function serves as the main driver for progressing combat logic.
-     * Action subclasses must call this function as the last call in their `run()` function if it is desired that they
-     * immediately progress combat to the next queued action upon finishing execution.
+     * Action subclasses must call this function as the last call in their `run()` function to hand off control to the
+     * next queued action upon finishing execution.
      */
     public void progressCombat() {
 
@@ -993,7 +993,7 @@ public class CombatManager {
                             getLatestSubMenuMemory().getSelectedOption()));
             String message;
             message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
-            addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
+            addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
             addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
             addQueuedActionBack(new Act_EndEntityTurn(gp));
         }
@@ -1460,7 +1460,7 @@ public class CombatManager {
 
         // Add move action.
         String message = buildUseMoveMessage(sourceEntity.getName(), move.getName());
-        addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
+        addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
         addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
         addQueuedActionBack(new Act_EndEntityTurn(gp));
         runNextQueuedAction();
@@ -2185,6 +2185,10 @@ public class CombatManager {
 
     public LinkedHashSet<Integer> getNonPlayerSideEntities() {
         return nonPlayerSideEntities;
+    }
+
+    public int getEntityIdCurrentTurn() {
+        return queuedEntityTurnOrder.peekFirst();
     }
 
     public String getLatestSubMenuDescriptionByIndex(int index) {

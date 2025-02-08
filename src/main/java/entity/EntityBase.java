@@ -240,11 +240,6 @@ public abstract class EntityBase extends Drawable {
      */
     protected boolean playingCombatFaintAnimation = false;
 
-    /**
-     * Boolean indicating whether the combat animation is to be played in reverse or not.
-     */
-    protected boolean combatAnimationReverse = false;
-
 
     // PATHFINDING
     /**
@@ -540,8 +535,8 @@ public abstract class EntityBase extends Drawable {
         if (playingCombatAttackAnimation) {
 
             setCombatAttackSprite();
-        } else if (playingCombatFaintAnimation || (status == EntityStatus.FAINT)) {
-//        } else if (playingCombatFaintAnimation) {
+//        } else if (playingCombatFaintAnimation || (status == EntityStatus.FAINT)) {
+        } else if (playingCombatFaintAnimation) {
 
             setCombatFaintSprite();
         } else if (combating) {
@@ -1717,6 +1712,14 @@ public abstract class EntityBase extends Drawable {
 
     public boolean isHidden() {
         return hidden;
+    }
+
+    public boolean isPlayingCombatAttackAnimation() {
+        return playingCombatAttackAnimation;
+    }
+
+    public boolean isPlayingCombatFaintAnimation() {
+        return playingCombatFaintAnimation;
     }
 
     public boolean isOnPath() {

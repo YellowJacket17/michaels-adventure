@@ -1,0 +1,17 @@
+02/08/2025 11:37:45:200  INFO     Application started.
+02/08/2025 11:37:49:630  INFO     Starting game loop.
+02/08/2025 11:38:06:451  ERROR    An unhandled exception has occurred!
+java.lang.IndexOutOfBoundsException: Index -1 out of bounds for length 3
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:64)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:70)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:266)
+	at java.base/java.util.Objects.checkIndex(Objects.java:361)
+	at java.base/java.util.ArrayList.get(ArrayList.java:427)
+	at combat.CombatManager.runTargetSelectSubMenuSelection(CombatManager.java:992)
+	at combat.CombatManager.runSubMenuSelection(CombatManager.java:711)
+	at combat.CombatManager.progressCombat(CombatManager.java:219)
+	at combat.support.CombatAnimationSupport.update(CombatAnimationSupport.java:109)
+	at core.GamePanel.update(GamePanel.java:272)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)

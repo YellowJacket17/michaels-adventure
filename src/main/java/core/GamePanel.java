@@ -5,6 +5,7 @@ import animation.AnimationManager;
 import asset.AssetPool;
 import asset.Illustration;
 import combat.*;
+import combat.support.CombatAnimationSupport;
 import core.enumeration.PrimaryGameState;
 import cutscene.CutsceneManager;
 import dialogue.DialogueArrow;
@@ -95,6 +96,7 @@ public class GamePanel {
     private final FadeSupport fadeS = new FadeSupport(this);
     private final TransitionSupport transitionS = new TransitionSupport(this);
     private final IllustrationSupport illustrationS = new IllustrationSupport(this);
+    private final CombatAnimationSupport combatAnimationS = new CombatAnimationSupport(this);
     private final PathFinder pathF = new PathFinder(this);
     private final UserInterface ui = new UserInterface(this);
 
@@ -267,6 +269,7 @@ public class GamePanel {
 
         // Animation.
         animationM.update(dt);
+        combatAnimationS.update(dt);
 
         // Particle Effect.
         particleEffectM.update(dt);
@@ -606,6 +609,10 @@ public class GamePanel {
 
     public IllustrationSupport getIllustrationS() {
         return illustrationS;
+    }
+
+    public CombatAnimationSupport getCombatAnimationS() {
+        return combatAnimationS;
     }
 
     public PathFinder getPathF() {

@@ -160,10 +160,11 @@ public class DialogueReader {
                     if (activeConv.getConvId() == -2) {                                                                 // Check if this is a sub-menu message.
 
                         gp.getSubMenuS().handlePostSubMenuPrompt();
-                    } else if (activeConv.getConvId() == -4) {                                                          // Check is this is a noninteractive combat message.
+                    } else if (activeConv.getConvId() == -4) {                                                          // Check if this is a noninteractive combat message.
 
+                        convertToPlaceholderMessage();                                                                  // Convert to placeholder message to ensure that `progressCombat()` is only triggered once by this message.
                         gp.getCombatM().progressCombat();
-                } else {
+                } else if (activeConv.getConvId() != -5) {                                                              // Ensure the active conversation isn't a placeholder message.
 
                         gp.getEventM().handlePostConversation(activeConv.getConvId());
                     }
@@ -303,6 +304,77 @@ public class DialogueReader {
 
 
     /**
+     * Stages and initiates a single message to be read to the dialogue screen.
+     * This message cannot be manually progressed by the player, and no automatic logic or cleanup is run after the
+     * message has been read; the message will remain displayed indefinitely until the conversation is cleaned up by
+     * logic run elsewhere.
+     * The temporary conversation this message is placed in is given an ID of -5.
+     * The primary game state is set to dialogue.
+     *
+     * @param message text to be read
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
+     */
+    public void initiatePlaceholderMessage(String message, boolean charByChar) {
+
+        initiatePlaceholderMessage(message, charByChar, false);
+    }
+
+
+    /**
+     * Stages and initiates a single message to be read to the dialogue screen.
+     * This message cannot be manually progressed by the player, and no automatic logic or cleanup is run after the
+     * message has been read; the message will remain displayed indefinitely until the conversation is cleaned up by
+     * logic run elsewhere.
+     * The temporary conversation this message is placed in is given an ID of -5.
+     * The primary game state is set to dialogue.
+     *
+     * @param message text to be read
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
+     * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false), regardless of pause
+     */
+    public void initiatePlaceholderMessage(String message, boolean charByChar, boolean showArrow) {
+
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
+        stageMessage(message, -5);                                                                                      // Instantiate a temporary conversation with an ID of -5 to indicate that this is a placeholder message.
+        activeConv.setPlayerInputToEnd(false);                                                                          // This is so logic following the dialogue once it has finished being read is run immediately without player input.
+        printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
+        alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
+    }
+
+
+    /**
+     * Converts the current piece of dialogue being read to a placeholder message.
+     * The current piece of dialogue is converted exactly as currently displayed at the time of calling this method;
+     * for example, if the dialogue is mid-print when this message is called, then only what has been printed thus far
+     * will be converted to the placeholder message.
+     * This message cannot be manually progressed by the player, and no automatic logic or cleanup is run after the
+     * message has been read; the message will remain displayed indefinitely until the conversation is cleaned up by
+     * logic run elsewhere.
+     * The temporary conversation this message is placed in is given an ID of -5.
+     * The primary game state is set to dialogue.
+     */
+    public void convertToPlaceholderMessage() {
+
+        if (activeConv != null) {
+
+            gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
+            printCharByChar = false;                                                                                    // Instantly "freeze" the printed dialogue as-is at the time of calling this method.
+            alwaysShowArrow = false;                                                                                    // Do not display the dialogue arrow.
+            Conversation conversation = new Conversation(-5);                                                           // Instantiate a temporary conversation with the passed ID.
+            Dialogue dialogue = new Dialogue();                                                                         // Instantiate a temporary piece of dialogue to add to the temporary conversation.
+            dialogue.setText(dialoguePrintTotal);                                                                       // Set the dialogue text as the text that had already been read out at the time of calling this method.
+            conversation.getDialogueList().add(dialogue);                                                               // Add the dialogue to the temporary conversation.
+            activeConv = conversation;                                                                                  // Stage the temporary conversation as the current conversation being read.
+            activeConv.setPlayerInputToEnd(false);                                                                      // The player cannot manually progress this dialogue.
+            readingConversation = false;                                                                                // If reading, stop reading conversation to keep dialogue displayed exactly as it was at the time of calling this method.
+            readingDialogue = false;                                                                                    // If reading, stop reading dialogue.
+            dialoguePaused = false;                                                                                     // If paused, unpause dialogue.
+            nextDialogueIndex = 1;                                                                                      // Housekeeping; only one piece of dialogue in this conversation, so set next dialogue index as if already iterated.
+        }
+    }
+
+
+    /**
      * Stages and initiates a new conversation.
      * The primary game state is set to dialogue.
      *
@@ -356,9 +428,6 @@ public class DialogueReader {
             }
         }
     }
-
-
-    // TODO : Need to reset DialaogueArrow after InteractionCounter goes to zero.
 
 
     /**
@@ -504,7 +573,7 @@ public class DialogueReader {
      * @param i character index in the staged piece of dialogue to be checked
      * @return next word, if applicable
      */
-    public String checkNextWord(int i) {
+    private String checkNextWord(int i) {
 
         if ((activeDialogueText.charAt(i) == ' ') && (i < activeDialogueText.length() - 1)) {                           // Check if the next character to be printed is a space AND is not the last character in the piece of dialogue.
 

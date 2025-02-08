@@ -1,7 +1,7 @@
 package combat.enumeration;
 
 /**
- * This enum defines the possible categories that a move can be.
+ * This enum defines the possible categories that a combat move can be.
  */
 public enum MoveCategory {
 

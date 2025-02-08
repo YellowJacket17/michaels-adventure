@@ -615,13 +615,14 @@ public class Player extends EntityBase {
             if ((!gp.getDialogueR().isReadingConversation())
                     && (gp.getDialogueR().getActiveConv().isPlayerInputToEnd())) {                                      // If no longer reading a conversation AND player input is required to end the conversation.
 
-                if (gp.getDialogueR().getActiveConv().getConvId() == -3) {
+                if (gp.getDialogueR().getActiveConv().getConvId() == -3) {                                              // Check if the conversation was an interactive combat message that has finished;
 
-                    gp.getCombatM().progressCombat();                                                                   // The conversation was an interactive combat message and has finished; check what logic to run next in combat.
-                    interactionCountdown = stagedMenuInteractionCountdown;                                              // Player must wait before interacting with another action, for example (prevents instantly progressing next action that appears).
+                    gp.getDialogueR().convertToPlaceholderMessage();                                                    // Convert to placeholder message to ensure that `progressCombat()` can only be triggered by player input from this message once.
+                    interactionCountdown = stagedMenuInteractionCountdown;                                              // Player must wait before interacting with another combat action, for example (prevents instantly progressing next action that appears).
+                    gp.getCombatM().progressCombat();                                                                   // Check what logic to run next in combat (i.e., progress combat loop).
                 } else {
 
-                    gp.getEventM().handlePostConversation(gp.getDialogueR().getActiveConv().getConvId());               // Check to see if any events will be triggered once the conversation has finished.
+                    gp.getEventM().handlePostConversation(gp.getDialogueR().getActiveConv().getConvId());               // Check if any events will be triggered once the conversation has finished.
                 }
             } else {
 

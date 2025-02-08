@@ -1,0 +1,15 @@
+02/06/2025 17:52:49:027  INFO     Application started.
+02/06/2025 17:52:52:232  INFO     Starting game loop.
+02/06/2025 17:53:20:572  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "combat.ActionBase.run()" because the return value of "java.util.LinkedList.pollFirst()" is null
+	at combat.CombatManager.runNextQueuedAction(CombatManager.java:687)
+	at combat.CombatManager.progressCombat(CombatManager.java:220)
+	at event.implementation.submenu.Evt_SubMenu001.run(Evt_SubMenu001.java:24)
+	at event.EventManager.handlePostSubMenu(EventManager.java:278)
+	at entity.implementation.player.Player.updateSubMenuInput(Player.java:790)
+	at entity.implementation.player.Player.updateInput(Player.java:173)
+	at entity.EntityManager.updateInput(EntityManager.java:117)
+	at core.GamePanel.update(GamePanel.java:253)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)

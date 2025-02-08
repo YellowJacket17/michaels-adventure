@@ -25,8 +25,10 @@ public abstract class ActionBase {
     // METHOD
     /**
      * Runs action logic.
-     * Note that the `progressCombat()` method in CombatManager must be called somewhere through this method (typically
-     * the end) to progress combat to the next action.
+     * Note that the `progressCombat()` method in CombatManager must be called somewhere through this action's logic to
+     * hand off control to the next queued action, thereby progressing combat.
+     * Tip: if searching for code that progresses combat to the next action (i.e., code that ends an action), search
+     * files for uses of the `progressCombat()` method.
      */
     public abstract void run();
 }

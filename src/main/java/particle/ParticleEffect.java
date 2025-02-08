@@ -7,12 +7,19 @@ import render.Renderer;
 import render.drawable.Transform;
 import render.enumeration.ZIndex;
 
+import java.util.UUID;
+
 /**
  * This class defines a particle effect.
  */
 public class ParticleEffect {
 
     // FIELDS
+    /**
+     * Universally unique identifier (UUID) for this particle effect.
+     */
+    private final UUID uuid = java.util.UUID.randomUUID();
+
     /**
      * Initial world position of each particle.
      * All particles have the same initial position.
@@ -124,6 +131,10 @@ public class ParticleEffect {
 
 
     // GETTER
+    public UUID getUuid() {
+        return uuid;
+    }
+
     public float getMaximumTime() {
         return maximumTime;
     }
