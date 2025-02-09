@@ -114,25 +114,29 @@ public class CombatAnimationSupport {
      * determined by the move being used.
      * The sound effect associated with the move is also played.
      * Only moves that subtract health from target entities are supported.
+     * If a standard move animation is already active, nothing will happen.
      *
      * @param sourceEntityId ID of entity using the animated combat move
      * @param targetEntitiesFinalLife calculated final life points of each targeted entity after applying damage; entity
      *                                ID is the key, life points is the value
      * @param move combat move being used for animation
      */
-    public void initiateStandardAttackAnimation(int sourceEntityId, HashMap<Integer, Integer> targetEntitiesFinalLife,
-                                                MoveBase move) {
+    public void initiateStandardMoveAnimation(int sourceEntityId, HashMap<Integer, Integer> targetEntitiesFinalLife,
+                                              MoveBase move) {
 
-        this.sourceEntityId = sourceEntityId;
+        if (!standardMoveAnimationActive) {
 
-        for (int targetEntityId : targetEntitiesFinalLife.keySet()) {
+            this.sourceEntityId = sourceEntityId;
 
-            this.targetEntitiesFinalLife.put(targetEntityId, targetEntitiesFinalLife.get(targetEntityId));
-            this.targetEntitiesDamageRemainder.put(targetEntityId, 0.0);
+            for (int targetEntityId : targetEntitiesFinalLife.keySet()) {
+
+                this.targetEntitiesFinalLife.put(targetEntityId, targetEntitiesFinalLife.get(targetEntityId));
+                this.targetEntitiesDamageRemainder.put(targetEntityId, 0.0);
+            }
+            this.move = move;
+            standardMoveAnimationActive = true;
+            standardMoveAnimationDelay = 0.4;
         }
-        this.move = move;
-        standardMoveAnimationActive = true;
-        standardMoveAnimationDelay = 0.4;
     }
 
 
@@ -187,8 +191,9 @@ public class CombatAnimationSupport {
 
                 lifeSubtractionCandidate = (int)Math.floor(targetEntitiesDamageRemainder.get(entityId));
 
-                if ((gp.getEntityM().getEntityById(entityId).getLife() - lifeSubtractionCandidate)
-                        <= targetEntitiesFinalLife.get(entityId)) {
+                if (((gp.getEntityM().getEntityById(entityId).getLife() - lifeSubtractionCandidate)
+                        <= targetEntitiesFinalLife.get(entityId))
+                        || ((gp.getEntityM().getEntityById(entityId).getLife() - lifeSubtractionCandidate) < 0)) {
 
                     gp.getEntityM().getEntityById(entityId).setLife(targetEntitiesFinalLife.get(entityId));
                 } else {

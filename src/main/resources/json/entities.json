@@ -72,8 +72,8 @@
         "attributes": {
             "name": "Joe",
             "speed": 120,
-            "maxLife": 25,
-            "life": 12,
+            "maxLife": 70,
+            "life": 70,
             "maxSkillPoints": 12,
             "skillPoints": 15,
             "baseAttack": 1,
@@ -102,8 +102,8 @@
         "attributes": {
             "name": "Howie",
             "speed": 120,
-            "maxLife": 17,
-            "life": 1,
+            "maxLife": 80,
+            "life": 40,
             "maxSkillPoints": 3,
             "skillPoints": 14,
             "baseAttack": 1,
@@ -131,8 +131,8 @@
         "attributes": {
             "name": "Logan",
             "speed": 120,
-            "maxLife": 1,
-            "life": 1,
+            "maxLife": 60,
+            "life": 50,
             "maxSkillPoints": 2,
             "skillPoints": 2,
             "baseAttack": 1,

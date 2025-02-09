@@ -91,7 +91,7 @@ public class Act_UseMove extends ActionBase {
     public void run() {
 
         HashMap<Integer, Integer> targetEntitiesFinalLife = calculateDamage();                                          // Calculate (but don't apply) final life values of each target entity.
-        gp.getCombatAnimationS().initiateStandardAttackAnimation(sourceEntityId, targetEntitiesFinalLife, move);        // Play standard attack animation (fainting + move affects applied afterward).
+        gp.getCombatAnimationS().initiateStandardMoveAnimation(sourceEntityId, targetEntitiesFinalLife, move);          // Play standard attack animation (fainting + move affects applied afterward).
     }
 
 
@@ -107,8 +107,9 @@ public class Act_UseMove extends ActionBase {
         HashMap<Integer, Integer> targetEntitiesFinalLife = new HashMap<>();
         int sourceEntityAttack = gp.getEntityM().getEntityById(sourceEntityId).getAttack();
         int sourceEntityMagic = gp.getEntityM().getEntityById(sourceEntityId).getMagic();
-        int targetDamage = 0;
         boolean targetGuarding;
+        int targetDamage;
+        int targetFinalLife;
 
         for (int targetEntityId : targetEntityIds) {                                                                    // Calculate and apply damage dealt to each target entity.
 
@@ -128,18 +129,37 @@ public class Act_UseMove extends ActionBase {
 
                 int targetEntityDefense = gp.getEntityM().getEntityById(targetEntityId).getDefense();
                 targetDamage = move.getPower() * (sourceEntityAttack / targetEntityDefense);
-                if (targetGuarding) {targetDamage /= 2;}
-                targetEntitiesFinalLife.put(
-                        targetEntityId,
-                        gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage);
+
+                if (targetGuarding) {
+
+                    targetDamage /= 2;
+                }
+
+                if (gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage < 0) {
+
+                    targetFinalLife = 0;
+                } else {
+
+                    targetFinalLife = gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage;
+                }
+                targetEntitiesFinalLife.put(targetEntityId, targetFinalLife);
             } else if (move.getCategory() == MoveCategory.MAGIC) {
 
                 int targetEntityMagic = gp.getEntityM().getEntityById(targetEntityId).getMagic();
                 targetDamage = move.getPower() * (sourceEntityMagic / targetEntityMagic);
-                if (targetGuarding) {targetDamage /= 2;}
-                targetEntitiesFinalLife.put(
-                        targetEntityId,
-                        gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage);
+
+                if (targetGuarding) {
+
+                    targetDamage /= 2;
+                }
+                if (gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage < 0) {
+
+                    targetFinalLife = 0;
+                } else {
+
+                    targetFinalLife = gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage;
+                }
+                targetEntitiesFinalLife.put(targetEntityId, targetFinalLife);
             }
         }
         return targetEntitiesFinalLife;
