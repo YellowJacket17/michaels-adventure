@@ -63,7 +63,7 @@ public class Cts_000 extends CutsceneBase {
                 if (!gp.getFadeS().isFlashActive()) {
                     gp.setLockPlayerControl(false);
                     gp.getEntityM().getPlayer().setInteractionCountdown(
-                            gp.getEntityM().getPlayer().getStagedMenuInteractionCountdown());
+                            gp.getEntityM().getPlayer().getStagedStandardInteractionCountdown());
                     exitCutscene();
                     resetCutscene();
                 }

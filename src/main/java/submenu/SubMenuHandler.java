@@ -234,6 +234,8 @@ public class SubMenuHandler {
                 this.options.add(item);
             }
             this.subMenuId = subMenuId;
+            gp.getEntityM().getPlayer().setInteractionCountdown(
+                    gp.getEntityM().getPlayer().getStagedStandardInteractionCountdown());                               // Player must wait before interacting with the generated sub-menu else (helps avoid accidental selection). .
         } else {
 
             throw new IllegalArgumentException("Attempted to set a sub-menu with a number of options '"

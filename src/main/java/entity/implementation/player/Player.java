@@ -36,14 +36,13 @@ public class Player extends EntityBase {
     private final double stagedMoveCountdown = 0.033;
 
     /**
-     * Number of seconds that must pass before the player can press a key (same or different as previous) to interact
-     * with a menu option.
-     * Essentially, this control the sensitivity of the cursor in menus.
-     * The value of this variable will be set to `interactionCountdown` whenever a pause in menu interaction is needed.
+     * Standard number of seconds (i.e., "cooldown" period) that must pass before the player can press a key (same or
+     * different as previous) to interact with the world or a menu option
+     * Essentially, this control the sensitivity of key presses in menus, etc.
      * This value will have a noticeable impact on the "feel" of the game while in menus.
      * As a reference, note that 0.16 seconds is ~10 frames at 60 FPS.
      */
-    private final double stagedMenuInteractionCountdown = 0.16;
+    private final double stagedStandardInteractionCountdown = 0.16;
 
     /**
      * Variable to store the number of seconds that the player has to change direction while retaining momentum upon
@@ -102,7 +101,7 @@ public class Player extends EntityBase {
     public Player(GamePanel gp) {
         super(gp, 0, EntityType.CHARACTER);
         setDefaultValues();                                                                                             // Set default player values when a player instance is created.
-        setSprites();                                                                                                  // Load player sprites when a player instance is created.
+        setSprites();                                                                                                   // Load player sprites when a player instance is created.
     }
 
 
@@ -140,7 +139,7 @@ public class Player extends EntityBase {
             if (gp.getUi().getSystemSettingSelected() == 3) {
                 gp.getUi().setSystemOptionSelected(1);
             }
-            fullScreenCountdown = stagedMenuInteractionCountdown;
+            fullScreenCountdown = stagedStandardInteractionCountdown;
         } else if ((fullScreenCountdown <= 0)
                 && (gp.getSystemSetting(3).getActiveOption() == 1)
                 && (KeyListener.isKeyPressed(GLFW_KEY_ESCAPE) || KeyListener.isKeyPressed(GLFW_KEY_F11))) {
@@ -148,7 +147,7 @@ public class Player extends EntityBase {
             if (gp.getUi().getSystemSettingSelected() == 3) {
                 gp.getUi().setSystemOptionSelected(0);
             }
-            fullScreenCountdown = stagedMenuInteractionCountdown;
+            fullScreenCountdown = stagedStandardInteractionCountdown;
         }
 
         if (!gp.isLockPlayerControl()) {
@@ -442,7 +441,7 @@ public class Player extends EntityBase {
                     directionLast = directionCurrent;
                 }
 
-                if (walkSpriteNumLast == 2) {                                                                               // Swap which foot will step forward for the next walking cycle.
+                if (walkSpriteNumLast == 2) {                                                                           // Swap which foot will step forward for the next walking cycle.
 
                     walkSpriteNumLast = 3;
                 } else {
@@ -618,7 +617,7 @@ public class Player extends EntityBase {
                 if (gp.getDialogueR().getActiveConv().getConvId() == -3) {                                              // Check if the conversation was an interactive combat message that has finished;
 
                     gp.getDialogueR().convertToPlaceholderMessage();                                                    // Convert to placeholder message to ensure that `progressCombat()` can only be triggered by player input from this message once.
-                    interactionCountdown = stagedMenuInteractionCountdown;                                              // Player must wait before interacting with another combat action, for example (prevents instantly progressing next action that appears).
+                    interactionCountdown = stagedStandardInteractionCountdown;                                              // Player must wait before interacting with another combat action, for example (prevents instantly progressing next action that appears).
                     gp.getCombatM().progressCombat();                                                                   // Check what logic to run next in combat (i.e., progress combat loop).
                 } else {
 
@@ -647,12 +646,12 @@ public class Player extends EntityBase {
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
                 gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
@@ -661,7 +660,7 @@ public class Player extends EntityBase {
                 } else {
                     gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() - 1);
                 }
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
@@ -670,7 +669,7 @@ public class Player extends EntityBase {
                 } else {
                     gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() + 1);
                 }
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
         }
     }
@@ -691,32 +690,32 @@ public class Player extends EntityBase {
 
             if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
                 gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
                 gp.getUi().setItemRowSelected(gp.getUi().getItemRowSelected() - 1);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
                 gp.getUi().setItemColSelected(gp.getUi().getItemColSelected() - 1);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
                 gp.getUi().setItemRowSelected(gp.getUi().getItemRowSelected() + 1);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
                 gp.getUi().setItemColSelected(gp.getUi().getItemColSelected() + 1);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
         }
     }
@@ -737,32 +736,32 @@ public class Player extends EntityBase {
 
             else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
                 gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
                 gp.getUi().setSystemSettingSelected(gp.getUi().getSystemSettingSelected() - 1);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
                 gp.getUi().setSystemSettingSelected(gp.getUi().getSystemSettingSelected() + 1);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
                 gp.getUi().setSystemOptionSelected(gp.getUi().getSystemOptionSelected() - 1);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
                 gp.getUi().setSystemOptionSelected(gp.getUi().getSystemOptionSelected() + 1);
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
         }
     }
@@ -778,18 +777,18 @@ public class Player extends EntityBase {
 
             if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
                 gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() - 1);                             // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
                 gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() + 1);                             // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)
                     || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
                 gp.getEventM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected());
-                interactionCountdown = stagedMenuInteractionCountdown;
+                interactionCountdown = stagedStandardInteractionCountdown;
             }
         }
     }
@@ -977,8 +976,8 @@ public class Player extends EntityBase {
 
 
     // GETTERS
-    public double getStagedMenuInteractionCountdown() {
-        return stagedMenuInteractionCountdown;
+    public double getStagedStandardInteractionCountdown() {
+        return stagedStandardInteractionCountdown;
     }
 
     public double getInteractionCountdown() {

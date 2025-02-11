@@ -11,8 +11,6 @@ import event.implementation.map.Evt_Map000;
 import event.implementation.map.Evt_Map001;
 import event.implementation.submenu.Evt_SubMenu000;
 import event.implementation.submenu.Evt_SubMenu001;
-import item.ItemBase;
-import utility.UtilityTool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -355,7 +353,7 @@ public class EventManager {
             case 1:
                 gp.getEntityM().clearConversingEntities();                                                              // All conversations between entities have ended.
                 gp.getEntityM().getPlayer().setInteractionCountdown(
-                        gp.getEntityM().getPlayer().getStagedMenuInteractionCountdown());                               // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity, for example (prevents player from getting stuck in interaction loop).
+                        gp.getEntityM().getPlayer().getStagedStandardInteractionCountdown());                           // Player must wait before interacting with something else (prevents player from getting stuck in interaction loop).
                 gp.setPrimaryGameState(PrimaryGameState.EXPLORE);                                                       // Return control back to the player.
                 break;
             case 2:
@@ -394,7 +392,7 @@ public class EventManager {
                     gp.getDialogueR().reset();                                                                          // Reset the DialogueReader's fields back to their default values.
                 }
                 gp.getEntityM().getPlayer().setInteractionCountdown(
-                        gp.getEntityM().getPlayer().getStagedMenuInteractionCountdown());                               // Player must wait 0.16 seconds (~10 frames at 60 FPS) before interacting with another entity (prevents player from getting stuck in interaction loop).
+                        gp.getEntityM().getPlayer().getStagedStandardInteractionCountdown());                           // Player must wait before interacting with something else.
                 gp.setPrimaryGameState(PrimaryGameState.EXPLORE);                                                       // No further logic will run.
                 break;
             case 2:

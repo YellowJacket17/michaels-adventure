@@ -63,7 +63,13 @@ public class CombatAnimationSupport {
      * Time to delay the start of the actual animation from when the `initiateStandardMoveAnimation()` method is called
      * (seconds).
      */
-    private double standardMoveAnimationDelay;
+    private double standardMoveAnimationFrontDelay;
+
+    /**
+     * Time between when the actual animation is complete and control is handed off to the next combat action (seconds).
+     * (seconds).
+     */
+    private double standardMoveAnimationBackDelay;
 
 
     // STANDARD FAINT ANIMATION FIELDS
@@ -94,13 +100,13 @@ public class CombatAnimationSupport {
 
         // Standard move animation.
         if (standardMoveAnimationActive) {
-            if (standardMoveAnimationDelay > 0) {
-                standardMoveAnimationDelay -= dt;
-                if (standardMoveAnimationDelay <= 0) {
+            if (standardMoveAnimationFrontDelay > 0) {
+                standardMoveAnimationFrontDelay -= dt;
+                if (standardMoveAnimationFrontDelay <= 0) {
                     kickoffStandardMoveAnimation();
                 }
             }
-            if (standardMoveAnimationDelay <= 0) {
+            if (standardMoveAnimationFrontDelay <= 0) {
                 updateStandardAttackAnimation(dt);
             }
         }
@@ -135,7 +141,8 @@ public class CombatAnimationSupport {
             }
             this.move = move;
             standardMoveAnimationActive = true;
-            standardMoveAnimationDelay = 0.4;
+            standardMoveAnimationFrontDelay = 0.4;
+            standardMoveAnimationBackDelay = 0.4;
         }
     }
 
@@ -218,16 +225,24 @@ public class CombatAnimationSupport {
 
         if (sourceAttackComplete && healthBarsComplete && particleEffectsComplete) {                                    // Check if all animations have completed; if so, combat can be progressed to the next action.
 
-            List<Integer> targetEntityIds = new ArrayList<>();
+            if (standardMoveAnimationBackDelay > 0) {
 
-            for (int targetEntityId : targetEntitiesFinalLife.keySet()) {
-
-                targetEntityIds.add(targetEntityId);
+                standardMoveAnimationBackDelay -= dt;
             }
-            move.runEffects(sourceEntityId, targetEntityIds);                                                           // Apply any additional affects that this move may have.
-            gp.getCombatM().pollFainting();                                                                             // Check whether any entities fainted as a result of this move; appropriate actions will be queued if so.
-            resetStandardMoveAnimation();
-            gp.getCombatM().progressCombat();
+
+            if (standardMoveAnimationBackDelay <= 0) {
+
+                List<Integer> targetEntityIds = new ArrayList<>();
+
+                for (int targetEntityId : targetEntitiesFinalLife.keySet()) {
+
+                    targetEntityIds.add(targetEntityId);
+                }
+                move.runEffects(sourceEntityId, targetEntityIds);                                                       // Apply any additional affects that this move may have.
+                gp.getCombatM().pollFainting();                                                                         // Check whether any entities fainted as a result of this move; appropriate actions will be queued if so.
+                resetStandardMoveAnimation();
+                gp.getCombatM().progressCombat();
+            }
         }
     }
 
@@ -244,7 +259,8 @@ public class CombatAnimationSupport {
         particleEffectUuids.clear();
         targetEntitiesFinalLife.clear();
         targetEntitiesDamageRemainder.clear();
-        standardMoveAnimationDelay = 0;
+        standardMoveAnimationFrontDelay = 0;
+        standardMoveAnimationBackDelay = 0;
     }
 
 

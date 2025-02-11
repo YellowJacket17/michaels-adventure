@@ -308,7 +308,7 @@ public abstract class EntityBase extends Drawable {
      * Increasing this value will extend the duration of the combat stance animation cycle.
      * In other words, increasing this value will make the combat stance animation appear to run more slowly.
      */
-    protected double animationCounterCombatStanceMax = 1.2;
+    protected double animationCounterCombatStanceMax = 0.8;
 
     /**
      * Maximum number of seconds allocated to a full combat attack animation cycle.
@@ -1906,8 +1906,8 @@ public abstract class EntityBase extends Drawable {
         if (combating) {
             cancelAction();
             Random random = new Random();
-            int i = random.nextInt(((int)animationCounterCombatStanceMax * 100) + 1);                                   // Generate random number from 0 to (`animationCounterCombatStanceMax` * 100) + 1 (both inclusive).
-            animationCounter = i / (animationCounterCombatStanceMax * 100);                                             // Randomize animation counter so that not all entities are animating in sync.
+            int i = random.nextInt(101);                                                                                // Generate random number from 0 (inclusive) to 100 (inclusive, since 101 is exclusive).
+            animationCounter = ((double)i / 100.0) * animationCounterCombatStanceMax;                                   // Randomize animation counter so that not all entities are animating in sync.
         }
     }
 

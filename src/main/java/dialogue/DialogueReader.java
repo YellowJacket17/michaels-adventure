@@ -62,10 +62,12 @@ public class DialogueReader {
     private double printCountdown = 0;
 
     /**
-     * Number of seconds that must pass before the player can proceed with interaction after a piece of dialogue has
-     * been read.
+     * Number of seconds (i.e., "cooldown" period) that must pass before the player can proceed with interaction after a
+     * piece of dialogue has been read.
+     * Essentially, this control the sensitivity of key presses when progressing dialogue.
+     * This value will have a noticeable impact on the "feel" of the game while reading dialogue.
      */
-    private final double stagedProgressionCountdown = 0.1;
+    private final double stagedDialogueInteractionCountdown = 0.1;
 
     /**
      * Boolean setting whether all visible text will be printed to the screen character by character or whether it will
@@ -431,7 +433,7 @@ public class DialogueReader {
 
 
     /**
-     * Stages text characters from the staged piece of dialogue to be drawn by the UI class.
+     * Stages text characters from the staged piece of dialogue to be drawn by the UserInterface class.
      * Characters are added one at a time to give a letter-by-letter printing effect.
      *
      * @param dt time since last frame (seconds)
@@ -472,13 +474,13 @@ public class DialogueReader {
 
                     readingDialogue = false;
                     dialoguePaused = true;                                                                              // Pause the current piece of dialogue until the player progresses to the next line (i.e., enter paused state).
-                    gp.getEntityM().getPlayer().setInteractionCountdown(stagedProgressionCountdown);                    // Force the player to wait before further progressing the dialogue screen or any other interaction (prevents instantly progressing next menu action, for example).
+                    gp.getEntityM().getPlayer().setInteractionCountdown(stagedDialogueInteractionCountdown);            // Force the player to wait before further progressing the dialogue screen or any other interaction (prevents instantly progressing next menu action, for example).
                 }
 
                 if (dialoguePrintTotal.length() == activeDialogueText.length()) {                                       // If the entire piece of dialogue has been read, stop printing characters.
 
                     readingDialogue = false;
-                    gp.getEntityM().getPlayer().setInteractionCountdown(stagedProgressionCountdown);                    // Force the player to wait before further progressing the dialogue screen or any other interaction (prevents instantly progressing next menu action, for example).
+                    gp.getEntityM().getPlayer().setInteractionCountdown(stagedDialogueInteractionCountdown);            // Force the player to wait before further progressing the dialogue screen or any other interaction (prevents instantly progressing next menu action, for example).
 
                     if (nextDialogueIndex >= activeConv.getDialogueList().size()){
 
