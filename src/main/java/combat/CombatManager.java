@@ -172,9 +172,11 @@ public class CombatManager {
     private boolean combatUiVisible = false;
 
     /**
-     * Boolean to set whether the target selection arrow is rendered or not.
+     * Boolean indicating whether the root combat sub-menu has been displayed yet during an entity's turn.
+     * This is used to control the character-by-character printing of the accompanying dialogue when the root combat
+     * sub-menu is first displayed.
      */
-    private boolean targetArrowVisible = false;
+    private boolean newTurnRootSubMenuDisplayed = false;
 
     /**
      * Default combat move if an entity has no assigned moves.
@@ -530,6 +532,7 @@ public class CombatManager {
         }
         boolean viableEntity = false;                                                                                   // A viable entity is a non-fainted one.
         boolean generateTurnOrderCalled = false;                                                                        // Boolean tracking whether the turn order has already been re-generated.
+        newTurnRootSubMenuDisplayed = false;                                                                            // Reset variable tracking whether root combat sub-menu has been displayed this turn yet or not.
 
         while (!viableEntity) {
 
@@ -674,6 +677,19 @@ public class CombatManager {
 
 
     /**
+     * Builds and refreshes message for the skill combat sub-menu.
+     */
+    public void refreshSkillSubMenuDialogue() {
+
+        if (getLatestSubMenuMemory().getType() == SubMenuType.SKILL) {
+
+            gp.getDialogueR().initiatePlaceholderMessage(
+                    buildSkillSubMenuDialogue(gp.getSubMenuH().getIndexSelected()), false);
+        }
+    }
+
+
+    /**
      * Runs the action at the front of the queue of actions.
      * Once complete, the action is removed from the queue.
      */
@@ -795,7 +811,7 @@ public class CombatManager {
         }
         moveOptions.add("Back");
         colors.put(moveOptions.size() - 1, backOptionColor);
-        addQueuedActionBack(new Act_ReadMessage(gp, buildSkillSubMenuDialogue(), false, false));
+        addQueuedActionBack(new Act_ReadMessage(gp, buildSkillSubMenuDialogue(0), false, false));
         addQueuedActionBack(new Act_GenerateSubMenu(
                 gp, SubMenuType.SKILL, moveOptions, colors, disabledOptions, optionDescriptions));
     }
@@ -971,8 +987,6 @@ public class CombatManager {
      * Runs logic based on the last option that was selected in the target select combat sub-menu.
      */
     private void runTargetSelectSubMenuSelection() {
-
-        targetArrowVisible = false;                                                                                     // Target selection has been completed.
 
         if (getLatestSubMenuMemory().getSelectedOption() == (getLatestSubMenuMemory().getOptions().size() - 1)){        // Determine whether the 'Back' option was selected or not.
 
@@ -1566,9 +1580,14 @@ public class CombatManager {
                 gp,
                 buildRootSubMenuDialogue(gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getName()),
                 false,
-                false));
+                !newTurnRootSubMenuDisplayed));
         addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.ROOT,
                 rootCombatOptions, colors, disabledOptions, optionDescriptions));
+
+        if (!newTurnRootSubMenuDisplayed) {
+
+            newTurnRootSubMenuDisplayed = true;
+        }
     }
 
 
@@ -1578,7 +1597,6 @@ public class CombatManager {
      */
     private void generateTargetSelectSubMenuAction() {
 
-        targetArrowVisible = true;                                                                                      // Target selection has been initiated.
         EntityBase sourceEntity = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst());
         MoveTargets moveTargets = null;
 
@@ -1605,8 +1623,8 @@ public class CombatManager {
      * Generates a list of names of selectable targets in combat.
      * This method is to be used to generate selectable targets when a player-side entity is the entity whose turn it
      * is.
-     * This method will not properly generate a list of selectable targets when a non-player-side entity is the entity whose
-     * turn it is.
+     * This method will not properly generate a list of selectable targets when a non-player-side entity is the entity
+     * whose turn it is.
      * The "self" entity is that whose turn it currently is (may or may not be the player entity).
      * Non-player-side entities refers to combating entities fighting against the player's side.
      * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
@@ -1996,11 +2014,19 @@ public class CombatManager {
     /**
      * Builds message for the skill combat sub-menu.
      *
+     * @param selectedIndex selected index in the skill combat sub-menu
      * @return message
      */
-    private String buildSkillSubMenuDialogue() {
+    private String buildSkillSubMenuDialogue(int selectedIndex) {
 
-        return "Use which skill?";
+        if (selectedIndex < gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves().size()) {
+
+            return gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst())
+                    .getMoves().get(gp.getSubMenuH().getIndexSelected()).getDescription();
+        } else {
+
+            return "Return to previous menu.";
+        }
     }
 
 
@@ -2203,6 +2229,7 @@ public class CombatManager {
         guardingEntities.clear();
         lastActionSubmenu = false;
         combatUiVisible = false;
+        newTurnRootSubMenuDisplayed = false;
     }
 
 
@@ -2215,12 +2242,19 @@ public class CombatManager {
         return nonPlayerSideEntities;
     }
 
-    public int getEntityIdCurrentTurn() {
+    public int getTurnEntityId() {
         return queuedEntityTurnOrder.peekFirst();
     }
 
-    public String getLatestSubMenuDescriptionByIndex(int index) {
+    public SubMenuType getLatestSubMenuType() {
+        if (getLatestSubMenuMemory() != null) {
+            return getLatestSubMenuMemory().getType();
+        } else {
+            return null;
+        }
+    }
 
+    public String getLatestSubMenuDescriptionByIndex(int index) {
         if (getLatestSubMenuMemory().getDescriptions().get(index) != null) {
             return getLatestSubMenuMemory().getDescriptions().get(index);
         } else {
@@ -2230,10 +2264,6 @@ public class CombatManager {
 
     public boolean isCombatUiVisible() {
         return combatUiVisible;
-    }
-
-    public boolean isTargetArrowVisible() {
-        return targetArrowVisible;
     }
 
     public LinkedHashSet<Integer> getGuardingEntities() {

@@ -59,7 +59,7 @@ public class PartySupport {
     private final LimitedLinkedHashMap<Integer, Integer> stagedEntityFadeUpEffects;
 
 
-    // TODO : Add lock to prevent party management while fades are occurring.
+    // TODO : Add lock to prevent party management (organizing order in overworld, etc.) while fades are occurring.
 
 
     // CONSTRUCTOR

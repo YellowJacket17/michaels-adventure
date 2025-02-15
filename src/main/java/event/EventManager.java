@@ -221,7 +221,7 @@ public class EventManager {
 
 
     /**
-     * Handles if any further logic should be executed after a conversation ends.
+     * Handles any further logic that may be executed after a conversation ends.
      * If not, all entities are removed from a conversing state and the primary game state is set to explore.
      *
      * @param convId ID of the conversation that just ended

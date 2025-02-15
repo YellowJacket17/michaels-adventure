@@ -6,6 +6,7 @@ import render.drawable.Drawable;
 /**
  * This class defines GUI icons created for the game.
  * These elements are primarily used in menus.
+ * The intended use is for a menu icon that has an "active" and an "inactive" state.
  */
 public class GuiIcon extends Drawable {
 

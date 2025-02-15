@@ -165,11 +165,6 @@ public class GamePanel {
      */
     private SelectionArrow selectionA;
 
-    /**
-     * Arrow that appears when the player is required to make a taret entity selection in combat.
-     */
-    private TargetArrow targetA;
-
 
     // CONSTRUCTOR
     /**
@@ -197,7 +192,6 @@ public class GamePanel {
         guardingShield = new GuardingShield(this);
         dialogueA = new DialogueArrow(this);
         selectionA = new SelectionArrow(this);
-        targetA = new TargetArrow(this);
 
         // Initialize system settings.
         Setting vSyncSetting = new Setting("VSync", "Syncs frame rate with monitor refresh rate to prevent screen tearing.");
@@ -668,10 +662,6 @@ public class GamePanel {
 
     public SelectionArrow getSelectionA() {
         return selectionA;
-    }
-
-    public TargetArrow getTargetA() {
-        return targetA;
     }
 
 

@@ -1,6 +1,9 @@
 package miscellaneous;
 
+import combat.enumeration.BannerColor;
+import combat.enumeration.SubMenuType;
 import core.GamePanel;
+import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
 import entity.enumeration.EntityStatus;
 import event.enumeration.FadeState;
@@ -18,6 +21,10 @@ import java.util.Vector;
  * This class handles the drawing of all on-screen user interface (UI) elements.
  */
 public class UserInterface {
+
+    // TODO : Many of the UI elements have values that don't need to be re-calculated each frame that they're rendered.
+    //  In the future, break out these calculations to run only when a UI element is actually changed (dimensions/
+    //  placement changes, etc.). This will improve memory usage.
 
     // FIELDS
     private final GamePanel gp;
@@ -1110,11 +1117,6 @@ public class UserInterface {
             renderCombatStatusBanners();
         }
 
-        // Target arrow.
-        if (gp.getCombatM().isTargetArrowVisible()) {
-            renderCombatTargetArrow();
-        }
-
         // Sub-menu option descriptions.
         if (gp.getSubMenuH().getSubMenuId() != -1) {
             renderCombatSubMenuDescriptionScreen();
@@ -1185,13 +1187,33 @@ public class UserInterface {
         Vector2f bannerScreenCoords = gp.getCamera().worldCoordsToScreenCoords(bannerWorldCoords);
         Vector2f lifeBarWorldCoords = new Vector2f(bannerWorldX + 16.0f, bannerWorldY + 2.0f);
         Vector2f lifeBarScreenCoords = gp.getCamera().worldCoordsToScreenCoords(lifeBarWorldCoords);
+        BannerColor bannerColor = BannerColor.STANDARD;
+
+        if ((gp.getCombatM().getTurnEntityId() == entityId)
+                && (gp.getPrimaryGameState() == PrimaryGameState.SUB_MENU)) {
+
+            bannerColor = BannerColor.TURN;
+        }
+
+        if ((gp.getCombatM().getLatestSubMenuType() == SubMenuType.TARGET_SELECT)
+                && (gp.getPrimaryGameState() == PrimaryGameState.SUB_MENU)) {
+
+            if ((gp.getSubMenuH().getIndexSelected() < (gp.getSubMenuH().getOptions().size() - 1))                      // Minus one is to account for 'Back' option.
+                    && (gp.getCombatM().getLastGeneratedTargetOptions().get(gp.getSubMenuH().getIndexSelected())
+                    == entityId)) {
+
+                bannerColor = BannerColor.TARGET;
+            }
+        }
 
         if (includeSkill) {
 
-            gp.getLifeSkillBannerBackground().addToRenderPipeline(renderer, bannerScreenCoords.x, bannerScreenCoords.y);
+            gp.getLifeSkillBannerBackground().addToRenderPipeline(
+                    renderer, bannerScreenCoords.x, bannerScreenCoords.y, bannerColor);
         }else {
 
-            gp.getLifeBannerBackground().addToRenderPipeline(renderer, bannerScreenCoords.x, bannerScreenCoords.y);
+            gp.getLifeBannerBackground().addToRenderPipeline(
+                    renderer, bannerScreenCoords.x, bannerScreenCoords.y, bannerColor);
         }
         renderLifeBar(
                 entity.getLife(),
@@ -1227,36 +1249,6 @@ public class UserInterface {
             Vector2f shieldWorldCoords = new Vector2f(bannerWorldX + 46.0f, bannerWorldY);
             Vector2f shieldScreenCoords = gp.getCamera().worldCoordsToScreenCoords(shieldWorldCoords);
             gp.getGuardingShield().addToRenderPipeline(renderer, shieldScreenCoords.x, shieldScreenCoords.y);
-        }
-    }
-
-
-    /**
-     * Adds the combat target selection arrow to the render pipeline.
-     */
-    private void renderCombatTargetArrow() {
-
-        int i = 0;
-
-        for (int entityId : gp.getCombatM().getLastGeneratedTargetOptions()) {
-
-            if (i == gp.getSubMenuH().getIndexSelected()) {                                                             // If combating entity that's currently being considered to target.
-
-                EntityBase entity = gp.getEntityM().getEntityById(entityId);
-                float targetArrowWorldX = entity.getWorldX() + (entity.getNativeSpriteWidth() / 2)                      // Render arrow centered horizontally above target entity sprite.
-                        - (gp.getTargetA().getNativeSpriteWidth() / 2);
-                float targetArrowWorldY = entity.getWorldY() - entity.getNativeSpriteHeight()
-                        + GamePanel.NATIVE_TILE_SIZE - gp.getTargetA().getNativeSpriteHeight() - 4;                     // Render arrow slightly above target entity sprite.
-                Vector2f targetArrowWorldCoords = new Vector2f(
-                        targetArrowWorldX,
-                        targetArrowWorldY);
-                Vector2f targetArrowScreenCoords = gp.getCamera().worldCoordsToScreenCoords(targetArrowWorldCoords);
-                gp.getTargetA().addToRenderPipeline(renderer, targetArrowScreenCoords.x, targetArrowScreenCoords.y);
-                break;
-            } else {
-
-                i++;
-            }
         }
     }
 

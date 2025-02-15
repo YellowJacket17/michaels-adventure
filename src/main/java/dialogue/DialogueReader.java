@@ -157,20 +157,7 @@ public class DialogueReader {
                 progressDialogue(dt);                                                                                   // Progress the current piece of dialogue that's being read.
             } else {
 
-                if ((!activeConv.isPlayerInputToEnd()) && (gp.getPrimaryGameState() == PrimaryGameState.DIALOGUE)) {    // Only trigger this when the primary game state is set to dialogue; it prevents this from triggering repeatedly if the conversation is not set to null after the first time.
-
-                    if (activeConv.getConvId() == -2) {                                                                 // Check if this is a sub-menu message.
-
-                        gp.getSubMenuS().handlePostSubMenuPrompt();
-                    } else if (activeConv.getConvId() == -4) {                                                          // Check if this is a noninteractive combat message.
-
-                        convertToPlaceholderMessage();                                                                  // Convert to placeholder message to ensure that `progressCombat()` is only triggered once by this message.
-                        gp.getCombatM().progressCombat();
-                } else if (activeConv.getConvId() != -5) {                                                              // Ensure the active conversation isn't a placeholder message.
-
-                        gp.getEventM().handlePostConversation(activeConv.getConvId());
-                    }
-                }
+                handlePostConversation();
             }
         }
     }
@@ -328,7 +315,7 @@ public class DialogueReader {
      * message has been read; the message will remain displayed indefinitely until the conversation is cleaned up by
      * logic run elsewhere.
      * The temporary conversation this message is placed in is given an ID of -5.
-     * The primary game state is set to dialogue.
+     * The primary game state is NOT set to dialogue (i.e., left as is).
      *
      * @param message text to be read
      * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
@@ -336,7 +323,6 @@ public class DialogueReader {
      */
     public void initiatePlaceholderMessage(String message, boolean charByChar, boolean showArrow) {
 
-        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -5);                                                                                      // Instantiate a temporary conversation with an ID of -5 to indicate that this is a placeholder message.
         activeConv.setPlayerInputToEnd(false);                                                                          // This is so logic following the dialogue once it has finished being read is run immediately without player input.
         printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
@@ -353,13 +339,12 @@ public class DialogueReader {
      * message has been read; the message will remain displayed indefinitely until the conversation is cleaned up by
      * logic run elsewhere.
      * The temporary conversation this message is placed in is given an ID of -5.
-     * The primary game state is set to dialogue.
+     * The primary game state is NOT set to dialogue (i.e., left as is).
      */
     public void convertToPlaceholderMessage() {
 
         if (activeConv != null) {
 
-            gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
             printCharByChar = false;                                                                                    // Instantly "freeze" the printed dialogue as-is at the time of calling this method.
             alwaysShowArrow = false;                                                                                    // Do not display the dialogue arrow.
             Conversation conversation = new Conversation(-5);                                                           // Instantiate a temporary conversation with the passed ID.
@@ -485,6 +470,7 @@ public class DialogueReader {
                     if (nextDialogueIndex >= activeConv.getDialogueList().size()){
 
                         readingConversation = false;                                                                    // All dialogue in the conversation has finished being read.
+                        handlePostConversation();
                     }
                 } else if (printCharByChar) {
 
@@ -516,6 +502,28 @@ public class DialogueReader {
         alwaysShowArrow = false;
         for (int key : dialoguePrint.keySet()) {
             dialoguePrint.replace(key, "");
+        }
+    }
+
+
+    /**
+     * Handles logic to be executed after a conversation has finished being read.
+     */
+    private void handlePostConversation() {
+
+        if ((!activeConv.isPlayerInputToEnd()) && (gp.getPrimaryGameState() == PrimaryGameState.DIALOGUE)) {            // Only trigger this when the primary game state is set to dialogue; it prevents this from triggering repeatedly if the conversation is not set to null after the first time.
+
+            if (activeConv.getConvId() == -2) {                                                                         // Check if this is a sub-menu message.
+
+                gp.getSubMenuS().handlePostSubMenuPrompt();
+            } else if (activeConv.getConvId() == -4) {                                                                  // Check if this is a noninteractive combat message.
+
+                convertToPlaceholderMessage();                                                                          // Convert to placeholder message to ensure that `progressCombat()` is only triggered once by this message.
+                gp.getCombatM().progressCombat();
+            } else if (activeConv.getConvId() != -5) {                                                                  // Ensure the active conversation isn't a placeholder message.
+
+                gp.getEventM().handlePostConversation(activeConv.getConvId());
+            }
         }
     }
 

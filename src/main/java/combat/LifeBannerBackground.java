@@ -1,6 +1,7 @@
 package combat;
 
 import asset.AssetPool;
+import combat.enumeration.BannerColor;
 import core.GamePanel;
 import org.joml.Vector2f;
 import render.Renderer;
@@ -16,6 +17,11 @@ public class LifeBannerBackground extends Drawable {
 
     // FIELDS
     GamePanel gp;
+
+    /**
+     * Last rendered banner color.
+     */
+    private BannerColor lastBannerColor = BannerColor.STANDARD;
 
     /**
      * Boolean tracking whether a render error has occurred. If true, this prevents a render error from repeatedly being
@@ -50,11 +56,33 @@ public class LifeBannerBackground extends Drawable {
      * @param renderer Renderer instance
      * @param screenX screen x-coordinate of the background (leftmost, normalized from 0 to 1, both inclusive)
      * @param screenY screen y-coordinate of the background (topmost, normalized from 0 to 1, both inclusive)
+     * @param bannerColor banner background color
      */
-    public void addToRenderPipeline(Renderer renderer, float screenX, float screenY) {
+    public void addToRenderPipeline(Renderer renderer, float screenX, float screenY, BannerColor bannerColor) {
 
         if (sprite != null) {
 
+            if (lastBannerColor != bannerColor) {
+
+                switch (bannerColor) {
+                    case STANDARD:
+                        this.color.x = 20;
+                        this.color.y = 20;
+                        this.color.z = 20;
+                        break;
+                    case TARGET:
+                        this.color.x = 255;
+                        this.color.y = 170;
+                        this.color.z = 100;
+                        break;
+                    case TURN:
+                        this.color.x = 100;
+                        this.color.y = 193;
+                        this.color.z = 255;
+                        break;
+                }
+                lastBannerColor = bannerColor;
+            }
             Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(new Vector2f(screenX, screenY));
             this.transform.position.x = worldCoords.x;
             this.transform.position.y = worldCoords.y;
