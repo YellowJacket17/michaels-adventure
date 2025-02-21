@@ -711,4 +711,10 @@ public class PartySupport {
                 + entityId
                 + "' that is already executing a fade effect; unexpected outcomes may occur.");
     }
+
+
+    // GETTER
+    public boolean isStagedEntityFadeUpEffectsEmpty() {
+        return (stagedEntityFadeUpEffects.size() > 0 ? false : true);
+    }
 }

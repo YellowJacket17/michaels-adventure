@@ -15,7 +15,6 @@ import render.enumeration.ZIndex;
 import render.drawable.Transform;
 
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * This class handles the drawing of all on-screen user interface (UI) elements.
@@ -24,7 +23,7 @@ public class UserInterface {
 
     // TODO : Many of the UI elements have values that don't need to be re-calculated each frame that they're rendered.
     //  In the future, break out these calculations to run only when a UI element is actually changed (dimensions/
-    //  placement changes, etc.). This will improve memory usage.
+    //  placement changes, etc.). This will improve memory usage. These could perhaps be records.
 
     // FIELDS
     private final GamePanel gp;

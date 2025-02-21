@@ -4,6 +4,7 @@ import combat.MoveBase;
 import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import utility.LimitedArrayList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ public class CombatAnimationSupport {
     private final GamePanel gp;
 
 
-    // STANDARD MOVE ANIMATION FIELDS
+    // STANDARD MOVE ANIMATION (SMA) FIELDS
     /**
      * Boolean indicating whether a standard move animation is staged/playing (true) or not (false).
      */
@@ -28,55 +29,79 @@ public class CombatAnimationSupport {
     /**
      * ID of the entity using animated move.
      */
-    private int sourceEntityId;
+    private int smaSourceEntityId;
 
     /**
      * Combat move being used for animation.
      */
-    private MoveBase move;
+    private MoveBase smaMove;
 
     /**
      * UUIDs of particle effects being animated.
      */
-    private List<UUID> particleEffectUuids = new ArrayList<>();
+    private List<UUID> smaParticleEffectUuids = new ArrayList<>();
 
     /**
      * Calculated final life points of each targeted entity after applying damage; entity ID is the key, life points is
      * the value.
      */
-    private HashMap<Integer, Integer> targetEntitiesFinalLife = new HashMap<>();
+    private HashMap<Integer, Integer> smaTargetEntitiesFinalLife = new HashMap<>();
 
     /**
      * Non-whole number remainder of target entity life points to be carried over to the next update; entity ID is the key,
      * life is the value.
      * This exists because life values on entities are only updated by whole numbers.
      */
-    private HashMap<Integer, Double> targetEntitiesDamageRemainder = new HashMap<>();
+    private HashMap<Integer, Double> smaTargetEntitiesDamageRemainder = new HashMap<>();
 
     /**
      * Number of life points that an entity will gain/lose per second while the life bar animation is playing.
      * Increasing this value will increase the speed of the animation.
      */
-    private final double healthBarSpeed = 20.0;
+    private final double smaHealthBarSpeed = 20.0;
 
     /**
-     * Time to delay the start of the actual animation from when the `initiateStandardMoveAnimation()` method is called
-     * (seconds).
+     * Time to delay the start of the actual standard move animation from when the `initiateStandardMoveAnimation()`
+     * method is called (seconds).
      */
-    private double standardMoveAnimationFrontDelay;
+    private double smaFrontDelay;
 
     /**
-     * Time between when the actual animation is complete and control is handed off to the next combat action (seconds).
-     * (seconds).
+     * Time between when the actual standard move animation is complete and control is handed off to the next combat
+     * action (seconds).
      */
-    private double standardMoveAnimationBackDelay;
+    private double smaBackDelay;
 
 
-    // STANDARD FAINT ANIMATION FIELDS
+    // STANDARD FAINT ANIMATION (SFA) FIELDS
     /**
      * Boolean indicating whether a standard faint animation is staged/playing (true) or not (false).
      */
     private boolean standardFaintAnimationActive = false;
+
+
+    // STANDARD PARTY SWAP ANIMATION (SPSA) FIELDS
+    /**
+     * Boolean indicating whether a standard party swap animation is staged/playing (true) or not (false).
+     */
+    private boolean standardPartySwapAnimationActive = false;
+
+    /**
+     * List to store the IDs of the entities involved in a standard party swap animation.
+     */
+    private final LimitedArrayList<Integer> spsaSwappingEntities = new LimitedArrayList<>(2);
+
+    /**
+     * Time to delay the start of the actual standard party swap animation from when the
+     * `initiateStandardPartySwapAnimation()` method id called (seconds).
+     */
+    private double spsaFrontDelay;
+
+    /**
+     * Time between when the actual standard party swap animation is complete and control is handed off to the next
+     * combat action (seconds).
+     */
+    private double spsaBackDelay;
 
 
     // CONSTRUCTOR
@@ -100,14 +125,27 @@ public class CombatAnimationSupport {
 
         // Standard move animation.
         if (standardMoveAnimationActive) {
-            if (standardMoveAnimationFrontDelay > 0) {
-                standardMoveAnimationFrontDelay -= dt;
-                if (standardMoveAnimationFrontDelay <= 0) {
+            if (smaFrontDelay > 0) {
+                smaFrontDelay -= dt;
+                if (smaFrontDelay <= 0) {
                     kickoffStandardMoveAnimation();
                 }
             }
-            if (standardMoveAnimationFrontDelay <= 0) {
-                updateStandardAttackAnimation(dt);
+            if (smaFrontDelay <= 0) {
+                updateStandardMoveAnimation(dt);
+            }
+        }
+
+        // Standard party swap animation.
+        if (standardPartySwapAnimationActive) {
+            if (spsaFrontDelay > 0) {
+                spsaFrontDelay -= dt;
+                if (spsaFrontDelay <= 0) {
+                    kickoffStandardPartySwapAnimation();
+                }
+            }
+            if (spsaFrontDelay <= 0) {
+                updateStandardPartySwapAnimation(dt);
             }
         }
     }
@@ -132,17 +170,38 @@ public class CombatAnimationSupport {
 
         if (!standardMoveAnimationActive) {
 
-            this.sourceEntityId = sourceEntityId;
+            this.smaSourceEntityId = sourceEntityId;
 
             for (int targetEntityId : targetEntitiesFinalLife.keySet()) {
 
-                this.targetEntitiesFinalLife.put(targetEntityId, targetEntitiesFinalLife.get(targetEntityId));
-                this.targetEntitiesDamageRemainder.put(targetEntityId, 0.0);
+                this.smaTargetEntitiesFinalLife.put(targetEntityId, targetEntitiesFinalLife.get(targetEntityId));
+                this.smaTargetEntitiesDamageRemainder.put(targetEntityId, 0.0);
             }
-            this.move = move;
+            this.smaMove = move;
             standardMoveAnimationActive = true;
-            standardMoveAnimationFrontDelay = 0.4;
-            standardMoveAnimationBackDelay = 0.4;
+            smaFrontDelay = 0.4;                                                                                        // If 'smaFrontDelay' is kept at zero, this line must be replaced with 'initiateStandardMoveAnimation();'.
+            smaBackDelay = 0.4;
+        }
+    }
+
+
+    /**
+     * Initiates a standard party swap animation to play.
+     * The fade state and position of each target entity will be modified by this animation.
+     * If a standard party swap animation is already active, nothing will happen.
+     *
+     * @param entityId1 ID of entity to swap
+     * @param entityId2 ID of entity to swap
+     */
+    public void initiateStandardPartySwapAnimation(int entityId1, int entityId2) {
+
+        if (!standardPartySwapAnimationActive) {
+
+            spsaSwappingEntities.add(entityId1);
+            spsaSwappingEntities.add(entityId2);
+            standardPartySwapAnimationActive = true;
+            kickoffStandardPartySwapAnimation();                                                                        // If 'smaFrontDelay' is set to non-zero number X, this line must be replaced with 'smaFrontDelay = X;'.
+            spsaBackDelay = 0.1;
         }
     }
 
@@ -152,24 +211,24 @@ public class CombatAnimationSupport {
      */
     private void kickoffStandardMoveAnimation() {
 
-        gp.getEntityM().getEntityById(sourceEntityId).initiateCombatAttackAnimation();                                  // Play attack animation on source entity.
-        gp.getEntityM().getEntityById(sourceEntityId).subtractSkillPoints(move.getSkillPoints());                       // Subtract skill points used by this move.
+        gp.getEntityM().getEntityById(smaSourceEntityId).initiateCombatAttackAnimation();                               // Play attack animation on source entity.
+        gp.getEntityM().getEntityById(smaSourceEntityId).subtractSkillPoints(smaMove.getSkillPoints());                 // Subtract skill points used by this move.
 
-        if (move.getSoundEffect() != null) {                                                                            // Play move sound effect.
+        if (smaMove.getSoundEffect() != null) {                                                                         // Play move sound effect.
 
-            gp.getSoundS().playEffect(move.getSoundEffect());
+            gp.getSoundS().playEffect(smaMove.getSoundEffect());
         } else {
 
             gp.getSoundS().playEffect("testEffect2");
         }
 
-        for (int targetEntityId : targetEntitiesFinalLife.keySet()) {
+        for (int targetEntityId : smaTargetEntitiesFinalLife.keySet()) {
 
             gp.getParticleEffectM().addParticleEffect(                                                                  // Play particle effect animation on target entities.
                     new Vector2f(
                             gp.getEntityM().getEntityById(targetEntityId).getWorldX() + (GamePanel.NATIVE_TILE_SIZE / 2),
                             gp.getEntityM().getEntityById(targetEntityId).getWorldY() + (GamePanel.NATIVE_TILE_SIZE / 4)),
-                    move.getParticleEffectColor() != null ? move.getParticleEffectColor() : new Vector3f(255, 255, 255),
+                    smaMove.getParticleEffectColor() != null ? smaMove.getParticleEffectColor() : new Vector3f(255, 255, 255),
                     4.0f
             );
         }
@@ -177,44 +236,54 @@ public class CombatAnimationSupport {
 
 
     /**
-     * Updates the state of the active standard combat attack animation by one frame.
+     * Kicks off the staged standard party swap animation.
+     */
+    private void kickoffStandardPartySwapAnimation() {
+
+        gp.getPartyS().swapEntityInParty(spsaSwappingEntities.get(0), spsaSwappingEntities.get(1), true);
+    }
+
+
+    /**
+     * Updates the state of the active standard combat move animation by one frame.
      *
      * @param dt time since last frame (seconds)
      */
-    private void updateStandardAttackAnimation(double dt) {
+    private void updateStandardMoveAnimation(double dt) {
 
-        boolean sourceAttackComplete = !gp.getEntityM().getEntityById(sourceEntityId).isPlayingCombatAttackAnimation(); // Check if attack animation for source entity is complete.
+        boolean sourceAttackComplete =
+                !gp.getEntityM().getEntityById(smaSourceEntityId).isPlayingCombatAttackAnimation();                     // Check if attack animation for source entity is complete.
         boolean healthBarsComplete = true;
         boolean particleEffectsComplete = true;
         int lifeSubtractionCandidate;
 
-        for (int entityId : targetEntitiesFinalLife.keySet()) {                                                         // Check if life bar animation for each target entity is complete.
+        for (int entityId : smaTargetEntitiesFinalLife.keySet()) {                                                      // Check if life bar animation for each target entity is complete.
 
-            if (targetEntitiesFinalLife.get(entityId) <= gp.getEntityM().getEntityById(entityId).getLife()) {           // Update target entity life if not already at final value.
+            if (smaTargetEntitiesFinalLife.get(entityId) <= gp.getEntityM().getEntityById(entityId).getLife()) {        // Update target entity life if not already at final value.
 
-                targetEntitiesDamageRemainder.put(
+                smaTargetEntitiesDamageRemainder.put(
                         entityId,
-                        targetEntitiesDamageRemainder.get(entityId) + (healthBarSpeed * dt));
+                        smaTargetEntitiesDamageRemainder.get(entityId) + (smaHealthBarSpeed * dt));
 
-                lifeSubtractionCandidate = (int)Math.floor(targetEntitiesDamageRemainder.get(entityId));
+                lifeSubtractionCandidate = (int)Math.floor(smaTargetEntitiesDamageRemainder.get(entityId));
 
                 if (((gp.getEntityM().getEntityById(entityId).getLife() - lifeSubtractionCandidate)
-                        <= targetEntitiesFinalLife.get(entityId))
+                        <= smaTargetEntitiesFinalLife.get(entityId))
                         || ((gp.getEntityM().getEntityById(entityId).getLife() - lifeSubtractionCandidate) < 0)) {
 
-                    gp.getEntityM().getEntityById(entityId).setLife(targetEntitiesFinalLife.get(entityId));
+                    gp.getEntityM().getEntityById(entityId).setLife(smaTargetEntitiesFinalLife.get(entityId));
                 } else {
 
                     gp.getEntityM().getEntityById(entityId).subtractLife(lifeSubtractionCandidate);
                     healthBarsComplete = false;                                                                         // A life bar was found that has not completed its animation.
                 }
-                targetEntitiesDamageRemainder.put(
+                smaTargetEntitiesDamageRemainder.put(
                         entityId,
-                        targetEntitiesDamageRemainder.get(entityId) - lifeSubtractionCandidate);
+                        smaTargetEntitiesDamageRemainder.get(entityId) - lifeSubtractionCandidate);
             }
         }
 
-        for (UUID uuid : particleEffectUuids) {                                                                         // Check if all particle effect animations are complete.
+        for (UUID uuid : smaParticleEffectUuids) {                                                                      // Check if all particle effect animations are complete.
 
             if (gp.getParticleEffectM().getParticleEffectByUuid(uuid) != null) {
 
@@ -225,22 +294,56 @@ public class CombatAnimationSupport {
 
         if (sourceAttackComplete && healthBarsComplete && particleEffectsComplete) {                                    // Check if all animations have completed; if so, combat can be progressed to the next action.
 
-            if (standardMoveAnimationBackDelay > 0) {
+            if (smaBackDelay > 0) {
 
-                standardMoveAnimationBackDelay -= dt;
+                smaBackDelay -= dt;
             }
 
-            if (standardMoveAnimationBackDelay <= 0) {
+            if (smaBackDelay <= 0) {
 
                 List<Integer> targetEntityIds = new ArrayList<>();
 
-                for (int targetEntityId : targetEntitiesFinalLife.keySet()) {
+                for (int targetEntityId : smaTargetEntitiesFinalLife.keySet()) {
 
                     targetEntityIds.add(targetEntityId);
                 }
-                move.runEffects(sourceEntityId, targetEntityIds);                                                       // Apply any additional affects that this move may have.
+                smaMove.runEffects(smaSourceEntityId, targetEntityIds);                                                 // Apply any additional affects that this move may have.
                 gp.getCombatM().pollFainting();                                                                         // Check whether any entities fainted as a result of this move; appropriate actions will be queued if so.
                 resetStandardMoveAnimation();
+                gp.getCombatM().progressCombat();
+            }
+        }
+    }
+
+
+    /**
+     * Updates the state of the active standard party swap animation by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void updateStandardPartySwapAnimation(double dt) {
+
+        boolean swappingEntitiesNeutralFadeState = true;
+
+        for (int entityId : spsaSwappingEntities) {
+
+            if (gp.getEntityM().getEntityById(entityId).getActiveFadeEffect() != null) {
+
+                swappingEntitiesNeutralFadeState = false;
+                break;
+            }
+        }
+
+        if (swappingEntitiesNeutralFadeState && gp.getPartyS().isStagedEntityFadeUpEffectsEmpty()) {
+
+            if (spsaBackDelay > 0) {
+
+                spsaBackDelay -= dt;
+            }
+
+            if (spsaBackDelay <= 0) {
+
+                resetStandardPartySwapAnimation();
                 gp.getCombatM().progressCombat();
             }
         }
@@ -254,18 +357,43 @@ public class CombatAnimationSupport {
     private void resetStandardMoveAnimation() {
 
         standardMoveAnimationActive = false;
-        sourceEntityId = 0;
-        move = null;
-        particleEffectUuids.clear();
-        targetEntitiesFinalLife.clear();
-        targetEntitiesDamageRemainder.clear();
-        standardMoveAnimationFrontDelay = 0;
-        standardMoveAnimationBackDelay = 0;
+        smaSourceEntityId = 0;
+        smaMove = null;
+        smaParticleEffectUuids.clear();
+        smaTargetEntitiesFinalLife.clear();
+        smaTargetEntitiesDamageRemainder.clear();
+        smaFrontDelay = 0;
+        smaBackDelay = 0;
+    }
+
+
+    /**
+     * Resets CombatAnimationSupport standard party swap animation fields back to their default state.
+     * Intended to be called to clean up after a standard party swap animation has completed.
+     */
+    private void resetStandardPartySwapAnimation() {
+
+        standardPartySwapAnimationActive = false;
+        spsaSwappingEntities.clear();
+        spsaFrontDelay = 0;
+        spsaBackDelay = 0;
     }
 
 
     // GETTER
     public boolean isAnimationActive() {
-        return (standardMoveAnimationActive && standardFaintAnimationActive);
+        return (standardMoveAnimationActive && standardFaintAnimationActive && standardPartySwapAnimationActive);
+    }
+
+    public boolean isStandardMoveAnimationActive() {
+        return standardMoveAnimationActive;
+    }
+
+    public boolean isStandardFaintAnimationActive() {
+        return standardFaintAnimationActive;
+    }
+
+    public boolean isStandardPartySwapAnimationActive() {
+        return standardPartySwapAnimationActive;
     }
 }

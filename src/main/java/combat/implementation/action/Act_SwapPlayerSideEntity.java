@@ -6,6 +6,7 @@ import core.GamePanel;
 /**
  * This class defines a combat action (swap player side entities).
  * Note that any swapped entities in a guarding state will exit said state.
+ * This action is only applicable to party member entities (i.e., not the player entity itself).
  */
 public class Act_SwapPlayerSideEntity extends ActionBase {
 
@@ -37,7 +38,6 @@ public class Act_SwapPlayerSideEntity extends ActionBase {
 
             gp.getCombatM().getGuardingEntities().remove(entityId2);
         }
-        gp.getPartyS().swapEntityInParty(entityId1, entityId2, true);
-        gp.getCombatM().progressCombat();
+        gp.getCombatAnimationS().initiateStandardPartySwapAnimation(entityId1, entityId2);
     }
 }
