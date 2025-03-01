@@ -1,14 +1,15 @@
 package combat.support;
 
 import combat.MoveBase;
+import combat.implementation.action.Act_EndEntityTurn;
 import core.GamePanel;
+import entity.enumeration.EntityStatus;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import utility.LimitedArrayList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -39,7 +40,7 @@ public class CombatAnimationSupport {
     /**
      * UUIDs of particle effects being animated.
      */
-    private List<UUID> smaParticleEffectUuids = new ArrayList<>();
+    private ArrayList<UUID> smaParticleEffectUuids = new ArrayList<>();
 
     /**
      * Calculated final life points of each targeted entity after applying damage; entity ID is the key, life points is
@@ -73,13 +74,6 @@ public class CombatAnimationSupport {
     private double smaBackDelay;
 
 
-    // STANDARD FAINT ANIMATION (SFA) FIELDS
-    /**
-     * Boolean indicating whether a standard faint animation is staged/playing (true) or not (false).
-     */
-    private boolean standardFaintAnimationActive = false;
-
-
     // STANDARD PARTY SWAP ANIMATION (SPSA) FIELDS
     /**
      * Boolean indicating whether a standard party swap animation is staged/playing (true) or not (false).
@@ -89,11 +83,11 @@ public class CombatAnimationSupport {
     /**
      * List to store the IDs of the entities involved in a standard party swap animation.
      */
-    private final LimitedArrayList<Integer> spsaSwappingEntities = new LimitedArrayList<>(2);
+    private final LimitedArrayList<Integer> spsaSwappingEntityIds = new LimitedArrayList<>(2);
 
     /**
      * Time to delay the start of the actual standard party swap animation from when the
-     * `initiateStandardPartySwapAnimation()` method id called (seconds).
+     * `initiateStandardPartySwapAnimation()` method ia called (seconds).
      */
     private double spsaFrontDelay;
 
@@ -102,6 +96,27 @@ public class CombatAnimationSupport {
      * combat action (seconds).
      */
     private double spsaBackDelay;
+
+
+    // STANDARD FAINT ANIMATION (SFA) FIELDS
+    /**
+     * Boolean indicating whether a standard faint animation is staged/playing (true) or not (false).
+     */
+    private boolean standardFaintAnimationActive = false;
+
+    private ArrayList<Integer> sfaFaintingEntityIds = new ArrayList<>();
+
+    /**
+     * Time to delay the start of the actual standard faint animation from when the `initiateStandardFaintAnimation()`
+     * method ia called (seconds).
+     */
+    private double sfaFrontDelay;
+
+    /**
+     * Time between when the actual standard faint animation is complete and control is handed off to the next combat
+     * action (seconds).
+     */
+    private double sfaBackDelay;
 
 
     // CONSTRUCTOR
@@ -113,6 +128,13 @@ public class CombatAnimationSupport {
     public CombatAnimationSupport(GamePanel gp) {
         this.gp = gp;
     }
+
+
+    // TODO : Modify standard move animations to handle restoring health.
+
+    // TODO : Add standard revive animation to handle reviving an entity during combat.
+
+    // TODO : Consider modifying standard move animation to only finish once sound effect is complete.
 
 
     // METHODS
@@ -148,6 +170,19 @@ public class CombatAnimationSupport {
                 updateStandardPartySwapAnimation(dt);
             }
         }
+
+        // Standard faint animation.
+        if (standardFaintAnimationActive) {
+            if (sfaFrontDelay > 0) {
+                sfaFrontDelay -= dt;
+                if (sfaFrontDelay <= 0) {
+                    kickoffStandardFaintAnimation();
+                }
+            }
+            if (sfaFrontDelay <= 0) {
+                updateStandardFaintAnimation(dt);
+            }
+        }
     }
 
 
@@ -158,6 +193,8 @@ public class CombatAnimationSupport {
      * determined by the move being used.
      * The sound effect associated with the move is also played.
      * Only moves that subtract health from target entities are supported.
+     * Once the animation is complete and effects/fainting have been polled, an action to end the current turn will be
+     * added to the end of the queue of combat actions.
      * If a standard move animation is already active, nothing will happen.
      *
      * @param sourceEntityId ID of entity using the animated combat move
@@ -197,11 +234,33 @@ public class CombatAnimationSupport {
 
         if (!standardPartySwapAnimationActive) {
 
-            spsaSwappingEntities.add(entityId1);
-            spsaSwappingEntities.add(entityId2);
+            spsaSwappingEntityIds.add(entityId1);
+            spsaSwappingEntityIds.add(entityId2);
             standardPartySwapAnimationActive = true;
             kickoffStandardPartySwapAnimation();                                                                        // If 'smaFrontDelay' is set to non-zero number X, this line must be replaced with 'smaFrontDelay = X;'.
             spsaBackDelay = 0.1;
+        }
+    }
+
+
+    /**
+     * Initiates a standard faint animation to play.
+     * The status of each target entity will be modified to `FAINT` by this animation.
+     * If a standard faint animation is already active, nothing will happen.
+     *
+     * @param entityIds IDs of entities to participate in this batch of faint animations
+     */
+    public void initiateStandardFaintAnimation(ArrayList<Integer> entityIds) {
+
+        if (!standardFaintAnimationActive) {
+
+            for (int entityId : entityIds) {
+
+                sfaFaintingEntityIds.add(entityId);
+            }
+            standardFaintAnimationActive = true;
+            kickoffStandardFaintAnimation();
+            sfaBackDelay = 0.1;
         }
     }
 
@@ -240,7 +299,20 @@ public class CombatAnimationSupport {
      */
     private void kickoffStandardPartySwapAnimation() {
 
-        gp.getPartyS().swapEntityInParty(spsaSwappingEntities.get(0), spsaSwappingEntities.get(1), true);
+        gp.getPartyS().swapEntityInParty(spsaSwappingEntityIds.get(0), spsaSwappingEntityIds.get(1), true);
+    }
+
+
+    /**
+     * Kicks off the staged standard faint animation.
+     */
+    private void kickoffStandardFaintAnimation() {
+
+        for (int entityId : sfaFaintingEntityIds) {
+
+            gp.getEntityM().getEntityById(entityId).setStatus(EntityStatus.FAINT);
+            gp.getEntityM().getEntityById(entityId).initiateCombatFaintAnimation();
+        }
     }
 
 
@@ -301,7 +373,7 @@ public class CombatAnimationSupport {
 
             if (smaBackDelay <= 0) {
 
-                List<Integer> targetEntityIds = new ArrayList<>();
+                ArrayList<Integer> targetEntityIds = new ArrayList<>();
 
                 for (int targetEntityId : smaTargetEntitiesFinalLife.keySet()) {
 
@@ -309,6 +381,7 @@ public class CombatAnimationSupport {
                 }
                 smaMove.runEffects(smaSourceEntityId, targetEntityIds);                                                 // Apply any additional affects that this move may have.
                 gp.getCombatM().pollFainting();                                                                         // Check whether any entities fainted as a result of this move; appropriate actions will be queued if so.
+                gp.getCombatM().addQueuedActionBack(new Act_EndEntityTurn(gp));                                         // End the current entity's turn.
                 resetStandardMoveAnimation();
                 gp.getCombatM().progressCombat();
             }
@@ -325,7 +398,7 @@ public class CombatAnimationSupport {
 
         boolean swappingEntitiesNeutralFadeState = true;
 
-        for (int entityId : spsaSwappingEntities) {
+        for (int entityId : spsaSwappingEntityIds) {
 
             if (gp.getEntityM().getEntityById(entityId).getActiveFadeEffect() != null) {
 
@@ -344,6 +417,40 @@ public class CombatAnimationSupport {
             if (spsaBackDelay <= 0) {
 
                 resetStandardPartySwapAnimation();
+                gp.getCombatM().progressCombat();
+            }
+        }
+    }
+
+
+    /**
+     * Updates the state of the active standard faint animation by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void updateStandardFaintAnimation(double dt) {
+
+        boolean faintAnimationsComplete = true;
+
+        for (int entityId : sfaFaintingEntityIds) {
+
+            if (gp.getEntityM().getEntityById(entityId).isPlayingCombatFaintAnimation()) {
+
+                faintAnimationsComplete = false;
+                break;
+            }
+        }
+
+        if (faintAnimationsComplete) {
+
+            if (sfaBackDelay > 0) {
+
+                sfaBackDelay -= dt;
+            }
+
+            if (sfaBackDelay <= 0) {
+
+                resetStandardFaintAnimation();
                 gp.getCombatM().progressCombat();
             }
         }
@@ -374,15 +481,28 @@ public class CombatAnimationSupport {
     private void resetStandardPartySwapAnimation() {
 
         standardPartySwapAnimationActive = false;
-        spsaSwappingEntities.clear();
+        spsaSwappingEntityIds.clear();
         spsaFrontDelay = 0;
         spsaBackDelay = 0;
     }
 
 
+    /**
+     * Resets CombatAnimationSupport standard faint animation fields back to their default state.
+     * Intended to be called to clean up after a standard faint animation has completed.
+     */
+    private void resetStandardFaintAnimation() {
+
+        standardFaintAnimationActive = false;
+        sfaFaintingEntityIds.clear();
+        sfaFrontDelay = 0;
+        sfaBackDelay = 0;
+    }
+
+
     // GETTER
     public boolean isAnimationActive() {
-        return (standardMoveAnimationActive && standardFaintAnimationActive && standardPartySwapAnimationActive);
+        return (standardMoveAnimationActive && standardPartySwapAnimationActive && standardFaintAnimationActive);
     }
 
     public boolean isStandardMoveAnimationActive() {

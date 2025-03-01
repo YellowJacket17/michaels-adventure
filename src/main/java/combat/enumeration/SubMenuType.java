@@ -26,6 +26,11 @@ public enum SubMenuType {
     TARGET_SELECT,
 
     /**
+     * Select whether to confirm or cancel the pre-determined targets that will be hit by a move.
+     */
+    TARGET_CONFIRM,
+
+    /**
      * Select from a list of all player-side entities (including the player entity) to manage.
      */
     PARTY,

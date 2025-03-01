@@ -2,7 +2,8 @@ package utility;
 
 import asset.Sound;
 import combat.MoveBase;
-import combat.implementation.move.Mve_Tackle;
+import combat.implementation.move.Mve_Earthquake;
+import combat.implementation.move.Mve_Punch;
 import dialogue.Conversation;
 import dialogue.Dialogue;
 import entity.EntityBase;
@@ -648,7 +649,11 @@ public class JsonParser {
 
         switch (moveId) {
             case 1:
-                move = new Mve_Tackle(gp);
+                move = new Mve_Earthquake(gp);
+                break;
+            case 2:
+                move = new Mve_Punch(gp);
+                break;
         }
         return move;
     }

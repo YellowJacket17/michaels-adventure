@@ -150,7 +150,7 @@ public class CombatManager {
     private final ArrayList<Integer> lastGeneratedInactivePlayerSideOptions = new ArrayList<>();
 
     /**
-     * Stores the last generated list of target options in combat.
+     * Stores the last generated list of target options in combat (player-side and non-player-side).
      * The IDs of viable entities are stored in this list.
      */
     private final ArrayList<Integer> lastGeneratedTargetOptions = new ArrayList<>();
@@ -554,13 +554,13 @@ public class CombatManager {
                     && (!gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).isHidden())) {                // If hidden, entity is not actively participating in combat (ex. party member in reserve).
 
                 viableEntity = true;
-
-                if (guardingEntities.remove(queuedEntityTurnOrder.peekFirst())) {                                       // If the entity was in a guarding state, end it.
-
-                    String message = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getName()
-                            + " reverted from a defensive stance.";
-                    addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
-                }
+                guardingEntities.remove(queuedEntityTurnOrder.peekFirst());
+//                if (guardingEntities.remove(queuedEntityTurnOrder.peekFirst())) {                                       // If the entity was in a guarding state, end it.
+//
+//                    String message = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getName()
+//                            + " reverted from a defensive stance.";
+//                    addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
+//                }
             }
         }
     }
@@ -574,44 +574,46 @@ public class CombatManager {
      */
     public void pollFainting() {
 
-        checkJustFainted(gp.getEntityM().getPlayer().getEntityId());
+        actionPreFaint(gp.getEntityM().getPlayer().getEntityId());
 
         for (int entityId : gp.getEntityM().getParty().keySet()) {
 
-            checkJustFainted(entityId);
+            actionPreFaint(entityId);
         }
 
         for (int entityId : nonPlayerSideEntities) {
 
-            checkJustFainted(entityId);
+            actionPreFaint(entityId);
         }
 
-        if (checkAllNonPlayerSideFainted()) {                                                                           // Combat is won if all non-player-side entities have fainted.
+        if (checkAllNonPlayerSideZeroLife()) {                                                                           // Combat is won if all non-player-side entities have fainted.
 
-            String message = gp.getEntityM().getPlayer().getName() + " won the fight!";
-            addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
-            addQueuedActionFront(new Act_ToggleCombatUi(gp, false));
-            addQueuedActionFront(new Act_ReadMessage(gp, message, true, true));
+//            String message = gp.getEntityM().getPlayer().getName() + " won the fight!";
+            String message = "Player won the fight!";
+            addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
+            addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
+            addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
         }
 
-        if (checkPlayerFainted()) {                                                                                     // Combat is only lost if the player entity has fainted.
+        if (checkPlayerZeroLife()) {                                                                                     // Combat is only lost if the player entity has fainted.
 
-            String message = gp.getEntityM().getPlayer().getName() + " lost the fight.";
-            addQueuedActionFront(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
-            addQueuedActionFront(new Act_ToggleCombatUi(gp, false));
-            addQueuedActionFront(new Act_ReadMessage(gp, message, true, true));
+//            String message = gp.getEntityM().getPlayer().getName() + " lost the fight.";
+            String message = "Player lost the fight.";
+            addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
+            addQueuedActionBack(new Act_ToggleCombatUi(gp, false));
+            addQueuedActionBack(new Act_ExitCombat(gp, ExitCombatTransitionType.BASIC));
         }
     }
 
 
     /**
-     * Checks whether the player entity has a fainted status or not.
+     * Checks whether the player entity has zero life or not.
      *
-     * @return whether the player entity has fainted (true) or not (false)
+     * @return whether the player entity has zero life (true) or not (false)
      */
-    public boolean checkPlayerFainted() {
+    public boolean checkPlayerZeroLife() {
 
-        if (gp.getEntityM().getPlayer().getStatus() == EntityStatus.FAINT) {
+        if (gp.getEntityM().getPlayer().getLife() <= 0) {
 
             return true;
         }
@@ -620,25 +622,24 @@ public class CombatManager {
 
 
     /**
-     * Checks whether all party member entities (active and inactive, excluding the player entity) have a fainted status
-     * or not.
+     * Checks whether all party member entities (active and inactive, excluding the player entity) have zero life or
+     * not.
      *
-     * @return whether all party member entities have fainted (true) or not (false)
+     * @return whether all party member entities have zero life (true) or not (false)
      */
-    public boolean checkAllPartyFainted() {
+    public boolean checkAllPartyZeroLife() {
 
-        int allPartyCount = gp.getEntityM().getParty().size();
-        int faintedPartyCount = 0;
+        int zeroLifePartyCount = 0;
 
         for (int entityId : gp.getEntityM().getParty().keySet()) {
 
-            if (gp.getEntityM().getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+            if (gp.getEntityM().getEntityById(entityId).getLife() <= 0) {
 
-                faintedPartyCount++;
+                zeroLifePartyCount++;
             }
         }
 
-        if (faintedPartyCount == allPartyCount) {
+        if (zeroLifePartyCount == gp.getEntityM().getParty().size()) {
 
             return true;
         } else {
@@ -649,24 +650,23 @@ public class CombatManager {
 
 
     /**
-     * Checks whether all non-player-side entities have a fainted status or not.
+     * Checks whether all non-player-side entities have zero life or not.
      *
-     * @return whether all non-player-side entities have fainted (true) or not (false)
+     * @return whether all non-player-side entities have zero life (true) or not (false)
      */
-    public boolean checkAllNonPlayerSideFainted() {
+    public boolean checkAllNonPlayerSideZeroLife() {
 
-        int allNonPlayerSideCount = gp.getCombatM().getNonPlayerSideEntities().size();
-        int faintedNonPlayerSideCount = 0;
+        int zeroLifeNonPlayerSideCount = 0;
 
         for (int entityId : gp.getCombatM().getNonPlayerSideEntities()) {
 
-            if (gp.getEntityM().getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+            if (gp.getEntityM().getEntityById(entityId).getLife() <= 0) {
 
-                faintedNonPlayerSideCount++;
+                zeroLifeNonPlayerSideCount++;
             }
         }
 
-        if (faintedNonPlayerSideCount == allNonPlayerSideCount) {
+        if (zeroLifeNonPlayerSideCount == gp.getCombatM().getNonPlayerSideEntities().size()) {
 
             return true;
         } else {
@@ -722,6 +722,9 @@ public class CombatManager {
                 break;
             case TARGET_SELECT:
                 runTargetSelectSubMenuSelection();
+                break;
+            case TARGET_CONFIRM:
+                runTargetConfirmSubMenuSelection();
                 break;
             case PARTY:
                 runPartySubMenuSelection();
@@ -783,7 +786,13 @@ public class CombatManager {
      */
     private void runRootSubMenuSelectionAttack() {
 
-        generateTargetSelectSubMenuAction();
+        if (defaultMove.isHitAllTargets()) {
+
+            generateTargetConfirmSubMenuAction(defaultMove);
+        } else {
+
+            generateTargetSelectSubMenuAction(defaultMove.getMoveTargets());
+        }
     }
 
 
@@ -856,9 +865,9 @@ public class CombatManager {
         } else {
 
             guardingEntities.add(queuedEntityTurnOrder.peekFirst());
-            String message = gp.getEntityM()
-                    .getEntityById(queuedEntityTurnOrder.peekFirst()).getName() + " assumed a defensive stance.";
-            addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
+//            String message = gp.getEntityM()
+//                    .getEntityById(queuedEntityTurnOrder.peekFirst()).getName() + " assumed a defensive stance.";
+//            addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
             addQueuedActionBack(new Act_EndEntityTurn(gp));
         }
     }
@@ -874,7 +883,16 @@ public class CombatManager {
             revertSubMenuSelection();
         } else {
 
-            generateTargetSelectSubMenuAction();
+            MoveBase move = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getMoves()
+                    .get(getLatestSubMenuMemory().getSelectedOption());
+
+            if (move.isHitAllTargets()) {
+
+                generateTargetConfirmSubMenuAction(move);
+            } else {
+
+                generateTargetSelectSubMenuAction(move.getMoveTargets());
+            }
         }
     }
 
@@ -1007,11 +1025,37 @@ public class CombatManager {
             EntityBase targetEntity = gp.getEntityM().getEntityById(
                     lastGeneratedTargetOptions.get(
                             getLatestSubMenuMemory().getSelectedOption()));
-            String message;
-            message = buildUseMoveDialogue(sourceEntity.getName(), move.getName());
+            String message = buildUseMoveDialogue(sourceEntity.getName(), move.getName());
             addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
             addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
-            addQueuedActionBack(new Act_EndEntityTurn(gp));
+        }
+    }
+
+
+    /**
+     * Runs logic based on the last option that was selected in the target confirm combat sub-menu.
+     */
+    private void runTargetConfirmSubMenuSelection() {
+
+        if (getLatestSubMenuMemory().getSelectedOption() == (getLatestSubMenuMemory().getOptions().size() - 1)){        // Determine whether the 'Back' option was selected or not.
+
+            revertSubMenuSelection();
+        } else {                                                                                                        // Determine appropriate target entity that was selected.
+
+            EntityBase sourceEntity = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst());
+            MoveBase move = null;
+
+            switch (subMenuLog.get(subMenuLog.size() - 2).getType()) {
+                case ROOT:                                                                                              // A basic attack must have been selected (i.e., 'Attack' option in root combat sub-menu).
+                    move = defaultMove;
+                    break;
+                case SKILL:                                                                                             // A skill move must have been selected (i.e., 'Skill' option in root combat sub-menu).
+                    move = sourceEntity.getMoves().get(subMenuLog.get(subMenuLog.size() - 2).getSelectedOption());
+                    break;
+            }
+            String message = buildUseMoveDialogue(sourceEntity.getName(), move.getName());
+            addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
+            addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), lastGeneratedTargetOptions));
         }
     }
 
@@ -1469,16 +1513,26 @@ public class CombatManager {
         int i = random.nextInt(possibleMoves.size());                                                                   // Generate random number from 0 to number of possible moves minus one (both inclusive).
         move = possibleMoves.get(i);
 
-        // Generate random target entity.
+        // Generate target entity.
+        ArrayList<Integer> targetEntityIds = new ArrayList<>();
         generateNonPlayerSideTargetOptions(move.getMoveTargets());
-        i = random.nextInt(lastGeneratedTargetOptions.size());                                                          // Generate random number from 0 to number of selectable target entities (both inclusive)
-        EntityBase targetEntity = gp.getEntityM().getEntityById(lastGeneratedTargetOptions.get(i));
+
+        if (move.isHitAllTargets()) {                                                                                   // Move hits all possible targets.
+
+            for (int entityId : lastGeneratedTargetOptions) {
+
+                targetEntityIds.add(entityId);
+            }
+        } else {                                                                                                        // Move only hits one possible target.
+
+            i = random.nextInt(lastGeneratedTargetOptions.size());                                                      // Generate random number from 0 to number of selectable target entities (both inclusive)
+            targetEntityIds.add(lastGeneratedTargetOptions.get(i));
+        }
 
         // Add move action.
         String message = buildUseMoveDialogue(sourceEntity.getName(), move.getName());
         addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
-        addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
-        addQueuedActionBack(new Act_EndEntityTurn(gp));
+        addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntityIds));
         runNextQueuedAction();
     }
 
@@ -1594,20 +1648,11 @@ public class CombatManager {
     /**
      * Generates a sub-menu action for selecting targets and adds it to the back of the queue of actions.
      * The list of last generated selectable targets in combat is also refreshed.
+     *
+     * @param moveTargets possible move targets
      */
-    private void generateTargetSelectSubMenuAction() {
+    private void generateTargetSelectSubMenuAction(MoveTargets moveTargets) {
 
-        EntityBase sourceEntity = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst());
-        MoveTargets moveTargets = null;
-
-        switch (getLatestSubMenuMemory().getType()) {
-            case ROOT:                                                                                                  // A basic attack must have been selected (i.e., 'Attack' option in root combat sub-menu).
-                moveTargets = defaultMove.getMoveTargets();
-                break;
-            case SKILL:                                                                                                 // A skill move must have been selected (i.e., 'Skill' option in root combat sub-menu).
-                moveTargets = sourceEntity.getMoves().get(getLatestSubMenuMemory().getSelectedOption()).getMoveTargets();
-                break;
-        }
         ArrayList<String> targetOptions = generatePlayerSideTargetOptions(moveTargets);
         targetOptions.add("Back");
         HashMap<Integer, Vector3f> colors = new HashMap<>();
@@ -1616,6 +1661,26 @@ public class CombatManager {
                 gp, buildTargetSelectSubMenuDialogue(), false, false));
         addQueuedActionBack(new Act_GenerateSubMenu(
                 gp, SubMenuType.TARGET_SELECT, targetOptions, colors));
+    }
+
+
+    /**
+     * Generates a sub-menu action for confirming the pre-determined targets that a move will hit and adds it to the
+     * back of the queue of actions.
+     * The list of last generated selectable targets in combat is also refreshed.
+     *
+     * @param move move to use
+     */
+    private void generateTargetConfirmSubMenuAction(MoveBase move) {
+
+        generatePlayerSideTargetOptions(move.getMoveTargets());
+        ArrayList<String> targetOptions = new ArrayList<>();
+        HashMap<Integer, Vector3f> colors = new HashMap<>();
+        targetOptions.add("Confirm");
+        targetOptions.add("Back");
+        colors.put(targetOptions.size() - 1, backOptionColor);
+        addQueuedActionBack(new Act_ReadMessage(gp, buildTargetConfirmSubMenuDialogue(), false, false));
+        addQueuedActionBack(new Act_GenerateSubMenu(gp, SubMenuType.TARGET_CONFIRM, targetOptions, colors));
     }
 
 
@@ -1860,27 +1925,27 @@ public class CombatManager {
     /**
      * Checks whether an entity has just fainted; in other words, if the entity has zero life but not a
      * fainted status.
-     * If it has, its status is changed and a message is queued to display.
+     * If it has, then both its faint animation and a message are added to the end of the queue of actions.
      *
      * @param entityId ID of entity to check
      */
-    private void checkJustFainted(int entityId) {
+    private void actionPreFaint(int entityId) {
 
         EntityBase targetEntity = gp.getEntityM().getEntityById(entityId);
 
         if ((targetEntity.getLife() <= 0)
                 && (targetEntity.getStatus() != EntityStatus.FAINT)) {
 
-            targetEntity.setStatus(EntityStatus.FAINT);
+            addQueuedActionBack(new Act_SetEntityFaint(gp, entityId));
             String message = targetEntity.getName() + " has no energy left to fight!";
-            addQueuedActionFront(new Act_ReadMessage(gp, message, true, true));
+            addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
         }
     }
 
 
     /**
      * Sets a target entity to a combating state.
-     * If ethe target entity is already in a combating state, it will remain as such.
+     * If the target entity is already in a combating state, it will remain as such.
      * The target entity's pre-combat world position is also stored for later use (if needed post-combat).
      *
      * @param target ID of the entity entering combat
@@ -2080,6 +2145,29 @@ public class CombatManager {
             description = "Use "
                     + sourceEntity.getMoves().get(getLatestSubMenuMemory().getSelectedOption()).getName()
                     + " on who?";
+        }
+        return description;
+    }
+
+
+    /**
+     * Builds message for the target confirm sub-menu.
+     *
+     * @return message
+     */
+    private String buildTargetConfirmSubMenuDialogue() {
+
+        EntityBase sourceEntity = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst());
+        String description = "";
+
+        if (getLatestSubMenuMemory().getType() == SubMenuType.ROOT) {
+
+            description = "Attack the selected targets?";
+        } else if (getLatestSubMenuMemory().getType() == SubMenuType.SKILL) {
+
+            description = "Use "
+                    + sourceEntity.getMoves().get(getLatestSubMenuMemory().getSelectedOption()).getName()
+                    + " on the selected targets?";
         }
         return description;
     }

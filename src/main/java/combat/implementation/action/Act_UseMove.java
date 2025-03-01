@@ -5,6 +5,7 @@ import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import core.GamePanel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class Act_UseMove extends ActionBase {
     /**
      * IDs of the entities targeted by the move.
      */
-    private final List<Integer> targetEntityIds;
+    private final List<Integer> targetEntityIds = new ArrayList<>();
 
 
     // CONSTRUCTORS
@@ -36,57 +37,21 @@ public class Act_UseMove extends ActionBase {
         super(gp);
         this.move = move;
         this.sourceEntityId = sourceEntityId;
-        this.targetEntityIds = List.of(targetEntityId);                                                                 // Immutable list.
+        this.targetEntityIds.add(targetEntityId);
     }
 
 
-    public Act_UseMove(GamePanel gp, MoveBase move, int sourceEntityId, int targetEntityId1, int targetEntityId2) {
+    public Act_UseMove(GamePanel gp, MoveBase move, int sourceEntityId, ArrayList<Integer> targetEntityIds) {
         super(gp);
         this.move = move;
         this.sourceEntityId = sourceEntityId;
-        this.targetEntityIds = List.of(targetEntityId1, targetEntityId2);                                               // Immutable list.
+        for (int entityId : targetEntityIds) {
+            this.targetEntityIds.add(entityId);
+        }
     }
 
 
-    public Act_UseMove(GamePanel gp, MoveBase move, int sourceEntityId, int targetEntityId1, int targetEntityId2,
-                       int targetEntityId3) {
-        super(gp);
-        this.move = move;
-        this.sourceEntityId = sourceEntityId;
-        this.targetEntityIds = List.of(targetEntityId1, targetEntityId2, targetEntityId3);                              // Immutable list.
-    }
-
-
-    public Act_UseMove(GamePanel gp, MoveBase move, int sourceEntityId, int targetEntityId1, int targetEntityId2,
-                       int targetEntityId3, int targetEntityId4) {
-        super(gp);
-        this.move = move;
-        this.sourceEntityId = sourceEntityId;
-        this.targetEntityIds = List.of(targetEntityId1, targetEntityId2, targetEntityId3, targetEntityId4);             // Immutable list.
-    }
-
-
-    public Act_UseMove(GamePanel gp, MoveBase move, int sourceEntityId, int targetEntityId1, int targetEntityId2,
-                       int targetEntityId3, int targetEntityId4, int targetEntityId5) {
-        super(gp);
-        this.move = move;
-        this.sourceEntityId = sourceEntityId;
-        this.targetEntityIds = List.of(targetEntityId1, targetEntityId2, targetEntityId3, targetEntityId4,
-                targetEntityId5);                                                                                       // Immutable list.
-    }
-
-
-    public Act_UseMove(GamePanel gp, MoveBase move, int sourceEntityId, int targetEntityId1, int targetEntityId2,
-                       int targetEntityId3, int targetEntityId4, int targetEntityId5, int targetEntityId6) {
-        super(gp);
-        this.move = move;
-        this.sourceEntityId = sourceEntityId;
-        this.targetEntityIds = List.of(targetEntityId1, targetEntityId2, targetEntityId3, targetEntityId4,
-                targetEntityId5, targetEntityId6);                                                                      // Immutable list.
-    }
-
-
-    // METHOD
+    // METHODS
     @Override
     public void run() {
 
@@ -107,60 +72,49 @@ public class Act_UseMove extends ActionBase {
         HashMap<Integer, Integer> targetEntitiesFinalLife = new HashMap<>();
         int sourceEntityAttack = gp.getEntityM().getEntityById(sourceEntityId).getAttack();
         int sourceEntityMagic = gp.getEntityM().getEntityById(sourceEntityId).getMagic();
-        boolean targetGuarding;
         int targetDamage;
         int targetFinalLife;
 
         for (int targetEntityId : targetEntityIds) {                                                                    // Calculate and apply damage dealt to each target entity.
-
-            if (gp.getCombatM().getGuardingEntities().contains(targetEntityId)) {                                       // Determine if the target entity is in a guarding state.
-
-                targetGuarding = true;
-                gp.getCombatM().getGuardingEntities().remove(targetEntityId);
-                String message = gp.getEntityM()
-                        .getEntityById(targetEntityId).getName() + "'s defensive stance was broken!";
-                gp.getCombatM().addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
-            } else {
-
-                targetGuarding = false;
-            }
 
             if (move.getCategory() == MoveCategory.PHYSICAL) {
 
                 int targetEntityDefense = gp.getEntityM().getEntityById(targetEntityId).getDefense();
                 targetDamage = move.getPower() * (sourceEntityAttack / targetEntityDefense);
 
-                if (targetGuarding) {
 
-                    targetDamage /= 2;
-                }
-
-                if (gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage < 0) {
-
-                    targetFinalLife = 0;
-                } else {
-
-                    targetFinalLife = gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage;
-                }
-                targetEntitiesFinalLife.put(targetEntityId, targetFinalLife);
             } else if (move.getCategory() == MoveCategory.MAGIC) {
 
                 int targetEntityMagic = gp.getEntityM().getEntityById(targetEntityId).getMagic();
                 targetDamage = move.getPower() * (sourceEntityMagic / targetEntityMagic);
 
-                if (targetGuarding) {
+            } else {
+
+                targetDamage = 0;
+            }
+
+            if (move.getCategory() != MoveCategory.SUPPORT) {
+
+                if (gp.getCombatM().getGuardingEntities().contains(targetEntityId)) {                                   // Determine if the target entity is in a guarding state.
 
                     targetDamage /= 2;
+                    gp.getCombatM().getGuardingEntities().remove(targetEntityId);
                 }
-                if (gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage < 0) {
 
-                    targetFinalLife = 0;
-                } else {
+                if (targetDamage <= 0) {
 
-                    targetFinalLife = gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage;
+                    targetDamage = 1;                                                                                   // Guarantee that at least one life point is taken for non-support moves.
                 }
-                targetEntitiesFinalLife.put(targetEntityId, targetFinalLife);
             }
+
+            if (gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage < 0) {
+
+                targetFinalLife = 0;
+            } else {
+
+                targetFinalLife = gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage;
+            }
+            targetEntitiesFinalLife.put(targetEntityId, targetFinalLife);
         }
         return targetEntitiesFinalLife;
     }

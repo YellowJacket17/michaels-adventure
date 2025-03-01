@@ -1203,6 +1203,13 @@ public class UserInterface {
 
                 bannerColor = BannerColor.TARGET;
             }
+        } else if ((gp.getCombatM().getLatestSubMenuType() == SubMenuType.TARGET_CONFIRM)
+                && (gp.getPrimaryGameState() == PrimaryGameState.SUB_MENU)) {
+
+            if (gp.getCombatM().getLastGeneratedTargetOptions().contains(entityId)) {
+
+                bannerColor = BannerColor.TARGET;
+            }
         }
 
         if (includeSkill) {

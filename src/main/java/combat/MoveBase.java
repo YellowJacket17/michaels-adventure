@@ -43,6 +43,12 @@ public abstract class MoveBase {
     protected final MoveTargets moveTargets;
 
     /**
+     * Boolean setting whether this move will hit all possible move targets, or whether a single target of the possible
+     * move targets must be selected.
+     */
+    protected final boolean hitAllTargets;
+
+    /**
      * Move name.
      */
     protected String name;
@@ -86,12 +92,15 @@ public abstract class MoveBase {
      * @param moveId move ID
      * @param category type of move (PHYSICAL or MAGIC)
      * @param moveTargets combating entities that may be targeted by this move
+     * @param hitAllTargets whether this move will target all possible move targets (true) or only target a single
+     *                        target of the possible move targets (false)
      */
-    public MoveBase(GamePanel gp, int moveId, MoveCategory category, MoveTargets moveTargets) {
+    public MoveBase(GamePanel gp, int moveId, MoveCategory category, MoveTargets moveTargets, boolean hitAllTargets) {
         this.gp = gp;
         this.moveId = moveId;
         this.category = category;
         this.moveTargets = moveTargets;
+        this.hitAllTargets = hitAllTargets;
     }
 
 
@@ -113,6 +122,10 @@ public abstract class MoveBase {
 
     public MoveTargets getMoveTargets() {
         return moveTargets;
+    }
+
+    public boolean isHitAllTargets() {
+        return hitAllTargets;
     }
 
     public String getName() {

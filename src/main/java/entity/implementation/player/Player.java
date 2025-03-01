@@ -1,7 +1,7 @@
 package entity.implementation.player;
 
 import combat.implementation.move.Mve_Punch;
-import combat.implementation.move.Mve_Tackle;
+import combat.implementation.move.Mve_Earthquake;
 import core.enumeration.PrimaryGameState;
 import miscellaneous.KeyListener;
 import entity.EntityBase;
@@ -481,6 +481,34 @@ public class Player extends EntityBase {
         combatAttackLeft = AssetPool.getSpritesheet("characters").getSprite(14);
         combatAttackRight = AssetPool.getSpritesheet("characters").getSprite(17);
 
+        combatFaintLeft1_1 = AssetPool.getSpritesheet("characters").getSprite(18);
+        combatFaintLeft2_1 = AssetPool.getSpritesheet("characters").getSprite(20);
+        combatFaintLeft3_1 = AssetPool.getSpritesheet("characters").getSprite(22);
+        combatFaintLeft4_1 = AssetPool.getSpritesheet("characters").getSprite(24);
+        combatFaintLeft5_1 = AssetPool.getSpritesheet("characters").getSprite(26);
+        combatFaintLeft6_1 = AssetPool.getSpritesheet("characters").getSprite(28);
+
+        combatFaintLeft1_2 = AssetPool.getSpritesheet("characters").getSprite(19);
+        combatFaintLeft2_2 = AssetPool.getSpritesheet("characters").getSprite(21);
+        combatFaintLeft3_2 = AssetPool.getSpritesheet("characters").getSprite(23);
+        combatFaintLeft4_2 = AssetPool.getSpritesheet("characters").getSprite(25);
+        combatFaintLeft5_2 = AssetPool.getSpritesheet("characters").getSprite(27);
+        combatFaintLeft6_2 = AssetPool.getSpritesheet("characters").getSprite(29);
+
+        combatFaintRight1_1 = AssetPool.getSpritesheet("characters").getSprite(30);
+        combatFaintRight2_1 = AssetPool.getSpritesheet("characters").getSprite(32);
+        combatFaintRight3_1 = AssetPool.getSpritesheet("characters").getSprite(34);
+        combatFaintRight4_1 = AssetPool.getSpritesheet("characters").getSprite(36);
+        combatFaintRight5_1 = AssetPool.getSpritesheet("characters").getSprite(38);
+        combatFaintRight6_1 = AssetPool.getSpritesheet("characters").getSprite(40);
+
+        combatFaintRight1_2 = AssetPool.getSpritesheet("characters").getSprite(31);
+        combatFaintRight2_2 = AssetPool.getSpritesheet("characters").getSprite(33);
+        combatFaintRight3_2 = AssetPool.getSpritesheet("characters").getSprite(35);
+        combatFaintRight4_2 = AssetPool.getSpritesheet("characters").getSprite(37);
+        combatFaintRight5_2 = AssetPool.getSpritesheet("characters").getSprite(39);
+        combatFaintRight5_2 = AssetPool.getSpritesheet("characters").getSprite(41);
+
         sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
@@ -511,7 +539,7 @@ public class Player extends EntityBase {
         setBaseAgility(10);
 
         // Combat moves.
-        moves.add(new Mve_Tackle(gp));
+        moves.add(new Mve_Earthquake(gp));
         moves.add(new Mve_Punch(gp));
 
         // Items.

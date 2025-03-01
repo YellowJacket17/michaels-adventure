@@ -22,19 +22,17 @@ public class Mve_BasicAttack extends MoveBase {
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 0;
     private static final Vector3f mveParticleEffectColor = new Vector3f(228, 166, 255);
-//    private static final String mveSoundEffect = "";
 
 
     // CONSTRUCTOR
     public Mve_BasicAttack(GamePanel gp) {
-        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT);
+        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT, false);
         name = mveName;
         description = mveDescription;
         power = mvePower;
         accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
         particleEffectColor = mveParticleEffectColor;
-//        soundEffect = mveSoundEffect;
     }
 
 

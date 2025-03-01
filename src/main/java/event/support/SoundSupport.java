@@ -206,8 +206,12 @@ public class SoundSupport {
     }
 
 
-    // GETTER
+    // GETTERS
     public String getPlayingTrackName() {
         return playingTrackName;
+    }
+
+    public boolean isSoundPlaying(String resourceName) {
+        return AssetPool.getSound(resourceName).isPlaying();
     }
 }

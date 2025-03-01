@@ -90,8 +90,13 @@ public abstract class EntityBase extends Drawable {
             combatStanceLeft1, combatStanceLeft2,
             combatStanceRight1, combatStanceRight2,
             combatAttackRight, combatAttackLeft,
-            combatFaintLeft1, combatFaintLeft2, combatFaintLeft3, combatFaintLeft4, combatFaintLeft5,
-            combatFaintRight1, combatFaintRight2, combatFaintRight3, combatFaintRight4, combatFaintRight5;
+            combatFaintLeft1_1, combatFaintLeft1_2, combatFaintRight1_1, combatFaintRight1_2,
+            combatFaintLeft2_1, combatFaintLeft2_2, combatFaintRight2_1, combatFaintRight2_2,
+            combatFaintLeft3_1, combatFaintLeft3_2, combatFaintRight3_1, combatFaintRight3_2,
+            combatFaintLeft4_1, combatFaintLeft4_2, combatFaintRight4_1, combatFaintRight4_2,
+            combatFaintLeft5_1, combatFaintLeft5_2, combatFaintRight5_1, combatFaintRight5_2,
+            combatFaintLeft6_1, combatFaintLeft6_2, combatFaintRight6_1, combatFaintRight6_2;
+
 
     /**
      * Boolean tracking whether a render error has occurred.
@@ -188,8 +193,9 @@ public abstract class EntityBase extends Drawable {
      * This is used for combat faint animation to distinguish which frame of animation to render, regardless of whether
      * this entity is facing left or right.
      * A value of '1' represents the first frame, a value of '2' represents the second frame, etc.
+     * The last frame (a value of '6') represents the final "resting" faint sprite.
      */
-    protected int combatFaintSpriteNumCurrent = 1;
+    protected int combatFaintSpriteNumCurrent = 6;
 
     /**
      * Boolean indicating whether this entity is currently in a state of motion or not (used for grid-based movement).
@@ -322,7 +328,7 @@ public abstract class EntityBase extends Drawable {
      * Increasing this value will extend the duration of the combat faint animation.
      * In other words, increasing this value will make the combat faint animation appear to run more slowly.
      */
-    protected double animationCounterCombatFaintMax = 0.8;
+    protected double animationCounterCombatFaintMax = 0.6;
 
 
     // BASIC ATTRIBUTES
@@ -429,9 +435,9 @@ public abstract class EntityBase extends Drawable {
     protected double agilityBuff;
 
     /**
-     * Entity's status (faint, etc.).
+     * Entity's status (healthy, faint, etc.).
      */
-    protected EntityStatus status;
+    protected EntityStatus status = EntityStatus.HEALTHY;
 
     /**
      * Amount of experience this entity has earned at its current level.
@@ -532,41 +538,14 @@ public abstract class EntityBase extends Drawable {
      */
     public void addToRenderPipeline(Renderer renderer) {
 
-        if (playingCombatAttackAnimation) {
-
-            setCombatAttackSprite();
-//        } else if (playingCombatFaintAnimation || (status == EntityStatus.FAINT)) {
-        } else if (playingCombatFaintAnimation) {
-
-            setCombatFaintSprite();
-        } else if (combating) {
-
-            setCombatStanceSprite();
-        } else {
-
-            setWalkingSprite();
-        }
-
         if (!hidden && gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
-            if (sprite != null) {
+            if (playingCombatFaintAnimation || (combating && (status == EntityStatus.FAINT))) {
 
-                int worldXAdjustment = (GamePanel.NATIVE_TILE_SIZE / 2) - (sprite.getNativeWidth() / 2);                // Amount in the x-direction that the sprite needs to be adjusted when rendered; ensures sprite is centered on occupied tile.
-                int worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE;                          // Amount in the y-direction that the sprite needs to be adjusted when rendered; ensures bottom of sprite touches bottom of occupied tile.
-                transform.position.x = worldX + worldXAdjustment;
-                transform.position.y = worldY + worldYAdjustment;
-                transform.scale.x = sprite.getNativeWidth();
-                transform.scale.y = sprite.getNativeHeight();
-                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
-            } else if (!renderError) {
+                addToRenderPipelineFaint(renderer);
+            } else {
 
-                UtilityTool.logError("Failed to add entity "
-                        + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
-                        + "with ID '"
-                        + entityId
-                        + "' to the render pipeline: sprites may not have been properly loaded upon entity "
-                        + "initialization.");
-                renderError = true;
+                addToRenderPipelineStandard(renderer);
             }
         }
     }
@@ -717,23 +696,26 @@ public abstract class EntityBase extends Drawable {
      */
     public void stageCombatFaintSprite() {
 
-        double oneFourthAnimationCounterMax = animationCounterCombatFaintMax / 4;
+        double oneFifthAnimationCounterMax = animationCounterCombatFaintMax / 5;
 
-        if (animationCounter < oneFourthAnimationCounterMax) {
+        if (animationCounter < oneFifthAnimationCounterMax) {
 
             combatFaintSpriteNumCurrent = 1;
-        } else if (animationCounter < (oneFourthAnimationCounterMax * 2)) {
+        } else if (animationCounter < (oneFifthAnimationCounterMax * 2)) {
 
             combatFaintSpriteNumCurrent = 2;
-        } else if (animationCounter < (oneFourthAnimationCounterMax * 3)) {
+        } else if (animationCounter < (oneFifthAnimationCounterMax * 3)) {
 
             combatFaintSpriteNumCurrent = 3;
-        } else if (animationCounter < (oneFourthAnimationCounterMax * 4)) {
+        } else if (animationCounter < (oneFifthAnimationCounterMax * 4)) {
 
             combatFaintSpriteNumCurrent = 4;
-        } else {
+        } else if (animationCounter < (oneFifthAnimationCounterMax * 5)) {
 
             combatFaintSpriteNumCurrent = 5;
+        } else {
+
+            combatFaintSpriteNumCurrent = 6;
         }
     }
 
@@ -812,6 +794,116 @@ public abstract class EntityBase extends Drawable {
         setDefenseBuff(0);
         setMagicBuff(0);
         setAgilityBuff(0);
+    }
+
+
+    /**
+     * Resets life and skills points to their maximum values and status to its default value.
+     */
+    public void resetHealth() {
+
+        setLife(maxLife);
+        setSkillPoints(maxSkillPoints);
+        setStatus(EntityStatus.HEALTHY);
+    }
+
+
+    /**
+     * Adds this entity to the render pipeline (standard sprites).
+     *
+     * @param renderer Renderer instance
+     */
+    protected void addToRenderPipelineStandard(Renderer renderer) {
+
+        if (playingCombatAttackAnimation) {
+
+            setCombatAttackSprite();
+        } else if (combating) {
+
+            setCombatStanceSprite();
+        } else {
+
+            setWalkingSprite();
+        }
+
+        if (sprite != null) {
+
+            int worldXAdjustment = (GamePanel.NATIVE_TILE_SIZE / 2) - (sprite.getNativeWidth() / 2);                    // Amount in the x-direction that the sprite needs to be adjusted when rendered; ensures sprite is centered on occupied tile.
+            int worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE;                              // Amount in the y-direction that the sprite needs to be adjusted when rendered; ensures bottom of sprite touches bottom of occupied tile.
+            transform.position.x = worldX + worldXAdjustment;
+            transform.position.y = worldY + worldYAdjustment;
+            transform.scale.x = sprite.getNativeWidth();
+            transform.scale.y = sprite.getNativeHeight();
+            renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+
+        } else if (!renderError) {
+
+            UtilityTool.logError("Failed to add entity "
+                    + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
+                    + "with ID '"
+                    + entityId
+                    + "' to the render pipeline: sprites may not have been properly loaded upon entity "
+                    + "initialization.");
+            renderError = true;
+        }
+
+    }
+
+
+    /**
+     * Adds this entity to the render pipeline (faint sprites).
+     * A complete combat faint sprite spans across two sprites, which must both be added to the render pipeline, side by
+     * side.
+     *
+     * @param renderer Renderer instance
+     */
+    protected void addToRenderPipelineFaint(Renderer renderer) {
+
+        try {
+
+            int worldXAdjustment = (GamePanel.NATIVE_TILE_SIZE / 2) - (sprite.getNativeWidth() / 2);                    // Amount in the x-direction that the sprite needs to be adjusted when rendered; ensures sprite is centered on occupied tile.
+            int worldYAdjustment = -sprite.getNativeHeight() + GamePanel.NATIVE_TILE_SIZE + 4;                          // Amount in the y-direction that the sprite needs to be adjusted when rendered; note that faint sprites have sn additional +4 offset compared to standard sprites.
+
+            switch (directionCurrent) {
+                case LEFT:
+                    setCombatFaintSpriteTwo();
+                    break;
+                case RIGHT:
+                    setCombatFaintSpriteOne();
+                    break;
+            }
+            transform.position.x = worldX + worldXAdjustment;
+            transform.position.y = worldY + worldYAdjustment;
+            transform.scale.x = sprite.getNativeWidth();
+            transform.scale.y = sprite.getNativeHeight();
+            renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+
+            switch (directionCurrent) {
+                case LEFT:
+                    worldXAdjustment -= sprite.getNativeWidth();
+                    setCombatFaintSpriteOne();
+                    break;
+                case RIGHT:
+                    worldXAdjustment += sprite.getNativeWidth();
+                    setCombatFaintSpriteTwo();
+                    break;
+            }
+            transform.position.x = worldX + worldXAdjustment;
+            renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+
+        } catch (NullPointerException e) {
+
+            if (!renderError) {
+
+                UtilityTool.logError("Failed to add entity "
+                        + (((name != null) && (!name.equals(""))) ? ("'" + name + "' ") : "")
+                        + "with ID '"
+                        + entityId
+                        + "' to the render pipeline: sprites may not have been properly loaded upon entity "
+                        + "initialization.");
+                renderError = true;
+            }
+        }
     }
 
 
@@ -911,45 +1003,109 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Sets this entity's sprite to match this entity's current direction and staged combat faint sprite number.
+     * This method sets the sprite to be the first (left) half of the complete combat faint sprite.
+     * As a reminder, a complete combat faint sprite spans across two sprites.
      */
-    protected void setCombatFaintSprite() {
+    protected void setCombatFaintSpriteOne() {
 
         switch (directionCurrent) {
             case LEFT:
                 switch (combatFaintSpriteNumCurrent) {
                     case 1:
-                        sprite = combatFaintLeft1;
+                        sprite = combatFaintLeft1_1;
                         break;
                     case 2:
-                        sprite = combatFaintLeft2;
+                        sprite = combatFaintLeft2_1;
                         break;
                     case 3:
-                        sprite = combatFaintLeft3;
+                        sprite = combatFaintLeft3_1;
                         break;
                     case 4:
-                        sprite = combatFaintLeft4;
+                        sprite = combatFaintLeft4_1;
                         break;
                     case 5:
-                        sprite = combatFaintLeft5;
+                        sprite = combatFaintLeft5_1;
+                        break;
+                    case 6:
+                        sprite = combatFaintLeft6_1;
                         break;
                 }
                 break;
             case RIGHT:
                 switch (combatFaintSpriteNumCurrent) {
                     case 1:
-                        sprite = combatFaintRight1;
+                        sprite = combatFaintRight1_1;
                         break;
                     case 2:
-                        sprite = combatFaintRight2;
+                        sprite = combatFaintRight2_1;
                         break;
                     case 3:
-                        sprite = combatFaintRight3;
+                        sprite = combatFaintRight3_1;
                         break;
                     case 4:
-                        sprite = combatFaintRight4;
+                        sprite = combatFaintRight4_1;
                         break;
                     case 5:
-                        sprite = combatFaintRight5;
+                        sprite = combatFaintRight5_1;
+                        break;
+                    case 6:
+                        sprite = combatFaintRight6_1;
+                        break;
+                }
+                break;
+        }
+    }
+
+
+    /**
+     * Sets this entity's sprite to match this entity's current direction and staged combat faint sprite number.
+     * This method sets the sprite to be the second (right) half of the complete combat faint sprite.
+     * As a reminder, a complete combat faint sprite spans across two sprites.
+     */
+    protected void setCombatFaintSpriteTwo() {
+
+        switch (directionCurrent) {
+            case LEFT:
+                switch (combatFaintSpriteNumCurrent) {
+                    case 1:
+                        sprite = combatFaintLeft1_2;
+                        break;
+                    case 2:
+                        sprite = combatFaintLeft2_2;
+                        break;
+                    case 3:
+                        sprite = combatFaintLeft3_2;
+                        break;
+                    case 4:
+                        sprite = combatFaintLeft4_2;
+                        break;
+                    case 5:
+                        sprite = combatFaintLeft5_2;
+                        break;
+                    case 6:
+                        sprite = combatFaintLeft6_2;
+                        break;
+                }
+                break;
+            case RIGHT:
+                switch (combatFaintSpriteNumCurrent) {
+                    case 1:
+                        sprite = combatFaintRight1_2;
+                        break;
+                    case 2:
+                        sprite = combatFaintRight2_2;
+                        break;
+                    case 3:
+                        sprite = combatFaintRight3_2;
+                        break;
+                    case 4:
+                        sprite = combatFaintRight4_2;
+                        break;
+                    case 5:
+                        sprite = combatFaintRight5_2;
+                        break;
+                    case 6:
+                        sprite = combatFaintRight6_2;
                         break;
                 }
                 break;
@@ -1574,44 +1730,100 @@ public abstract class EntityBase extends Drawable {
         return combatAttackLeft;
     }
 
-    public Sprite getCombatFaintLeft1() {
-        return combatFaintLeft1;
+    public Sprite getCombatFaintLeft1_1() {
+        return combatFaintLeft1_1;
     }
 
-    public Sprite getCombatFaintLeft2() {
-        return combatFaintLeft2;
+    public Sprite getCombatFaintLeft1_2() {
+        return combatFaintLeft1_2;
     }
 
-    public Sprite getCombatFaintLeft3() {
-        return combatFaintLeft3;
+    public Sprite getCombatFaintRight1_1() {
+        return combatFaintRight1_1;
     }
 
-    public Sprite getCombatFaintLeft4() {
-        return combatFaintLeft4;
+    public Sprite getCombatFaintRight1_2() {
+        return combatFaintRight1_2;
     }
 
-    public Sprite getCombatFaintLeft5() {
-        return combatFaintLeft5;
+    public Sprite getCombatFaintLeft2_1() {
+        return combatFaintLeft2_1;
     }
 
-    public Sprite getCombatFaintRight1() {
-        return combatFaintRight1;
+    public Sprite getCombatFaintLeft2_2() {
+        return combatFaintLeft2_2;
     }
 
-    public Sprite getCombatFaintRight2() {
-        return combatFaintRight2;
+    public Sprite getCombatFaintRight2_1() {
+        return combatFaintRight2_1;
     }
 
-    public Sprite getCombatFaintRight3() {
-        return combatFaintRight3;
+    public Sprite getCombatFaintRight2_2() {
+        return combatFaintRight2_2;
     }
 
-    public Sprite getCombatFaintRight4() {
-        return combatFaintRight4;
+    public Sprite getCombatFaintLeft3_1() {
+        return combatFaintLeft3_1;
     }
 
-    public Sprite getCombatFaintRight5() {
-        return combatFaintRight5;
+    public Sprite getCombatFaintLeft3_2() {
+        return combatFaintLeft3_2;
+    }
+
+    public Sprite getCombatFaintRight3_1() {
+        return combatFaintRight3_1;
+    }
+
+    public Sprite getCombatFaintRight3_2() {
+        return combatFaintRight3_2;
+    }
+
+    public Sprite getCombatFaintLeft4_1() {
+        return combatFaintLeft4_1;
+    }
+
+    public Sprite getCombatFaintLeft4_2() {
+        return combatFaintLeft4_2;
+    }
+
+    public Sprite getCombatFaintRight4_1() {
+        return combatFaintRight4_1;
+    }
+
+    public Sprite getCombatFaintRight4_2() {
+        return combatFaintRight4_2;
+    }
+
+    public Sprite getCombatFaintLeft5_1() {
+        return combatFaintLeft5_1;
+    }
+
+    public Sprite getCombatFaintLeft5_2() {
+        return combatFaintLeft5_2;
+    }
+
+    public Sprite getCombatFaintRight5_1() {
+        return combatFaintRight5_1;
+    }
+
+    public Sprite getCombatFaintRight5_2() {
+        return combatFaintRight5_2;
+    }
+
+    public Sprite getCombatFaintLeft6_1() {
+        return combatFaintLeft6_1;
+    }
+
+    public Sprite getCombatFaintLeft6_2() {
+        return combatFaintLeft6_2;
+    }
+
+    public Sprite getCombatFaintRight6_1() {
+        return combatFaintRight6_1;
+    }
+
+    public Sprite getCombatFaintRight6_2() {
+        return combatFaintRight6_2;
     }
 
     public float getWorldX() {
