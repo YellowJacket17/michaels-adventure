@@ -1,7 +1,9 @@
 package entity.implementation.player;
 
+import combat.implementation.move.Mve_Heal;
 import combat.implementation.move.Mve_Punch;
 import combat.implementation.move.Mve_Earthquake;
+import combat.implementation.move.Mve_Revive;
 import core.enumeration.PrimaryGameState;
 import miscellaneous.KeyListener;
 import entity.EntityBase;
@@ -541,6 +543,8 @@ public class Player extends EntityBase {
         // Combat moves.
         moves.add(new Mve_Earthquake(gp));
         moves.add(new Mve_Punch(gp));
+        moves.add(new Mve_Revive(gp));
+        moves.add(new Mve_Heal(gp));
 
         // Items.
 //        for (int i = 0; i < 600; i++) {

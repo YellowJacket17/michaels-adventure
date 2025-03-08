@@ -280,7 +280,7 @@ public abstract class EntityBase extends Drawable {
     /**
      * Variable to store the active fade effect type being performed by this entity (null if none).
      */
-    protected FadeEffectType activeFadeEffect;
+    protected FadeEffectType activeFadeEffect = FadeEffectType.NONE;
 
     /**
      * Variable to store the calculated alpha change that will occur per second during an active fade effect.
@@ -495,7 +495,7 @@ public abstract class EntityBase extends Drawable {
         // These are core actions that take precedent over all others.
         if (hidden) {return;}
 
-        if (activeFadeEffect != null) {
+        if (activeFadeEffect != FadeEffectType.NONE) {
             updateFadeEffect(dt);
         }
 
@@ -767,7 +767,7 @@ public abstract class EntityBase extends Drawable {
      */
     public void initiateFadeEffect(FadeEffectType type, double duration) {
 
-        if (activeFadeEffect == null) {
+        if (activeFadeEffect == FadeEffectType.NONE) {
 
             switch (type) {
                 case FADE_UP:
@@ -1304,7 +1304,7 @@ public abstract class EntityBase extends Drawable {
                 alphaCandidate = color.w + (float)(dt * fadeEffectAlphaPerSecond);
                 if (alphaCandidate >= 255) {
                     setAlpha(255);
-                    activeFadeEffect = null;
+                    activeFadeEffect = FadeEffectType.NONE;
                     fadeEffectAlphaPerSecond = 0;
                 } else {
                     color.w = alphaCandidate;
@@ -1315,7 +1315,7 @@ public abstract class EntityBase extends Drawable {
                 if (alphaCandidate < 0) {
                     hidden = true;
                     setAlpha(255);
-                    activeFadeEffect = null;
+                    activeFadeEffect = FadeEffectType.NONE;
                     fadeEffectAlphaPerSecond = 0;
                 } else {
                     color.w = alphaCandidate;

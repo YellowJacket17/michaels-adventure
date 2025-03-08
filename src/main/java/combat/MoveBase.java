@@ -3,8 +3,10 @@ package combat;
 import combat.enumeration.MoveCategory;
 import combat.enumeration.MoveTargets;
 import core.GamePanel;
+import entity.enumeration.EntityStatus;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,10 +32,8 @@ public abstract class MoveBase {
     protected final int moveId;
 
     /**
-     * Defines which attributes this move will use from both the source and target entities when calculating damage
-     * and/or affects.
-     * The role that this move plays in combat is also defined: is this move primarily meant for attacking, or is it
-     * primarily meant to boost/deplete attributes of other combating entities?
+     * Defines whether this move will apply direct damage with a possible secondary effect (`PHYSICAL` or `MAGIC`), or
+     * only apply an effect (`SUPPORT`).
      */
     protected final MoveCategory category;
 
@@ -60,11 +60,13 @@ public abstract class MoveBase {
 
     /**
      * Move base power.
+     * If the move category is `SUPPORT`, then this value will not be used to apply direct damage.
      */
     protected int power;
 
     /**
      * Move base accuracy.
+     * If the move category is `SUPPORT`, then this value will be ignored and always assumed to be one hundred.
      */
     protected int accuracy;
 
@@ -90,7 +92,7 @@ public abstract class MoveBase {
      *
      * @param gp GamePanel instance
      * @param moveId move ID
-     * @param category type of move (PHYSICAL or MAGIC)
+     * @param category type of move (physical, magic, or support)
      * @param moveTargets combating entities that may be targeted by this move
      * @param hitAllTargets whether this move will target all possible move targets (true) or only target a single
      *                        target of the possible move targets (false)
@@ -104,11 +106,31 @@ public abstract class MoveBase {
     }
 
 
-    // METHOD
+    // METHODS
     /**
      * Runs move effect logic.
      */
-    public abstract void runEffects(int sourceEntityId, List<Integer> targetEntityId);
+    public abstract void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityId);
+
+
+    /**
+     * Verifies whether an entity is eligible to be targeted by this move.
+     * In other words, this method sets the conditions that a target must meet in order to be a selectable target for
+     * this move.
+     * By default, any non-fainted entity may be targeted.
+     * Each MoveBase implementation may override this default behavior with unique conditions.
+     *
+     * @param entityId ID of candidate target entity
+     * @return whether the candidate entity is a valid target (true) or not (false)
+     */
+    public boolean verifyTarget(int entityId) {
+
+        if (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT) {
+
+            return true;
+        }
+        return false;
+    }
 
 
     // GETTERS

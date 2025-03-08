@@ -3,7 +3,7 @@ package combat;
 import asset.Sound;
 import combat.enumeration.EnterCombatTransitionType;
 import combat.enumeration.ExitCombatTransitionType;
-import combat.enumeration.MoveTargets;
+import combat.enumeration.MoveCategory;
 import combat.enumeration.SubMenuType;
 import combat.implementation.action.*;
 import combat.implementation.move.Mve_BasicAttack;
@@ -223,7 +223,9 @@ public class CombatManager {
         } else if (!queuedActions.isEmpty()) {                                                                          // If there are still queued actions, run the next one.
 
             runNextQueuedAction();
-        } else {                                                                                                        // Begin the turn of the entity at the front of the turn order queue.
+        } else {                                                                                                        // Begin the turn of the entity at the front of the next entity in line in turn order queue.
+
+            endEntityTurn();
 
             if (nonPlayerSideEntities.contains(queuedEntityTurnOrder.peekFirst())) {                                    // If entity at the front of the turn order queue is a non-player-side entity.
 
@@ -453,10 +455,11 @@ public class CombatManager {
             i++;
         }
 
-        // Stage a message action.
+        // Stage a message and root combat sub-menu action.
         String message = build + " would like to fight!";
         addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
         addQueuedActionBack(new Act_ToggleCombatUi(gp, true));
+        generateRootSubMenuAction();
 
         // Enter the main method for progressing combat.
         progressCombat();
@@ -791,7 +794,7 @@ public class CombatManager {
             generateTargetConfirmSubMenuAction(defaultMove);
         } else {
 
-            generateTargetSelectSubMenuAction(defaultMove.getMoveTargets());
+            generateTargetSelectSubMenuAction(defaultMove);
         }
     }
 
@@ -868,7 +871,6 @@ public class CombatManager {
 //            String message = gp.getEntityM()
 //                    .getEntityById(queuedEntityTurnOrder.peekFirst()).getName() + " assumed a defensive stance.";
 //            addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
-            addQueuedActionBack(new Act_EndEntityTurn(gp));
         }
     }
 
@@ -891,7 +893,7 @@ public class CombatManager {
                 generateTargetConfirmSubMenuAction(move);
             } else {
 
-                generateTargetSelectSubMenuAction(move.getMoveTargets());
+                generateTargetSelectSubMenuAction(move);
             }
         }
     }
@@ -996,7 +998,6 @@ public class CombatManager {
                         .get(getLatestSubMenuMemory().getSelectedOption());
             }
             addQueuedActionBack(new Act_SwapPlayerSideEntity(gp, playerSideId1, playerSideId2));
-            addQueuedActionBack(new Act_EndEntityTurn(gp));
         }
     }
 
@@ -1507,24 +1508,30 @@ public class CombatManager {
             }
         }
 
-        // Select random move for source entity to use.
-        MoveBase move;
+        // Select random move for source entity to use and target(s).
+        ArrayList<Integer> moveBlacklist = new ArrayList<>();                                                           // List to store moves determined to have no valid targets (i.e., zero possible targets).
+        MoveBase move = null;
         Random random = new Random();
-        int i = random.nextInt(possibleMoves.size());                                                                   // Generate random number from 0 to number of possible moves minus one (both inclusive).
-        move = possibleMoves.get(i);
-
-        // Generate target entity.
         ArrayList<Integer> targetEntityIds = new ArrayList<>();
-        generateNonPlayerSideTargetOptions(move.getMoveTargets());
-
+        boolean validMove = false;                                                                                      // Boolean to control whether a move with more than zero possible targets was selected.
+        int i;
+        while (!validMove) {
+            i = random.nextInt(possibleMoves.size());                                                                   // Generate random number from 0 to number of possible moves minus one (both inclusive).
+            if (!moveBlacklist.contains(i)) {
+                move = possibleMoves.get(i);
+                generateNonPlayerSideTargetOptions(move);
+                if (lastGeneratedTargetOptions.size() > 0) {
+                    validMove = true;
+                } else {
+                    moveBlacklist.add(i);
+                }
+            }
+        }
         if (move.isHitAllTargets()) {                                                                                   // Move hits all possible targets.
-
             for (int entityId : lastGeneratedTargetOptions) {
-
                 targetEntityIds.add(entityId);
             }
         } else {                                                                                                        // Move only hits one possible target.
-
             i = random.nextInt(lastGeneratedTargetOptions.size());                                                      // Generate random number from 0 to number of selectable target entities (both inclusive)
             targetEntityIds.add(lastGeneratedTargetOptions.get(i));
         }
@@ -1649,11 +1656,11 @@ public class CombatManager {
      * Generates a sub-menu action for selecting targets and adds it to the back of the queue of actions.
      * The list of last generated selectable targets in combat is also refreshed.
      *
-     * @param moveTargets possible move targets
+     * @param move move for which targets will be generated
      */
-    private void generateTargetSelectSubMenuAction(MoveTargets moveTargets) {
+    private void generateTargetSelectSubMenuAction(MoveBase move) {
 
-        ArrayList<String> targetOptions = generatePlayerSideTargetOptions(moveTargets);
+        ArrayList<String> targetOptions = generatePlayerSideTargetOptions(move);
         targetOptions.add("Back");
         HashMap<Integer, Vector3f> colors = new HashMap<>();
         colors.put(targetOptions.size() - 1, backOptionColor);
@@ -1673,7 +1680,7 @@ public class CombatManager {
      */
     private void generateTargetConfirmSubMenuAction(MoveBase move) {
 
-        generatePlayerSideTargetOptions(move.getMoveTargets());
+        generatePlayerSideTargetOptions(move);
         ArrayList<String> targetOptions = new ArrayList<>();
         HashMap<Integer, Vector3f> colors = new HashMap<>();
         targetOptions.add("Confirm");
@@ -1697,37 +1704,37 @@ public class CombatManager {
      * The list of entity IDs of last generated selectable targets ('lastGeneratedTargetOptions') is also refreshed by
      * this method (same ordering as generated list of names).
      *
-     * @param moveTargets possible targets
+     * @param move move for which targets are being generated
      * @return list of names of selectable targets
      */
-    private ArrayList<String> generatePlayerSideTargetOptions(MoveTargets moveTargets) {
+    private ArrayList<String> generatePlayerSideTargetOptions(MoveBase move) {
 
         ArrayList<String> targetOptions = new ArrayList<>();
         lastGeneratedTargetOptions.clear();
 
-        switch (moveTargets) {
+        switch (move.getMoveTargets()) {
             case OPPONENT:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, false);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case ALLY:
-                addPlayerSideEntitiesToTargetOptions(targetOptions, false);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case SELF:
-                addSelfEntityToTargetOptions(targetOptions);
+                addSelfEntityToTargetOptions(targetOptions, move);
                 break;
             case OPPONENT_ALLY:
-                addPlayerSideEntitiesToTargetOptions(targetOptions, false);
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, false);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case OPPONENT_SELF:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, true);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 break;
             case ALLY_SELF:
-                addPlayerSideEntitiesToTargetOptions(targetOptions, true);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 break;
             case OPPONENT_ALLY_SELF:
-                addPlayerSideEntitiesToTargetOptions(targetOptions, true);
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, true);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 break;
         }
         return targetOptions;
@@ -1747,38 +1754,38 @@ public class CombatManager {
      * The list of entity IDs of last generated selectable targets ('lastGeneratedTargetOptions') is also refreshed by
      * this method (same ordering as generated list of names).
      *
-     * @param moveTargets possible targets
+     * @param move move for which targets are being generated
      * @return list of names of selectable targets
      */
-    private ArrayList<String> generateNonPlayerSideTargetOptions(MoveTargets moveTargets) {
+    private ArrayList<String> generateNonPlayerSideTargetOptions(MoveBase move) {
 
 
         ArrayList<String> targetOptions = new ArrayList<>();
         lastGeneratedTargetOptions.clear();
 
-        switch (moveTargets) {
+        switch (move.getMoveTargets()) {
             case OPPONENT:
-                addPlayerSideEntitiesToTargetOptions(targetOptions, false);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case ALLY:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, false);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case SELF:
-                addSelfEntityToTargetOptions(targetOptions);
+                addSelfEntityToTargetOptions(targetOptions, move);
                 break;
             case OPPONENT_ALLY:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, false);
-                addPlayerSideEntitiesToTargetOptions(targetOptions, false);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case OPPONENT_SELF:
-                addPlayerSideEntitiesToTargetOptions(targetOptions, true);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 break;
             case ALLY_SELF:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, true);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 break;
             case OPPONENT_ALLY_SELF:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, true);
-                addPlayerSideEntitiesToTargetOptions(targetOptions, true);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 break;
         }
         return targetOptions;
@@ -1796,9 +1803,10 @@ public class CombatManager {
      * return a value.
      *
      * @param targetOptions list to add viable target options to (of String type)
+     * @param move move for which targets are being generated
      * @param includeSelf whether the entity whose turn it is will be added to the list (true) or not (false)
      */
-    private void addNonPlayerSideEntitiesToTargetOptions(ArrayList targetOptions, boolean includeSelf) {
+    private void addNonPlayerSideEntitiesToTargetOptions(ArrayList targetOptions, MoveBase move, boolean includeSelf) {
 
         ArrayList<EntityBase> tempNonPlayerSideEntities = new ArrayList<>();
 
@@ -1813,7 +1821,7 @@ public class CombatManager {
             if ((includeSelf
                     || (gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
                     != entity.getEntityId()))
-                    && (entity.getStatus() != EntityStatus.FAINT)) {
+                    && (move.verifyTarget(entity.getEntityId()))) {
 
                 targetOptions.add(entity.getName());
                 lastGeneratedTargetOptions.add(entity.getEntityId());
@@ -1833,9 +1841,10 @@ public class CombatManager {
      * return a value.
      *
      * @param targetOptions list to add viable target options to (of String type)
+     * @param move move for which targets are being generated
      * @param includeSelf whether the entity whose turn it is will be added to the list (true) or not (false)
      */
-    private void addPlayerSideEntitiesToTargetOptions(ArrayList targetOptions, boolean includeSelf) {
+    private void addPlayerSideEntitiesToTargetOptions(ArrayList targetOptions, MoveBase move, boolean includeSelf) {
 
         ArrayList<EntityBase> tempPlayerSideEntities = new ArrayList<>();
         tempPlayerSideEntities.add(gp.getEntityM().getPlayer());
@@ -1859,7 +1868,7 @@ public class CombatManager {
             if ((includeSelf
                     || (gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
                     != entity.getEntityId()))
-                    && (entity.getStatus() != EntityStatus.FAINT)) {
+                    && (move.verifyTarget(entity.getEntityId()))) {
 
                 targetOptions.add(entity.getName());
                 lastGeneratedTargetOptions.add(entity.getEntityId());
@@ -1878,8 +1887,9 @@ public class CombatManager {
      * return a value.
      *
      * @param targetOptions list to add viable target option to (of String type)
+     * @param move move for which targets are being generated
      */
-    private void addSelfEntityToTargetOptions(ArrayList targetOptions) {
+    private void addSelfEntityToTargetOptions(ArrayList targetOptions, MoveBase move) {
 
         if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
                     == gp.getEntityM().getPlayer().getEntityId())                                                       // Check if player entity is the self.
@@ -1896,7 +1906,7 @@ public class CombatManager {
             if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
                 if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId() == entityId)        // Check if a party member entity is the self.
-                        && (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT)) {
+                        && (move.verifyTarget(gp.getEntityM().getEntityById(entityId).getEntityId()))) {
 
                     targetOptions.add(gp.getEntityM().getEntityById(entityId).getName());
                     lastGeneratedTargetOptions.add(entityId);
@@ -1936,7 +1946,7 @@ public class CombatManager {
         if ((targetEntity.getLife() <= 0)
                 && (targetEntity.getStatus() != EntityStatus.FAINT)) {
 
-            addQueuedActionBack(new Act_SetEntityFaint(gp, entityId));
+            addQueuedActionBack(new Act_FaintEntity(gp, entityId));
             String message = targetEntity.getName() + " has no energy left to fight!";
             addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
         }
@@ -2118,8 +2128,8 @@ public class CombatManager {
             default:
                 categoryAbbreviation = "???";
         }
-        return "POWER: " + move.getPower() + " [" + categoryAbbreviation + "]\n"
-                + "ACCURACY: " + move.getAccuracy() + "\n"
+        return "POWER: " + (move.getCategory() == MoveCategory.SUPPORT ? "--" : move.getPower()) + " [" + categoryAbbreviation + "]\n"
+                + "ACCURACY: " + (move.getCategory() == MoveCategory.SUPPORT ? "--" :move.getAccuracy()) + "\n"
                 + "SKILL: " + move.getSkillPoints() + "/"
                 + gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getSkillPoints();
     }

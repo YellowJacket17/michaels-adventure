@@ -7,7 +7,6 @@ import core.GamePanel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * This class defines a combat action (use a combat move).
@@ -29,7 +28,7 @@ public class Act_UseMove extends ActionBase {
     /**
      * IDs of the entities targeted by the move.
      */
-    private final List<Integer> targetEntityIds = new ArrayList<>();
+    private final ArrayList<Integer> targetEntityIds = new ArrayList<>();
 
 
     // CONSTRUCTORS
@@ -51,12 +50,22 @@ public class Act_UseMove extends ActionBase {
     }
 
 
+    // TODO : Add possibility of move missing based on move accuracy.
+
+
     // METHODS
     @Override
     public void run() {
 
-        HashMap<Integer, Integer> targetEntitiesFinalLife = calculateDamage();                                          // Calculate (but don't apply) final life values of each target entity.
-        gp.getCombatAnimationS().initiateStandardMoveAnimation(sourceEntityId, targetEntitiesFinalLife, move);          // Play standard attack animation (fainting + move affects applied afterward).
+        if (move.getCategory() == MoveCategory.SUPPORT) {
+
+            move.runEffects(sourceEntityId, targetEntityIds);
+        } else {
+
+            HashMap<Integer, Integer> targetEntitiesFinalLife = calculateDamage();                                      // Calculate (but don't apply) final life values of each target entity.
+            gp.getCombatAnimationS().initiateStandardMoveAnimation(
+                    sourceEntityId, targetEntitiesFinalLife, move, 0.4, 0.4);                                           // Play standard attack animation (fainting + move affects applied afterward).
+        }
     }
 
 
@@ -129,7 +138,7 @@ public class Act_UseMove extends ActionBase {
         return sourceEntityId;
     }
 
-    public List<Integer> getTargetEntityIds() {
+    public ArrayList<Integer> getTargetEntityIds() {
         return targetEntityIds;
     }
 }

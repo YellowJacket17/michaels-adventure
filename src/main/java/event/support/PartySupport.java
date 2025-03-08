@@ -21,9 +21,9 @@ public class PartySupport {
     private final GamePanel gp;
 
     /**
-     * Fade effect duration (up and down, seconds).
+     * Standard fade effect duration (up and down, seconds).
      */
-    private final double fadeEffectDuration = 0.20;
+    private final double standardFadeEffectDuration = 0.20;
 
     /**
      * Map to temporarily store the staged tile position that an entity will go to.
@@ -111,7 +111,7 @@ public class PartySupport {
                 if (gp.getEntityM().getEntityById(stagedEntityFadeUpEffects.get(targetEntityId)).getActiveFadeEffect()
                         != FadeEffectType.FADE_DOWN) {
                     gp.getEntityM().getEntityById(targetEntityId).initiateFadeEffect(
-                            FadeEffectType.FADE_UP, fadeEffectDuration);
+                            FadeEffectType.FADE_UP, standardFadeEffectDuration);
                     entityIdsToRemove.add(targetEntityId);
                 }
             }
@@ -157,7 +157,7 @@ public class PartySupport {
                     if (fade) {
 
                         gp.getEntityM().getParty().get(entityId).initiateFadeEffect(
-                                FadeEffectType.FADE_DOWN, fadeEffectDuration);
+                                FadeEffectType.FADE_DOWN, standardFadeEffectDuration);
                     } else {
 
                         gp.getEntityM().getParty().get(entityId).setHidden(true);
@@ -205,7 +205,7 @@ public class PartySupport {
 
             if (gp.getEntityM().getNpc().get(entityId).isHidden() && fade) {
 
-                gp.getEntityM().getNpc().get(entityId).initiateFadeEffect(FadeEffectType.FADE_UP, fadeEffectDuration);
+                gp.getEntityM().getNpc().get(entityId).initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration);
             } else {
 
                 gp.getEntityM().getNpc().get(entityId).setHidden(false);
@@ -228,7 +228,7 @@ public class PartySupport {
 
                     if (fade) {
 
-                        entity.initiateFadeEffect(FadeEffectType.FADE_UP, fadeEffectDuration);
+                        entity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration);
                     } else {
 
                         entity.setHidden(false);
@@ -435,7 +435,7 @@ public class PartySupport {
                     if (fade) {
 
                         gp.getEntityM().getNpc().get(entityId).initiateFadeEffect(
-                                FadeEffectType.FADE_UP, fadeEffectDuration);
+                                FadeEffectType.FADE_UP, standardFadeEffectDuration);
                     } else {
 
                         gp.getEntityM().getNpc().get(entityId).setHidden(false);
@@ -470,7 +470,7 @@ public class PartySupport {
 
                 if (fade) {
 
-                    entity.initiateFadeEffect(FadeEffectType.FADE_UP, fadeEffectDuration);
+                    entity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration);
                 } else {
 
                     entity.setHidden(false);
@@ -502,7 +502,7 @@ public class PartySupport {
 
                     if (fade) {
 
-                        entity.initiateFadeEffect(FadeEffectType.FADE_UP, fadeEffectDuration);
+                        entity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration);
                     } else {
 
                         entity.setHidden(false);
@@ -535,7 +535,7 @@ public class PartySupport {
 
                 if (fade) {
 
-                    entity.initiateFadeEffect(FadeEffectType.FADE_DOWN, fadeEffectDuration);
+                    entity.initiateFadeEffect(FadeEffectType.FADE_DOWN, standardFadeEffectDuration);
                 } else {
 
                     entity.setHidden(true);
@@ -567,7 +567,7 @@ public class PartySupport {
 
                     if (fade) {
 
-                        entity.initiateFadeEffect(FadeEffectType.FADE_DOWN, fadeEffectDuration);
+                        entity.initiateFadeEffect(FadeEffectType.FADE_DOWN, standardFadeEffectDuration);
                     } else {
 
                         entity.setHidden(true);
@@ -597,7 +597,7 @@ public class PartySupport {
                 targetEntity.getEntityId(),
                 new Vector2i(postFadeDownCol, postFadeDownRow));                                                        // Keep entity in its original position temporarily as it fades down.
         tempEntityDirections.put(targetEntity.getEntityId(), postFadeDownDirection);                                    // Keep entity in its original direction temporarily as it fades down.
-        targetEntity.initiateFadeEffect(FadeEffectType.FADE_DOWN, fadeEffectDuration);
+        targetEntity.initiateFadeEffect(FadeEffectType.FADE_DOWN, standardFadeEffectDuration);
     }
 
 
@@ -687,7 +687,7 @@ public class PartySupport {
      */
     public boolean checkActiveFadeEffect(int entityId) {
 
-        if (gp.getEntityM().getEntityById(entityId).getActiveFadeEffect() != null) {
+        if (gp.getEntityM().getEntityById(entityId).getActiveFadeEffect() != FadeEffectType.NONE) {
 
             return true;
         }
@@ -713,7 +713,11 @@ public class PartySupport {
     }
 
 
-    // GETTER
+    // GETTERS
+    public double getStandardFadeEffectDuration() {
+        return standardFadeEffectDuration;
+    }
+
     public boolean isStagedEntityFadeUpEffectsEmpty() {
         return (stagedEntityFadeUpEffects.size() > 0 ? false : true);
     }

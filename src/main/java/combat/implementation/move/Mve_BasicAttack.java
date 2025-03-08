@@ -6,10 +6,11 @@ import combat.enumeration.MoveTargets;
 import core.GamePanel;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class defines a move (Struggle).
+ * This class defines a move (Basic Attack).
  * Note that this is the default move when an entity cannot otherwise move.
  */
 public class Mve_BasicAttack extends MoveBase {
@@ -22,6 +23,7 @@ public class Mve_BasicAttack extends MoveBase {
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 0;
     private static final Vector3f mveParticleEffectColor = new Vector3f(228, 166, 255);
+    private static final String mveSoundEffect = "testEffect2";
 
 
     // CONSTRUCTOR
@@ -33,10 +35,11 @@ public class Mve_BasicAttack extends MoveBase {
         accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
         particleEffectColor = mveParticleEffectColor;
+        soundEffect = mveSoundEffect;
     }
 
 
     // METHOD
     @Override
-    public void runEffects(int sourceEntityId, List<Integer> targetEntityIds) {}
+    public void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityIds) {}
 }

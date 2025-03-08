@@ -16,7 +16,7 @@ public class ParticleEffect {
 
     // FIELDS
     /**
-     * Universally unique identifier (UUID) for this particle effect.
+     * Universally unique identifier (UUID) of this particle effect.
      */
     private final UUID uuid = java.util.UUID.randomUUID();
 

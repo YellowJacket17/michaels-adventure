@@ -70,10 +70,13 @@ public class ParticleEffectManager {
      * @param worldOriginPosition world initial position of center of each particle
      * @param color color of each particle (r, g, b)
      * @param size world size of each particle
+     * @return universally unique identifier (UUID) of the added particle effect
      */
-    public void addParticleEffect(Vector2f worldOriginPosition, Vector3f color, float size) {
+    public UUID addParticleEffect(Vector2f worldOriginPosition, Vector3f color, float size) {
 
-        particleEffects.add(new ParticleEffect(worldOriginPosition, color, size));
+        ParticleEffect particleEffect = new ParticleEffect(worldOriginPosition, color, size);
+        particleEffects.add(particleEffect);
+        return particleEffect.getUuid();
     }
 
 

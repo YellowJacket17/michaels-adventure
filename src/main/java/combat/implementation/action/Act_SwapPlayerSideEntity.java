@@ -38,6 +38,6 @@ public class Act_SwapPlayerSideEntity extends ActionBase {
 
             gp.getCombatM().getGuardingEntities().remove(entityId2);
         }
-        gp.getCombatAnimationS().initiateStandardPartySwapAnimation(entityId1, entityId2);
+        gp.getCombatAnimationS().initiateStandardPartySwapAnimation(entityId1, entityId2, 0, 0.1);
     }
 }

@@ -6,7 +6,7 @@ import combat.enumeration.MoveTargets;
 import core.GamePanel;
 import org.joml.Vector3f;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This class defines a move (Earthquake).
@@ -39,5 +39,5 @@ public class Mve_Earthquake extends MoveBase {
 
     // METHOD
     @Override
-    public void runEffects(int sourceEntityId, List<Integer> targetEntityIds) {}
+    public void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityIds) {}
 }
