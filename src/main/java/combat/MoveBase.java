@@ -65,7 +65,7 @@ public abstract class MoveBase {
     protected int power;
 
     /**
-     * Move base accuracy.
+     * Move base accuracy (from zero to one hundred, both inclusive).
      * If the move category is `SUPPORT`, then this value will be ignored and always assumed to be one hundred.
      */
     protected int accuracy;

@@ -17,8 +17,8 @@ public class Mve_Punch extends MoveBase {
     private static final int mveId = 2;
     private static final String mveName = "Punch";
     private static final String mveDescription = "The user punches the opponent.";
-    private static final int mvePower = 25;
-    private static final int mveAccuracy = 90;
+    private static final int mvePower = 30;
+    private static final int mveAccuracy = 85;
     private static final int mveSkillPoints = 2;
     private static final Vector3f mveParticleEffectColor = new Vector3f(255, 186, 166);
     private static final String mveSoundEffect = "testEffect3";

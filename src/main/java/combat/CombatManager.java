@@ -1774,8 +1774,8 @@ public class CombatManager {
                 addSelfEntityToTargetOptions(targetOptions, move);
                 break;
             case OPPONENT_ALLY:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 addPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case OPPONENT_SELF:
                 addPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
@@ -1784,8 +1784,8 @@ public class CombatManager {
                 addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 break;
             case OPPONENT_ALLY_SELF:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 addPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 break;
         }
         return targetOptions;
