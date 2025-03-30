@@ -40,7 +40,7 @@ public class Act_FaintEntity extends ActionBase {
 
                 gp.getCombatM().getGuardingEntities().remove(entityId);
             }
-
+            gp.getEntityM().getEntityById(entityId).resetSecondaryAttributes();                                         // Reset attack, defense, magic, and agility attributes if applicable.
         }
         gp.getCombatAnimationS().initiateStandardFaintAnimation(entityIds, 0, 0.1);
     }

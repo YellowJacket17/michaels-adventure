@@ -27,9 +27,9 @@ public class SubMenuHandler {
      * Unique ID of sub-menu currently being displayed.
      * To be clear, this ID is unique for each sub-menu in the game, as it determines what logic to run after an option
      * has been selected.
-     * The default value is -1, indicating that there is no sub-menu currently being displayed.
+     * The default value is 0, indicating that there is no sub-menu currently being displayed.
      */
-    private int subMenuId = -1;
+    private int subMenuId = 0;
 
     /**
      * Sub-menu's screen position, normalized from 0 to 1, both inclusive.
@@ -252,7 +252,7 @@ public class SubMenuHandler {
     public void reset() {
 
         options.clear();
-        subMenuId = -1;
+        subMenuId = 0;
         subMenuScreenX = 0;
         subMenuScreenY = 0;
         subMenuDefaultPosition = true;

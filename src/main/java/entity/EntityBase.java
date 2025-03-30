@@ -232,9 +232,10 @@ public abstract class EntityBase extends Drawable {
     protected boolean hidden = false;
 
     /**
-     * Default idle action that this entity will do when not being interacted with by the player or some other event.
+     * Default action/behavior that this entity will do when not being interacted with by the player or some other
+     * event.
      */
-    protected DefaultIdleAction defaultIdleAction;
+    protected DefaultAction defaultAction = DefaultAction.STATIC;
 
     /**
      * Boolean indicating whether this entity is currently performing a combat attack animation.
@@ -296,7 +297,7 @@ public abstract class EntityBase extends Drawable {
     protected double worldCounter;
 
     /**
-     * Controls the number of seconds this entity must wait before moving again after exiting a state of motion.
+     * Controls the number of seconds this entity must wait before executing its default action.
      */
     protected double rest;
 
@@ -358,53 +359,39 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Entity's maximum available skill points for moves in combat.
+     * Primary attribute.
      */
-    protected int maxSkillPoints;
+    protected int maxSkill;
 
     /**
      * Entity's remaining available skill points for moves in combat.
+     * Primary attribute.
      */
-    protected int skillPoints;
+    protected int skill;
 
     /**
      * Entity's base attack stat.
+     * Secondary attribute.
      */
     protected int baseAttack;
 
     /**
      * Entity's base defense stat.
+     * Secondary attribute.
      */
     protected int baseDefense;
 
     /**
      * Entity's base magic stat.
+     * Secondary attribute.
      */
     protected int baseMagic;
 
     /**
      * Entity's base agility stat.
+     * Secondary attribute.
      */
     protected int baseAgility;
-
-    /**
-     * Entity's total current attack stat.
-     */
-    protected int attack;
-
-    /**
-     * Entity's total current defense stat.
-     */
-    protected int defense;
-
-    /**
-     * Entity's total current magic stat.
-     */
-    protected int magic;
-
-    /**
-     * Entity's total current agility stat.
-     */
-    protected int agility;
 
     /**
      * Temporary multiplier to this entity's attack stat.
@@ -479,7 +466,6 @@ public abstract class EntityBase extends Drawable {
         this.directionCurrent = EntityDirection.DOWN;
         this.directionLast = EntityDirection.DOWN;
         this.directionCandidate = EntityDirection.DOWN;
-        setRest(1);
         setSprites();
     }
 
@@ -548,12 +534,23 @@ public abstract class EntityBase extends Drawable {
                 addToRenderPipelineStandard(renderer);
             }
         }
+
+//        if (hidden) {
+//
+//            renderer.addRectangle(new Vector4f(255, 255, 255, 255),
+//                    new Transform(
+//                            new Vector2f(worldX, worldY),
+//                            new Vector2f(32.0f, 32.0f)),
+//                    ZIndex.THIRD_LAYER
+//            );
+//        }
     }
 
 
     /**
      * Cancels this entity's current action (i.e., exits its current state of motion or turning and returns to its
      * previous tile, if applicable).
+     * The rest time until a new default action can execute is reset to zero.
      */
     public void cancelAction() {
 
@@ -564,6 +561,7 @@ public abstract class EntityBase extends Drawable {
         worldCounter = 0;
         directionCurrent = directionLast;
         walkSpriteNumCurrent = 1;
+        rest = 0;
     }
 
 
@@ -764,8 +762,10 @@ public abstract class EntityBase extends Drawable {
      *
      * @param type type of fade effect (up or down)
      * @param duration fade effect duration (seconds)
+     * @param preventAction whether this entity can execute its default action (true) or not (false) while the fade effect
+     *                      is executing; will cancel any current action
      */
-    public void initiateFadeEffect(FadeEffectType type, double duration) {
+    public void initiateFadeEffect(FadeEffectType type, double duration, boolean preventAction) {
 
         if (activeFadeEffect == FadeEffectType.NONE) {
 
@@ -781,14 +781,31 @@ public abstract class EntityBase extends Drawable {
                     fadeEffectAlphaPerSecond = color.w / duration;
                     break;
             }
+
+            if (preventAction && (rest < duration)) {
+
+                cancelAction();
+                setRest(duration);                                                                                      // Increase `rest` to ensure that a new default action cannot initiate during the fade effect.
+            }
         }
     }
 
 
     /**
-     * Resets combat stats (attack, defense, magic, and agility) to their base values by removing buffs.
+     * Resets primary combat attributes (life points, skill points, and status) to their maximum/default values.
      */
-    public void resetStats() {
+    public void resetPrimaryAttributes() {
+
+        setLife(maxLife);
+        setSkill(maxSkill);
+        setStatus(EntityStatus.HEALTHY);
+    }
+
+
+    /**
+     * Resets secondary combat attributes (attack, defense, magic, and agility) to their base values by removing buffs.
+     */
+    public void resetSecondaryAttributes() {
 
         setAttackBuff(0);
         setDefenseBuff(0);
@@ -798,13 +815,32 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Resets life and skills points to their maximum values and status to its default value.
+     * Sets the amount of time this entity must rest before executing its default action/behavior.
+     *
+     * @param seconds number of seconds to rest
      */
-    public void resetHealth() {
+    public void setRest(double seconds) {
 
-        setLife(maxLife);
-        setSkillPoints(maxSkillPoints);
-        setStatus(EntityStatus.HEALTHY);
+        rest = seconds;
+    }
+
+
+    /**
+     * Resets the amount of time this entity must rest before executing its default action/behavior to an initial,
+     * default value.
+     * Each default action may have its own value.
+     * Uses include when this entity is first loaded into a map and/or when this entity exits a prescribed state.
+     */
+    public void resetDefaultActionInitialRest() {
+
+        switch (defaultAction) {
+            case RANDOM_STEPS:
+                setRest(1);
+                break;
+            case RANDOM_TURNS:
+                setRest(1);
+                break;
+        }
     }
 
 
@@ -1140,17 +1176,6 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Sets the amount of time this entity must rest before it's able to enter a new state of motion.
-     *
-     * @param seconds number of seconds to rest
-     */
-    protected void setRest(double seconds) {
-
-        rest = seconds;
-    }
-
-
-    /**
      * Updates this entity's world position by one frame if it's in a state of motion, using a walking animation.
      * If this entity reaches its target tile, it will exit the state of motion.
      *
@@ -1326,14 +1351,19 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Sets this entity's behavior.
+     * Sets this entity's default action/behavior.
      * Override this method in implemented entity classes if custom actions are desired.
      *
      * @param dt time since last frame (seconds)
      */
     protected void setAction(double dt) {
 
-        switch (defaultIdleAction) {
+        if (rest > 0) {
+
+            rest -= dt;                                                                                                 // Decrease rest time by one frame each time a new frame is rendered.
+        }
+
+        switch (defaultAction) {
             case RANDOM_STEPS:
                 actionRandomSteps(dt);
                 break;
@@ -1446,10 +1476,6 @@ public abstract class EntityBase extends Drawable {
      */
     protected void actionRandomSteps(double dt) {
 
-        if (rest > 0) {
-
-            rest -= dt;                                                                                                 // Decrease rest time by one frame each time a new frame is rendered.
-        }
         boolean movingFlag = moving;                                                                                    // Set a flag to see if the entity entered this method in a state of motion.
 
         if (rest <= 0) {
@@ -1474,13 +1500,8 @@ public abstract class EntityBase extends Drawable {
 
         if (moving) {
 
-            updateWalkingAction(dt);                                                                                           // If entity is currently in a state of motion, it needs to finish that before doing anything else.
+            updateWalkingAction(dt);                                                                                    // If entity is currently in a state of motion, it needs to finish that before doing anything else.
             return;
-        }
-
-        if (rest > 0) {
-
-            rest -= dt;
         }
 
         if (rest <= 0) {
@@ -1565,82 +1586,6 @@ public abstract class EntityBase extends Drawable {
                 directionCurrent = directionCandidate;
                 directionLast = directionCandidate;
             }
-        }
-    }
-
-
-    /**
-     * Calculates and sets this entity's total attack based on its base attack and potential equipments/buffs it has.
-     *
-     * @return calculated total attack
-     */
-    private void calculateAttack() {
-
-        int calculated = (int)Math.floor((baseAttack * attackBuff) + baseAttack);
-
-        if (calculated >= 0) {
-
-            attack = calculated;
-        } else {
-
-            attack = 0;
-        }
-    }
-
-
-    /**
-     * Calculates and sets this entity's total defense based on its base defense and potential equipment/buffs it has.
-     *
-     * @return calculated total defense
-     */
-    private void calculateDefense() {
-
-        int calculated = (int)Math.floor((baseDefense * defenseBuff) + baseDefense);
-
-        if (calculated >= 0) {
-
-            defense = calculated;
-        } else {
-
-            defense = 0;
-        }
-    }
-
-
-    /**
-     * Calculates and sets this entity's total magic based on its base magic and potential equipment/buffs it has.
-     *
-     * @return calculated total magic
-     */
-    private void calculateMagic() {
-
-        int calculated = (int)Math.floor((baseMagic * magicBuff) + baseMagic);
-
-        if (calculated >= 0) {
-
-            magic = calculated;
-        } else {
-
-            magic = 0;
-        }
-    }
-
-
-    /**
-     * Calculates and sets this entity's total agility based on its base agility and potential equipment/buffs it has.
-     *
-     * @return calculated total agility
-     */
-    private void calculateAgility() {
-
-        int calculated = (int)Math.floor((baseAgility * agilityBuff) + baseAgility);
-
-        if (calculated >= 0) {
-
-            agility = calculated;
-        } else {
-
-            agility = 0;
         }
     }
 
@@ -1962,12 +1907,12 @@ public abstract class EntityBase extends Drawable {
         return life;
     }
 
-    public int getMaxSkillPoints() {
-        return maxSkillPoints;
+    public int getMaxSkill() {
+        return maxSkill;
     }
 
-    public int getSkillPoints() {
-        return skillPoints;
+    public int getSkill() {
+        return skill;
     }
 
     public int getBaseAttack() {
@@ -1986,18 +1931,6 @@ public abstract class EntityBase extends Drawable {
         return baseAgility;
     }
 
-    public int getAttack() {
-        return attack;
-    }
-
-    public int getDefense() {
-        return defense;
-    }
-
-    public int getMagic() {
-        return magic;
-    }
-
     public double getAttackBuff() {
         return attackBuff;
     }
@@ -2012,10 +1945,6 @@ public abstract class EntityBase extends Drawable {
 
     public double getAgilityBuff() {
         return agilityBuff;
-    }
-
-    public int getAgility() {
-        return agility;
     }
 
     public EntityStatus getStatus() {
@@ -2120,6 +2049,8 @@ public abstract class EntityBase extends Drawable {
             Random random = new Random();
             int i = random.nextInt(101);                                                                                // Generate random number from 0 (inclusive) to 100 (inclusive, since 101 is exclusive).
             animationCounter = ((double)i / 100.0) * animationCounterCombatStanceMax;                                   // Randomize animation counter so that not all entities are animating in sync.
+        } else {
+            resetDefaultActionInitialRest();
         }
     }
 
@@ -2127,6 +2058,8 @@ public abstract class EntityBase extends Drawable {
         this.conversing = conversing;
         if (conversing) {
             cancelAction();
+        } else {
+            resetDefaultActionInitialRest();
         }
     }
 
@@ -2138,8 +2071,8 @@ public abstract class EntityBase extends Drawable {
         this.hidden = hidden;
     }
 
-    public void setDefaultAction(DefaultIdleAction defaultIdleAction) {
-        this.defaultIdleAction = defaultIdleAction;
+    public void setDefaultAction(DefaultAction defaultAction) {
+        this.defaultAction = defaultAction;
     }
 
     public void startFollowingPath(int goalCol, int goalRow) {
@@ -2154,6 +2087,7 @@ public abstract class EntityBase extends Drawable {
         onPathGoalCol = 0;
         onPathGoalRow = 0;
         onPath = false;
+        setRest(0);
     }
 
     public void startFollowingEntity(int entityId) {
@@ -2168,6 +2102,7 @@ public abstract class EntityBase extends Drawable {
 
     public void stopFollowingEntity() {
         onEntityId = NO_ENTITY_FOLLOWED;
+        setRest(0);
     }
 
     public void setName(String name) {
@@ -2218,41 +2153,41 @@ public abstract class EntityBase extends Drawable {
         }
     }
 
-    public void setMaxSkillPoints(int maxSkillPoints) {
-        if (maxSkillPoints >= 0) {
-            this.maxSkillPoints = maxSkillPoints;
+    public void setMaxSkill(int maxSkill) {
+        if (maxSkill >= 0) {
+            this.maxSkill = maxSkill;
         }
     }
 
-    public void setSkillPoints(int skillPoints) {
-        if ((skillPoints >= 0) && (skillPoints <= maxSkillPoints)) {
-            this.skillPoints = skillPoints;
-        } else if (skillPoints < 0) {
-            this.skillPoints = 0;
-        } else if (skillPoints > maxSkillPoints) {
-            this.skillPoints = maxSkillPoints;
+    public void setSkill(int skill) {
+        if ((skill >= 0) && (skill <= maxSkill)) {
+            this.skill = skill;
+        } else if (skill < 0) {
+            this.skill = 0;
+        } else if (skill > maxSkill) {
+            this.skill = maxSkill;
         }
     }
 
     public void addSkillPoints(int addition) {
-        int result = skillPoints + addition;
-        if ((result >= 0) && (result <= maxSkillPoints)) {
-            skillPoints = result;
-        } else if (result > maxSkillPoints) {
-            skillPoints = maxSkillPoints;
+        int result = skill + addition;
+        if ((result >= 0) && (result <= maxSkill)) {
+            skill = result;
+        } else if (result > maxSkill) {
+            skill = maxSkill;
         } else if (result < 0) {
-            skillPoints = 0;
+            skill = 0;
         }
     }
 
     public void subtractSkillPoints(int subtraction) {
-        int result = skillPoints - subtraction;
-        if ((result >= 0) && (result <= maxSkillPoints)) {
-            skillPoints = result;
+        int result = skill - subtraction;
+        if ((result >= 0) && (result <= maxSkill)) {
+            skill = result;
         } else if (result < 0) {
-            skillPoints = 0;
-        } else if (result > maxSkillPoints) {
-            skillPoints = maxSkillPoints;
+            skill = 0;
+        } else if (result > maxSkill) {
+            skill = maxSkill;
         }
     }
 
@@ -2262,7 +2197,6 @@ public abstract class EntityBase extends Drawable {
         } else {
             this.baseAttack = 0;
         }
-        calculateAttack();
     }
 
     public void setBaseDefense(int baseDefense) {
@@ -2271,7 +2205,6 @@ public abstract class EntityBase extends Drawable {
         } else {
             this.baseDefense = 0;
         }
-        calculateDefense();
     }
 
     public void setBaseMagic(int baseMagic) {
@@ -2280,7 +2213,6 @@ public abstract class EntityBase extends Drawable {
         } else {
             this.baseMagic = 0;
         }
-        calculateMagic();
     }
 
     public void setBaseAgility(int baseAgility) {
@@ -2289,27 +2221,22 @@ public abstract class EntityBase extends Drawable {
         } else {
             this.baseAgility = 0;
         }
-        calculateAgility();
     }
 
     public void setAttackBuff(int attackBuff) {
         this.attackBuff = attackBuff;
-        calculateAttack();
     }
 
     public void setDefenseBuff(int defenseBuff) {
         this.defenseBuff = defenseBuff;
-        calculateDefense();
     }
 
     public void setMagicBuff(int magicBuff) {
         this.magicBuff = magicBuff;
-        calculateMagic();
     }
 
     public void setAgilityBuff(int agilityBuff) {
         this.agilityBuff = agilityBuff;
-        calculateAgility();
     }
 
     public void setStatus(EntityStatus status) {

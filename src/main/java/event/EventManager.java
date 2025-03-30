@@ -2,6 +2,7 @@ package event;
 
 import event.enumeration.EventType;
 import event.implementation.conversation.*;
+import event.implementation.submenu.Evt_SubMenu003;
 import miscellaneous.CollisionInspector;
 import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
@@ -9,7 +10,7 @@ import core.GamePanel;
 import entity.enumeration.EntityDirection;
 import event.implementation.map.Evt_Map000;
 import event.implementation.map.Evt_Map001;
-import event.implementation.submenu.Evt_SubMenu000;
+import event.implementation.submenu.Evt_SubMenu002;
 import event.implementation.submenu.Evt_SubMenu001;
 
 import java.util.ArrayList;
@@ -46,8 +47,9 @@ public class EventManager {
 
 
     // SUB-MENU EVENT FIELDS
-    private final Evt_SubMenu000 evt_subMenu000;
     private final Evt_SubMenu001 evt_subMenu001;
+    private final Evt_SubMenu002 evt_subMenu002;
+    private final Evt_SubMenu003 evt_subMenu003;
 
 
     // CONSTRUCTOR
@@ -70,8 +72,9 @@ public class EventManager {
         evt_conv008 = new Evt_Conv008(gp);
         evt_conv009 = new Evt_Conv009(gp);
 
-        evt_subMenu000 = new Evt_SubMenu000(gp);
         evt_subMenu001 = new Evt_SubMenu001(gp);
+        evt_subMenu002 = new Evt_SubMenu002(gp);
+        evt_subMenu003 = new Evt_SubMenu003(gp);
     }
 
 
@@ -269,11 +272,14 @@ public class EventManager {
         if (!gp.getSubMenuH().getDisabledOptions().contains(selectedIndex)) {
 
             switch (subMenuId) {
-                case 0:
-                    evt_subMenu000.run(selectedIndex);
-                    break;
                 case 1:
                     evt_subMenu001.run(selectedIndex);
+                    break;
+                case 2:
+                    evt_subMenu002.run(selectedIndex);
+                    break;
+                case 3:
+                    evt_subMenu003.run(selectedIndex);
                     break;
                 default:
                     cleanupSubmenu(1);

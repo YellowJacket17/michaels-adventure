@@ -1,9 +1,9 @@
 package entity.enumeration;
 
 /**
- * This enum defines the possible default idle actions an entity can have.
+ * This enum defines the possible default actions an entity can have.
  */
-public enum DefaultIdleAction {
+public enum DefaultAction {
 
     /**
      * Stand still, facing one direction.

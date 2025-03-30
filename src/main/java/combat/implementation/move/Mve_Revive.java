@@ -3,14 +3,12 @@ package combat.implementation.move;
 import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import combat.enumeration.MoveTargets;
-import combat.implementation.action.Act_ReviveEntity;
 import core.GamePanel;
 import entity.enumeration.EntityStatus;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * This class defines a move (Revive).
@@ -47,7 +45,7 @@ public class Mve_Revive extends MoveBase {
         HashMap<Integer, Integer> entitiesFinalSkillPoints = new HashMap<>();
         entitiesFinalSkillPoints.put(
                 sourceEntityId,
-                gp.getEntityM().getEntityById(sourceEntityId).getSkillPoints() - skillPoints);
+                gp.getEntityM().getEntityById(sourceEntityId).getSkill() - skillPoints);
         gp.getCombatAnimationS().initiateCustomEffectAnimation(
                 targetEntityIds,entitiesFinalSkillPoints, particleEffectColor, soundEffect, true, 0.4, 0.4);
         gp.getCombatAnimationS().initiateStandardReviveAnimation(targetEntityIds, 0.4, 0.4);

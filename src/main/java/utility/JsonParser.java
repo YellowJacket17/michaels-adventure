@@ -9,7 +9,7 @@ import combat.implementation.move.Mve_Revive;
 import dialogue.Conversation;
 import dialogue.Dialogue;
 import entity.EntityBase;
-import entity.enumeration.DefaultIdleAction;
+import entity.enumeration.DefaultAction;
 import entity.implementation.character.Npc_Test1;
 import entity.implementation.character.Npc_Test2;
 import entity.implementation.character.Npc_Test3;
@@ -18,6 +18,7 @@ import entity.implementation.object.Obj_Chest;
 import entity.implementation.object.Obj_Controller;
 import entity.implementation.object.Obj_Key;
 import core.GamePanel;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -149,9 +150,10 @@ public class JsonParser {
      *
      * @param gp GamePanel instance to load into
      * @param mapId ID of map into which entities are being loaded
+     * @param mapState state of map into which entities are being loaded
      * @throws JsonParseException if an error occurs while loading entities from JSON
      */
-    public static void loadEntitiesJson(GamePanel gp, int mapId) {
+    public static void loadEntitiesJson(GamePanel gp, int mapId, int mapState) {
 
         JSONParser parser = new JSONParser();
 
@@ -178,6 +180,17 @@ public class JsonParser {
                     if (entityMapId != mapId) {
 
                         onMap = false;                                                                                  // Entity is not on the target map, so don't load it.
+                    }else {
+
+                        JSONArray mapStatesJson = (JSONArray)entityJson.get("mapStates");                               // Note that map state is optional, so this may be null.
+
+                        if (mapStatesJson != null) {
+
+                            if (!mapStatesJson.contains((long)mapState)) {                                              // Cast `mapState` to a long type, since JSONArray values are of long type.
+
+                                onMap = false;
+                            }
+                        }
                     }
 
                     if (onMap && !checkEntityLoaded(gp, i)) {
@@ -240,15 +253,15 @@ public class JsonParser {
 
         JSONObject tracksJson = (JSONObject)mapJson.get("tracks");
 
-        for (int i = 0; i < tracksJson.size(); i++) {
+        for (Object key : tracksJson.keySet()) {
 
-            String track = (String)tracksJson.get(Integer.toString(i));                                                 // Retrieve next track, regardless of its index in the JSON file.
+            String track = (String)tracksJson.get(key);                                                                 // Retrieve next track.
 
             if (track.equals("NO_TRACK")) {
 
                 track = Sound.NO_TRACK;
             }
-            map.getTracks().add(track);                                                                                 // Add track to next index in list.
+            map.setTrack(Integer.parseInt((String)key), track);                                                         // Add track to map of tracks; key is loaded as String type.
         }
         return map;
     }
@@ -402,17 +415,17 @@ public class JsonParser {
         } catch (NullPointerException e) {
             life = 0;
         }
-        int maxSkillPoints;
+        int maxSkill;
         try {
-            maxSkillPoints = (int)((long)attributesJson.get("maxSkillPoints"));
+            maxSkill = (int)((long)attributesJson.get("maxSkill"));
         } catch (NullPointerException e) {
-            maxSkillPoints = 0;
+            maxSkill = 0;
         }
-        int skillPoints;
+        int skill;
         try {
-            skillPoints = (int)((long)attributesJson.get("skillPoints"));
+            skill = (int)((long)attributesJson.get("skill"));
         } catch (NullPointerException e) {
-            skillPoints = 0;
+            skill = 0;
         }
         int baseAttack;
         try {
@@ -463,8 +476,8 @@ public class JsonParser {
         entity.setSpeed(speed);
         entity.setMaxLife(maxLife);
         entity.setLife(life);
-        entity.setMaxSkillPoints(maxSkillPoints);
-        entity.setSkillPoints(skillPoints);
+        entity.setMaxSkill(maxSkill);
+        entity.setSkill(skill);
         entity.setBaseAttack(baseAttack);
         entity.setBaseDefense(baseDefense);
         entity.setBaseMagic(baseMagic);
@@ -514,17 +527,15 @@ public class JsonParser {
 
         // Idle action.
         String defaultAction = (String)entityJson.get("defaultAction");
-
         switch (defaultAction) {
             case "randomSteps":
-                entity.setDefaultAction(DefaultIdleAction.RANDOM_STEPS);
+                entity.setDefaultAction(DefaultAction.RANDOM_STEPS);
                 break;
             case "randomTurns":
-                entity.setDefaultAction(DefaultIdleAction.RANDOM_TURNS);
+                entity.setDefaultAction(DefaultAction.RANDOM_TURNS);
                 break;
-            default:
-                entity.setDefaultAction(DefaultIdleAction.STATIC);
         }
+        entity.resetDefaultActionInitialRest();
 
         // Type.
         String type = (String)entityJson.get("type");

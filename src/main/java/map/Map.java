@@ -4,6 +4,7 @@ import core.GamePanel;
 import landmark.LandmarkBase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This class defines a map.
@@ -49,10 +50,9 @@ public class Map {
     private int mapState = 0;
 
     /**
-     * Array of names/titles of tracks to play at specified map states.
-     * Array indices correspond to map states.
+     * Names/titles of tracks to play at specified map states; map state is the key, track name/title is the value.
      */
-    private final ArrayList<String> tracks = new ArrayList<>();
+    private final HashMap<Integer, String> tracks = new HashMap<>();
 
 
     // CONSTRUCTOR
@@ -87,15 +87,20 @@ public class Map {
         return mapState;
     }
 
-    public ArrayList<String> getTracks() {
-        return tracks;
+    public String getTrack(int mapState) {
+        return tracks.get(mapState);
     }
 
-    // SETTER
+
+    // SETTERS
     public void setMapState(int mapState, boolean swapTrack) {
         this.mapState = mapState;
         if (swapTrack) {
             gp.getSoundS().swapTrack(tracks.get(mapState), true);
         }
+    }
+
+    public void setTrack(int mapState, String resourceName) {
+        tracks.put(mapState, resourceName);
     }
 }

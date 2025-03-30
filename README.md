@@ -46,7 +46,7 @@ These files belong in the `sound` directory in the project root.
 The application will not run without being able to load them.
 
 ## Illustrations
-All illustrations are omitted from the remote repository ddue to file size.
+All illustrations are omitted from the remote repository due to file size.
 These files belong in the `illustrations` directory within the `resources` directory.
 The `illustrations` directory is omitted altogether from the remote repository.
 
@@ -59,10 +59,10 @@ Any lines/fields denoted with an asterisk "*" at the beginning are optional and 
 
 ```
 {
-    "[map_ID]": {
+    "<map_ID>": {
         "tracks": {
-            "0": "[map_state_1_track_resource_name]",
-            "1": "[map_state_2_track_resource_name]",
+            "<first_map_state>": "<track_resource_name>",
+            "<second_map_state>": "<track_resource_name>",
             ... up to unlimited ...
         }
     },
@@ -75,27 +75,28 @@ Map IDs are loaded into the game as the order in which they appear in the JSON f
 For example, even if the map ID at the top of the JSON file read "3", it would still be loaded into the game as map with ID "0".
 
 Tracks must be specified for a map.
-It is recommended to at minimum specify a track for map state "0".
+It is recommended to at minimum specify a track for a default map state "0".
 In this case, game logic would only expect a map to have that one state (i.e., state "0").
 If, during run time, it is attempted to set a map to a map state that it has no track for, an exception will occur.
 If no track is to be played for a given map state, simply input "NO_TRACK" as the value.
+Note that map state fields do not necessarily need to be listed as "0", "1", etc. (i.e., could be listed as "1", "3", etc.).
 
 ### dialogue.json ###
 
 ```
 {
-    "[conversation_ID]": {
-        "map": [ID_of_map_to_load_conversation_into],
-        *"convName": "[conversation_name]",
-        *"playerInputToEnd": [true/false],
+    "<conversation_ID>": {
+        "map": <ID_of_map_to_load_conversation_into>,
+        *"convName": "<conversation_name>",
+        *"playerInputToEnd": <true/false>,
         "dialogue": {
             "0": {
-                "speakerName": "[name_of_entity_delivering_first_piece_of_dialogue]",
-                "text": "[content_of_first_piece_of_dialogue]"
+                "speakerName": "<name_of_entity_delivering_first_piece_of_dialogue>",
+                "text": "<content_of_first_piece_of_dialogue>"
             },
             "1": {
-                "speakerName": "[name_of_entity_delivering_second_piece_of_dialogue]",
-                "text": "[content_of_second_piece_of_dialogue]"
+                "speakerName": "<name_of_entity_delivering_second_piece_of_dialogue>",
+                "text": "<content_of_second_piece_of_dialogue>"
             },
             ... up to unlimited ...
         }
@@ -118,39 +119,46 @@ If the "playerInputToEnd" field is omitted from a JSON element, it will automati
 
 Note that the "playerInputToEnd" field determines whether game event logic will automatically progress upon reading the last piece of conversation dialogue (true) or not (false).
 
+Dialogue IDs MUST start at "0" in the JSON file, working down as 0, 1, 2, etc.
+
 ### entities.json ###
 
 ```
 {
-    "[entity_ID]": {
-        "type": "[character/object]",
-        "class": "[name_of_entity_subclass]",
-        "defaultAction": [action_name],
-        *"map": [ID_of_map_to_load_entity_into],
-        *"collision": [true/false],
-        *"hidden": [true/false],
+    "<entity_ID>": {
+        "type": "<character/object>",
+        "class": "<name_of_entity_subclass>",
+        "defaultAction": <action_name>,
+        *"collision": <true/false>,
+        *"hidden": <true/false>,
+        *"map": <ID_of_map_to_load_entity_into>,
+        *"mapStates": [
+            <first_map_state>,
+            <_second_map_state>,
+            ... up to unlimited ...
+        ],
         "position": {
-            "defaultCol": [default_overworld_tile_column],
-            "defaultRow": [default_overworld_row_column]
+            "defaultCol": <default_overworld_tile_column>,
+            "defaultRow": <default_overworld_row_column>
         },
         *"attributes": {
-            *"name": "[entity_name]",
-            *"speed": [entity_overworld_walking_speed],
-            *"maxLife": [maximum_life_points],
-            *"life": [remaining_life_points],
-            *"maxSkillPoint": [maximum_skill_points],
-            *"skillPoints": [remaining_skill_points],
-            *"baseAttack": [base_attack_points],
-            *"baseDefense": [base_defense_points],
-            *"baseMagic": [base_magic_points],
-            *"baseAgility": [base_agility_points],
-            *"exp": [accumulated_experience_points],
-            *"level": [level],
-            *"nextLevelExp": [experience_points_required_to_level_up]
+            *"name": "<entity_name>",
+            *"speed": <entity_overworld_walking_speed>,
+            *"maxLife": <maximum_life_points>,
+            *"life": <remaining_life_points>,
+            *"maxSkill": <maximum_skill_points>,
+            *"skill": <remaining_skill_points>,
+            *"baseAttack": <base_attack_points>,
+            *"baseDefense": <base_defense_points>,
+            *"baseMagic": <base_magic_points>,
+            *"baseAgility": <base_agility_points>,
+            *"exp": <accumulated_experience_points>,
+            *"level": <level>,
+            *"nextLevelExp": <experience_points_required_to_level_up>
         },
         *"moves": {
-            "1": [move_ID],
-            "2": [move_ID],
+            "1": <move_ID>,
+            "2": <move_ID>,
             ... up to "4" ...
         }
     }
@@ -170,7 +178,7 @@ The "class" field determines what subclass an entity is.
 Essentially, this determines an entity's appearance.
 For example, if the name of a subclass is "Npc_Test1", then "Npc_Test1" is what would be written as the value.
 
-The "defaultAction" field determines an entity's default idle action in the overworld.
+The "defaultAction" field determines an entity's default action/behavior in the overworld.
 The options are:
 + "static"
 + "randomSteps"
@@ -178,15 +186,18 @@ The options are:
 
 Anything other than the above three will automatically result in "static" as a default value.
 
-The "map" field indicates which map an entity should automatically be loaded into.
-In other words, when said map is loaded, the entity will also be loaded and placed appropriately.
-If an entity is not tied to a particular map, simply omit this field and load it individually.
-
 The "collision" field determines whether an entity is solid or not.
 For example, if set to "false", other entities will be able to walk through the entity.
 If set to "true", other entities will not be able to walk through the entity.
 
 The "hidden" field determines whether an entity will be invisible by default.
+
+The "map" field indicates which map an entity should automatically be loaded into.
+In other words, when said map is loaded, the entity will also be loaded and placed appropriately.
+If an entity is not tied to a particular map, simply omit this field and load the entity individually.
+
+If the "mapStates" array is omitted, then the entity will be loaded into the map specified in the "map" field regardless of map state.
+This field is not used if an entity is loaded individually.
 
 Any omitted attributes will be assigned a default value of "0", with the exceptions of "name" and "speed".
 The "name" field will be assigned an empty string by default.

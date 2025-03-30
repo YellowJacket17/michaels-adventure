@@ -3,6 +3,8 @@ package map;
 import core.GamePanel;
 import utility.JsonParser;
 
+import java.util.HashMap;
+
 /**
  * This class is used to manage loaded maps in the game.
  */
@@ -15,6 +17,12 @@ public class MapManager {
      * Current loaded map.
      */
     private Map loadedMap;
+
+    /**
+     * Map to store map states; map ID is the key, map state is the value.
+     * Each time a map is loaded out, a snapshot of its current state is saved for future reference, as needed.
+     */
+    private final HashMap<Integer, Integer> savedMapStates = new HashMap<>();
 
 
     // CONSTRUCTOR
@@ -42,6 +50,11 @@ public class MapManager {
      */
     public void loadMap(int mapId, int mapState, boolean swapTrack) {
 
+        // Save state of outgoing map.
+        if (loadedMap != null) {
+            savedMapStates.put(loadedMap.getMapId(), loadedMap.getMapState());
+        }
+
         // Set new map.
         loadedMap = JsonParser.loadMapJson(gp, mapId);
 
@@ -57,7 +70,7 @@ public class MapManager {
         gp.getEntityM().getObj().clear();
 
         // Load entities on new map.
-        JsonParser.loadEntitiesJson(gp, mapId);
+        JsonParser.loadEntitiesJson(gp, mapId, mapState);
 
         // Purge `conv` (hash)map.
         gp.getDialogueR().getConv().clear();
@@ -67,9 +80,13 @@ public class MapManager {
     }
 
 
-    // GETTER
+    // GETTERS
     public Map getLoadedMap() {
         return loadedMap;
+    }
+
+    public int getSavedMapState(int mapId) {
+        return savedMapStates.get(mapId);
     }
 
 

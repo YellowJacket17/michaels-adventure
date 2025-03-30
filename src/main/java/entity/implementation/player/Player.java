@@ -12,12 +12,16 @@ import entity.enumeration.EntityType;
 import core.GamePanel;
 import event.enumeration.EventType;
 import item.ItemBase;
+import org.joml.Vector3f;
+import ui.enumeration.PrimaryMenuState;
 import org.joml.Vector2f;
 import asset.AssetPool;
 import utility.LimitedArrayList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -102,7 +106,7 @@ public class Player extends EntityBase {
     // CONSTRUCTOR
     public Player(GamePanel gp) {
         super(gp, 0, EntityType.CHARACTER);
-        setDefaultValues();                                                                                             // Set default player values when a player instance is created.
+        setInitialValues();                                                                                             // Set default player values when a player instance is created.
         setSprites();                                                                                                   // Load player sprites when a player instance is created.
     }
 
@@ -215,22 +219,7 @@ public class Player extends EntityBase {
         }
 
         // Set other actions.
-        switch (gp.getPrimaryGameState()) {
-            case EXPLORE:
-                updateWalkingAction(dt);
-                break;
-            case DIALOGUE:
-                updateWalkingAction(dt);
-                break;
-            case PARTY_MENU:
-                break;
-            case INVENTORY_MENU:
-                break;
-            case SETTINGS_MENU:
-                break;
-            case SUB_MENU:
-                break;
-        }
+        updateWalkingAction(dt);
     }
 
 
@@ -518,9 +507,9 @@ public class Player extends EntityBase {
 
 
     /**
-     * Sets default values for the player entity.
+     * Sets initial values for the player entity.
      */
-    private void setDefaultValues() {
+    private void setInitialValues() {
 
         // World position.
         setCol(23);
@@ -533,8 +522,8 @@ public class Player extends EntityBase {
         // Combat attributes.
         setMaxLife(299);
         setLife(299);
-        setMaxSkillPoints(50);
-        setSkillPoints(50);
+        setMaxSkill(50);
+        setSkill(50);
         setBaseAttack(1);
         setBaseDefense(1);
         setBaseMagic(1);
@@ -568,6 +557,7 @@ public class Player extends EntityBase {
         if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned) && (!moving)) {
 
             gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
+            gp.getUi().setPrimaryMenuState(PrimaryMenuState.PARTY);
             menuActioned = true;                                                                                        // Disable the ability of the player to close the menu (party, inventory, settings) by pressing the Space key.
         }
         else if (!moving) {                                                                                             // If the player is moving, they will not stop until they move the tile length (for grid-based movement); so, only accept key inputs when the player is not moving.
@@ -673,16 +663,24 @@ public class Player extends EntityBase {
 
             if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
                 gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
+                gp.getUi().setPrimaryMenuState(PrimaryMenuState.INACTIVE);
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
+            }
+
+            else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
+
+                generatePartySwapSubMenuPrompt();
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
                 gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
+                gp.getUi().setPrimaryMenuState(PrimaryMenuState.SETTINGS);
                 setInteractionCountdown(stagedStandardInteractionCountdown);
             }
 
             else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
+                gp.getUi().setPrimaryMenuState(PrimaryMenuState.INVENTORY);
                 setInteractionCountdown(stagedStandardInteractionCountdown);
             }
 
@@ -717,16 +715,19 @@ public class Player extends EntityBase {
 
             if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
                 gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
+                gp.getUi().setPrimaryMenuState(PrimaryMenuState.INACTIVE);
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
             if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
                 gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
+                gp.getUi().setPrimaryMenuState(PrimaryMenuState.PARTY);
                 setInteractionCountdown(stagedStandardInteractionCountdown);
             }
 
             else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
+                gp.getUi().setPrimaryMenuState(PrimaryMenuState.SETTINGS);
                 setInteractionCountdown(stagedStandardInteractionCountdown);
             }
 
@@ -763,16 +764,19 @@ public class Player extends EntityBase {
 
             if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
                 gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
+                gp.getUi().setPrimaryMenuState(PrimaryMenuState.INACTIVE);
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
             else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
                 gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
+                gp.getUi().setPrimaryMenuState(PrimaryMenuState.PARTY);
                 setInteractionCountdown(stagedStandardInteractionCountdown);
             }
 
             else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
                 gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
+                gp.getUi().setPrimaryMenuState(PrimaryMenuState.INVENTORY);
                 setInteractionCountdown(stagedStandardInteractionCountdown);
             }
 
@@ -847,7 +851,7 @@ public class Player extends EntityBase {
 
                 List<String> options = List.of("Yes", "No");                                                            // Immutable list.
                 String prompt = "Reset camera back to player?";
-                gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 0, false);
+                gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 2, false);
             }
             gp.setDebugActive(!gp.isDebugActive());
             debugActioned = true;                                                                                       // Disable the ability of the player to enable the debug mode by pressing the Q key.
@@ -1006,6 +1010,38 @@ public class Player extends EntityBase {
         }
 
         return interaction;
+    }
+
+
+    /**
+     * Generates a sub-menu prompt for swapping party members in the party menu screen.
+     */
+    private void generatePartySwapSubMenuPrompt() {
+
+        if ((gp.getEntityM().getParty().size() > 1)
+                && !((gp.getUi().getPartyMenuScrollLevel() == 0) && (gp.getUi().getPartySlotSelected() == 0))           // Ensure that player entity is not selected (i.e., `partyMenuScrollLevel` and `partySlotSelected` do not both equal zero).
+                && gp.getPartyS().isActionComplete()) {                                                                 // Only generate if no entities party management operation is already occurring.
+
+            List<String> options = new ArrayList<>();
+            Set<Integer> keySet = gp.getEntityM().getParty().keySet();                                                  // Extract keys from party map.
+            Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);                                            // Convert set of keys to array of keys.
+            EntityBase selectedEntity =
+                    gp.getEntityM().getParty().get(keyArray[
+                            gp.getUi().getPartyMenuScrollLevel() + (gp.getUi().getPartySlotSelected() - 1)]);
+
+            for (EntityBase candidateEntity : gp.getEntityM().getParty().values()) {
+
+                if (candidateEntity.getEntityId() != selectedEntity.getEntityId()) {
+
+                    options.add(candidateEntity.getName());
+                }
+            }
+            options.add("Cancel");
+            HashMap<Integer, Vector3f> colors = new HashMap<>();
+            colors.put(options.size() - 1, new Vector3f(255, 46, 102));
+            String prompt = "Swap " + selectedEntity.getName() + " with who?";
+            gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 3, false, colors);
+        }
     }
 
 

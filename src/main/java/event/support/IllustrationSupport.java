@@ -75,7 +75,7 @@ public class IllustrationSupport {
             Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
             drawable.transform.position.x = worldCoords.x;
             drawable.transform.position.y = worldCoords.y;
-            renderer.addDrawable(drawable, ZIndex.FIRST_LAYER);
+            renderer.addDrawable(drawable, ZIndex.SECOND_LAYER);
         }
     }
 

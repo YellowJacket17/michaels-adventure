@@ -52,9 +52,6 @@ public class Act_UseMove extends ActionBase {
     }
 
 
-    // TODO : Add possibility of move missing based on move accuracy.
-
-
     // METHODS
     @Override
     public void run() {
@@ -103,14 +100,22 @@ public class Act_UseMove extends ActionBase {
 
         if (move.getCategory() == MoveCategory.PHYSICAL) {
 
-            int sourceEntityAttack = gp.getEntityM().getEntityById(sourceEntityId).getAttack();
-            int targetEntityDefense = gp.getEntityM().getEntityById(targetEntityId).getDefense();
+            int sourceEntityAttack = gp.getEntityM().getEntityById(sourceEntityId).getBaseAttack()
+                    + (int)(gp.getEntityM().getEntityById(sourceEntityId).getBaseAttack()
+                    * gp.getEntityM().getEntityById(sourceEntityId).getAttackBuff());
+            int targetEntityDefense = gp.getEntityM().getEntityById(targetEntityId).getBaseDefense()
+                    + (int)(gp.getEntityM().getEntityById(targetEntityId).getBaseDefense()
+                    * gp.getEntityM().getEntityById(targetEntityId).getDefenseBuff());
             targetDamage = move.getPower() * (sourceEntityAttack / targetEntityDefense);
 
         } else if (move.getCategory() == MoveCategory.MAGIC) {
 
-            int sourceEntityMagic = gp.getEntityM().getEntityById(sourceEntityId).getMagic();
-            int targetEntityMagic = gp.getEntityM().getEntityById(targetEntityId).getMagic();
+            int sourceEntityMagic = gp.getEntityM().getEntityById(sourceEntityId).getBaseMagic()
+                    + (int)(gp.getEntityM().getEntityById(sourceEntityId).getBaseMagic()
+                    * gp.getEntityM().getEntityById(sourceEntityId).getMagicBuff());
+            int targetEntityMagic = gp.getEntityM().getEntityById(targetEntityId).getBaseMagic()
+                    + (int)(gp.getEntityM().getEntityById(targetEntityId).getBaseMagic()
+                    * gp.getEntityM().getEntityById(targetEntityId).getMagicBuff());
             targetDamage = move.getPower() * (sourceEntityMagic / targetEntityMagic);
 
         } else {

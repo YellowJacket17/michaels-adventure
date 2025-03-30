@@ -4,13 +4,13 @@ import core.GamePanel;
 import event.EventSubMenuBase;
 
 /**
- * This class implements post-selection event logic for sub-menu with ID 0.
- * Note that a sub-menu ID of 0 is used for resetting the camera when exiting debug mode.
+ * This class implements post-selection event logic for sub-menu with ID 2.
+ * Note that a sub-menu ID of 2 is used for resetting the camera when exiting debug mode.
  */
-public class Evt_SubMenu000 extends EventSubMenuBase {
+public class Evt_SubMenu002 extends EventSubMenuBase {
 
     // CONSTRUCTOR
-    public Evt_SubMenu000(GamePanel gp) {
+    public Evt_SubMenu002(GamePanel gp) {
         super(gp);
     }
 

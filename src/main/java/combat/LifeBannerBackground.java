@@ -45,7 +45,7 @@ public class LifeBannerBackground extends Drawable {
         this.color.x = 20;
         this.color.y = 20;
         this.color.z = 20;
-        this.color.w = 180;
+        this.color.w = 220;
     }
 
 

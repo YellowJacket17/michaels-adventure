@@ -45,7 +45,7 @@ public class LifeSkillBannerBackground extends Drawable {
         this.color.x = 20; // 46
         this.color.y = 20; // 74
         this.color.z = 20; // 123
-        this.color.w = 180;
+        this.color.w = 220;
     }
 
 

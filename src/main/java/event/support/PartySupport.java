@@ -17,6 +17,11 @@ import java.util.ArrayList;
  */
 public class PartySupport {
 
+    /*
+     * Please note that all of these methods were written in the context of static entities.
+     * Unexpected behavior may occur if these methods are called on non-static entities (walking, animating, etc.).
+     */
+
     // FIELDS
     private final GamePanel gp;
 
@@ -58,8 +63,10 @@ public class PartySupport {
      */
     private final LimitedLinkedHashMap<Integer, Integer> stagedEntityFadeUpEffects;
 
-
-    // TODO : Add lock to prevent party management (organizing order in overworld, etc.) while fades are occurring.
+    /**
+     * Countdown until all active party support actions have completed (seconds).
+     */
+    private double actionCountdown = 0;
 
 
     // CONSTRUCTOR
@@ -84,12 +91,21 @@ public class PartySupport {
      */
     public void update(double dt) {
 
+        // Update action countdown.
+        if (actionCountdown > 0) {
+            actionCountdown -= dt;
+            if (actionCountdown < 0) {
+                actionCountdown = 0;
+            }
+        }
+
         // Set stored position and direction for faded down entity, if necessary.
         if (tempEntityTiles.size() > 0) {
             LimitedArrayList<Integer> entityIdsToRemove =
                     new LimitedArrayList<>(gp.getEntityM().getParty().maxCapacity());
+            EntityBase entity;
             for (int entityId : tempEntityTiles.keySet()) {
-                EntityBase entity = gp.getEntityM().getEntityById(entityId);
+                entity = gp.getEntityM().getEntityById(entityId);
                 if (entity.getActiveFadeEffect() != FadeEffectType.FADE_DOWN) {
                     entity.setCol(tempEntityTiles.get(entityId).x);
                     entity.setRow(tempEntityTiles.get(entityId).y);
@@ -107,11 +123,17 @@ public class PartySupport {
         if (stagedEntityFadeUpEffects.size() > 0) {
             LimitedArrayList<Integer> entityIdsToRemove =
                     new LimitedArrayList<>(gp.getEntityM().getParty().maxCapacity());
+            EntityBase targetEntity;
             for (int targetEntityId : stagedEntityFadeUpEffects.keySet()) {
+                targetEntity = gp.getEntityM().getEntityById(targetEntityId);
                 if (gp.getEntityM().getEntityById(stagedEntityFadeUpEffects.get(targetEntityId)).getActiveFadeEffect()
                         != FadeEffectType.FADE_DOWN) {
-                    gp.getEntityM().getEntityById(targetEntityId).initiateFadeEffect(
-                            FadeEffectType.FADE_UP, standardFadeEffectDuration);
+                    targetEntity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration, true);
+                    setActionCountdown(standardFadeEffectDuration);
+                    if (targetEntity.isOnEntity()) {
+                        gp.getEntityM().getEntityById(targetEntity.getOnEntityId()).setColLast(targetEntity.getCol());  // Ensures that entity does not instantly swap back to previous position if following another entity.
+                        gp.getEntityM().getEntityById(targetEntity.getOnEntityId()).setRowLast(targetEntity.getRow());  // ^^^
+                    }
                     entityIdsToRemove.add(targetEntityId);
                 }
             }
@@ -157,7 +179,8 @@ public class PartySupport {
                     if (fade) {
 
                         gp.getEntityM().getParty().get(entityId).initiateFadeEffect(
-                                FadeEffectType.FADE_DOWN, standardFadeEffectDuration);
+                                FadeEffectType.FADE_DOWN, standardFadeEffectDuration, true);
+                        setActionCountdown(standardFadeEffectDuration);
                     } else {
 
                         gp.getEntityM().getParty().get(entityId).setHidden(true);
@@ -205,7 +228,9 @@ public class PartySupport {
 
             if (gp.getEntityM().getNpc().get(entityId).isHidden() && fade) {
 
-                gp.getEntityM().getNpc().get(entityId).initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration);
+                gp.getEntityM().getNpc().get(entityId).initiateFadeEffect(
+                        FadeEffectType.FADE_UP, standardFadeEffectDuration, true);
+                setActionCountdown(standardFadeEffectDuration);
             } else {
 
                 gp.getEntityM().getNpc().get(entityId).setHidden(false);
@@ -228,7 +253,8 @@ public class PartySupport {
 
                     if (fade) {
 
-                        entity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration);
+                        entity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration, true);
+                        setActionCountdown(standardFadeEffectDuration);
                     } else {
 
                         entity.setHidden(false);
@@ -435,7 +461,8 @@ public class PartySupport {
                     if (fade) {
 
                         gp.getEntityM().getNpc().get(entityId).initiateFadeEffect(
-                                FadeEffectType.FADE_UP, standardFadeEffectDuration);
+                                FadeEffectType.FADE_UP, standardFadeEffectDuration, true);
+                        setActionCountdown(standardFadeEffectDuration);
                     } else {
 
                         gp.getEntityM().getNpc().get(entityId).setHidden(false);
@@ -470,7 +497,8 @@ public class PartySupport {
 
                 if (fade) {
 
-                    entity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration);
+                    entity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration, true);
+                    setActionCountdown(standardFadeEffectDuration);
                 } else {
 
                     entity.setHidden(false);
@@ -502,7 +530,8 @@ public class PartySupport {
 
                     if (fade) {
 
-                        entity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration);
+                        entity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration, true);
+                        setActionCountdown(standardFadeEffectDuration);
                     } else {
 
                         entity.setHidden(false);
@@ -535,7 +564,8 @@ public class PartySupport {
 
                 if (fade) {
 
-                    entity.initiateFadeEffect(FadeEffectType.FADE_DOWN, standardFadeEffectDuration);
+                    entity.initiateFadeEffect(FadeEffectType.FADE_DOWN, standardFadeEffectDuration, true);
+                    setActionCountdown(standardFadeEffectDuration);
                 } else {
 
                     entity.setHidden(true);
@@ -567,7 +597,8 @@ public class PartySupport {
 
                     if (fade) {
 
-                        entity.initiateFadeEffect(FadeEffectType.FADE_DOWN, standardFadeEffectDuration);
+                        entity.initiateFadeEffect(FadeEffectType.FADE_DOWN, standardFadeEffectDuration, true);
+                        setActionCountdown(standardFadeEffectDuration);
                     } else {
 
                         entity.setHidden(true);
@@ -597,7 +628,8 @@ public class PartySupport {
                 targetEntity.getEntityId(),
                 new Vector2i(postFadeDownCol, postFadeDownRow));                                                        // Keep entity in its original position temporarily as it fades down.
         tempEntityDirections.put(targetEntity.getEntityId(), postFadeDownDirection);                                    // Keep entity in its original direction temporarily as it fades down.
-        targetEntity.initiateFadeEffect(FadeEffectType.FADE_DOWN, standardFadeEffectDuration);
+        targetEntity.initiateFadeEffect(FadeEffectType.FADE_DOWN, standardFadeEffectDuration, true);
+        setActionCountdown(standardFadeEffectDuration);
     }
 
 
@@ -713,6 +745,20 @@ public class PartySupport {
     }
 
 
+    /**
+     * Set countdown for a new party support action.
+     *
+     * @param duration action duration
+     */
+    private void setActionCountdown(double duration) {
+
+        if (actionCountdown < duration) {
+
+            actionCountdown = duration;
+        }
+    }
+
+
     // GETTERS
     public double getStandardFadeEffectDuration() {
         return standardFadeEffectDuration;
@@ -720,5 +766,9 @@ public class PartySupport {
 
     public boolean isStagedEntityFadeUpEffectsEmpty() {
         return (stagedEntityFadeUpEffects.size() > 0 ? false : true);
+    }
+
+    public boolean isActionComplete() {
+        return (actionCountdown <= 0 ? true : false);
     }
 }

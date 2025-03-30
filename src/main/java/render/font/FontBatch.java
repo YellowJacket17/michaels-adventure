@@ -4,6 +4,7 @@ import core.GamePanel;
 import org.joml.Vector3f;
 import asset.Shader;
 import asset.AssetPool;
+import render.enumeration.ZIndex;
 import utility.UtilityTool;
 
 import java.util.Arrays;
@@ -111,6 +112,11 @@ public class FontBatch {
      */
     private CFont font;
 
+    /**
+     * Layer on which this batch will be rendered.
+     */
+    private ZIndex zIndex = ZIndex.THIRD_LAYER;
+
 
     // CONSTRUCTOR
     /**
@@ -161,6 +167,17 @@ public class FontBatch {
             addCharacter(x, y, scale, charInfo, color);                                                                 // Add character to batch.                                                    // Adds character to batch.
             x += charInfo.getWidth() * scale;                                                                           // Prepare for next character in string.
         }
+    }
+
+
+    /**
+     * Sets the layer on which this batch will be rendered.
+     *
+     * @param zIndex layer on which to render
+     */
+    public void setzIndex(ZIndex zIndex) {
+
+        this.zIndex = zIndex;
     }
 
 
@@ -333,6 +350,10 @@ public class FontBatch {
             return font.getName();
         }
         return "";
+    }
+
+    public ZIndex getzIndex() {
+        return zIndex;
     }
 
 

@@ -1,8 +1,7 @@
 package core.enumeration;
 
 /**
- * This enum defines possible primary game states, with each largely affecting what player inputs do and what is
- * rendered.
+ * This enum defines possible primary game states, with each primarily determining how player inputs function.
  */
 public enum PrimaryGameState {
     EXPLORE,

@@ -1,6 +1,7 @@
 package render.font;
 
 import org.joml.Vector3f;
+import render.enumeration.ZIndex;
 
 /**
  * This class represents a piece of text.
@@ -38,6 +39,11 @@ public class Text {
      */
     private final String font;
 
+    /**
+     * Layer of this text.
+     */
+    private final ZIndex zIndex;
+
 
     // CONSTRUCTOR
     /**
@@ -50,13 +56,14 @@ public class Text {
      * @param color color in hexadecimal format
      * @param font font name
      */
-    public Text(String text, float screenX, float screenY, float scale, Vector3f color, String font) {
+    public Text(String text, float screenX, float screenY, float scale, Vector3f color, String font, ZIndex zIndex) {
         this.text = text;
         this.screenX = screenX;
         this.screenY = screenY;
         this.scale = scale;
         this.color = color;
         this.font = font;
+        this.zIndex = zIndex;
     }
 
 
@@ -83,5 +90,9 @@ public class Text {
 
     public String getFont() {
         return font;
+    }
+
+    public ZIndex getzIndex() {
+        return zIndex;
     }
 }

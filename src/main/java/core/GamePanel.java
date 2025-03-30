@@ -30,6 +30,7 @@ import landmark.LandmarkBase;
 import landmark.LandmarkManager;
 import submenu.SubMenuHandler;
 import tile.TileManager;
+import ui.UserInterface;
 import utility.*;
 
 import java.util.*;
@@ -104,7 +105,7 @@ public class GamePanel {
     // GAME STATE
     /**
      * Variable to store which primary state the game is currently in.
-     * The primary game state drives what is updated each frame, what is rendered, and how player inputs are registered.
+     * The primary game state drives how player inputs are registered.
      */
     private PrimaryGameState primaryGameState;
 
@@ -127,7 +128,7 @@ public class GamePanel {
     private boolean debugActive = false;
 
 
-    // SETTINGS
+    // IN-GAME SETTINGS
     /**
      * List to store system settings available to the player.
      */
@@ -380,7 +381,7 @@ public class GamePanel {
 
         // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";
-        AssetPool.addSpritesheet("characters", new Spritesheet(AssetPool.getTexture(filePath), 294, 32, 60, 1));
+        AssetPool.addSpritesheet("characters", new Spritesheet(AssetPool.getTexture(filePath), 281, 32, 60, 1));
 
         // Objects spritesheet (spritesheet 2).
         filePath = "/spritesheets/objects.png";
@@ -402,9 +403,9 @@ public class GamePanel {
 
         // Icons spritesheet (spritesheet 5).
         filePath = "/spritesheets/icons.png";
-        widths = new int[] {152, 152, 40, 36, 36, 28, 28, 28, 28, 28, 28, 6, 6, 6, 6};
-        heights = new int[] {58, 58, 40, 36, 36, 28, 28, 28, 28, 28, 28, 10, 10, 10, 10};
-        AssetPool.addSpritesheet("icons", new Spritesheet(AssetPool.getTexture(filePath), 15, widths, heights, 1));
+        widths = new int[] {152, 152, 10, 10, 40, 36, 36, 28, 28, 28, 28, 28, 28, 6, 6, 6, 6};
+        heights = new int[] {58, 58, 8, 8, 40, 36, 36, 28, 28, 28, 28, 28, 28, 10, 10, 10, 10};
+        AssetPool.addSpritesheet("icons", new Spritesheet(AssetPool.getTexture(filePath), 17, widths, heights, 1));
 
         // Miscellaneous spritesheet (spritesheet 6).
         filePath = "/spritesheets/miscellaneous.png";
@@ -428,82 +429,6 @@ public class GamePanel {
         // Illustrations.
         filePath = "/illustrations/illustration3.png";
         AssetPool.addIllustration("illustration3", new Illustration(AssetPool.getTexture(filePath)));
-    }
-
-
-    /**
-     * Performs necessary initializations when switching to a primary new game state.
-     *
-     * @param currentPrimaryGameState primary game state being switched from
-     * @param newPrimaryGameState primary game state being switched to
-     */
-    private void primaryGameStateInit(PrimaryGameState currentPrimaryGameState,
-                                      PrimaryGameState newPrimaryGameState) {
-
-        // Tidy up the state being switching from.
-        switch (currentPrimaryGameState) {
-
-            case PARTY_MENU:
-                guiIconM.getIconById(0).setSelected(false);                                                             // Deselect the party menu icon.
-                ui.setPartySlotSelected(0);                                                                             // Set the selected party member stat icon back to its default.
-                ui.setPartyMenuScrollLevel(0);                                                                          // Set the list of party members back to its default scroll level.
-                entityIconM.purgeAllEntityIcons();
-                break;
-
-            case INVENTORY_MENU:
-                guiIconM.getIconById(1).setSelected(false);                                                             // Deselected the inventory menu icon.
-                ui.setItemColSelected(0);                                                                               // Set the item slot back to its default column.
-                ui.setItemRowSelected(0);                                                                               // Set the item slot back to its default row.
-                for (int row = 0; row < ui.getMaxNumItemRow(); row++) {                                                 // Set all entries in the array of occupied item slots to false.
-                    for (int col = 0; col < ui.getMaxNumItemCol(); col++) {
-                        ui.getOccupiedItemSlots()[row][col] = false;
-                    }
-                }
-                break;
-
-            case SETTINGS_MENU:
-                guiIconM.getIconById(2).setSelected(false);                                                             // Deselect the settings menu icon.
-                ui.setSystemSettingSelected(0);                                                                         // Reset selected setting to default.
-                ui.setSystemOptionSelected(systemSettings.get(0).getActiveOption());                                    // Reset selected option to default (i.e., active option of the default setting).
-                break;
-        }
-
-        // Prepare for the state being switching to.
-        switch (newPrimaryGameState) {
-
-            case PARTY_MENU:
-                guiIconM.getIconById(0).setSelected(true);                                                              // Select the party menu icon.
-                entityIconM.createPartyEntityIcons();                                                                   // Create entity icons for the party members.
-                entityIconM.getEntityIconById(entityM.getPlayer().getEntityId()).setSelected(true);                     // Set the player icon as being selected (will animate the player icon).
-                guiIconM.getIconById(3).setSelected(true);                                                              // Set the background icon for the player as being selected (will darken the background).
-                ui.setPartySlotSelected(0);                                                                             // Set the player entity's party member stat icon as being selected in the UI.
-                ui.setPartyMenuScrollLevel(0);                                                                          // Set the list of party members back to the top.
-                break;
-
-            case INVENTORY_MENU:
-                guiIconM.getIconById(1).setSelected(true);                                                              // Select the inventory menu icon.
-                int numItems = entityM.getPlayer().getInventory().size();
-                int itemIndex = 0;                                                                                      // Variable to track how many item slots in the player's inventory have been assigned to an array slot.
-                for (int row = 0; row < ui.getMaxNumItemRow(); row++) {                                                 // Set the array of occupied item slots (inventory is displayed as a grid).
-                    for (int col = 0; col < ui.getMaxNumItemCol(); col++) {
-                        if (itemIndex < numItems) {
-                            ui.getOccupiedItemSlots()[row][col] = true;
-                        } else {
-                            ui.getOccupiedItemSlots()[row][col] = false;
-                        }
-                        itemIndex++;
-                    }
-                }
-                ui.setItemColSelected(0);                                                                               // Set the top-left item icon as being selected.
-                ui.setItemRowSelected(0);                                                                               // ^^^
-                break;
-
-            case SETTINGS_MENU:
-                guiIconM.getIconById(2).setSelected(true);                                                              // Select the settings menu icon.
-                ui.setSystemSettingSelected(0);
-                ui.setSystemOptionSelected(systemSettings.get(0).getActiveOption());
-                break;
-        }
     }
 
 
@@ -670,7 +595,6 @@ public class GamePanel {
 
     // SETTERS
     public void setPrimaryGameState(PrimaryGameState primaryGameState) {
-        primaryGameStateInit(this.primaryGameState, primaryGameState);
         this.primaryGameState = primaryGameState;
     }
 

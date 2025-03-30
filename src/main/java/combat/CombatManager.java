@@ -477,7 +477,7 @@ public class CombatManager {
                 handleBasicExitCombatTransitionLoading();
                 break;
         }
-        resetAllCombatingEntityStats();
+        resetAllCombatingEntitySecondaryAttributes();
         gp.getEntityM().clearCombatingEntities();
     }
 
@@ -814,7 +814,7 @@ public class CombatManager {
             moveOptions.add(move.getName());
 
             if (move.getSkillPoints() > gp.getEntityM()
-                    .getEntityById(queuedEntityTurnOrder.peekFirst()).getSkillPoints()) {
+                    .getEntityById(queuedEntityTurnOrder.peekFirst()).getSkill()) {
 
                 colors.put(moveOptions.size() - 1, disabledOptionColor);
                 disabledOptions.add(moveOptions.size() - 1);
@@ -1242,7 +1242,7 @@ public class CombatManager {
         // Swap music, if applicable.
         if (!retainPreCombatTrack) {
             gp.getSoundS().swapTrack(
-                    gp.getMapM().getLoadedMap().getTracks().get(gp.getMapM().getLoadedMap().getMapState()), true);
+                    gp.getMapM().getLoadedMap().getTrack(gp.getMapM().getLoadedMap().getMapState()), true);
         }
     }
 
@@ -1432,7 +1432,11 @@ public class CombatManager {
         // two party slots.
         for (int entityId : gp.getEntityM().getCombatingEntities()) {
 
-            entitiesToPlace.put(entityId, gp.getEntityM().getEntityById(entityId).getAgility());
+            entitiesToPlace.put(
+                    entityId,
+                    gp.getEntityM().getEntityById(entityId).getBaseAgility()
+                            + (int)(gp.getEntityM().getEntityById(entityId).getBaseAgility()
+                            * gp.getEntityM().getEntityById(entityId).getAgilityBuff()));
         }
 
         // Build the turn order based on entity agility attributes (higher agility moves sooner).
@@ -1503,7 +1507,7 @@ public class CombatManager {
         ArrayList<MoveBase> possibleMoves = new ArrayList<>();
         possibleMoves.add(defaultMove);
         for (MoveBase move : sourceEntity.getMoves()) {
-            if (move.skillPoints <= sourceEntity.getSkillPoints()) {
+            if (move.skillPoints <= sourceEntity.getSkill()) {
                 possibleMoves.add(move);
             }
         }
@@ -2131,7 +2135,7 @@ public class CombatManager {
         return "POWER: " + (move.getCategory() == MoveCategory.SUPPORT ? "--" : move.getPower()) + " [" + categoryAbbreviation + "]\n"
                 + "ACCURACY: " + (move.getCategory() == MoveCategory.SUPPORT ? "--" :move.getAccuracy()) + "\n"
                 + "SKILL: " + move.getSkillPoints() + "/"
-                + gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getSkillPoints();
+                + gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getSkill();
     }
 
 
@@ -2212,7 +2216,7 @@ public class CombatManager {
             descriptions.put(i,
                     entity.getName() + "\n"
                             + "HP: " + entity.getLife() + "/" + entity.getMaxLife() + "\n"
-                            + "SP: " + entity.getSkillPoints() + "/" + entity.getMaxSkillPoints());
+                            + "SP: " + entity.getSkill() + "/" + entity.getMaxSkill());
             i++;
         }
         return descriptions;
@@ -2260,13 +2264,13 @@ public class CombatManager {
 
 
     /**
-     * Remove all buffs from stats (attack, defense, magic, agility) for all combating entities.
+     * Remove all buffs from secondary attributes (attack, defense, magic, agility) for all combating entities.
      */
-    private void resetAllCombatingEntityStats() {
+    private void resetAllCombatingEntitySecondaryAttributes() {
 
         for (int entityId : gp.getEntityM().getCombatingEntities()) {
 
-            gp.getEntityM().getEntityById(entityId).resetStats();
+            gp.getEntityM().getEntityById(entityId).resetSecondaryAttributes();
         }
     }
 
@@ -2353,7 +2357,7 @@ public class CombatManager {
     }
 
     public String getLatestSubMenuDescriptionByIndex(int index) {
-        if (getLatestSubMenuMemory().getDescriptions().get(index) != null) {
+        if ((getLatestSubMenuMemory() != null) && (getLatestSubMenuMemory().getDescriptions().get(index) != null)) {
             return getLatestSubMenuMemory().getDescriptions().get(index);
         } else {
             return "";

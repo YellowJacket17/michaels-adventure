@@ -71,7 +71,7 @@ public class GuiIconManager {
                 guiIcon.transform.position.y = worldCoords.y;
                 guiIcon.transform.scale.x = guiIcon.getNativeSpriteWidth();
                 guiIcon.transform.scale.y = guiIcon.getNativeSpriteHeight();
-                renderer.addDrawable(guiIcon, ZIndex.FIRST_LAYER);
+                renderer.addDrawable(guiIcon, ZIndex.SECOND_LAYER);
         } else if (!renderErrors.contains(iconId)) {
 
             UtilityTool.logError("Failed to add GUI icon with ID '"
@@ -105,22 +105,22 @@ public class GuiIconManager {
         // Party menu icon - Icon ID 0.
         guiIcon = new GuiIcon(0);
         guiIcon.setName("Party menu");
-        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(5));
-        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(6));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(7));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(8));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Inventory menu icon - Icon ID 1.
         guiIcon = new GuiIcon(1);
         guiIcon.setName("Inventory menu");
-        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(7));
-        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(8));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(9));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(10));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Settings menu icon - Icon ID 2.
         guiIcon = new GuiIcon(2);
         guiIcon.setName("Settings menu");
-        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(9));
-        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(10));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(11));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(12));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Character summary icon 1 - Icon ID 3.
@@ -147,33 +147,40 @@ public class GuiIconManager {
         // Stackable item menu backdrop - Icon ID 6.
         guiIcon = new GuiIcon(6);
         guiIcon.setName("Item menu stackable backdrop");
-        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(3));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(5));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Non-stackable item menu backdrop - Icon ID 7.
         guiIcon = new GuiIcon(7);
         guiIcon.setName("Item menu non-stackable backdrop");
-        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(4));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(6));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Item menu selector - Icon ID 8.
         guiIcon = new GuiIcon(8);
         guiIcon.setName("Item menu selector");
-        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(2));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(4));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Leftward scroll arrow - Icon ID 9.
         guiIcon = new GuiIcon(9);
         guiIcon.setName("Leftward scroll arrow");
-        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(13));
-        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(14));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(15));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(16));
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Rightward scroll arrow - Icon ID 10.
         guiIcon = new GuiIcon(10);
         guiIcon.setName("Rightward scroll arrow");
-        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(11));
-        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(12));
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(13));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(14));
+        icons.put(guiIcon.getIconId(), guiIcon);
+
+        // Party swap indicator - Icon ID 11.
+        guiIcon = new GuiIcon(11);
+        guiIcon.setName("Party swap indicator");
+        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(2));
+        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(3));
         icons.put(guiIcon.getIconId(), guiIcon);
     }
 }

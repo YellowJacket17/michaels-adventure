@@ -13,6 +13,7 @@ import render.font.CFont;
 import render.font.FontBatch;
 import render.font.Text;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -77,10 +78,10 @@ public class Renderer {
      */
     public void render() {
 
-        // Render drawable layers in order.
+        // Render layers in order.
         for (ZIndex zIndex : ZIndex.values()) {
 
-            // Single drawables.
+            // Single drawables (always rendered first).
             for (DrawableSingle single : drawableSingles) {
                 if (!single.isAvailable() && (single.getzIndex() == zIndex)) {
                     single.flush();
@@ -93,25 +94,32 @@ public class Renderer {
                     batch.flush();
                 }
             }
-        }
 
-        // Text (always rendered as topmost layer).
-        for (int i = 0; i < stagedText.size(); i++) {                                                                   // Loop though each staged string.
-            if (i == 0) {
-                fontBatch.setFont((fonts.get(stagedText.get(i).getFont())));                                            // Set initial font.
-            } else {
-                if (!stagedText.get(i - 1).getFont().equals(stagedText.get(i).getFont())) {
-                    fontBatch.flush();                                                                                  // Manually flush batch before changing font.
-                    fontBatch.setFont((fonts.get(stagedText.get(i).getFont())));                                        // Set next font.
+            // Text (always rendered last).
+            CFont lastFontSet = null;
+            for (int i = 0; i < stagedText.size(); i++) {                                                               // Loop though each staged string.
+                if (stagedText.get(i).getzIndex() == zIndex) {                                                          // Only render staged strings on the current layer.
+                    if (lastFontSet == null) {
+                        fontBatch.setFont((fonts.get(stagedText.get(i).getFont())));                                    // Set initial font.
+                        lastFontSet = fonts.get(stagedText.get(i).getFont());
+                    } else {
+                        if (!lastFontSet.equals(stagedText.get(i).getFont())) {
+                            fontBatch.flush();                                                                          // Manually flush batch before changing font.
+                            fontBatch.setFont((fonts.get(stagedText.get(i).getFont())));                                // Set next font.
+                            lastFontSet = fonts.get(stagedText.get(i).getFont());
+                        }
+                    }
+                    fontBatch.addString(stagedText.get(i).getText(),
+                            stagedText.get(i).getScreenX(), stagedText.get(i).getScreenY(),
+                            stagedText.get(i).getScale(), stagedText.get(i).getColor());
                 }
             }
-            fontBatch.addString(stagedText.get(i).getText(),
-                    stagedText.get(i).getScreenX(), stagedText.get(i).getScreenY(),
-                    stagedText.get(i).getScale(), stagedText.get(i).getColor());
+            if (!fontBatch.isEmpty()) {
+                fontBatch.flush();                                                                                      // Must manually flush at the end to render any remaining characters in the batch.
+            }
         }
-        if (!fontBatch.isEmpty()) {
-            fontBatch.flush();                                                                                          // Must manually flush at the end to render any remaining characters in the batch.
-        }
+
+        // Cleanup.
         stagedText.clear();                                                                                             // Remove all staged text as it has already been rendered.
     }
 
@@ -121,7 +129,7 @@ public class Renderer {
      *
      * @param drawable Drawable instance to add
      * @param zIndex layer on which to render; drawables on the same layer will be rendered in the order in which they
-     *               were added (bottom to top)
+     *               were added to the render pipeline (bottom to top)
      */
     public void addDrawable(Drawable drawable, ZIndex zIndex) {
 
@@ -141,10 +149,12 @@ public class Renderer {
      * @param scale scale factor compared to native font size
      * @param color color (r, g, b)
      * @param font name of font to use
+     * @param zIndex layer on which to render; strings will always be rendered after other drawables on the same layer,
+     *               regardless of the order in which they were added to the render pipeline
      */
-    public void addString(String text, float x, float y, float scale, Vector3f color, String font) {
+    public void addString(String text, float x, float y, float scale, Vector3f color, String font, ZIndex zIndex) {
 
-        stagedText.add(new Text(text, x, y, scale, color, font));
+        stagedText.add(new Text(text, x, y, scale, color, font, zIndex));
     }
 
 
@@ -154,7 +164,7 @@ public class Renderer {
      * @param color color of this rectangle (r, g, b, a)
      * @param transform position (top-left coordinate) and scale (width and height) of this rectangle
      * @param zIndex layer on which to render; drawables on the same layer will be rendered in the order in which they
-     *               were added (bottom to top)
+     *               were added to the render pipeline (bottom to top)
      */
     public void addRectangle(Vector4f color, Transform transform, ZIndex zIndex) {
 
@@ -168,8 +178,8 @@ public class Renderer {
      *
      * @param color color of this rectangle (r, g, b, a)
      * @param transform position (top-left coordinate) and scale (width and height) of this rectangle
-     * @param zIndex layer on which to render; drawables on the same layer will be rendered in the order in which they
-     *               were added (bottom to top)
+     * @param zIndex layer on which to render; round rectangles will always be rendered before other drawables on the
+     *               same layer, regardless of the order in which they were added to the render pipeline
      * @param radius arc radius at four corners of this rectangle
      */
     public void addRoundRectangle(Vector4f color, Transform transform, ZIndex zIndex, float radius) {

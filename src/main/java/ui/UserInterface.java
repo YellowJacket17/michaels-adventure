@@ -1,8 +1,10 @@
-package miscellaneous;
+package ui;
 
 import combat.enumeration.BannerColor;
 import combat.enumeration.SubMenuType;
 import core.GamePanel;
+import miscellaneous.Setting;
+import ui.enumeration.PrimaryMenuState;
 import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
 import entity.enumeration.EntityStatus;
@@ -28,6 +30,15 @@ public class UserInterface {
     // FIELDS
     private final GamePanel gp;
     private Renderer renderer;
+
+    /**
+     * Variable to store which primary menu state that the game is in.
+     * This will affect which menu is rendered, if any.
+     * This is not to be confused with sub-menus, which are not affected by this.
+     * This will also not affect how player inputs function (i.e., only affects what is rendered, not how it's
+     * interacted with).
+     */
+    private PrimaryMenuState primaryMenuState = PrimaryMenuState.INACTIVE;
 
     /**
      * Standard normal font to use when rendering UI text (dialogue, sub-menu, etc.).
@@ -160,36 +171,35 @@ public class UserInterface {
             this.renderer = renderer;                                                                                   // Makes it easier to access current renderer across entire class.
         }
 
+        // PRIMARY MENU
+        switch (primaryMenuState) {
+            case PARTY:
+                renderInGameMenuMainWindowScreen();
+                renderPartyMenuScreen();
+                break;
+            case INVENTORY:
+                renderInGameMenuMainWindowScreen();
+                renderInventoryMenuScreen();
+                break;
+            case SETTINGS:
+                renderInGameMenuMainWindowScreen();
+                renderSettingsMenuScreen();
+                break;
+        }
+
         // COMBAT
         if (gp.getCombatM().isCombatActive()) {
             renderCombatScreen();
         }
 
-        // STANDARD
-        switch (gp.getPrimaryGameState()) {
-            case EXPLORE:
-                // Nothing here.
-                break;
-            case DIALOGUE:
-                renderDialogueScreen();
-                break;
-            case PARTY_MENU:
-                renderInGameMenuMainWindowScreen();
-                renderPartyMenuScreen();
-                break;
-            case INVENTORY_MENU:
-                renderInGameMenuMainWindowScreen();
-                renderInventoryMenuScreen();
-                break;
-            case SETTINGS_MENU:
-                renderInGameMenuMainWindowScreen();
-                renderSettingsMenuScreen();
-                break;
-            case SUB_MENU:
-                renderSubMenuScreen();
-                if (gp.getDialogueR().getActiveConv() != null) {                                                        // Keep dialogue screen up if the sub-menu is being drawn while dialogue is also being displayed.
-                    renderDialogueScreen();
-                }
+        // DIALOGUE
+        if (gp.getDialogueR().getActiveConv() != null) {
+            renderDialogueScreen();
+        }
+
+        // SUB-MENU
+        if (gp.getSubMenuH().getSubMenuId() != 0) {
+            renderSubMenuScreen();
         }
 
         // FADE
@@ -240,6 +250,16 @@ public class UserInterface {
 
 
     /**
+     * Refreshes which party member is active in the party menu screen.
+     * Meant to be called if party ordering is updated while the party menu screen is already displayed.
+     */
+    public void refreshSelectedPartyMenuEntity() {
+
+        updateSelectedPartyMenuEntity();
+    }
+
+
+    /**
      * Adds dialogue components (window and text) to the render pipeline.
      */
     private void renderDialogueScreen() {
@@ -259,9 +279,9 @@ public class UserInterface {
 
         // Render main dialogue window.
         renderer.addRectangle(
-                new Vector4f(20, 20, 20, 180),
+                new Vector4f(20, 20, 20, 220),
                 new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
-                ZIndex.SECOND_LAYER);
+                ZIndex.FIRST_LAYER);
 
         // Dialogue sub-window and text, if applicable (i.e., area where speaker's name is printed).
         if (gp.getDialogueR().getActiveDialogueEntityName() != null
@@ -291,9 +311,9 @@ public class UserInterface {
 
             // Render dialogue sub-window.
             renderer.addRectangle(
-                    new Vector4f(20, 20, 20, 180),
+                    new Vector4f(20, 20, 20, 220),
                     new Transform(subWindowWorldCoords, new Vector2f(subWindowWorldWidth, subWindowWorldHeight)),
-                    ZIndex.SECOND_LAYER);
+                    ZIndex.FIRST_LAYER);
 
             // Set position of dialogue entity name.
             Vector2f subTextScreenCoords = new Vector2f(subWindowScreenX + subWindowScreenLeftRightPadding,
@@ -301,7 +321,7 @@ public class UserInterface {
 
             // Render dialogue entity name.
             renderString(gp.getDialogueR().getActiveDialogueEntityName(), subTextScreenCoords, standardFontScale,
-                    new Vector3f(121, 149, 255), standardNormalFont);
+                    new Vector3f(121, 149, 255), standardNormalFont, ZIndex.FIRST_LAYER);
         }
 
         // Dialogue progress arrow, if applicable.
@@ -328,7 +348,7 @@ public class UserInterface {
                 new Vector2f(mainTextScreenLeftPadding, mainWindowScreenCoords.y + mainTextScreenSpacing);
         for (int key = 0; key < gp.getDialogueR().getMaxNumPrintLines(); key++) {
             renderString(gp.getDialogueR().getDialoguePrint(key), mainTextScreenCoords, standardFontScale,
-                    new Vector3f(255, 255, 255), standardNormalFont);
+                    new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
             mainTextScreenCoords.y += characterScreenHeight + mainTextScreenSpacing;
         }
     }
@@ -384,7 +404,7 @@ public class UserInterface {
         renderer.addRectangle(
                 new Vector4f(255, 255, 255, 255),
                 new Transform(dividerWorldCoords, new Vector2f(dividerWorldWidth, dividerWorldThickness)),
-                ZIndex.FIRST_LAYER);
+                ZIndex.SECOND_LAYER);
 
         // Prepare menu section title position and dimensions and render.
         float fontScale = 0.17f;                                                                                        // Font size (multiplies native height).
@@ -397,18 +417,18 @@ public class UserInterface {
                 mainWindowScreenLeftRightPadding + gp.getCamera().worldWidthToScreenWidth(50.0f),
                 mainWindowScreenTopBottomPadding + titleScreenTopBottomPadding);
         String title = "???";
-        switch (gp.getPrimaryGameState()) {
-            case PARTY_MENU:
+        switch (primaryMenuState) {
+            case PARTY:
                 title = "PARTY";
                 break;
-            case INVENTORY_MENU:
+            case INVENTORY:
                 title = "INVENTORY";
                 break;
-            case SETTINGS_MENU:
+            case SETTINGS:
                 title = "SETTINGS";
                 break;
         }
-        renderString(title, titleScreenCoords, fontScale, new Vector3f(121, 149, 255), standardBoldFont);
+        renderString(title, titleScreenCoords, fontScale, new Vector3f(121, 149, 255), standardBoldFont, ZIndex.SECOND_LAYER);
     }
 
 
@@ -423,8 +443,7 @@ public class UserInterface {
 
 
     /**
-     * Adds components of the status icons for each party member in the party menu section of the in-game menu to the
-     * render pipeline.
+     * Adds components of the status icons for each party member in the party menu screen to the render pipeline.
      */
     private void renderPartyMemberStatusIcons() {
 
@@ -475,6 +494,9 @@ public class UserInterface {
             gp.getGuiIconM().addToRenderPipeline(renderer, 4, slotIconScreenX, slotIconScreenY);
             renderPartyMemberStatusIconInterior(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]),
                     slotIconScreenX, slotIconScreenY);
+//            if ((partySlotSelected == 1) && (gp.getEntityM().getParty().size() > 1)) {
+//
+//            }
         }
 
         // Render slot 2 (bottommost).
@@ -513,7 +535,7 @@ public class UserInterface {
                 renderer.addRectangle(
                         miniIconActiveColor,
                         new Transform(miniIconWorldCoords, miniIconActiveWorldScale),
-                        ZIndex.FIRST_LAYER);
+                        ZIndex.SECOND_LAYER);
                 miniIconWorldCoords.x += (miniIconActiveWorldSize / 2) - (miniIconInactiveWorldSize / 2);
                 miniIconWorldCoords.y += miniIconWorldVerticalSpacing + miniIconActiveWorldSize;
             } else {
@@ -521,7 +543,7 @@ public class UserInterface {
                 renderer.addRectangle(
                         miniIconInactiveColor,
                         new Transform(miniIconWorldCoords, miniIconInactiveWorldScale),
-                        ZIndex.FIRST_LAYER);
+                        ZIndex.SECOND_LAYER);
                 miniIconWorldCoords.y += miniIconWorldVerticalSpacing + miniIconInactiveWorldSize;
             }
         }
@@ -529,7 +551,7 @@ public class UserInterface {
 
 
     /**
-     * Adds contents of a party member status icon in the party menu section of the in-game menu to the render pipeline.
+     * Adds contents of a party member status icon in the party menu screen to the render pipeline.
      *
      * @param entity party member whose contents to render
      * @param baseScreenX screen x-coordinate of the target party member status icon
@@ -551,7 +573,8 @@ public class UserInterface {
         workingWorldCoords.x = baseWorldCoords.x + 45.5f;
         workingWorldCoords.y = baseWorldCoords.y + 7.0f;
         workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
-        renderStringShadow(entity.getName(), workingScreenCoords, 0.12f, new Vector3f(255, 255, 255), standardBoldFont);
+        renderStringShadow(entity.getName(), workingScreenCoords, 0.12f,
+                new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
 
         // Render life bar.
         workingWorldCoords.x = baseWorldCoords.x + 64.0f;
@@ -566,32 +589,34 @@ public class UserInterface {
         workingWorldCoords.x -= 18.5f;
         workingWorldCoords.y -= 3.0f;
         workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
-        renderStringShadow("HP", workingScreenCoords, 0.12f, new Vector3f(255, 255, 255), standardBoldFont);
+        renderStringShadow("HP", workingScreenCoords, 0.12f,
+                new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
 
         workingWorldCoords.x += 50.0f;
         workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
         renderStringShadow(entity.getLife() + "/" + entity.getMaxLife(), workingScreenCoords, 0.12f,
-                new Vector3f(255, 255, 255), standardBoldFont);
+                new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
 
         // Render skill bar.
         workingWorldCoords.x = baseWorldCoords.x + 64.0f;
         workingWorldCoords.y = baseWorldCoords.y + 42.0f;
         workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
         renderSkillBar(
-                entity.getSkillPoints(),
-                entity.getMaxSkillPoints(),
+                entity.getSkill(),
+                entity.getMaxSkill(),
                 gp.getCamera().worldWidthToScreenWidth(30.0f),
                 workingScreenCoords.x,
                 workingScreenCoords.y);
         workingWorldCoords.x -= 18.5f;
         workingWorldCoords.y -= 3.0f;
         workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
-        renderStringShadow("SP", workingScreenCoords, 0.12f, new Vector3f(255, 255, 255), standardBoldFont);
+        renderStringShadow("SP", workingScreenCoords, 0.12f,
+                new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
 
         workingWorldCoords.x += 50.0f;
         workingScreenCoords = gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords);
-        renderStringShadow(entity.getSkillPoints() + "/" + entity.getMaxSkillPoints(), workingScreenCoords, 0.12f,
-                new Vector3f(255, 255, 255), standardBoldFont);
+        renderStringShadow(entity.getSkill() + "/" + entity.getMaxSkill(), workingScreenCoords, 0.12f,
+                new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
     }
 
 
@@ -647,7 +672,7 @@ public class UserInterface {
                         worldCoordsExterior,
                         new Vector2f(worldWidthExterior, worldHeightExterior)
                 ),
-                ZIndex.FIRST_LAYER
+                ZIndex.SECOND_LAYER
         );
         renderer.addRectangle(                                                                                          // Render life bar fill (interior).
                 colorInteriorSecondary,
@@ -655,7 +680,7 @@ public class UserInterface {
                         worldCoordsInterior,
                         new Vector2f(worldWidthInterior, worldHeightInterior)
                 ),
-                ZIndex.FIRST_LAYER
+                ZIndex.SECOND_LAYER
         );
         renderer.addRectangle(                                                                                          // Render life bar fill (interior).
                 colorInteriorPrimary,
@@ -663,7 +688,7 @@ public class UserInterface {
                         worldCoordsInterior,
                         new Vector2f(worldWidthInterior * remainingLifePercentage, worldHeightInterior)
                 ),
-                ZIndex.FIRST_LAYER
+                ZIndex.SECOND_LAYER
         );
     }
 
@@ -711,7 +736,7 @@ public class UserInterface {
                         worldCoordsExterior,
                         new Vector2f(worldWidthExterior, worldHeightExterior)
                 ),
-                ZIndex.FIRST_LAYER
+                ZIndex.SECOND_LAYER
         );
         renderer.addRectangle(                                                                                          // Render life bar fill (interior).
                 colorInteriorSecondary,
@@ -719,7 +744,7 @@ public class UserInterface {
                         worldCoordsInterior,
                         new Vector2f(worldWidthInterior, worldHeightInterior)
                 ),
-                ZIndex.FIRST_LAYER
+                ZIndex.SECOND_LAYER
         );
         renderer.addRectangle(                                                                                          // Render life bar fill (interior).
                 colorInteriorPrimary,
@@ -727,13 +752,13 @@ public class UserInterface {
                         worldCoordsInterior,
                         new Vector2f(worldWidthInterior * remainingLifePercentage, worldHeightInterior)
                 ),
-                ZIndex.FIRST_LAYER
+                ZIndex.SECOND_LAYER
         );
     }
 
 
     /**
-     * Adds components of the inventory menu section of the in-game menu to the render pipeline.
+     * Adds components of the inventory menu screen to the render pipeline.
      * This is to be rendered on top of the in-game menu main window.
      */
     private void renderInventoryMenuScreen() {
@@ -744,8 +769,7 @@ public class UserInterface {
 
 
     /**
-     * Adds components of the icons for each item in the inventory menu section of the in-game menu to the render
-     * pipeline.
+     * Adds components of the icons for each item in the inventory menu screen to the render pipeline.
      */
     private void renderItemIcons() {
 
@@ -807,8 +831,8 @@ public class UserInterface {
                     gp.getGuiIconM().addToRenderPipeline(renderer, 6, itemBackdropScreenX, itemBackdropScreenY);
                     gp.getEntityM().getPlayer().getInventory().get(itemIndex)
                             .addToRenderPipeline(renderer, itemIconScreenX, itemIconScreenY);
-                    renderStringShadow(
-                            quantity, quantityScreenCoords, 0.12f, new Vector3f(255, 255, 255), standardBoldFont);
+                    renderStringShadow(quantity, quantityScreenCoords, 0.12f,
+                            new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
                 } else {
 
                     gp.getGuiIconM().addToRenderPipeline(renderer, 7, itemBackdropScreenX, itemBackdropScreenY);
@@ -837,8 +861,8 @@ public class UserInterface {
 
 
     /**
-     * Adds components of description block of currently selected item in the inventory menu section of the in-game menu
-     * to the render pipeline.
+     * Adds components of description block of currently selected item in the inventory menu screen to the render
+     * pipeline.
      */
     private void renderSelectedItemDescription() {
 
@@ -868,9 +892,9 @@ public class UserInterface {
             float blockScreenSpacing = gp.getCamera().worldHeightToScreenHeight(28.0f);                                 // Normalized (Screen) spacing between each line of text in a block of text in a section.
             float maxLineScreenLength = 1 - leftmostScreenX - mainWindowScreenLeftRightPadding
                     - gp.getCamera().worldWidthToScreenWidth(42.0f);                                                    // 42 is the value of `dividerWorldLeftRightGap` in the `renderInGameMenuMainWindowScreen()` method in this class.
-            renderString(name, screenCoords, standardFontScale, nameColor, standardBoldFont);
+            renderString(name, screenCoords, standardFontScale, nameColor, standardBoldFont, ZIndex.SECOND_LAYER);
             screenCoords.y += sectionScreenSpacing;
-            renderString(quantity, screenCoords, standardFontScale, quantityColor, standardBoldFont);
+            renderString(quantity, screenCoords, standardFontScale, quantityColor, standardBoldFont, ZIndex.SECOND_LAYER);
             screenCoords.y += sectionScreenSpacing;
             renderStringBlock(
                     description,
@@ -880,13 +904,14 @@ public class UserInterface {
                     standardFontScale,
                     descriptionColor,
                     standardNormalFont,
+                    ZIndex.SECOND_LAYER,
                     true);
         }
     }
 
 
     /**
-     * Adds components of the settings menu section of the in-game menu to the render pipeline.
+     * Adds components of the settings menu screen to the render pipeline.
      * This is to be rendered on top of the in-game menu main window.
      */
     private void renderSettingsMenuScreen() {
@@ -959,13 +984,13 @@ public class UserInterface {
         Setting setting = gp.getSystemSetting(index);
         if (systemSettingSelected == index) {
             renderString(setting.getLabel(), settingLabelScreenCoords, fontScale,
-                    new Vector3f(244, 154, 45), standardBoldFont);
+                    new Vector3f(244, 154, 45), standardBoldFont, ZIndex.SECOND_LAYER);
         } else {
             renderString(setting.getLabel(), settingLabelScreenCoords, fontScale,
-                    new Vector3f(255, 255, 255), standardNormalFont);
+                    new Vector3f(255, 255, 255), standardNormalFont, ZIndex.SECOND_LAYER);
         }
         renderString(setting.getOption(setting.getActiveOption()), settingValueScreenCoords, fontScale,
-                new Vector3f(255, 255, 255), standardNormalFont);
+                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.SECOND_LAYER);
         if (systemSettingSelected == index) {
             float characterWorldHeight = renderer.getFont(standardNormalFont).getCharacter('A').getHeight() * fontScale;
             float characterScreenHeight = gp.getCamera().worldHeightToScreenHeight(characterWorldHeight);
@@ -1001,7 +1026,7 @@ public class UserInterface {
                                 gp.getFadeS().getColor().z,
                                 alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.FIRST_LAYER);
+                        ZIndex.SECOND_LAYER);
                 break;
             case ACTIVE:                                                                                                // Wait on colored screen.
                 renderer.addRectangle(
@@ -1011,7 +1036,7 @@ public class UserInterface {
                                 gp.getFadeS().getColor().z,
                                 alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.FIRST_LAYER);
+                        ZIndex.SECOND_LAYER);
                 break;
             case FADE_FROM:                                                                                             // Fade from color.
                 alpha = 255 - ((float)(gp.getFadeS().getFadeCounter()
@@ -1023,7 +1048,7 @@ public class UserInterface {
                                 gp.getFadeS().getColor().z,
                                 alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.FIRST_LAYER);
+                        ZIndex.SECOND_LAYER);
                 break;
         }
     }
@@ -1074,9 +1099,9 @@ public class UserInterface {
         float windowWorldWidth = gp.getCamera().screenWidthToWorldWidth(windowScreenWidth);
         float windowWorldHeight = gp.getCamera().screenHeightToWorldHeight(windowScreenHeight);
         renderer.addRectangle(
-                new Vector4f(20, 20, 20, 180),
+                new Vector4f(20, 20, 20, 220),
                 new Transform(windowWorldCoords, new Vector2f(windowWorldWidth, windowWorldHeight)),
-                ZIndex.SECOND_LAYER);
+                ZIndex.FIRST_LAYER);
 
         // Calculate position of text for first option.
         Vector2f optionsScreenCoords = new Vector2f(
@@ -1091,7 +1116,8 @@ public class UserInterface {
             } else {
                 color = new Vector3f(255, 255, 255);
             }
-            renderString(gp.getSubMenuH().getOptions().get(i), optionsScreenCoords, standardFontScale, color, standardNormalFont);
+            renderString(gp.getSubMenuH().getOptions().get(i), optionsScreenCoords,
+                    standardFontScale, color, standardNormalFont, ZIndex.FIRST_LAYER);
             if (i == gp.getSubMenuH().getIndexSelected()) {
                 float selectionArrowScreenHeight = gp.getCamera().worldHeightToScreenHeight(
                         gp.getSelectionA().getNativeSpriteHeight());
@@ -1230,7 +1256,8 @@ public class UserInterface {
 
         Vector2f lifeLabelWorldCoords = new Vector2f(bannerWorldX + 1.5f, bannerWorldY);
         Vector2f lifeLabelScreenCoords = gp.getCamera().worldCoordsToScreenCoords(lifeLabelWorldCoords);
-        renderString("HP", lifeLabelScreenCoords, 0.1f, new Vector3f(255, 255, 255), standardBoldFont);
+        renderString("HP", lifeLabelScreenCoords, 0.1f,
+                new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
         // NOTE: If "HP" label is increased to scale 0.12f, then world coords needs to be adjusted by -1.0f.
 
         if (includeSkill) {
@@ -1239,15 +1266,16 @@ public class UserInterface {
             Vector2f skillBarScreenCoords = gp.getCamera().worldCoordsToScreenCoords(skillBarWorldCoords);
 
             renderSkillBar(
-                    entity.getSkillPoints(),
-                    entity.getMaxSkillPoints(),
+                    entity.getSkill(),
+                    entity.getMaxSkill(),
                     gp.getCamera().worldWidthToScreenWidth(30.0f),
                     skillBarScreenCoords.x,
                     skillBarScreenCoords.y);
 
             Vector2f skillLabelWorldCoords = new Vector2f(bannerWorldX + 1.5f, bannerWorldY + 10.0f);
             Vector2f skillLabelScreenCoords = gp.getCamera().worldCoordsToScreenCoords(skillLabelWorldCoords);
-            renderString("SP", skillLabelScreenCoords, 0.1f, new Vector3f(255, 255, 255), standardBoldFont);
+            renderString("SP", skillLabelScreenCoords, 0.1f,
+                    new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
         }
 
         if (gp.getCombatM().getGuardingEntities().contains(entityId)) {
@@ -1289,9 +1317,9 @@ public class UserInterface {
             // Render description window.
             Vector2f windowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(windowScreenCoords);
             renderer.addRectangle(
-                    new Vector4f(20, 20, 20, 180),
+                    new Vector4f(20, 20, 20, 220),
                     new Transform(windowWorldCoords, new Vector2f(windowWorldWidth, windowWorldHeight)),
-                    ZIndex.SECOND_LAYER);
+                    ZIndex.FIRST_LAYER);
 
             // Render text.
             Vector2f textScreenCoords = new Vector2f(
@@ -1305,6 +1333,7 @@ public class UserInterface {
                     standardFontScale,
                     new Vector3f(255, 255, 255),
                     standardNormalFont,
+                    ZIndex.FIRST_LAYER,
                     false);
         }
     }
@@ -1324,39 +1353,46 @@ public class UserInterface {
         Long freeMemoryBytes = Runtime.getRuntime().freeMemory();
         Long usedMemoryMegabytes = (totalMemoryBytes - freeMemoryBytes) / 1000000;
         String memoryUsage = "JVM Memory Usage: " + usedMemoryMegabytes + " MB";
-        renderStringShadow(memoryUsage, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
+        renderStringShadow(memoryUsage, screenCoords, standardFontScale,
+                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
 
         // VSync.
         screenCoords.y += spacingScreenY;
         String vSync = "VSync: " + ((gp.getSystemSetting(0).getActiveOption() == 0) ? "Disabled" : "Enabled");
-        renderStringShadow(vSync, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
+        renderStringShadow(vSync, screenCoords, standardFontScale,
+                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Frame rate.
         screenCoords.y += spacingScreenY;
         String fps = "FPS: " + fpsTracker;
-        renderStringShadow(fps, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
+        renderStringShadow(fps, screenCoords, standardFontScale,
+                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Player column.
         screenCoords.y += spacingScreenY;
         String col = "Player Col: " + gp.getEntityM().getPlayer().getCol();
-        renderStringShadow(col, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
+        renderStringShadow(col, screenCoords, standardFontScale,
+                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Player row.
         screenCoords.y += spacingScreenY;
         String row = "Player Row: " + gp.getEntityM().getPlayer().getRow();
-        renderStringShadow(row, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
+        renderStringShadow(row, screenCoords, standardFontScale,
+                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Camera center (x).
         screenCoords.y += spacingScreenY;
         String centerX = "Camera Center X: "
                 + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
-        renderStringShadow(centerX, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
+        renderStringShadow(centerX, screenCoords, standardFontScale,
+                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Camera center (y).
         screenCoords.y += spacingScreenY;
         String centerY = "Camera Center Y: "
                 + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
-        renderStringShadow(centerY, screenCoords, standardFontScale, new Vector3f(255, 255, 255), standardNormalFont);
+        renderStringShadow(centerY, screenCoords, standardFontScale,
+                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
     }
 
 
@@ -1368,11 +1404,14 @@ public class UserInterface {
      * @param scale scale factor at which to render text compared to native font size
      * @param color text color (r, g, b)
      * @param font name of font to use
+     * @param zIndex layer on which to render; strings will always be rendered after other drawables on the same layer,
+     *               regardless of the order in which they were added to the render pipeline
      */
-    private void renderString(String text, Vector2f screenCoords, float scale, Vector3f color, String font) {
+    private void renderString(
+            String text, Vector2f screenCoords, float scale, Vector3f color, String font, ZIndex zIndex) {
 
         Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
-        renderer.addString(text, worldCoords.x, worldCoords.y, scale, color, font);
+        renderer.addString(text, worldCoords.x, worldCoords.y, scale, color, font, zIndex);
     }
 
 
@@ -1384,14 +1423,17 @@ public class UserInterface {
      * @param scale scale factor at which to render text compared to native font size
      * @param color text color (r, g, b)
      * @param font name of font to use
+     * @param zIndex layer on which to render; strings will always be rendered after other drawables on the same layer,
+     *               regardless of the order in which they were added to the render pipeline
      */
-    private void renderStringShadow(String text, Vector2f screenCoords, float scale, Vector3f color, String font) {
+    private void renderStringShadow(
+            String text, Vector2f screenCoords, float scale, Vector3f color, String font, ZIndex zIndex) {
 
         Vector2f shadowScreenCoords = new Vector2f(
                 screenCoords.x + gp.getCamera().worldWidthToScreenWidth(0.8f),                                          // Hard coded as an absolute (non-screen) width since shadow cast is fixed, regardless of native screen width.
                 screenCoords.y + gp.getCamera().worldHeightToScreenHeight(0.8f));                                       // Hard coded as an absolute (non-screen) height since shadow cast is fixed, regardless of native screen height.
-        renderString(text, shadowScreenCoords, scale, new Vector3f(0, 0, 0), font);
-        renderString(text, screenCoords, scale, color, font);
+        renderString(text, shadowScreenCoords, scale, new Vector3f(0, 0, 0), font, zIndex);
+        renderString(text, screenCoords, scale, color, font, zIndex);
     }
 
 
@@ -1406,10 +1448,12 @@ public class UserInterface {
      * @param scale scale factor at which to render text compared to native font size
      * @param color color of the printed text (r, g, b)
      * @param font name of font to use
+     * @param zIndex layer on which to render; strings will always be rendered after other drawables on the same layer,
+     *               regardless of the order in which they were added to the render pipeline
      * @param dropShadow whether a drop shadow should be drawn (true) or not (false)
      */
     private void renderStringBlock(String text, Vector2f screenCoords, float maxLineScreenLength, float lineScreenSpacing,
-                                   float scale, Vector3f color, String font, boolean dropShadow) {
+                                   float scale, Vector3f color, String font, ZIndex zIndex, boolean dropShadow) {
 
         String parsedText = "";
         int charIndex = 0;
@@ -1469,10 +1513,10 @@ public class UserInterface {
 
             if (dropShadow) {
 
-                renderStringShadow(line, screenCoords, scale, color, font);                                              // Render the line of text with a drop shadow.
+                renderStringShadow(line, screenCoords, scale, color, font, zIndex);                                     // Render the line of text with a drop shadow.
             } else {
 
-                renderString(line, screenCoords, scale, color, font);                                                    // Render the line of text without a drop shadow.
+                renderString(line, screenCoords, scale, color, font, zIndex);                                           // Render the line of text without a drop shadow.
             }
 
             if (wordsIndex != words.length) {
@@ -1486,7 +1530,7 @@ public class UserInterface {
     /**
      * Updates which party member is active in the party menu screen.
      */
-    private void updateSelectedPartyMenuEntity() {
+    public void updateSelectedPartyMenuEntity() {
 
         Set<Integer> keySet = gp.getEntityM().getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
@@ -1614,7 +1658,86 @@ public class UserInterface {
     }
 
 
+    /**
+     * Performs necessary preparations when switching to a new primary menu state.
+     *
+     * @param outgoingPrimaryMenuState primary menu state being switched from
+     * @param incomingPrimaryMenuState primary menu state being switched to
+     */
+    private void preparePrimaryMenuState(PrimaryMenuState outgoingPrimaryMenuState,
+                                         PrimaryMenuState incomingPrimaryMenuState) {
+
+        // Tidy up the state being switching from.
+        switch (outgoingPrimaryMenuState) {
+
+            case PARTY:
+                gp.getGuiIconM().getIconById(0).setSelected(false);                                                     // Deselect the party menu icon.
+                setPartySlotSelected(0);                                                                                // Set the selected party member stat icon back to its default.
+                setPartyMenuScrollLevel(0);                                                                             // Set the list of party members back to its default scroll level.
+                gp.getEntityIconM().purgeAllEntityIcons();
+                break;
+
+            case INVENTORY:
+                gp.getGuiIconM().getIconById(1).setSelected(false);                                                     // Deselected the inventory menu icon.
+                setItemColSelected(0);                                                                                  // Set the item slot back to its default column.
+                setItemRowSelected(0);                                                                                  // Set the item slot back to its default row.
+                for (int row = 0; row < getMaxNumItemRow(); row++) {                                                    // Set all entries in the array of occupied item slots to false.
+                    for (int col = 0; col < getMaxNumItemCol(); col++) {
+                        getOccupiedItemSlots()[row][col] = false;
+                    }
+                }
+                break;
+
+            case SETTINGS:
+                gp.getGuiIconM().getIconById(2).setSelected(false);                                                     // Deselect the settings menu icon.
+                setSystemSettingSelected(0);                                                                            // Reset selected setting to default.
+                setSystemOptionSelected(gp.getSystemSetting(0).getActiveOption());                                      // Reset selected option to default (i.e., active option of the default setting).
+                break;
+        }
+
+        // Prepare for the state being switching to.
+        switch (incomingPrimaryMenuState) {
+
+            case PARTY:
+                gp.getGuiIconM().getIconById(0).setSelected(true);                                                      // Select the party menu icon.
+                gp.getEntityIconM().createPartyEntityIcons();                                                           // Create entity icons for the party members.
+                gp.getEntityIconM().getEntityIconById(gp.getEntityM().getPlayer().getEntityId()).setSelected(true);     // Set the player icon as being selected (will animate the player icon).
+                gp.getGuiIconM().getIconById(3).setSelected(true);                                                      // Set the background icon for the player as being selected (will darken the background).
+                setPartySlotSelected(0);                                                                                // Set the player entity's party member stat icon as being selected in the UI.
+                setPartyMenuScrollLevel(0);                                                                             // Set the list of party members back to the top.
+                break;
+
+            case INVENTORY:
+                gp.getGuiIconM().getIconById(1).setSelected(true);                                                      // Select the inventory menu icon.
+                int numItems = gp.getEntityM().getPlayer().getInventory().size();
+                int itemIndex = 0;                                                                                      // Variable to track how many item slots in the player's inventory have been assigned to an array slot.
+                for (int row = 0; row < getMaxNumItemRow(); row++) {                                                    // Set the array of occupied item slots (inventory is displayed as a grid).
+                    for (int col = 0; col < getMaxNumItemCol(); col++) {
+                        if (itemIndex < numItems) {
+                            getOccupiedItemSlots()[row][col] = true;
+                        } else {
+                            getOccupiedItemSlots()[row][col] = false;
+                        }
+                        itemIndex++;
+                    }
+                }
+                setItemColSelected(0);                                                                                  // Set the top-left item icon as being selected.
+                setItemRowSelected(0);                                                                                  // ^^^
+                break;
+
+            case SETTINGS:
+                gp.getGuiIconM().getIconById(2).setSelected(true);                                                      // Select the settings menu icon.
+                setSystemSettingSelected(0);
+                setSystemOptionSelected(gp.getSystemSetting(0).getActiveOption());
+                break;
+        }
+    }
+
+
     // GETTERS
+    public PrimaryMenuState getPrimaryMenuState() {
+        return primaryMenuState;
+    }
 
     public String getStandardNormalFont() {
         return standardNormalFont;
@@ -1670,6 +1793,11 @@ public class UserInterface {
 
 
     // SETTERS
+    public void setPrimaryMenuState(PrimaryMenuState primaryMenuState) {
+        preparePrimaryMenuState(this.primaryMenuState, primaryMenuState);
+        this.primaryMenuState = primaryMenuState;
+    }
+
     public void setPartySlotSelected(int partySlotSelected) {
         if (partySlotSelected < 0) {
             this.partySlotSelected = 0;

@@ -614,7 +614,7 @@ public class CombatAnimationSupport {
         gp.getEntityM().getEntityById(smaSourceEntityId).initiateCombatAttackAnimation();                               // Play attack animation on source entity.
         gp.getEntityM().getEntityById(smaSourceEntityId).subtractSkillPoints(smaMove.getSkillPoints());                 // Subtract skill points used by this move.
 
-        if (smaMove.getSoundEffect() != null) {                                                                         // Play move sound effect.
+        if ((smaMove.getSoundEffect() != null) && (!smaTargetEntitiesFinalLife.isEmpty())) {                            // Play move sound effect (as long as there are targets being hit).
 
             gp.getSoundS().playEffect(smaMove.getSoundEffect());
         }
@@ -663,7 +663,7 @@ public class CombatAnimationSupport {
         for (int entityId : sraRevivingEntityIds) {
 
             gp.getEntityM().getEntityById(entityId).initiateFadeEffect(
-                    FadeEffectType.FADE_DOWN, gp.getPartyS().getStandardFadeEffectDuration());
+                    FadeEffectType.FADE_DOWN, gp.getPartyS().getStandardFadeEffectDuration(), false);
         }
     }
 
@@ -675,7 +675,7 @@ public class CombatAnimationSupport {
 
         for (int entityId : ceaEntitiesFinalSkillPoints.keySet()) {
 
-            gp.getEntityM().getEntityById(entityId).setSkillPoints(ceaEntitiesFinalSkillPoints.get(entityId));
+            gp.getEntityM().getEntityById(entityId).setSkill(ceaEntitiesFinalSkillPoints.get(entityId));
         }
 
         gp.getSoundS().playEffect(ceaSoundEffectResourceName);
@@ -712,7 +712,10 @@ public class CombatAnimationSupport {
 
         boolean particleEffectsComplete = checkParticleEffectAnimations(smaParticleEffectUuids);                        // Check if all particle effect animations are complete.
 
-        if (sourceAttackComplete && healthBarsComplete && particleEffectsComplete) {                                    // Check if all animations have completed; if so, combat can be progressed to the next action.
+        boolean soundEffectComplete =
+                smaMove.getSoundEffect() != null ? (!gp.getSoundS().isSoundPlaying(smaMove.getSoundEffect())) : true;   // Check if sound effect is complete.
+
+        if (sourceAttackComplete && healthBarsComplete && particleEffectsComplete && soundEffectComplete) {             // Check if all animations and sound effect have completed; if so, combat can be progressed to the next action.
 
             if (smaBackDelay > 0) {
 
@@ -832,7 +835,7 @@ public class CombatAnimationSupport {
 
                 gp.getEntityM().getEntityById(entityId).setStatus(EntityStatus.HEALTHY);
                 gp.getEntityM().getEntityById(entityId).initiateFadeEffect(
-                        FadeEffectType.FADE_UP, gp.getPartyS().getStandardFadeEffectDuration());
+                        FadeEffectType.FADE_UP, gp.getPartyS().getStandardFadeEffectDuration(), false);
 
                 if (gp.getEntityM().getEntityById(entityId).getLife() < 1) {
 
