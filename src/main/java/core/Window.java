@@ -114,7 +114,7 @@ public class Window {
     /**
      * Window title.
      */
-    private final String title = "Michael's Adventure";
+    private final String title = "Mary's Adventure";
 
     /**
      * Window clear color (red component).

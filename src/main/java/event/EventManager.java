@@ -347,8 +347,8 @@ public class EventManager {
      * after this function call (directly or via another function call) avoid complications in game logic.
      *
      * @param mode type of cleanup to perform: (1) reset fields in DialogueReader, remove all entities from a conversing
-     *             state, set player interaction buffer, and set the primary game state to explore; (2) reset fields in
-     *             DialogueReader and remove all entities from a conversing state; (3) reset fields in DialogueReader
+     *             state, and set the primary game state to explore; (2) reset fields in DialogueReader and remove all
+     *             entities from a conversing state; (3) reset fields in DialogueReader
      * @throws IllegalArgumentException if an illegal mode is passed as argument
      */
     public void cleanupConversation(int mode) {
@@ -383,9 +383,8 @@ public class EventManager {
      * after this function call (directly or via another function call) avoid complications in game logic.
      *
      * @param mode type of cleanup to perform: (1) reset fields in SubMenuHandler, reset fields in DialogueReader if
-     *             applicable, set player interaction buffer, and set the primary game state to explore; (2) reset
-     *             fields in SubMenuHandler and reset fields in DialogueReader if applicable; (3) reset fields in
-     *             SubMenuHandler
+     *             applicable, and set the primary game state to explore; (2) reset fields in SubMenuHandler and reset
+     *             fields in DialogueReader if applicable; (3) reset fields in SubMenuHandler
      * @throws IllegalArgumentException if an illegal mode is passed as argument
      */
     public void cleanupSubmenu(int mode) {
@@ -397,8 +396,6 @@ public class EventManager {
                 if (gp.getDialogueR().getActiveConv() != null) {
                     gp.getDialogueR().reset();                                                                          // Reset the DialogueReader's fields back to their default values.
                 }
-                gp.getEntityM().getPlayer().setInteractionCountdown(
-                        gp.getEntityM().getPlayer().getStagedStandardInteractionCountdown());                           // Player must wait before interacting with something else.
                 gp.setPrimaryGameState(PrimaryGameState.EXPLORE);                                                       // No further logic will run.
                 break;
             case 2:

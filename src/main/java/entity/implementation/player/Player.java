@@ -643,6 +643,7 @@ public class Player extends EntityBase {
                     gp.getCombatM().progressCombat();                                                                   // Check what logic to run next in combat (i.e., progress combat loop).
                 } else {
 
+                    setInteractionCountdown(stagedStandardInteractionCountdown);
                     gp.getEventM().handlePostConversation(gp.getDialogueR().getActiveConv().getConvId());               // Check if any events will be triggered once the conversation has finished.
                 }
             } else {

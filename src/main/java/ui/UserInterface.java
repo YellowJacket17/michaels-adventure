@@ -494,9 +494,6 @@ public class UserInterface {
             gp.getGuiIconM().addToRenderPipeline(renderer, 4, slotIconScreenX, slotIconScreenY);
             renderPartyMemberStatusIconInterior(gp.getEntityM().getParty().get(keyArray[partyMenuScrollLevel]),
                     slotIconScreenX, slotIconScreenY);
-//            if ((partySlotSelected == 1) && (gp.getEntityM().getParty().size() > 1)) {
-//
-//            }
         }
 
         // Render slot 2 (bottommost).

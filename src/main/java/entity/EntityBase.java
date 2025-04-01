@@ -840,6 +840,9 @@ public abstract class EntityBase extends Drawable {
             case RANDOM_TURNS:
                 setRest(1);
                 break;
+            case STATIC:
+                setRest(0);
+                break;
         }
     }
 
