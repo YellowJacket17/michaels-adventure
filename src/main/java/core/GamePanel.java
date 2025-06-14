@@ -1,7 +1,7 @@
 package core;
 
 import ai.PathFinder;
-import animation.AnimationManager;
+import animation.PassiveAnimationManager;
 import asset.AssetPool;
 import asset.Illustration;
 import combat.*;
@@ -85,7 +85,7 @@ public class GamePanel {
     private final MapManager mapM = new MapManager(this);
     private final EnvironmentManager environmentM = new EnvironmentManager(this);
     private final CutsceneManager cutsceneM = new CutsceneManager(this);
-    private final AnimationManager animationM = new AnimationManager();
+    private final PassiveAnimationManager passiveAnimationM = new PassiveAnimationManager();
     private final ParticleEffectManager particleEffectM = new ParticleEffectManager();
     private final CombatManager combatM = new CombatManager(this);
     private final EventManager eventM = new EventManager(this);
@@ -227,7 +227,8 @@ public class GamePanel {
         // Set camera to track player entity.
         cameraS.setTrackedEntity(entityM.getPlayer());
 
-        // Force fade into the game.
+        // Initiate opening cutscene.
+//        cutsceneM.initiateCutscene(0);
         fadeS.displayColor(new Vector3f(255, 255, 255));
         fadeS.initiateFadeFrom(0.5);
 
@@ -262,8 +263,11 @@ public class GamePanel {
         // Cutscene.
         cutsceneM.update(dt);
 
+        // Landmark.
+        landmarkM.update(dt);
+
         // Animation.
-        animationM.update(dt);
+        passiveAnimationM.update(dt);
         combatAnimationS.update(dt);
 
         // Particle Effect.
@@ -391,11 +395,12 @@ public class GamePanel {
         filePath = "/spritesheets/landmarks.png";
         int[] widths = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 128, 128, 128, 128, 96, 96, 96, 96};
+                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 128, 128, 128, 128, 96, 96, 96, 96, 32,
+                32};
         int[] heights = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 64, 64, 64, 64, 64, 64, 64, 64};
-        AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 71, widths, heights, 1));
+                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 64, 64, 64, 64, 64, 64, 64, 64, 92, 92};
+        AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 73, widths, heights, 1));
 
         // Items spritesheet (spritesheet 4).
         filePath = "/spritesheets/items.png";
@@ -414,12 +419,12 @@ public class GamePanel {
         AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 6, widths, heights, 1));
 
         // Sounds.
-        AssetPool.addSound("testTrack1", "sound/tracks/carvingCanyons_intro.ogg", "sound/tracks/carvingCanyons_loop.ogg");
-        AssetPool.addSound("testTrack2", "sound/tracks/dissipate_intro.ogg", "sound/tracks/dissipate_loop.ogg");
-        AssetPool.addSound("testTrack3", "sound/tracks/runningLate_intro.ogg", "sound/tracks/runningLate_loop.ogg");
-        AssetPool.addSound("testTrack4", "sound/tracks/riftInTime_intro.ogg", "sound/tracks/riftInTime_loop.ogg");
-        AssetPool.addSound("testTrack5", "sound/tracks/endOfTheLine_intro.ogg", "sound/tracks/endOfTheLine_loop.ogg");
-        AssetPool.addSound("testTrack6", "sound/tracks/yesteryear_intro.ogg", "sound/tracks/yesteryear_loop.ogg");
+        AssetPool.addSound("endOfTheLine", "sound/tracks/endOfTheLine_intro.ogg", "sound/tracks/endOfTheLine_loop.ogg");
+        AssetPool.addSound("dissipate", "sound/tracks/dissipate_intro.ogg", "sound/tracks/dissipate_loop.ogg");
+        AssetPool.addSound("carvingCanyons", "sound/tracks/carvingCanyons_intro.ogg", "sound/tracks/carvingCanyons_loop.ogg");
+        AssetPool.addSound("runningLate", "sound/tracks/runningLate_intro.ogg", "sound/tracks/runningLate_loop.ogg");
+        AssetPool.addSound("riftInTime", "sound/tracks/riftInTime_intro.ogg", "sound/tracks/riftInTime_loop.ogg");
+        AssetPool.addSound("yesteryear", "sound/tracks/yesteryear_intro.ogg", "sound/tracks/yesteryear_loop.ogg");
         AssetPool.addSound("testEffect1", "sound/effects/testEffect1.ogg");
         AssetPool.addSound("testEffect2", "sound/effects/testEffect2.ogg");
         AssetPool.addSound("testEffect3", "sound/effects/testEffect3.ogg");
@@ -427,8 +432,14 @@ public class GamePanel {
         AssetPool.addSound("testEffect5", "sound/effects/testEffect5.ogg");
 
         // Illustrations.
+        filePath = "/illustrations/illustration1.png";
+        AssetPool.addIllustration("illustration1", new Illustration(AssetPool.getTexture(filePath)));
+        filePath = "/illustrations/illustration2.png";
+        AssetPool.addIllustration("illustration2", new Illustration(AssetPool.getTexture(filePath)));
         filePath = "/illustrations/illustration3.png";
         AssetPool.addIllustration("illustration3", new Illustration(AssetPool.getTexture(filePath)));
+        filePath = "/illustrations/illustration5.png";
+        AssetPool.addIllustration("illustration5", new Illustration(AssetPool.getTexture(filePath)));
     }
 
 
@@ -485,8 +496,8 @@ public class GamePanel {
         return cutsceneM;
     }
 
-    public AnimationManager getAnimationM() {
-        return animationM;
+    public PassiveAnimationManager getPassiveAnimationM() {
+        return passiveAnimationM;
     }
 
     public ParticleEffectManager getParticleEffectM() {

@@ -2,8 +2,8 @@ package cutscene;
 
 import core.GamePanel;
 import cutscene.implementation.Cts_000;
+import cutscene.implementation.Cts_002;
 import cutscene.implementation.Cts_001;
-import utility.UtilityTool;
 
 /**
  * This class handles operations related to in-game cutscenes.
@@ -31,8 +31,9 @@ public class CutsceneManager {
 
 
     // CUTSCENE FIELDS
-    private final Cts_001 cts_001;
     private final Cts_000 cts_000;
+    private final Cts_001 cts_001;
+    private final Cts_002 cts_002;
 
 
     // CONSTRUCTOR
@@ -46,6 +47,7 @@ public class CutsceneManager {
 
         cts_000 = new Cts_000(gp);
         cts_001 = new Cts_001(gp);
+        cts_002 = new Cts_002(gp);
     }
 
 
@@ -71,6 +73,11 @@ public class CutsceneManager {
                         cts_001.run(dt);
                     }
                     break;
+                case 2:
+                    if (cts_002.isTriggerable()) {
+                        cts_002.run(dt);
+                    }
+                    break;
             }
         }
     }
@@ -78,7 +85,8 @@ public class CutsceneManager {
 
     /**
      * Triggers the specified cutscene to run, either from the beginning or from the phase it was last paused at.
-     * Note that control is not automatically unlocked/revoked from the player and must be done so manually if needed.
+     * Note that control is not automatically unlocked/revoked from the player and must be done so manually in cutscene
+     * logic if needed.
      *
      * @param cutsceneNum number of the cutscene to be triggered
      */
@@ -86,7 +94,6 @@ public class CutsceneManager {
 
         cutsceneActive = true;
         activeCutsceneNum = cutsceneNum;
-        gp.setLockPlayerControl(true);
     }
 
 
@@ -94,13 +101,13 @@ public class CutsceneManager {
      * Stops/pauses a cutscene from running.
      * Note that this does not reset the cutscene.
      * The cutscene is halted in whatever phase it was last executing.
-     * Note that control is not automatically unlocked/returned to the player and must be done so manually if needed.
+     * Note that control is not automatically unlocked/returned to the player and must be done so manually in cutscene
+     * logic if needed.
      */
     public void exitCutscene() {
 
         cutsceneActive = false;
         activeCutsceneNum = 0;
-        gp.setLockPlayerControl(false);
     }
 
 

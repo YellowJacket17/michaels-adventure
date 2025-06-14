@@ -1,45 +1,127 @@
 {
     "0": {
-        "convName": "Test1",
+        "convName": "OpeningCutscene1",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Mary",
-                "text": "Hi there!"
+                "text": "May 9th, 20XX... I think."
             },
             "1": {
-                "speakerName": "Test Enemy 1",
-                "text": "Hello! What are you doing here?"
+                "text": "I need to write down what's happening here."
             },
             "2": {
-                "speakerName": "Mary",
-                "text": "I'm testing different components of the game world. What are you up to?"
+                "text": "At the very least, it gives me something to do."
             },
             "3": {
-                "speakerName": "Test Enemy 1",
-                "text": "Oh, nothing much. I'm just a test NPC, but maybe one day I'll become something more! At least, that's what the creator told me. It's so great to be alive, wouldn't you agree?  "
+                "text": "I've been down here for what feels like half a day, perhaps?"
             },
             "4": {
-                "speakerName": "Mary",
-                "text": "Ah, well, good luck with that..."
+                "text": "My phone won't turn on and there's no daylight in site, so there's really no way to check."
             },
             "5": {
-                "speakerName": "",
-                "text": "............"
+                "text": "......"
             },
             "6": {
-                "speakerName": "",
-                "text": "........................"
+                "text": "This is all Joe's fault!"
             },
             "7": {
-                "speakerName": "",
-                "text": "Silence ensues..."
+                "text": "He wanted us all to travel out west to see a total solar eclipse."
+            },
+            "8": {
+                "text": "So, we all agreed to fly out with him and hike up some mountain in Oregon to see it."
+            },
+            "9": {
+                "text": "I still can't beleive that Logan forgot his glasses; thank goodness Nick happened to have an extra pair. (I sure wasn't sharing.)"
+            },
+            "10": {
+                "text": "Once we got to the top of the trail, we sat down in a small open field and waited."
+            },
+            "11": {
+                "text": "As the sky darkened, we looked up and saw the moon beginning to shift over the sun."
+            },
+            "12": {
+                "text": "I saw some birds returning to their nests and shadows growing longer like the sun was setting."
+            },
+            "13": {
+                "text": "After a moment, I realized that the latter didn't make any sense."
             }
         }   
-    },    
-
+    }, 
+    
     "1": {
+        "convName": "OpeningCutscene2",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "text": "The shadows kept growing, quickly reaching around us like they were trying to wrap themselves around our little clearing."
+            },
+            "1": {
+                "text": "Besides the fact that they were moving quickly towards us and didn't really match up with the shapes of the trees surrounding us, I rememeber something else unnatural about them."
+            },
+            "2": {
+                "text": "I remember that it... it almost looked like the edges of the shadows had little fingers that they were withering as they stretched out towards us."
+            },
+            "3": {
+                "text": "I remember yelling out as the edges touched me since they were noticably colder than the ambient air we'd been sitting in."
+            },
+            "4": {
+                "text": "I think I also heard Howie let out a huge gasp that cut off abruptly as we all started running away, panicking."
+            },
+            "5": {
+                "text": "The next thing I remember is waking up down here in this cave."
+            }
+        }   
+    },
+
+    "2": {
+        "convName": "OpeningCutscene3",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "text": "I haven't seen Nick or any of our other friends."
+            },
+            "1": {
+                "text": "This place is really weird; supernatural, even."
+            },
+            "2": {
+                "text": "I keep wondering if any of this is real or if it's just playing out in my head."
+            },
+            "3": {
+                "text": "Maybe I'm laying in a hospital bed somehere: who knows."
+            },
+            "4": {
+                "text": "Thank goodness I packed a decent amount of food and water for the trip, although it's still not much."
+            },
+            "5": {
+                "text": "I know I should set out further to look for everyone or even find an exit, but it's hard to when I don't even know how I got here."
+            },
+            "6": {
+                "text": "I have no special skills to survive, especially on my own."
+            },
+            "7": {
+                "text": "I'm terrified."
+            },
+            "8": {
+                "text": "But, I've got to do this: what other choice do I have?"
+            }
+        }   
+    },
+
+    "3": {
+        "convName": "OpeningCutscene4",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "text": "All I can say is... well, here I go."
+            }
+        }   
+    }, 
+
+    "4": {
         "convName": "Test2",
         "map": 0,
         "dialogue": {
@@ -54,7 +136,7 @@
         }
     },
     
-    "2": {
+    "5": {
         "convName": "Test3",
         "map": 0,
         "dialogue": {
@@ -69,7 +151,7 @@
         }
     },
 
-    "3": {
+    "6": {
         "convName": "Test4",
         "map": 1,
         "dialogue": {
@@ -84,7 +166,7 @@
         }
     },
 
-    "4": {
+    "7": {
         "map": 1,
         "dialogue": {
             "0": {
@@ -102,7 +184,7 @@
         }   
     },
 
-    "5": {
+    "8": {
         "map": 1,
         "dialogue": {
             "0": {
@@ -116,7 +198,7 @@
         }   
     },
 
-    "6": {
+    "9": {
         "map": 0,
         "dialogue": {
             "0": {
@@ -126,7 +208,7 @@
         }   
     },
 
-    "7": {
+    "10": {
         "map": 0,
         "dialogue": {
             "0": {
@@ -136,7 +218,7 @@
         }   
     },
 
-    "8": {
+    "11": {
         "map": 0,
         "dialogue": {
             "0": {
@@ -146,7 +228,7 @@
         }   
     },
 
-    "9": {
+    "12": {
         "map": 0,
         "dialogue": {
             "0": {
@@ -156,7 +238,7 @@
         }   
     },
 
-    "10": {
+    "13": {
         "map": 1,
         "dialogue": {
             "0": {
@@ -166,7 +248,7 @@
         }   
     },
 
-    "11": {
+    "14": {
         "map": 1,
         "dialogue": {
             "0": {

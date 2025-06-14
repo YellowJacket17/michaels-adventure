@@ -4,12 +4,12 @@ import core.GamePanel;
 import event.EventConvBase;
 
 /**
- * This class implements post-conversation logic for conversation with ID 8.
+ * This class implements post-conversation logic for conversation with ID 11.
  */
-public class Evt_Conv008 extends EventConvBase {
+public class Evt_Conv011 extends EventConvBase {
 
     // CONSTRUCTOR
-    public Evt_Conv008(GamePanel gp) {
+    public Evt_Conv011(GamePanel gp) {
         super(gp);
     }
 

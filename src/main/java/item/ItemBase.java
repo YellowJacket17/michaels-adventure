@@ -68,7 +68,7 @@ public abstract class ItemBase extends Drawable {
      * Constructs an ItemBase instance.
      *
      * @param gp GamePanel instance
-     * @param itemId item ID
+     * @param itemId item ID (unique to each subclass)
      * @param stackable whether this item is stackable in the player's inventory or not
      */
     public ItemBase(GamePanel gp, int itemId, boolean stackable) {

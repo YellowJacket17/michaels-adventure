@@ -11,13 +11,11 @@ public class Ldm_Waterfall1 extends LandmarkBase {
 
     // FIELDS
     private static final int ldmId = 1;
-    private static final String ldmName = "Waterfall1";
 
 
     // CONSTRUCTOR
-    public Ldm_Waterfall1(GamePanel gp) {
-        super(gp, ldmId, 1, 1);
-        name = ldmName;
+    public Ldm_Waterfall1(GamePanel gp, int col, int row) {
+        super(gp, ldmId, 1, 1, col, row);
     }
 
 
@@ -54,7 +52,7 @@ public class Ldm_Waterfall1 extends LandmarkBase {
         sprite = sprites.get(0);
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
-        animationGroup = 1;
+        passiveAnimationGroup = 1;
 
         setAlpha(180);
     }

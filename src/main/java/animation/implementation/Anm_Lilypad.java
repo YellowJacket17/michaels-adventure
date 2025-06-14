@@ -1,11 +1,11 @@
 package animation.implementation;
 
-import animation.AnimationBase;
+import animation.PassiveAnimationBase;
 
 /**
- * This class handles animation of the lilypad animation group.
+ * This class handles animation of the lilypad passive animation group.
  */
-public class Anm_Lilypad extends AnimationBase {
+public class Anm_Lilypad extends PassiveAnimationBase {
 
     // FIELDS
     /**

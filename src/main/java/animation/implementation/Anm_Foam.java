@@ -1,11 +1,11 @@
 package animation.implementation;
 
-import animation.AnimationBase;
+import animation.PassiveAnimationBase;
 
 /**
- * This class handles animation of the foam animation group.
+ * This class handles animation of the foam passive animation group.
  */
-public class Anm_Foam extends AnimationBase {
+public class Anm_Foam extends PassiveAnimationBase {
 
     // FIELD
     /**

@@ -1,11 +1,11 @@
 package animation.implementation;
 
-import animation.AnimationBase;
+import animation.PassiveAnimationBase;
 
 /**
- * This class handles the animation of the waterfall animation group.
+ * This class handles the animation of the waterfall passive animation group.
  */
-public class Anm_Waterfall extends AnimationBase {
+public class Anm_Waterfall extends PassiveAnimationBase {
 
     // FIELD
     /**

@@ -91,7 +91,7 @@ public abstract class MoveBase {
      * Constructs an MoveBase instance.
      *
      * @param gp GamePanel instance
-     * @param moveId move ID
+     * @param moveId move ID (unique to each subclass)
      * @param category type of move (physical, magic, or support)
      * @param moveTargets combating entities that may be targeted by this move
      * @param hitAllTargets whether this move will target all possible move targets (true) or only target a single

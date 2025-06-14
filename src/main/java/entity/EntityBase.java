@@ -62,9 +62,9 @@ public abstract class EntityBase extends Drawable {
     protected final GamePanel gp;
 
     /**
-     * Unique entity ID.
-     * To be clear, this ID is unique for each EntityBase instance across the entire game, NOT for just each EntityBase
-     * type/subclass.
+     * Entity ID.
+     * To be clear, this ID is unique for each EntityBase instance.
+     * Each EntityBase instance should have its own unique ID.
      */
     protected final int entityId;
 
@@ -220,8 +220,9 @@ public abstract class EntityBase extends Drawable {
     protected boolean conversing = false;
 
     /**
-     * Boolean indicating whether this entity is currently colliding with something (other entity, landmark, tile, etc.)
-     * that has collision.
+     * Boolean indicating whether this entity is currently in a state of colliding or not.
+     * In other words, this boolean indicates whether this entity is currently colliding with something (other entity,
+     * landmark, tile, etc.) that has solid collision.
      */
     protected boolean colliding = false;
 
@@ -455,7 +456,7 @@ public abstract class EntityBase extends Drawable {
      * Constructs an EntityBase instance.
      *
      * @param gp GamePanel instance
-     * @param entityId unique entity ID
+     * @param entityId entity ID (unique to each instance)
      * @param type type of entity (CHARACTER or OBJECT)
      */
     public EntityBase(GamePanel gp, int entityId, EntityType type) {
@@ -608,7 +609,8 @@ public abstract class EntityBase extends Drawable {
             moving = true;                                                                                              // When a movement is triggered, the player character enters a state of motion.
             worldXStart = worldX;                                                                                       // Record current position before moving (x).
             worldYStart = worldY;                                                                                       // Record current position before moving (y).
-            checkColliding();                                                                                           // Check collision.
+            updateCollisionState();                                                                                     // Check and update colliding state of entity.
+            gp.getEventM().handleStockStepInteraction(entityId);
         }
     }
 
@@ -1153,12 +1155,13 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Checks collision of this entity with other entities, landmarks, tiles, etc.
+     * Checks and updates collision state of this entity with other entities, landmarks, tiles, etc.
      */
-    protected void checkColliding() {
+    protected void updateCollisionState() {
+
+        colliding = false;                                                                                              // Note that colliding is set to 'true' in the methods below, if applicable.
 
         // Check tile collision.
-        colliding = false;
         gp.getCollisionI().checkTile(this);
 
         // Check landmark collision.
@@ -1355,7 +1358,7 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Sets this entity's default action/behavior.
-     * Override this method in implemented entity classes if custom actions are desired.
+     * Override this method in implemented EntityBase classes if custom actions are desired.
      *
      * @param dt time since last frame (seconds)
      */
@@ -1560,8 +1563,7 @@ public abstract class EntityBase extends Drawable {
         if (!moving) {                                                                                                  // If the entity is static (i.e., not in a state of motion), it's free to make a new move.
 
             directionCandidate = selectRandomDirection();                                                               // Generate a random direction for the entity to step in.
-
-            checkColliding();                                                                                           // Check collision.
+            updateCollisionState();                                                                                     // Check and update colliding state of entity.
 
             if (!colliding) {
 
@@ -1588,6 +1590,7 @@ public abstract class EntityBase extends Drawable {
                 worldYStart = worldY;                                                                                   // Record current position before moving (y).
                 directionCurrent = directionCandidate;
                 directionLast = directionCandidate;
+                gp.getEventM().handleStockStepInteraction(entityId);
             }
         }
     }

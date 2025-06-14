@@ -512,8 +512,10 @@ public class Player extends EntityBase {
     private void setInitialValues() {
 
         // World position.
-        setCol(23);
-        setRow(25);
+//        setCol(7);
+//        setRow(90);
+        setCol(73);
+        setRow(82);
 
         // Basic attributes.
         setName("Mary");
@@ -603,6 +605,7 @@ public class Player extends EntityBase {
                     moving = true;                                                                                      // When a direction key is pressed, the player character enters a state of motion.
                     worldXStart = worldX;                                                                               // Record current position before moving (x).
                     worldYStart = worldY;                                                                               // Record current position before moving (y).
+                    updateCollisionState();                                                                             // Check and update colliding state of entity.
 
                     if ((directionCurrent.equals(directionLast)) || (moveCountdown > 0)) {                              // The if statement ensures that simply changing direction to face a tile doesn't trigger an interaction.
 
@@ -611,7 +614,6 @@ public class Player extends EntityBase {
 
                         turning = true;                                                                                 // Enter a state of turning since the frame buffer has lapsed (meaning the player is currently static) AND the new direction is different from the last.
                     }
-                    checkColliding();                                                                                   // Check collision.
                 } else {                                                                                                // If player is not moving, set idle sprite.
 
                     walkSpriteNumCurrent = 1;
@@ -1002,13 +1004,15 @@ public class Player extends EntityBase {
 
         if (!interaction) {
 
-            interaction = gp.getEventM().handleTileInteraction(dt, EventType.STEP);                                     // If an object isn't being interacted with, check if a tile is being interacted with via a step.
+            interaction = gp.getEventM().handleTileInteraction(dt, EventType.STEP);                          // If an object isn't being interacted with, check if a tile is being interacted with (map-specific) via a step.
         }
 
         if (!interaction) {
 
             interaction = gp.getEventM().handlePartyInteraction(dt, EventType.STEP);                                    // If a tile isn't being interacted with, check to see if a party member is being interacted with via a step.
         }
+
+        gp.getEventM().handleStockStepInteraction(entityId);                                                     // Check if a tile is being interacted with (type-specific) via a step; may occur regardless of other interactions occurring via a step.
 
         return interaction;
     }

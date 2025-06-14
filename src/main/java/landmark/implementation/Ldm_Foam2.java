@@ -11,13 +11,11 @@ public class Ldm_Foam2 extends LandmarkBase {
 
     // FIELDS
     private static final int ldmId = 5;
-    private static final String ldmName = "Foam2";
 
 
     // CONSTRUCTOR
-    public Ldm_Foam2(GamePanel gp) {
-        super(gp, ldmId, 2, 3);
-        name = ldmName;
+    public Ldm_Foam2(GamePanel gp, int col, int row) {
+        super(gp, ldmId, 3, 2, col, row);
     }
 
 
@@ -37,6 +35,6 @@ public class Ldm_Foam2 extends LandmarkBase {
         sprite = sprites.get(0);
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
-        animationGroup = 2;
+        passiveAnimationGroup = 2;
     }
 }

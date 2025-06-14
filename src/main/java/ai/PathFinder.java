@@ -14,7 +14,8 @@ public class PathFinder {
     private final GamePanel gp;
 
     /**
-     * Array of all nodes being checked (equal to world tile size) [col][row].
+     * Array of all nodes being checked (equal to world tile size).
+     * Data is stored in this array as [col][row].
      */
     private Node[][] nodes;
 
@@ -268,8 +269,8 @@ public class PathFinder {
         if ((!node.isOpen())
                 && (!node.isChecked())
                 && (!node.isSolid())
-                && (!gp.getCollisionI().checkNode(node.getRow(), node.getCol(),
-                goalNode.getRow(), goalNode.getCol(), entity, true))) {
+                && (!gp.getCollisionI().checkNode(node.getCol(), node.getRow(),
+                goalNode.getCol(), goalNode.getRow(), entity, true))) {
 
             node.setOpen(true);
             node.setParent(currentNode);

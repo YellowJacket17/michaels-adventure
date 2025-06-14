@@ -50,7 +50,7 @@ public class Evt_Map001 extends EventMapBase {
                 if (type == EventType.CLICK) {
                     if (gp.getEntityM().getPlayer().searchItemInventory(0)) {
                         if (!gp.getIllustrationS().isIllustrationActive()) {
-                            gp.getCutsceneM().initiateCutscene(0);
+                            gp.getCutsceneM().initiateCutscene(2);
                         }
                     } else {
                         gp.getDialogueR().initiateStandardMessage("A key is needed to open this chest.", true);
@@ -67,15 +67,9 @@ public class Evt_Map001 extends EventMapBase {
     public boolean npcInteraction(double dt, EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
-            case 4:
-                if (type == EventType.CLICK) {
-                    gp.getEventM().talkToNpc(target, 0);
-                    return true;
-                }
-                break;
             case 8:
                 if (type == EventType.CLICK) {
-                    gp.getEventM().talkToNpc(target, 4);
+                    gp.getEventM().talkToNpc(target, 7);
                     return true;
                 }
                 break;
@@ -93,7 +87,7 @@ public class Evt_Map001 extends EventMapBase {
                         && (target.isOnEntity())
                         && (target.getOnEntityId() == gp.getEntityM().getPlayer().getEntityId())) {
 
-                    gp.getEventM().talkToNpc(target, 3);
+                    gp.getEventM().talkToNpc(target, 6);
                     return true;
                 }
                 break;
@@ -102,7 +96,7 @@ public class Evt_Map001 extends EventMapBase {
                         && (target.isOnEntity())
                         && (target.getOnEntityId() == gp.getEntityM().getPlayer().getEntityId())) {
 
-                    gp.getEventM().talkToNpc(target, 10);
+                    gp.getEventM().talkToNpc(target, 13);
                     return true;
                 }
                 break;
@@ -111,7 +105,7 @@ public class Evt_Map001 extends EventMapBase {
                         && (target.isOnEntity())
                         && (target.getOnEntityId() == gp.getEntityM().getPlayer().getEntityId())) {
 
-                    gp.getEventM().talkToNpc(target, 11);
+                    gp.getEventM().talkToNpc(target, 14);
                     return true;
                 }
                 break;

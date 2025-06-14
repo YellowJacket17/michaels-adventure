@@ -35,12 +35,15 @@ public class CollisionInspector {
 
     // METHODS
     /**
-     * Checks if the tile in front of an entity has collision.
+     * Checks if an entity is predicted to collide with a tile that has collision (i.e., is solid).
+     * If so, the entity is set as colliding.
      *
-     * @param entity interacting entity
+     * @param entity target entity
+     * @return whether a collision was calculated (true) or not (false)
      */
-    public void checkTile(EntityBase entity) {
+    public boolean checkTile(EntityBase entity) {
 
+        boolean collision = false;
         int entityCol = entity.getCol();                                                                                // Initialize variable with entity's current tile position.
         int entityRow = entity.getRow();                                                                                // ^^^
         int tileNum;                                                                                                    // We only need to check the type of tile that the entity is trying to walk towards.
@@ -67,6 +70,7 @@ public class CollisionInspector {
             if (gp.getTileM().getTiles()[tileNum].hasCollision()) {                                                     // Check if there's collision on `tileNum`; if true, the entity is hitting a solid tile and cannot move in that direction.
 
                 entity.setColliding(true);
+                collision = true;
             }
 
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -78,74 +82,60 @@ public class CollisionInspector {
                     + entity.getEntityId()
                     + "' attempted to exceed the bounds of the world.");
             entity.setColliding(true);
+            collision = true;
         }
+        return collision;
     }
 
 
     /**
-     * Checks if an entity is colliding with a landmark.
-     * If so, the entity being check for collision with a landmark is set as colliding.
+     * Checks if an entity is predicted to collide with a landmark that has collision (i.e., is solid).
+     * If so, the entity is set as colliding.
      *
-     * @param entity interacting entity
+     * @param entity target entity
+     * @return whether a collision was calculated (true) or not (false)
      */
-    public void checkLandmark(EntityBase entity) {
+    public boolean checkLandmark(EntityBase entity) {
 
-        if (gp.getMapM().getLoadedMap() != null) {                                                                      // Only run this logic if there's a loaded map.
+        boolean collision = false;
+        int entityCol = entity.getCol();                                                                            // Initialize variable with entity's current tile position.
+        int entityRow = entity.getRow();                                                                            // ^^^
 
-            int entityCol = entity.getCol();                                                                            // Initialize variable with entity's current tile position.
-            int entityRow = entity.getRow();                                                                            // ^^^
-
-            switch (entity.getDirectionCandidate()) {                                                                   // Check entity's direction candidate, then simulate movement to predict where it would be after a step in that direction.
-                case UP:
-                    entityRow--;                                                                                        // Predicting where entity will be after a move and seeing if collision occurs.
-                    break;
-                case DOWN:
-                    entityRow++;                                                                                        // Predicting where entity will be after a move and seeing if collision occurs.
-                    break;
-                case LEFT:
-                    entityCol--;                                                                                        // Predicting where entity will be after a move and seeing if collision occurs.
-                    break;
-                case RIGHT:
-                    entityCol++;                                                                                        // Predicting where entity will be after a move and seeing if collision occurs.
-                    break;
-            }
-
-            ArrayList<LandmarkBase> landmarks = gp.getMapM().getLoadedMap().getMapLandmarks();                          // Retrieve all landmarks on the current map.
-            boolean collision = false;                                                                                  // Initialize a variable that will track whether a collision has been detected or not.
-            int index = 0;                                                                                              // Initialize a variable to track which landmark in the landmarks array is currently being checked.
-
-            while ((index < landmarks.size()) && (!collision)) {                                                        // Check each landmark in the landmarks array as long as a collision has not yet occurred.
-
-                boolean breakLandmark = false;                                                                          // Initialize a variable to track whether the current landmark should keep being checked.
-                LandmarkBase landmark = landmarks.get(index);                                                           // Retrieve a landmark to check.
-                int row = 0;
-
-                while ((row < landmark.getNumTilesRow()) && (!breakLandmark)) {                                         // Check each row of tiles that the landmark occupies as long as the entity's row hasn't been checked yet.
-
-                    int tileRow = landmark.getRow() - row;
-
-                    if (entityRow == tileRow) {                                                                         // Only check columns in this row if it's the same as the entity row (save's computation resources).
-
-                        int col = 0;
-
-                        while ((col < landmark.getNumTilesCol()) && (!collision)) {                                     // Check each column of tiles that the landmark occupies as long as a collision has not yet occurred.
-
-                            int tileCol = landmark.getCol() + col;
-
-                            if ((entityCol == tileCol) && (landmark.getCollision()[row][col])) {
-
-                                entity.setColliding(true);                                                              // A collision has occurred.
-                                collision = true;                                                                       // Break this entire loop of checking landmarks so that we don't waste more computation resources.
-                            }
-                            col++;                                                                                      // Iterate to the next column.
-                        }
-                        breakLandmark = true;                                                                           // No need to check further rows; break the current landmark's loop so that we don't waste more computation resources.
-                    }
-                    row++;                                                                                              // Iterate to the next row.
-                }
-                index++;                                                                                                // Iterate to the next landmark.
-            }
+        switch (entity.getDirectionCandidate()) {                                                                   // Check entity's direction candidate, then simulate movement to predict where it would be after a step in that direction.
+            case UP:
+                entityRow--;                                                                                        // Predicting where entity will be after a move and seeing if collision occurs.
+                break;
+            case DOWN:
+                entityRow++;                                                                                        // Predicting where entity will be after a move and seeing if collision occurs.
+                break;
+            case LEFT:
+                entityCol--;                                                                                        // Predicting where entity will be after a move and seeing if collision occurs.
+                break;
+            case RIGHT:
+                entityCol++;                                                                                        // Predicting where entity will be after a move and seeing if collision occurs.
+                break;
         }
+
+        try {
+
+            if (gp.getLandmarkM().getCalculatedGlobalLandmarkCollision()[entityCol][entityRow]) {                   // Check if there's collision on target tile due to a landmark; if true, the entity is hitting a solid landmark/tile and cannot move in that direction.
+
+                entity.setColliding(true);
+                collision = true;
+            }
+
+        } catch (IndexOutOfBoundsException e) {
+
+            UtilityTool.logWarning("Entity "
+                    + (((entity.getName() != null) && (!entity.getName().equals("")))
+                    ? ("'" + entity.getName() + "' ") : "")
+                    + "with ID '"
+                    + entity.getEntityId()
+                    + "' attempted to exceed the bounds of the world.");
+            entity.setColliding(true);
+            collision = true;
+        }
+        return collision;
     }
 
 
@@ -154,16 +144,17 @@ public class CollisionInspector {
      * pathfinding.
      * Hidden entities are not counted.
      *
-     * @param targetRow row of the tile/node being checked
      * @param targetCol column of the tile/node being checked
-     * @param goalRow row of the final goal tile/node for the pathfinding operation
+     * @param targetRow row of the tile/node being checked
      * @param goalCol column of the final goal tile/node for the pathfinding operation
+     * @param goalRow row of the final goal tile/node for the pathfinding operation
      * @param entity entity following the path
      * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
      *                        (false)
      * @return whether a solid entity or landmark occupies the target tile/node (true) or not (false)
      */
-    public boolean checkNode(int targetRow, int targetCol, int goalRow, int goalCol, EntityBase entity, boolean ignoreFollowers) {
+    public boolean checkNode(
+            int targetCol,int targetRow, int goalCol, int goalRow, EntityBase entity, boolean ignoreFollowers) {
 
         // Only check entities if the row/column we're checking isn't the same as the goal row/column for the pathfinding operation.
         // This is because a random entity occupying the goal row/column will automatically cause the entire pathfinding operation to fail.
@@ -174,7 +165,7 @@ public class CollisionInspector {
             }
         }
 
-        if (calculateNodeLandmark(targetRow, targetCol)) {
+        if (calculateNodeLandmark(targetCol, targetRow)) {
             return true;
         }
         return false;
@@ -182,7 +173,8 @@ public class CollisionInspector {
 
 
     /**
-     * Checks if an entity (primary) is colliding with another entity (target).
+     * Checks if an entity (primary) is predicted to collide with another entity (target) that has collision (i.e., is
+     * solid).
      * If so, the primary entity is set as colliding.
      * Hidden entities are not counted.
      *
@@ -190,9 +182,11 @@ public class CollisionInspector {
      * @param target target entity map to be checked for colliding entities
      * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
      *                        (false)
-     * @return ID of the colliding entity; will return CollisionInspector.NO_COLLISION if no collision was found
+     * @return ID of the target entity that the primary entity will collide with; will return
+     * CollisionInspector.NO_COLLISION if no collision was calculated
      */
-    public int checkEntity(EntityBase entity, LimitedLinkedHashMap<Integer, EntityBase> target, boolean ignoreFollowers) {
+    public int checkEntity(
+            EntityBase entity, LimitedLinkedHashMap<Integer, EntityBase> target, boolean ignoreFollowers) {
 
         return calculateEntityCollision(entity, target, ignoreFollowers);
     }
@@ -200,75 +194,45 @@ public class CollisionInspector {
 
     /**
      * Checks if an entity is colliding with the player entity.
+     * (If the player entity has collision (i.e., is solid)).
      * If so, the entity being check for collision with the player entity is set as colliding.
      * Hidden entities are not counted.
      *
      * @param entity entity being checked for collision with player entity
      * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
      *                        (false)
+     * @return ID of the player entity if a collision will occur; will return CollisionInspector.NO_COLLISION if no
+     * collision was calculated
      */
-    public void checkPlayer(EntityBase entity, boolean ignoreFollowers) {
+    public int checkPlayer(EntityBase entity, boolean ignoreFollowers) {
 
         LimitedLinkedHashMap<Integer, EntityBase> target = new LimitedLinkedHashMap<>(1);                               // Create a target map that only contains the player entity; this is so we can use the `calculateEntityCollision()` method.
         target.put(gp.getEntityM().getPlayer().getEntityId(), gp.getEntityM().getPlayer());
-        calculateEntityCollision(entity, target, ignoreFollowers);
+        return calculateEntityCollision(entity, target, ignoreFollowers);
     }
 
 
     /**
-     * Calculates whether a solid landmark occupies a node; used as part of node collision check for A* pathfinding.
+     * Calculates whether a landmark with collision (i.e., a solid landmark) occupies a node; used as part of node
+     * collision check for A* pathfinding.
      *
-     * @param targetRow row of the tile/node being checked
      * @param targetCol column of the tile/node being checked
+     * @param targetRow row of the tile/node being checked
      * @return whether a solid landmark occupies the target tile/node (true) or not (false)
      */
-    private boolean calculateNodeLandmark(int targetRow, int targetCol) {
+    private boolean calculateNodeLandmark(int targetCol, int targetRow) {
 
-        if (gp.getMapM().getLoadedMap() != null) {                                                                      // Only run this logic if there's a loaded map.
+        if (gp.getLandmarkM().getCalculatedGlobalLandmarkCollision()[targetCol][targetRow]) {                           // Check if there's collision on target tile due to a landmark; if true, the entity is hitting a solid landmark/tile and cannot move in that direction.
 
-            ArrayList<LandmarkBase> landmarks = gp.getMapM().getLoadedMap().getMapLandmarks();                          // Generate a single list od all landmarks on the current map.
-
-            int index = 0;                                                                                              // Initialize a variable to track which landmark in the landmarks array is currently being checked.
-
-            while (index < landmarks.size()) {                                                                          // Check each landmark in the landmarks array until a collision is detected.
-
-                boolean breakLandmark = false;                                                                          // Initialize a variable to track whether the current landmark should keep being checked.
-
-                LandmarkBase landmark = landmarks.get(index);                                                           // Retrieve a landmark to check.
-
-                int row = 0;
-
-                while ((row < landmark.getNumTilesRow()) && (!breakLandmark)) {                                         // Check each row of tiles that the landmark occupies as long as the target row hasn't been checked yet.
-
-                    int tileRow = landmark.getRow() - row;
-
-                    if (targetRow == tileRow) {                                                                         // Only check columns in this row if it's the same as the target row (save's computation resources).
-
-                        int col = 0;
-
-                        while (col < landmark.getNumTilesCol()) {                                                       // Check each column of tiles that the landmark occupies until a collision is detected.
-
-                            int tileCol = landmark.getCol() + col;
-
-                            if ((targetCol == tileCol) && (landmark.getCollision()[row][col])) {
-
-                                return true;                                                                            // A solid landmark occupies this tile, therefore collision will occur.
-                            }
-                            col++;                                                                                      // Iterate to the next column.
-                        }
-                        breakLandmark = true;                                                                           // No need to check further rows; break the current landmark's loop so that we don't waste anymore computation resources.
-                    }
-                    row++;                                                                                              // Iterate to the next row.
-                }
-                index++;                                                                                                // Iterate to the next landmark.
-            }
+            return true;
         }
         return false;
     }
 
 
     /**
-     * Calculates whether a solid entity occupies a node; used as part of node collision check for A* pathfinding.
+     * Calculates whether an entity with collision (i.e., a solid entity) occupies a node; used as part of node
+     * collision check for A* pathfinding.
      * Hidden entities are not counted.
      *
      * @param targetRow row of the tile/node being checked
@@ -338,7 +302,8 @@ public class CollisionInspector {
 
 
     /**
-     * Calculates if an entity (primary) is colliding with another entity (target).
+     * Calculates if an entity (primary) is predicted to collide with another entity (target) that has collision (i.e.,
+     * is solid).
      * If so, the primary entity is set as colliding.
      * Hidden entities are not counted.
      *
@@ -346,9 +311,11 @@ public class CollisionInspector {
      * @param target target entity map to be checked for colliding entities
      * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
      *                        (false)
-     * @return ID of the colliding entity; will return CollisionInspector.NO_COLLISION if no collision was found
+     * @return ID of the target entity that the primary entity will collide with; will return
+     * CollisionInspector.NO_COLLISION if no collision was calculated
      */
-    private int calculateEntityCollision(EntityBase entity, LimitedLinkedHashMap<Integer, EntityBase> target, boolean ignoreFollowers) {
+    private int calculateEntityCollision(
+            EntityBase entity, LimitedLinkedHashMap<Integer, EntityBase> target, boolean ignoreFollowers) {
 
         int collidingEntityId = NO_COLLISION;                                                                           // Initialize with a default value.
 

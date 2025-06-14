@@ -1,12 +1,12 @@
 package animation.implementation;
 
-import animation.AnimationBase;
+import animation.PassiveAnimationBase;
 import utility.UtilityTool;
 
 /**
- * This class handles animation of the sparkle animation group.
+ * This class handles animation of the sparkle passive animation group.
  */
-public class Anm_Sparkle extends AnimationBase {
+public class Anm_Sparkle extends PassiveAnimationBase {
 
     // FIELDS
     /**

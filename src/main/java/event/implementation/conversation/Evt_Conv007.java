@@ -1,5 +1,6 @@
 package event.implementation.conversation;
 
+import combat.enumeration.EnterCombatTransitionType;
 import core.GamePanel;
 import event.EventConvBase;
 
@@ -18,10 +19,8 @@ public class Evt_Conv007 extends EventConvBase {
     @Override
     public void run() {
 
-        if (gp.getEntityM().getParty().get(7) != null) {
-
-            gp.getPartyS().removeEntityFromParty(7, true, true, true);
-        }
         gp.getEventM().cleanupConversation(1);
+        gp.getCombatM().initiateCombat(20, 30, EnterCombatTransitionType.BASIC, "runningLate",
+                gp.getEntityM().getEntityById(4), gp.getEntityM().getEntityById(8));
     }
 }

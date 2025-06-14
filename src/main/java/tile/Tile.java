@@ -22,11 +22,11 @@ public class Tile {
     private boolean collision = false;
 
     /**
-     * Animation group that this tile is part of.
-     * Animation groups can have values of 0, 1, 2, etc.
-     * A value of -1 means that this tile is not animated.
+     * Passive animation group that this tile is part of.
+     * Passive animation groups can have values of 0, 1, 2, etc.
+     * A value of -1 means that this tile is not passively animated.
      */
-    private int animationGroup = -1;
+    private int passiveAnimationGroup = -1;
 
 
     // CONSTRUCTOR
@@ -45,8 +45,8 @@ public class Tile {
         return collision;
     }
 
-    public int getAnimationGroup() {
-        return animationGroup;
+    public int getPassiveAnimationGroup() {
+        return passiveAnimationGroup;
     }
 
 
@@ -59,7 +59,7 @@ public class Tile {
         this.collision = collision;
     }
 
-    public void setAnimationGroup(int animationGroup) {
-        this.animationGroup = animationGroup;
+    public void setPassiveAnimationGroup(int passiveAnimationGroup) {
+        this.passiveAnimationGroup = passiveAnimationGroup;
     }
 }

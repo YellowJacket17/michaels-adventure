@@ -88,10 +88,12 @@ public class TileManager {
                 } catch (NullPointerException e) {
                     tileNum = defaultTile;                                                                              // If no map is loaded, just use the default tile.
                 }
-                int spriteNum = gp.getAnimationM().getSprite(tiles[tileNum].getAnimationGroup(), worldCol, worldRow);   // Render appropriate tile in animation cycle, if applicable.
+                int spriteNum = gp.getPassiveAnimationM().getSprite(
+                        tiles[tileNum].getPassiveAnimationGroup(), worldCol, worldRow);                                 // Render appropriate tile in passive animation cycle, if applicable.
 
-                if ((tiles[tileNum].getSprites().get(spriteNum) != null)
-                        && (spriteNum < tiles[tileNum].getSprites().size())) {
+                if ((spriteNum < tiles[tileNum].getSprites().size())
+                        && (spriteNum >= 0)
+                        && (tiles[tileNum].getSprites().get(spriteNum) != null)) {
 
                     Sprite sprite = tiles[tileNum].getSprites().get(spriteNum);
                     drawables[worldCol][worldRow].setSprite(sprite);
@@ -101,7 +103,7 @@ public class TileManager {
                     UtilityTool.logError("Failed to add tile at index '"
                             + tileNum
                             + "' to the render pipeline: the map may contain a tile that does not exist or a tile may"
-                            + " have been assigned to the incorrect animation group.");
+                            + " have been assigned an incorrect animation.");
                     renderErrors.add(tileNum);
                 }
 
@@ -116,7 +118,7 @@ public class TileManager {
 
 
     /**
-     * Loads map tile data from a text file.
+     * Loads map tile data as tile IDs from a text file.
      *
      * @param mapId ID of the map whose tile data is to be loaded
      * @return loaded tile data
@@ -626,7 +628,7 @@ public class TileManager {
      * @param index index that the tile will occupy in the array of tiles
      * @param sprite tile sprite
      * @param collision parameter for whether the tile will have collision (true) or not (false)
-     * @param group parameter for which animation group the tile belongs to
+     * @param group parameter for which passive animation group the tile belongs to
      */
     private void setup(int index, Sprite sprite, boolean collision, int group) {
 
@@ -636,7 +638,7 @@ public class TileManager {
         }
         tiles[index] = new Tile();
         tiles[index].setCollision(collision);
-        tiles[index].setAnimationGroup(group);
+        tiles[index].setPassiveAnimationGroup(group);
         addSprite(index, sprite);
     }
 

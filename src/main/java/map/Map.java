@@ -35,12 +35,20 @@ public class Map {
     /**
      * Array to store tile data for this map.
      * Tiles are stored in this array using their IDs.
+     * Data is stored in this array as [col][row].
      */
     private final int[][] mapTileNum;
 
     /**
      * Array to store landmark data for this map.
      * Landmarks are stored in this array using their IDs.
+     * Data is stored in this array as [col][row].
+     */
+    private final int[][] mapLandmarkNum;
+
+    /**
+     * Array to store landmark data for this map.
+     * Instantiated landmarks are stored in this array.
      */
     private final ArrayList<LandmarkBase> mapLandmarks;
 
@@ -66,7 +74,8 @@ public class Map {
         this.gp = gp;
         this.mapId = mapId;
         mapTileNum = gp.getTileM().loadMapTileData(mapId);                                                              // Load tile data from file.
-        mapLandmarks = gp.getLandmarkM().loadMapLandmarkData(mapId);                                                    // Load landmark data from file.
+        mapLandmarkNum = gp.getLandmarkM().loadMapLandmarkData(mapId);                                                  // Load landmark data from file.
+        mapLandmarks = gp.getLandmarkM().instantiateMapLandmarks(mapId, mapLandmarkNum);                                // Instantiate map landmarks.
     }
 
 
@@ -77,6 +86,10 @@ public class Map {
 
     public int[][] getMapTileNum() {
         return mapTileNum;
+    }
+
+    public int[][] getMapLandmarkNum() {
+        return mapLandmarkNum;
     }
 
     public ArrayList<LandmarkBase> getMapLandmarks() {

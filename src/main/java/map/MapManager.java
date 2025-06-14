@@ -61,6 +61,9 @@ public class MapManager {
         // Set map state and swap track, if applicable.
         loadedMap.setMapState(mapState, swapTrack);
 
+        // Calculate landmark collision on map.
+        gp.getLandmarkM().calculateGlobalLandmarkCollision();
+
         // Clear conversing and combating entity lists.
         gp.getEntityM().clearConversingEntities();
         gp.getEntityM().clearCombatingEntities();

@@ -37,13 +37,13 @@ public class EventManager {
 
 
     // CONVERSATION EVENT FIELDS
-    private final Evt_Conv001 evt_conv001;
-    private final Evt_Conv002 evt_conv002;
     private final Evt_Conv004 evt_conv004;
-    private final Evt_Conv006 evt_conv006;
+    private final Evt_Conv005 evt_conv005;
     private final Evt_Conv007 evt_conv007;
-    private final Evt_Conv008 evt_conv008;
     private final Evt_Conv009 evt_conv009;
+    private final Evt_Conv010 evt_conv010;
+    private final Evt_Conv011 evt_conv011;
+    private final Evt_Conv012 evt_conv012;
 
 
     // SUB-MENU EVENT FIELDS
@@ -64,13 +64,13 @@ public class EventManager {
         evt_map000 = new Evt_Map000(gp);
         evt_map001 = new Evt_Map001(gp);
 
-        evt_conv001 = new Evt_Conv001(gp);
-        evt_conv002 = new Evt_Conv002(gp);
         evt_conv004 = new Evt_Conv004(gp);
-        evt_conv006 = new Evt_Conv006(gp);
+        evt_conv005 = new Evt_Conv005(gp);
         evt_conv007 = new Evt_Conv007(gp);
-        evt_conv008 = new Evt_Conv008(gp);
         evt_conv009 = new Evt_Conv009(gp);
+        evt_conv010 = new Evt_Conv010(gp);
+        evt_conv011 = new Evt_Conv011(gp);
+        evt_conv012 = new Evt_Conv012(gp);
 
         evt_subMenu001 = new Evt_SubMenu001(gp);
         evt_subMenu002 = new Evt_SubMenu002(gp);
@@ -80,7 +80,7 @@ public class EventManager {
 
     // METHODS
     /**
-     * Handles what to do if the player interacts with an object entity.
+     * Handles what to do if the player interacts with an object entity that may trigger a unique event.
      *
      * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
@@ -109,7 +109,7 @@ public class EventManager {
 
 
     /**
-     * Handles what to do if the player interacts with an NPC character entity.
+     * Handles what to do if the player interacts with an NPC character entity that may trigger a unique event.
      *
      * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
@@ -138,7 +138,7 @@ public class EventManager {
 
 
     /**
-     * Handles what to do if the player interacts with a party member character entity.
+     * Handles what to do if the player interacts with a party member character entity that may trigger a unique event.
      *
      * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
@@ -167,11 +167,11 @@ public class EventManager {
 
 
     /**
-     * Handles what to do if the player interacts with a tile directly in front (i.e., certain column/row).
+     * Handles what to do if the player interacts with a tile that may trigger a unique event.
      *
      * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
-     * @return whether a tile event was triggered (true) or not (false)
+     * @return whether a tile event (map-specific and/or tile-specific) was triggered (true) or not (false)
      */
     public boolean handleTileInteraction(double dt, EventType type) {
 
@@ -200,17 +200,20 @@ public class EventManager {
                 break;
         }
 
-        if ((type == EventType.STEP)                                                                                    // If interaction type is step.
-                && ((gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getNpc(), true)
-                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible NPC.
-                || (gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getObj(), true)
-                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible object.
-                || (gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getParty(), true)
-                    != CollisionInspector.NO_COLLISION))) {                                                             // Ensure title is not already occupied by a solid, non-follower/followed, visible party member.
+//        if ((type == EventType.STEP)                                                                                    // If interaction type is step.
+//                && ((gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getNpc(), true)
+//                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible NPC.
+//                || (gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getObj(), true)
+//                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible object.
+//                || (gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getParty(), true)
+//                    != CollisionInspector.NO_COLLISION))) {                                                             // Ensure title is not already occupied by a solid, non-follower/followed, visible party member.
+
+        if ((type == EventType.STEP) && (gp.getEntityM().getPlayer().isColliding())) {                                  // Ensure that the player entity can occupy the target tile.
 
             return false;
         }
 
+        // Map-specific events.
         switch (gp.getMapM().getLoadedMap().getMapId()) {                                                               // Switch which map to check for interaction events on depending on the current loaded map.
                 case 0:
                     return evt_map000.tileInteraction(dt, type, targetCol, targetRow,
@@ -219,6 +222,72 @@ public class EventManager {
                     return evt_map001.tileInteraction(dt, type, targetCol, targetRow,
                             gp.getEntityM().getPlayer().getDirectionCurrent());
             }
+
+        // Tile/landmark-specific events.
+        return false;
+    }
+
+
+    /**
+     * Handles what to do if an entity steps onto a tile that may trigger a stock event.
+     * These types of events are intended to occur whenever any tile/landmark of a particular type is interacted with.
+     * An example is a grass landmark rustling each time an entity takes a step through it.
+     * Another example is a puddle tile making a splashing sound effect each time an entity takes a step through it.
+     *
+     * @return whether a type-specific tile event was triggered (true) or not (false)
+     */
+    public boolean handleStockStepInteraction(int entityId) {
+
+        EntityBase entity = gp.getEntityM().getEntityById(entityId);
+
+        int entityCol = entity.getCol();
+        int entityRow = entity.getRow();
+
+        int targetCol = 0;                                                                                              // Declare a variable to store the simulated step of the entity.
+        int targetRow = 0;                                                                                              // ^^^
+
+        switch (entity.getDirectionCurrent()) {                                                                         // Simulate entity's movement and check where they would be after taking a step.
+            case UP:
+                targetCol = entityCol;
+                targetRow = entityRow - 1;
+                break;
+            case DOWN:
+                targetCol = entityCol;
+                targetRow = entityRow + 1;
+                break;
+            case LEFT:
+                targetCol = entityCol - 1;
+                targetRow = entityRow;
+                break;
+            case RIGHT:
+                targetCol = entityCol + 1;
+                targetRow = entityRow;
+                break;
+        }
+
+//        if ((gp.getCollisionI().checkPlayer(entity, true) != CollisionInspector.NO_COLLISION)                           // Ensure tile is not already occupied by a solid, non-follower/followed, visible player entity.
+//                || ((gp.getCollisionI().checkEntity(entity, gp.getEntityM().getNpc(), true)
+//                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible NPC.
+//                || (gp.getCollisionI().checkEntity(entity, gp.getEntityM().getObj(), true)
+//                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible object.
+//                || (gp.getCollisionI().checkEntity(entity, gp.getEntityM().getParty(), true)
+//                    != CollisionInspector.NO_COLLISION))) {                                                             // Ensure title is not already occupied by a solid, non-follower/followed, visible party member.
+
+        if (entity.isColliding()) {                                                                                     // Ensure that the entity can occupy the target tile.
+
+            return false;
+        }
+
+        // Grass1 animation (rustling).
+        try {
+
+            if (gp.getMapM().getLoadedMap().getMapLandmarkNum()[targetCol][targetRow + 1] == 6) {
+
+                gp.getLandmarkM().initiateConditionalAnimation(targetCol, targetRow + 1);
+                return true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {}
+
         return false;
     }
 
@@ -232,26 +301,38 @@ public class EventManager {
     public void handlePostConversation(int convId) {
 
         switch (convId) {
+            case 0:
+                cleanupConversation(2);
+                break;
             case 1:
-                evt_conv001.run();
+                cleanupConversation(2);
                 break;
             case 2:
-                evt_conv002.run();
+                cleanupConversation(2);
+                break;
+            case 3:
+                cleanupConversation(2);
                 break;
             case 4:
                 evt_conv004.run();
                 break;
-            case 6:
-                evt_conv006.run();
+            case 5:
+                evt_conv005.run();
                 break;
             case 7:
                 evt_conv007.run();
                 break;
-            case 8:
-                evt_conv008.run();
-                break;
             case 9:
                 evt_conv009.run();
+                break;
+            case 10:
+                evt_conv010.run();
+                break;
+            case 11:
+                evt_conv011.run();
+                break;
+            case 12:
+                evt_conv012.run();
                 break;
             default:
                 cleanupConversation(1);

@@ -1,9 +1,9 @@
 package animation;
 
 /**
- * This abstract class defines base logic for tile animation.
+ * This abstract class defines base logic for continuous animation.
  */
-public abstract class AnimationBase {
+public abstract class PassiveAnimationBase {
     
     // FIELDS
     /**
@@ -20,10 +20,11 @@ public abstract class AnimationBase {
     // CONSTRUCTOR
     /**
      * Constructs an Animation instance.
+     * This class handles passive animations.
      *
-     * @param counterMax maximum allowed value for core animation time counter (seconds).
+     * @param counterMax maximum allowed value for core passive animation time counter (seconds).
      */
-    public AnimationBase(double counterMax) {
+    public PassiveAnimationBase(double counterMax) {
 
         this.counterMax = counterMax;
     }
@@ -31,7 +32,8 @@ public abstract class AnimationBase {
 
     // METHODS
     /**
-     * Updates the animation counter, the value of which is used to determine the next image to be drawn.
+     * Updates the animation counter, the value of which is used to determine the next image to be rendered for the
+     * passive animation.
      *
      * @param dt time since last frame (seconds)
      */
@@ -47,7 +49,7 @@ public abstract class AnimationBase {
 
 
     /**
-     * Retrieves the next sprite to be drawn for the animation.
+     * Retrieves the next sprite to be rendered for the passive animation.
      *
      * @param worldCol world column position of tile
      * @param worldRow world row position of tile

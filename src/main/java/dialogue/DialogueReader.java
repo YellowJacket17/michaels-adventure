@@ -484,13 +484,14 @@ public class DialogueReader {
     /**
      * Resets DialogueReader back to its default state.
      * Intended to be called to clean up after a conversation has finished being read.
+     * Note that `stagedPrintCountdown` is not automatically set back to its default value.
      */
     public void reset() {
 
         nextDialogueIndex = 0;
         activeConv = null;
         readingConversation = false;
-        stagedPrintCountdown = defaultPrintCountdown;
+//        stagedPrintCountdown = defaultPrintCountdown;
         printCountdown = 0;
         printCharByChar = true;
         activePrintLine = 0;
@@ -557,7 +558,6 @@ public class DialogueReader {
      */
     private void stageDialogue(Dialogue dialogue) {
 
-        this.stagedPrintCountdown = defaultPrintCountdown;
         this.printCountdown = 0;
         this.activePrintLine = 0;
         this.activeDialogueText = dialogue.getText();
@@ -655,5 +655,9 @@ public class DialogueReader {
     // SETTERS
     public void setStagedPrintCountdown(double stagedPrintCountdown) {
         this.stagedPrintCountdown = stagedPrintCountdown;
+    }
+
+    public void resetStagedPrintCountdown() {
+        this.stagedPrintCountdown = defaultPrintCountdown;
     }
 }

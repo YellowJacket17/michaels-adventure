@@ -69,6 +69,16 @@ public class UserInterface {
     private final float mainWindowWorldHeight = 380.0f;
 
     /**
+     * Default opacity for rendered user interface window elements (dialogue window, sub-menu window, etc.).
+     */
+    private final float defaultWindowOpacity = 220;
+
+    /**
+     * Opacity for rendered user interface window elements (dialogue window, sub-menu window, etc.).
+     */
+    private float windowOpacity = defaultWindowOpacity;
+
+    /**
      * Variable to store current selected party member in the party menu.
      * The default value is zero (first slot).
      * Note that this is only representative of the three slots that can be rendered on screen at the same time.
@@ -279,7 +289,7 @@ public class UserInterface {
 
         // Render main dialogue window.
         renderer.addRectangle(
-                new Vector4f(20, 20, 20, 220),
+                new Vector4f(20, 20, 20, windowOpacity),
                 new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
                 ZIndex.FIRST_LAYER);
 
@@ -311,7 +321,7 @@ public class UserInterface {
 
             // Render dialogue sub-window.
             renderer.addRectangle(
-                    new Vector4f(20, 20, 20, 220),
+                    new Vector4f(20, 20, 20, windowOpacity),
                     new Transform(subWindowWorldCoords, new Vector2f(subWindowWorldWidth, subWindowWorldHeight)),
                     ZIndex.FIRST_LAYER);
 
@@ -373,7 +383,7 @@ public class UserInterface {
         float mainWindowWorldWidth = gp.getCamera().screenWidthToWorldWidth(mainWindowScreenWidth);
         float mainWindowWorldHeight = gp.getCamera().screenHeightToWorldHeight(mainWindowScreenHeight);
         renderer.addRoundRectangle(
-                new Vector4f(20, 20, 20, 220),
+                new Vector4f(20, 20, 20, windowOpacity),
                 new Transform(mainWindowWorldCoords, new Vector2f(mainWindowWorldWidth, mainWindowWorldHeight)),
                 ZIndex.SECOND_LAYER,
                 (int)mainWindowWorldHeight / 16);
@@ -1096,7 +1106,7 @@ public class UserInterface {
         float windowWorldWidth = gp.getCamera().screenWidthToWorldWidth(windowScreenWidth);
         float windowWorldHeight = gp.getCamera().screenHeightToWorldHeight(windowScreenHeight);
         renderer.addRectangle(
-                new Vector4f(20, 20, 20, 220),
+                new Vector4f(20, 20, 20, windowOpacity),
                 new Transform(windowWorldCoords, new Vector2f(windowWorldWidth, windowWorldHeight)),
                 ZIndex.FIRST_LAYER);
 
@@ -1314,7 +1324,7 @@ public class UserInterface {
             // Render description window.
             Vector2f windowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(windowScreenCoords);
             renderer.addRectangle(
-                    new Vector4f(20, 20, 20, 220),
+                    new Vector4f(20, 20, 20, windowOpacity),
                     new Transform(windowWorldCoords, new Vector2f(windowWorldWidth, windowWorldHeight)),
                     ZIndex.FIRST_LAYER);
 
@@ -1343,6 +1353,7 @@ public class UserInterface {
 
         float screenX = gp.getCamera().worldWidthToScreenWidth(7.7f);
         float spacingScreenY = gp.getCamera().worldHeightToScreenHeight(25.9f);
+        Vector3f color = new Vector3f(255, 255, 255);
 
         // Memory usage by Java Runtime.
         Vector2f screenCoords = new Vector2f(screenX, gp.getCamera().worldHeightToScreenHeight(7.7f));
@@ -1351,45 +1362,52 @@ public class UserInterface {
         Long usedMemoryMegabytes = (totalMemoryBytes - freeMemoryBytes) / 1000000;
         String memoryUsage = "JVM Memory Usage: " + usedMemoryMegabytes + " MB";
         renderStringShadow(memoryUsage, screenCoords, standardFontScale,
-                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
+                color, standardNormalFont, ZIndex.FIRST_LAYER);
 
         // VSync.
         screenCoords.y += spacingScreenY;
         String vSync = "VSync: " + ((gp.getSystemSetting(0).getActiveOption() == 0) ? "Disabled" : "Enabled");
         renderStringShadow(vSync, screenCoords, standardFontScale,
-                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
+                color, standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Frame rate.
         screenCoords.y += spacingScreenY;
         String fps = "FPS: " + fpsTracker;
         renderStringShadow(fps, screenCoords, standardFontScale,
-                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
+                color, standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Player column.
         screenCoords.y += spacingScreenY;
         String col = "Player Col: " + gp.getEntityM().getPlayer().getCol();
         renderStringShadow(col, screenCoords, standardFontScale,
-                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
+                color, standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Player row.
         screenCoords.y += spacingScreenY;
         String row = "Player Row: " + gp.getEntityM().getPlayer().getRow();
         renderStringShadow(row, screenCoords, standardFontScale,
-                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
+                color, standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Camera center (x).
         screenCoords.y += spacingScreenY;
         String centerX = "Camera Center X: "
                 + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
         renderStringShadow(centerX, screenCoords, standardFontScale,
-                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
+                color, standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Camera center (y).
         screenCoords.y += spacingScreenY;
         String centerY = "Camera Center Y: "
                 + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
         renderStringShadow(centerY, screenCoords, standardFontScale,
-                new Vector3f(255, 255, 255), standardNormalFont, ZIndex.FIRST_LAYER);
+                color, standardNormalFont, ZIndex.FIRST_LAYER);
+
+        // Primary game state.
+        screenCoords.y += spacingScreenY;
+        String state = "Primary Game State: "
+                + (gp.getPrimaryGameState().toString());
+        renderStringShadow(state, screenCoords, standardFontScale,
+                color, standardNormalFont, ZIndex.FIRST_LAYER);
     }
 
 
@@ -1793,6 +1811,14 @@ public class UserInterface {
     public void setPrimaryMenuState(PrimaryMenuState primaryMenuState) {
         preparePrimaryMenuState(this.primaryMenuState, primaryMenuState);
         this.primaryMenuState = primaryMenuState;
+    }
+
+    public void setWindowOpacity(float windowOpacity) {
+        this.windowOpacity = windowOpacity;
+    }
+
+    public void resetWindowOpacity() {
+        this.windowOpacity = defaultWindowOpacity;
     }
 
     public void setPartySlotSelected(int partySlotSelected) {
