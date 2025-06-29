@@ -37,11 +37,6 @@ public class Node {
     private int fCost;
 
     /**
-     * Boolean tracking whether the current node is solid (i.e., on a tile that has collision) or not.
-     */
-    private boolean solid;
-
-    /**
      * Boolean tracking whether the current node is open (i.e., on a tile that does not have collision).
      */
     private boolean open;
@@ -90,10 +85,6 @@ public class Node {
         return fCost;
     }
 
-    public boolean isSolid() {
-        return solid;
-    }
-
     public boolean isOpen() {
         return open;
     }
@@ -118,10 +109,6 @@ public class Node {
 
     public void setfCost(int fCost) {
         this.fCost = fCost;
-    }
-
-    public void setSolid(boolean solid) {
-        this.solid = solid;
     }
 
     public void setOpen(boolean open) {

@@ -3,6 +3,7 @@ package entity;
 import combat.MoveBase;
 import core.GamePanel;
 import entity.enumeration.*;
+import event.enumeration.StockStepInteractionType;
 import render.Renderer;
 import asset.Sprite;
 import render.enumeration.ZIndex;
@@ -150,8 +151,8 @@ public abstract class EntityBase extends Drawable {
      * Candidate direction this entity has chosen to move in.
      * Potential collisions with other entities, landmarks, tiles, etc. will be checked using this candidate before the
      * entity actually enters a state of motion.
-     * This variable is primarily used when generating directions for entities to move in before confirming its actually
-     * feasible.
+     * This variable is primarily used when generating directions for entities to move in before confirming it's
+     * actually feasible.
      */
     protected EntityDirection directionCandidate;
 
@@ -247,6 +248,11 @@ public abstract class EntityBase extends Drawable {
      * Boolean indicating whether this entity is currently performing a combat faint animation.
      */
     protected boolean playingCombatFaintAnimation = false;
+
+    /**
+     * Boolean indicating whether this entity is currently in a state of hopping or not.
+     */
+    protected boolean hopping = false;
 
 
     // PATHFINDING
@@ -501,6 +507,11 @@ public abstract class EntityBase extends Drawable {
             return;
         }
 
+        if (hopping) {
+            updateHoppingState(dt);
+            return;
+        }
+
         if (conversing) {return;}
 
         if (isOnEntity()) {
@@ -557,6 +568,7 @@ public abstract class EntityBase extends Drawable {
 
         moving = false;
         turning = false;
+        hopping = false;
         worldX = worldXStart;
         worldY = worldYStart;
         worldCounter = 0;
@@ -568,6 +580,10 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Forces this entity to enter a new state of motion: step to an adjacent tile in the specified direction.
+     * Note that the entity will be forced to move in the given direction regardless of if the tile being moved to has
+     * collision (i.e., is solid).
+     * In other words, this entity's collision state is not calculated and applied in this method.
+     * It is recommended that this method be called after it has been determined that the given direction is valid.
      *
      * @param direction direction this entity will move in
      */
@@ -609,8 +625,10 @@ public abstract class EntityBase extends Drawable {
             moving = true;                                                                                              // When a movement is triggered, the player character enters a state of motion.
             worldXStart = worldX;                                                                                       // Record current position before moving (x).
             worldYStart = worldY;                                                                                       // Record current position before moving (y).
-            updateCollisionState();                                                                                     // Check and update colliding state of entity.
-            gp.getEventM().handleStockStepInteraction(entityId);
+            gp.getEventM().handleStockStepInteraction(getColEnd(), getRowEnd(), entityId,
+                    StockStepInteractionType.GRASS_RUSTLE);
+            gp.getEventM().handleStockStepInteraction(getColEnd(), getRowEnd(), entityId,
+                    StockStepInteractionType.LEDGE_HOP);
         }
     }
 
@@ -790,6 +808,28 @@ public abstract class EntityBase extends Drawable {
                 setRest(duration);                                                                                      // Increase `rest` to ensure that a new default action cannot initiate during the fade effect.
             }
         }
+    }
+
+
+    /**
+     * Initiates a hop.
+     * This entity will enter both a state of hopping and a state of motion.
+     * This entity will move downward (positive y-direction) two tiles during a hop.
+     * Other directions for hopping are not supported.
+     */
+    public void initiateHop() {
+
+        gp.getSoundS().playEffect("testEffect6");
+        cancelAction();
+        hopping = true;
+        moving = true;
+        worldXStart = worldX;
+        worldYStart = worldY;
+        worldXEnd = worldX;
+        worldYEnd = worldY + (GamePanel.NATIVE_TILE_SIZE * 2);                                                          // An entity moves two tiles during a hop.
+        directionCurrent = EntityDirection.DOWN;
+        directionCandidate = EntityDirection.DOWN;
+        directionLast = EntityDirection.DOWN;
     }
 
 
@@ -1161,23 +1201,28 @@ public abstract class EntityBase extends Drawable {
 
         colliding = false;                                                                                              // Note that colliding is set to 'true' in the methods below, if applicable.
 
-        // Check tile collision.
-        gp.getCollisionI().checkTile(this);
+        int targetCol = getCol();
+        int targetRow = getRow();
 
-        // Check landmark collision.
-        gp.getCollisionI().checkLandmark(this);
+        switch (directionCandidate) {
+            case UP:
+                targetRow--;
+                break;
+            case DOWN:
+                targetRow++;
+                break;
+            case LEFT:
+                targetCol--;
+                break;
+            case RIGHT:
+                targetCol++;
+                break;
+        }
 
-        // Check object collision.
-        gp.getCollisionI().checkEntity(this, gp.getEntityM().getObj(), true);
+        if (gp.getCollisionI().calculateCollisionAll(targetCol, targetRow, this, true)) {
 
-        // Check NPC collision.
-        gp.getCollisionI().checkEntity(this, gp.getEntityM().getNpc(), true);
-
-        // Check party collision.
-        gp.getCollisionI().checkEntity(this, gp.getEntityM().getParty(), true);
-
-        // Check player collision.
-        gp.getCollisionI().checkPlayer(this, true);
+            colliding = true;
+        }
     }
 
 
@@ -1224,6 +1269,57 @@ public abstract class EntityBase extends Drawable {
                 worldYStart = worldYEnd;
 
                 if (walkSpriteNumLast == 2) {                                                                               // Swap which foot will step forward for the next walking cycle.
+
+                    walkSpriteNumLast = 3;
+                } else {
+
+                    walkSpriteNumLast = 2;
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Updates this entity's world position by one frame if it's in a state of hopping.
+     * If this entity reaches its target tile, it will exit the state of hopping (and motion).
+     *
+     * @param dt time since last frame (seconds)
+     */
+    protected void updateHoppingState(double dt) {
+
+        if (hopping) {
+
+            worldCounter += speed * dt;
+            updateWorldPosition(dt);
+
+            if (worldCounter <= GamePanel.NATIVE_TILE_SIZE / 2) {                                                       // Walking animation; entity will have a foot forward for half of the world units traversed.
+
+                if (walkSpriteNumLast == 2) {
+
+                    walkSpriteNumCurrent = 3;
+                } else {
+
+                    walkSpriteNumCurrent = 2;
+                }
+            } else {
+
+                walkSpriteNumCurrent = 1;
+            }
+
+            if (worldCounter >= (GamePanel.NATIVE_TILE_SIZE * 2)) {
+
+                hopping = false;
+                moving = false;
+                worldCounter = 0;
+                worldX = worldXEnd;
+                worldY = worldYEnd;
+                worldXLast = worldXStart;
+                worldYLast = worldYStart;
+                worldXStart = worldXEnd;
+                worldYStart = worldYEnd;
+
+                if (walkSpriteNumLast == 2) {
 
                     walkSpriteNumLast = 3;
                 } else {
@@ -1590,7 +1686,8 @@ public abstract class EntityBase extends Drawable {
                 worldYStart = worldY;                                                                                   // Record current position before moving (y).
                 directionCurrent = directionCandidate;
                 directionLast = directionCandidate;
-                gp.getEventM().handleStockStepInteraction(entityId);
+                gp.getEventM().handleStockStepInteraction(getColEnd(), getRowEnd(),
+                        entityId, StockStepInteractionType.GRASS_RUSTLE);
             }
         }
     }
@@ -1885,6 +1982,10 @@ public abstract class EntityBase extends Drawable {
         return playingCombatFaintAnimation;
     }
 
+    public boolean isHopping() {
+        return hopping;
+    }
+
     public boolean isOnPath() {
         return onPath;
     }
@@ -2079,6 +2180,10 @@ public abstract class EntityBase extends Drawable {
 
     public void setDefaultAction(DefaultAction defaultAction) {
         this.defaultAction = defaultAction;
+    }
+
+    public void setHopping(boolean hopping) {
+        this.hopping = hopping;
     }
 
     public void startFollowingPath(int goalCol, int goalRow) {

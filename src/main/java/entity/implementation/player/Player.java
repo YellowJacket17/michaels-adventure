@@ -5,6 +5,7 @@ import combat.implementation.move.Mve_Punch;
 import combat.implementation.move.Mve_Earthquake;
 import combat.implementation.move.Mve_Revive;
 import core.enumeration.PrimaryGameState;
+import event.enumeration.StockStepInteractionType;
 import miscellaneous.KeyListener;
 import entity.EntityBase;
 import entity.enumeration.EntityDirection;
@@ -203,6 +204,11 @@ public class Player extends EntityBase {
 
         if (combating) {
             updateCombatStanceAnimation(dt);
+            return;
+        }
+
+        if (hopping) {
+            updateHoppingState(dt);
             return;
         }
 
@@ -514,7 +520,7 @@ public class Player extends EntityBase {
         // World position.
 //        setCol(7);
 //        setRow(90);
-        setCol(73);
+        setCol(20);
         setRow(82);
 
         // Basic attributes.
@@ -570,7 +576,7 @@ public class Player extends EntityBase {
                     || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E)))
                     && (interactionCountdown <= 0)) {
 
-                interaction = checkClickInteraction(dt);                                                                // Check if any interactions triggered by a click (i.e., hitting the Enter key or other manual selection) have been hit.
+                interaction = checkClickInteraction(dt, directionCurrent);                                              // Check if any interactions triggered by a click (i.e., hitting the Enter key or other manual selection) have been hit.
             }
 
             if (!interaction) {                                                                                         // If nothing is being interacted with, continue with logic to check if player will move.
@@ -609,7 +615,7 @@ public class Player extends EntityBase {
 
                     if ((directionCurrent.equals(directionLast)) || (moveCountdown > 0)) {                              // The if statement ensures that simply changing direction to face a tile doesn't trigger an interaction.
 
-                        checkStepInteraction(dt);                                                                       // Check if any interactions triggered by a step have been hit.
+                        checkStepInteraction(dt, getColEnd(), getRowEnd());                                             // Check if any interactions triggered by a step have been hit.
                     } else {
 
                         turning = true;                                                                                 // Enter a state of turning since the frame buffer has lapsed (meaning the player is currently static) AND the new direction is different from the last.
@@ -962,25 +968,44 @@ public class Player extends EntityBase {
      * Checks if any interactions triggered by a click have been hit.
      *
      * @param dt time since last frame (seconds)
+     * @param direction direction with respect to this entity of tile being check for click interaction
      * @return whether an interaction has been triggered (true) or not (false)
      */
-    private boolean checkClickInteraction(double dt) {
+    private boolean checkClickInteraction(double dt, EntityDirection direction) {
 
-        boolean interaction = gp.getEventM().handleNpcInteraction(dt, EventType.CLICK);                                 // Check in an NPC is being interacted with via a click.
+        int targetCol = getCol();
+        int targetRow = getRow();
+
+        switch (direction) {
+            case UP:
+                targetRow -= 1;
+                break;
+            case DOWN:
+                targetRow += 1;
+                break;
+            case LEFT:
+                targetCol -= 1;
+                break;
+            case RIGHT:
+                targetCol += 1;
+                break;
+        }
+
+        boolean interaction = gp.getEventM().handleNpcInteraction(dt, EventType.CLICK, targetCol, targetRow);           // Check in an NPC is being interacted with via a click.
 
         if (!interaction) {
 
-            interaction = gp.getEventM().handleObjectInteraction(dt, EventType.CLICK);                                  // If an NPC isn't being interacted with, check if an object is being interacted with via a click.
+            interaction = gp.getEventM().handleObjectInteraction(dt, EventType.CLICK, targetCol, targetRow);            // If an NPC isn't being interacted with, check if an object is being interacted with via a click.
         }
 
         if (!interaction) {
 
-            interaction = gp.getEventM().handlePartyInteraction(dt, EventType.CLICK);                                   // If an object isn't being interacted with, check if a party member is being interacted with via a click.
+            interaction = gp.getEventM().handlePartyInteraction(dt, EventType.CLICK, targetCol, targetRow);             // If an object isn't being interacted with, check if a party member is being interacted with via a click.
         }
 
         if (!interaction) {
 
-            interaction = gp.getEventM().handleTileInteraction(dt, EventType.CLICK);                                    // If a party member isn't being interacted with, check to see if a tile is being interacted with via a click.
+            interaction = gp.getEventM().handleTileInteraction(dt, EventType.CLICK, targetCol, targetRow);              // If a party member isn't being interacted with, check to see if a tile is being interacted with via a click.
         }
 
         return interaction;
@@ -990,29 +1015,35 @@ public class Player extends EntityBase {
     /**
      * Checks if any interactions triggered by a step have been hit.
      *
+     * @param targetCol column of the tile being checked
+     * @param targetRow row of the tile being checked
      * @param dt time since last frame (seconds)
      * @return whether an interaction has been triggered (true) or not (false)
      */
-    private boolean checkStepInteraction(double dt) {
+    private boolean checkStepInteraction(double dt, int targetCol, int targetRow) {
 
-        boolean interaction = gp.getEventM().handleNpcInteraction(dt, EventType.STEP);                                  // Check in an NPC is being interacted with via a step.
+        boolean interaction = gp.getEventM().handleNpcInteraction(dt, EventType.STEP, targetCol, targetRow);            // Check in an NPC is being interacted with via a step.
 
         if (!interaction) {
 
-            interaction = gp.getEventM().handleObjectInteraction(dt, EventType.STEP);                                   // If an NPC isn't being interacted with, check if an object is being interacted with via a step..
+            interaction = gp.getEventM().handleObjectInteraction(dt, EventType.STEP, targetCol, targetRow);             // If an NPC isn't being interacted with, check if an object is being interacted with via a step.
         }
 
         if (!interaction) {
 
-            interaction = gp.getEventM().handleTileInteraction(dt, EventType.STEP);                          // If an object isn't being interacted with, check if a tile is being interacted with (map-specific) via a step.
+            interaction = gp.getEventM().handleTileInteraction(dt, EventType.STEP, targetCol, targetRow);               // If an object isn't being interacted with, check if a tile is being interacted with (map-specific) via a step.
         }
 
         if (!interaction) {
 
-            interaction = gp.getEventM().handlePartyInteraction(dt, EventType.STEP);                                    // If a tile isn't being interacted with, check to see if a party member is being interacted with via a step.
+            interaction = gp.getEventM().handlePartyInteraction(dt, EventType.STEP, targetCol, targetRow);              // If a tile isn't being interacted with, check to see if a party member is being interacted with via a step.
         }
 
-        gp.getEventM().handleStockStepInteraction(entityId);                                                     // Check if a tile is being interacted with (type-specific) via a step; may occur regardless of other interactions occurring via a step.
+        gp.getEventM().handleStockStepInteraction(targetCol, targetRow, entityId,
+                StockStepInteractionType.GRASS_RUSTLE);                                                                 // Check if a tile is being interacted with (type-specific) via a step; may occur regardless of other interactions occurring via a step.
+
+        gp.getEventM().handleStockStepInteraction(targetCol, targetRow, entityId,
+                StockStepInteractionType.LEDGE_HOP);                                                                    // ^^^
 
         return interaction;
     }

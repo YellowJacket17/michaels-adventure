@@ -2,6 +2,7 @@ package ai;
 
 import entity.EntityBase;
 import core.GamePanel;
+import entity.enumeration.EntityDirection;
 
 import java.util.ArrayList;
 
@@ -93,16 +94,8 @@ public class PathFinder {
 
         int col = 0;
         int row = 0;
-        int tileNum;
 
         while ((col < GamePanel.MAX_WORLD_COL) && (row < GamePanel.MAX_WORLD_ROW)) {
-
-            tileNum = gp.getMapM().getLoadedMap().getMapTileNum()[col][row];
-
-            if (gp.getTileM().getTiles()[tileNum].hasCollision()) {                                                     // Check whether the tile a node occupies is solid or not; set the node to solid if true.
-
-                nodes[col][row].setSolid(true);
-            }
 
             getCost(nodes[col][row]);                                                                                   // Set cost on this node.
             col++;
@@ -148,22 +141,22 @@ public class PathFinder {
 
             // Open the Up node.
             if ((row - 1) >= 0) {
-                openNode(nodes[col][row - 1]);
+                openNode(nodes[col][row - 1], EntityDirection.UP);
             }
 
             // Open the Left node.
             if ((col - 1) >= 0) {
-                openNode(nodes[col - 1][row]);
+                openNode(nodes[col - 1][row], EntityDirection.LEFT);
             }
 
             // Open the Down node.
             if ((row + 1) < GamePanel.MAX_WORLD_ROW) {
-                openNode(nodes[col][row + 1]);
+                openNode(nodes[col][row + 1], EntityDirection.DOWN);
             }
 
             // Open the Right node.
             if ((col + 1) < GamePanel.MAX_WORLD_COL) {
-                openNode(nodes[col + 1][row]);
+                openNode(nodes[col + 1][row], EntityDirection.RIGHT);
             }
 
             // Find the best node by scanning the list of open nodes.
@@ -240,7 +233,6 @@ public class PathFinder {
 
             nodes[col][row].setOpen(false);                                                                             // Reset `open` for this node.
             nodes[col][row].setChecked(false);                                                                          // Reset `checked` for this node.
-            nodes[col][row].setSolid(false);                                                                            // Reset `solid` for this node.
 
             col++;
 
@@ -263,14 +255,14 @@ public class PathFinder {
      * Opens a node if it is able to be opened.
      *
      * @param node node to be opened
+     * @param incomingDirection direction from which the node will be opened relative to the previous node
      */
-    private void openNode(Node node) {
+    private void openNode(Node node, EntityDirection incomingDirection) {
 
         if ((!node.isOpen())
                 && (!node.isChecked())
-                && (!node.isSolid())
-                && (!gp.getCollisionI().checkNode(node.getCol(), node.getRow(),
-                goalNode.getCol(), goalNode.getRow(), entity, true))) {
+                && (!gp.getCollisionI().calculateCollisionNode(node.getCol(), node.getRow(),
+                goalNode.getCol(), goalNode.getRow(), entity, true, incomingDirection))) {
 
             node.setOpen(true);
             node.setParent(currentNode);
@@ -310,7 +302,7 @@ public class PathFinder {
 
         while (current != startNode) {                                                                                  // Backtrack from goal node to start node.
 
-            pathList.add(0, current);                                                                                   // With this list, entities can track the path they're moving on.                                                                       // Always adding to the first slot so that the last added node is in [0].
+            pathList.add(0, current);                                                                                   // With this list, entities can track the path they're moving on.
             current = current.getParent();
         }
     }

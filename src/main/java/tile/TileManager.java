@@ -594,6 +594,14 @@ public class TileManager {
         setup(130, AssetPool.getSpritesheet("tiles").getSprite(177), false);                                            // floorPortalLongitude3
 
         setup(131, AssetPool.getSpritesheet("tiles").getSprite(178), false);                                            // floorPortalLongitude4
+
+        setup(132, AssetPool.getSpritesheet("tiles").getSprite(179), true);                                             // floorLedge1
+
+        setup(133, AssetPool.getSpritesheet("tiles").getSprite(180), true);                                             // floorLedge2
+
+        setup(134, AssetPool.getSpritesheet("tiles").getSprite(181), true);                                             // floorLedge3
+
+        setup(135, AssetPool.getSpritesheet("tiles").getSprite(182), true);                                             // floorLedge4
     }
 
 

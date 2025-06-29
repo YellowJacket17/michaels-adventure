@@ -237,6 +237,8 @@ public class GamePanel {
 
         // Set primary game state to player control.
         primaryGameState = PrimaryGameState.EXPLORE;
+
+        partyS.addEntityToParty(4, true);
     }
 
 
@@ -381,7 +383,7 @@ public class GamePanel {
 
         // Tiles spritesheet (spritesheet 0).
         String filePath = "/spritesheets/tiles.png";
-        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 179, 32, 32, 1));
+        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 183, 32, 32, 1));
 
         // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";
@@ -430,6 +432,7 @@ public class GamePanel {
         AssetPool.addSound("testEffect3", "sound/effects/testEffect3.ogg");
         AssetPool.addSound("testEffect4", "sound/effects/testEffect4.ogg");
         AssetPool.addSound("testEffect5", "sound/effects/testEffect5.ogg");
+        AssetPool.addSound("testEffect6", "sound/effects/testEffect6.ogg");
 
         // Illustrations.
         filePath = "/illustrations/illustration1.png";

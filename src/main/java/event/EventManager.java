@@ -1,6 +1,7 @@
 package event;
 
 import event.enumeration.EventType;
+import event.enumeration.StockStepInteractionType;
 import event.implementation.conversation.*;
 import event.implementation.submenu.Evt_SubMenu003;
 import miscellaneous.CollisionInspector;
@@ -80,44 +81,18 @@ public class EventManager {
 
     // METHODS
     /**
-     * Handles what to do if the player interacts with an object entity that may trigger a unique event.
-     *
-     * @param dt time since last frame (seconds)
-     * @param type whether an event is triggered by a click or step
-     * @return whether an object event was triggered (true) or not (false)
-     */
-    public boolean handleObjectInteraction(double dt, EventType type) {
-
-        int entityId = gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getObj(), false);    // If there's collision with an object (i.e., object in front of player entity), retrieve the entity ID of the object.
-
-        if (entityId != CollisionInspector.NO_COLLISION) {
-
-            EntityBase target = gp.getEntityM().getObj().get(entityId);                                                 // Retrieve the entity corresponding with the returned entity ID.
-
-            if (!target.isMoving()) {                                                                                   // An object can only be interacted with if it's not currently in a state of motion.
-
-                switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
-                    case 0:
-                        return evt_map000.objInteraction(dt, type, target);
-                    case 1:
-                        return evt_map001.objInteraction(dt, type, target);
-                }
-            }
-        }
-        return false;
-    }
-
-
-    /**
      * Handles what to do if the player interacts with an NPC character entity that may trigger a unique event.
      *
      * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
+     * @param targetCol column of the tile being checked
+     * @param targetRow row of the tile being checked
      * @return whether an NPC event was triggered (true) or not (false)
      */
-    public boolean handleNpcInteraction(double dt, EventType type) {
+    public boolean handleNpcInteraction(double dt, EventType type, int targetCol, int targetRow) {
 
-        int entityId = gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getNpc(), false);    // If there's collision with an NPC (i.e., NPC in front of player), retrieve the entity ID of the NPC.
+        int entityId = gp.getCollisionI().calculateCollisionEntity(
+                targetCol, targetRow, gp.getEntityM().getPlayer(), false, true, false, true, true);                     // If there's collision with an NPC (i.e., NPC in front of player), retrieve the entity ID of the NPC.
 
         if (entityId != CollisionInspector.NO_COLLISION) {
 
@@ -138,15 +113,50 @@ public class EventManager {
 
 
     /**
+     * Handles what to do if the player interacts with an object entity that may trigger a unique event.
+     *
+     * @param dt time since last frame (seconds)
+     * @param type whether an event is triggered by a click or step
+     * @param targetCol column of the tile being checked
+     * @param targetRow row of the tile being checked
+     * @return whether an object event was triggered (true) or not (false)
+     */
+    public boolean handleObjectInteraction(double dt, EventType type, int targetCol, int targetRow) {
+
+        int entityId = gp.getCollisionI().calculateCollisionEntity(
+                targetCol, targetRow, gp.getEntityM().getPlayer(), false, true, true, false, true);                     // If there's collision with an object (i.e., object in front of player entity), retrieve the entity ID of the object.
+
+        if (entityId != CollisionInspector.NO_COLLISION) {
+
+            EntityBase target = gp.getEntityM().getObj().get(entityId);                                                 // Retrieve the entity corresponding with the returned entity ID.
+
+            if (!target.isMoving()) {                                                                                   // An object can only be interacted with if it's not currently in a state of motion.
+
+                switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
+                    case 0:
+                        return evt_map000.objInteraction(dt, type, target);
+                    case 1:
+                        return evt_map001.objInteraction(dt, type, target);
+                }
+            }
+        }
+        return false;
+    }
+
+
+    /**
      * Handles what to do if the player interacts with a party member character entity that may trigger a unique event.
      *
      * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
+     * @param targetCol column of the tile being checked
+     * @param targetRow row of the tile being checked
      * @return whether a party member event was triggered (true) or not (false)
      */
-    public boolean handlePartyInteraction(double dt, EventType type) {
+    public boolean handlePartyInteraction(double dt, EventType type, int targetCol, int targetRow) {
 
-        int entityId = gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getParty(), false);  // If there's collision with a party member (i.e., party member in front of player entity), retrieve the entity ID of the party member.
+        int entityId = gp.getCollisionI().calculateCollisionEntity(
+                targetCol, targetRow, gp.getEntityM().getPlayer(), false, true, true, true, false);                     // If there's collision with a party member (i.e., party member in front of player entity), retrieve the entity ID of the party member.
 
         if (entityId != CollisionInspector.NO_COLLISION) {
 
@@ -171,34 +181,11 @@ public class EventManager {
      *
      * @param dt time since last frame (seconds)
      * @param type whether an event is triggered by a click or step
+     * @param targetCol column of the tile being checked
+     * @param targetRow row of the tile being checked
      * @return whether a tile event (map-specific and/or tile-specific) was triggered (true) or not (false)
      */
-    public boolean handleTileInteraction(double dt, EventType type) {
-
-        int playerCol = gp.getEntityM().getPlayer().getCol();                                                           // Initialize variable with player entity's current tile position.
-        int playerRow = gp.getEntityM().getPlayer().getRow();                                                           // ^^^
-
-        int targetCol = 0;                                                                                              // Declare a variable to store the simulated step of the player entity.
-        int targetRow = 0;                                                                                              // ^^^
-
-        switch (gp.getEntityM().getPlayer().getDirectionCurrent()) {                                                    // Simulate player's movement and check where they would be after taking a step forward.
-            case UP:
-                targetCol = playerCol;
-                targetRow = playerRow - 1;
-                break;
-            case DOWN:
-                targetCol = playerCol;
-                targetRow = playerRow + 1;
-                break;
-            case LEFT:
-                targetCol = playerCol - 1;
-                targetRow = playerRow;
-                break;
-            case RIGHT:
-                targetCol = playerCol + 1;
-                targetRow = playerRow;
-                break;
-        }
+    public boolean handleTileInteraction(double dt, EventType type, int targetCol, int targetRow) {
 
 //        if ((type == EventType.STEP)                                                                                    // If interaction type is step.
 //                && ((gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getNpc(), true)
@@ -234,59 +221,21 @@ public class EventManager {
      * An example is a grass landmark rustling each time an entity takes a step through it.
      * Another example is a puddle tile making a splashing sound effect each time an entity takes a step through it.
      *
-     * @return whether a type-specific tile event was triggered (true) or not (false)
+     * @param targetCol column of the tile being checked
+     * @param targetRow row of the tile being checked
+     * @param entityId ID of interacting entity
+     * @param type type of stock step interaction to query
+     * @return whether a stock step interaction was/may be triggered (true) or not (false)
      */
-    public boolean handleStockStepInteraction(int entityId) {
+    public boolean handleStockStepInteraction(int targetCol, int targetRow, int entityId,
+                                              StockStepInteractionType type) {
 
-        EntityBase entity = gp.getEntityM().getEntityById(entityId);
-
-        int entityCol = entity.getCol();
-        int entityRow = entity.getRow();
-
-        int targetCol = 0;                                                                                              // Declare a variable to store the simulated step of the entity.
-        int targetRow = 0;                                                                                              // ^^^
-
-        switch (entity.getDirectionCurrent()) {                                                                         // Simulate entity's movement and check where they would be after taking a step.
-            case UP:
-                targetCol = entityCol;
-                targetRow = entityRow - 1;
-                break;
-            case DOWN:
-                targetCol = entityCol;
-                targetRow = entityRow + 1;
-                break;
-            case LEFT:
-                targetCol = entityCol - 1;
-                targetRow = entityRow;
-                break;
-            case RIGHT:
-                targetCol = entityCol + 1;
-                targetRow = entityRow;
-                break;
+        switch (type) {
+            case GRASS_RUSTLE:
+                return handleStockStepInteractionGrass(targetCol, targetRow, entityId);
+            case LEDGE_HOP:
+                return handleStockStepInteractionLedge(targetCol, targetRow, entityId);
         }
-
-//        if ((gp.getCollisionI().checkPlayer(entity, true) != CollisionInspector.NO_COLLISION)                           // Ensure tile is not already occupied by a solid, non-follower/followed, visible player entity.
-//                || ((gp.getCollisionI().checkEntity(entity, gp.getEntityM().getNpc(), true)
-//                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible NPC.
-//                || (gp.getCollisionI().checkEntity(entity, gp.getEntityM().getObj(), true)
-//                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible object.
-//                || (gp.getCollisionI().checkEntity(entity, gp.getEntityM().getParty(), true)
-//                    != CollisionInspector.NO_COLLISION))) {                                                             // Ensure title is not already occupied by a solid, non-follower/followed, visible party member.
-
-        if (entity.isColliding()) {                                                                                     // Ensure that the entity can occupy the target tile.
-
-            return false;
-        }
-
-        // Grass1 animation (rustling).
-        try {
-
-            if (gp.getMapM().getLoadedMap().getMapLandmarkNum()[targetCol][targetRow + 1] == 6) {
-
-                gp.getLandmarkM().initiateConditionalAnimation(targetCol, targetRow + 1);
-                return true;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
 
         return false;
     }
@@ -873,5 +822,56 @@ public class EventManager {
             }
         }
         return followers;
+    }
+
+
+    /**
+     * Handles what to do if an entity steps onto a tile that may trigger a stock event (grass rustle).
+     *
+     * @param targetCol column of the tile being checked
+     * @param targetRow row of the tile being checked
+     * @param entityId ID of interacting entity
+     * @return whether a stock step interaction (grass rustle) was/may be triggered (true) or not (false)
+     */
+    private boolean handleStockStepInteractionGrass(int targetCol, int targetRow, int entityId) {
+
+        try {
+
+            EntityBase entity = gp.getEntityM().getEntityById(entityId);
+
+            if ((!entity.isColliding())                                                                                 // Ensure that the entity can occupy the target tile.
+                    && (gp.getMapM().getLoadedMap().getMapLandmarkNum()[targetCol][targetRow + 1] == 6)) {
+
+                gp.getLandmarkM().initiateConditionalAnimation(targetCol, targetRow + 1);
+                return true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {}
+
+        return false;
+    }
+
+
+    /**
+     * Handles what to do if an entity steps onto a tile that may trigger a stock event (ledge hop).
+     *
+     * @param targetCol column of the tile/node being checked
+     * @param targetRow row of the tile/node being checked
+     * @param entityId ID of interacting entity
+     * @return whether a stock step interaction (ledge hop) was/may be triggered (true) or not (false)
+     */
+    private boolean handleStockStepInteractionLedge(int targetCol, int targetRow, int entityId) {
+
+        EntityBase entity = gp.getEntityM().getEntityById(entityId);
+        int tileNumTarget = gp.getMapM().getLoadedMap().getMapTileNum()[targetCol][targetRow];
+
+        if ((entity.getDirectionCurrent() == EntityDirection.DOWN)
+                && ((tileNumTarget == 132) || (tileNumTarget == 133)
+                || (tileNumTarget == 134) || (tileNumTarget == 135))) {
+
+            entity.initiateHop();
+            return true;
+        }
+
+        return false;
     }
 }

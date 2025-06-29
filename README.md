@@ -215,6 +215,7 @@ Able to compile with Windows x64, macOS x64, and macOS arm64 natives.
 Note that the program has only been fully tested on Windows x64 and runs fine there.
 On macOS x64, a window will appear and the game loop will start with music playing, but no visuals will draw.
 No testing has been done with macOS arm64.
+When running on Mac, include the `-XstartOnFirstThread` option when launching the JAR file.
 
 Within system settings, a setting labeled "Tether Game Speed" exists.
 When enabled, this setting will tie game update logic to the frame rate limit.
