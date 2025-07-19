@@ -122,144 +122,47 @@
     }, 
 
     "4": {
-        "convName": "Test2",
-        "map": 0,
+          "convName": "Map001ShadowEncounter1",
+        "map": 1,
+        "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Joe",
-                "text": "My, my, what a mysterious place this is..."
-            },
-            "1": {
-                "speakerName": "Joe",
-                "text": "Mind if I look around with you for a bit?"
-            }
-        }
-    },
-    
-    "5": {
-        "convName": "Test3",
-        "map": 0,
-        "dialogue": {
-            "0": {
-                "speakerName": "Joe",
-                "text": "Alright, that's enough for now."
+                "speakerName": "Mary",
+                "text": "Wait, wha . . . what is that?"
             },
             "1": {
                 "speakerName": "Mary",
-                "text": "Who are you again...?"
+                "text": "Can it see me . . . ?"
+            }
+        }   
+    },
+
+    "5": {
+        "convName": "Map001ShadowEncounter2",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speakerName": "Mary",
+                "text": "Yes, it can!"
             }
         }
     },
 
     "6": {
-        "convName": "Test4",
+        "convName": "Map001ShadowEncounter2",
         "map": 1,
+        "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Joe",
-                "text": "Would you mind taking me back to where you found me?"
+                "speakerName": "Shadow Figure",
+                "text": "hwta eth ekch rea uoy? teg yarde ot hgift ihts emit, I liwl OTN nru aayw giana!"
             },
             "1": {
                 "speakerName": "Mary",
-                "text": "So whiny..."
+                "text": "Ahh, pl . . . please, go away!"
             }
+
         }
-    },
-
-    "7": {
-        "map": 1,
-        "dialogue": {
-            "0": {
-                "speakerName": "Test Enemy 2",
-                "text": "AH! You bumped into me!"
-            },
-            "1": {
-                "speakerName": "Mary",
-                "text": "Wha..."
-            },
-            "2": {
-                "speakerName": "Test Enemy 2",
-                "text": "You've ruined my day. Prepare to be pulverized, punk!"
-            }
-        }   
-    },
-
-    "8": {
-        "map": 1,
-        "dialogue": {
-            "0": {
-                "speakerName": "Test Enemy 2",
-                "text": "Please don't walk into me. Would hate that..."
-            },
-            "1": {
-                "speakerName": "Mary",
-                "text": "Okay..."
-            }
-        }   
-    },
-
-    "9": {
-        "map": 0,
-        "dialogue": {
-            "0": {
-                "speakerName": "Logan",
-                "text": "My turn to join!"
-            }
-        }   
-    },
-
-    "10": {
-        "map": 0,
-        "dialogue": {
-            "0": {
-                "speakerName": "Logan",
-                "text": "My turn to leave!"
-            }
-        }   
-    },
-
-    "11": {
-        "map": 0,
-        "dialogue": {
-            "0": {
-                "speakerName": "Howie",
-                "text": "Please, help me find my way home."
-            }
-        }   
-    },
-
-    "12": {
-        "map": 0,
-        "dialogue": {
-            "0": {
-                "speakerName": "Howie",
-                "text": "Well, maybe we'll find our way out next time."
-            }
-        }   
-    },
-
-    "13": {
-        "map": 1,
-        "dialogue": {
-            "0": {
-                "speakerName": "Logan",
-                "text": "This place is scary, take me back to that other room!"
-            }
-        }   
-    },
-
-    "14": {
-        "map": 1,
-        "dialogue": {
-            "0": {
-                "speakerName": "Howie",
-                "text": "Hmmm, I think I'd like to go back to where you found me."
-            },
-
-            "1": {
-                "speakerName": "Mary",
-                "text": "I thought you wanted to go home, but whatever you say..."
-            }
-        }   
     }
 }

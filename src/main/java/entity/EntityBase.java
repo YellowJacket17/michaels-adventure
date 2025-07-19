@@ -536,7 +536,9 @@ public abstract class EntityBase extends Drawable {
      */
     public void addToRenderPipeline(Renderer renderer) {
 
-        if (!hidden && gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
+
+
+        if (!isHiddenInGrass() && !hidden && gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
             if (playingCombatFaintAnimation || (combating && (status == EntityStatus.FAINT))) {
 
@@ -989,6 +991,29 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
+     * Checks whether this entity should be hidden due to walking through a tall grass landmark.
+     *
+     * @return whether this entity should be hidden (true) or not (false)
+     */
+    protected boolean isHiddenInGrass() {
+
+        try {
+
+            if (gp.getMapM().getLoadedMap().getMapLandmarkNum()[getCol()][getRow()] == 6                                // Hide if standing on same tile as grass landmark (prevents flickering of entity when walking up/down).
+                    && (gp.getMapM().getLoadedMap().getMapLandmarkNum()[getCol()][getRow() + 1] == 6)                   // Hide if next row down also has a grass landmark (prevents pre-mature hiding of entity when entering grass landmark from below).
+                    && (directionCurrent != EntityDirection.LEFT)                                                       // Hide if moving up or down (prevents odd pop-in of entity when entering/exiting tall grass from the right).
+                    && (directionCurrent != EntityDirection.RIGHT)) {                                                   // ^^^
+
+                return true;
+            }
+
+        } catch(ArrayIndexOutOfBoundsException e) {}
+
+        return false;
+    }
+
+
+    /**
      * Sets loaded entity sprites.
      * Default sprite and default width and height, and default opacity (alpha) should be set here.
      * If not manually set, default opacity is completely opaque.
@@ -1293,7 +1318,9 @@ public abstract class EntityBase extends Drawable {
             worldCounter += speed * dt;
             updateWorldPosition(dt);
 
-            if (worldCounter <= GamePanel.NATIVE_TILE_SIZE / 2) {                                                       // Walking animation; entity will have a foot forward for half of the world units traversed.
+            if ((worldCounter <= GamePanel.NATIVE_TILE_SIZE / 2)
+                    || ((worldCounter >= GamePanel.NATIVE_TILE_SIZE))
+                        && (worldCounter <= (GamePanel.NATIVE_TILE_SIZE * 1.5))) {                                      // Walking animation; entity will have a foot forward for half of the world units traversed.
 
                 if (walkSpriteNumLast == 2) {
 
@@ -1304,6 +1331,16 @@ public abstract class EntityBase extends Drawable {
                 }
             } else {
 
+                if ((worldCounter < GamePanel.NATIVE_TILE_SIZE) && (walkSpriteNumCurrent != 1)) {
+
+                    if (walkSpriteNumLast == 2) {
+
+                        walkSpriteNumLast = 3;
+                    } else {
+
+                        walkSpriteNumLast = 2;
+                    }
+                }
                 walkSpriteNumCurrent = 1;
             }
 

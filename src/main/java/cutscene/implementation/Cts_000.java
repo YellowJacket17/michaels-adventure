@@ -11,7 +11,7 @@ import org.joml.Vector3f;
  */
 public class Cts_000 extends CutsceneBase {
 
-    // FIELDS
+    // FIELD
     private double counter = 0;
 
 
@@ -24,8 +24,8 @@ public class Cts_000 extends CutsceneBase {
     // METHOD
     @Override
     public void run(double dt) {
-        switch (scenePhase) {
 
+        switch (scenePhase) {
             case 0:
                 gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
                 gp.getSoundS().playTrack("endOfTheLine");

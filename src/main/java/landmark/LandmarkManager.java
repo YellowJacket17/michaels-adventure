@@ -277,7 +277,7 @@ public class LandmarkManager {
                 landmark = new Ldm_Foam2(gp, col, row);
                 break;
             case 6:
-                landmark = new Ldm_Grass1(gp, col, row);
+                landmark = new Ldm_TallGrass1(gp, col, row);
                 break;
             default:
                 UtilityTool.logError("Attempted to instantiate a landmark type that does not exist.");

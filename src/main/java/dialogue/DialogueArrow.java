@@ -15,7 +15,7 @@ import utility.UtilityTool;
 public class DialogueArrow extends Drawable {
 
     // FIELDS
-    GamePanel gp;
+    private final GamePanel gp;
 
     /**
      * Controls the up-and-down animation of the dialogue arrow.

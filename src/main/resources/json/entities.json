@@ -1,167 +1,12 @@
 {
     "1": {
-        "type": "object",
-        "class": "Obj_Controller",
-        "defaultAction": "static",
-        "map": 1,
-        "position": {
-            "defaultCol": 23,
-            "defaultRow": 13
-        }
-    },    
-
-    "2": {
-        "type": "object",
-        "class": "Obj_Key",
-        "defaultAction": "static",
-        "map": 1,
-        "position": {
-            "defaultCol": 34,
-            "defaultRow": 26
-        }
-    },
-    
-    "3": {
-        "type": "object",
-        "class": "Obj_Chest",
-        "defaultAction": "static",
-        "map": 1,
-        "position": {
-            "defaultCol": 22,
-            "defaultRow": 26
-        }
-    },
-    
-    "4": {
         "type": "character",
-        "class": "Npc_Test1",
-        "collision": true,
-        "hidden": false,
-        "defaultAction": "randomSteps",
-        "map": 1,
-        "mapStates": [
-            0
-        ],
-        "attributes": {
-            "name": "Test Enemy 1",
-            "speed": 120,
-            "maxLife": 87,
-            "life": 87,
-            "maxSkill": 20,
-            "skill": 20,
-            "baseAttack": 1,
-            "baseDefense": 1,
-            "baseMagic": 1,
-            "baseAgility": 1,
-            "exp": 0,
-            "level": 1,
-            "nextLevelExp": 1
-        },
-        "position": {
-            "defaultCol": 18,
-            "defaultRow": 82
-        },
-        "moves": {
-            "1": 1,
-            "2": 3
-        }
-    },
-
-    "5": {
-        "type": "character",
-        "class": "Npc_Test2",
-        "collision": true,
-        "defaultAction": "randomSteps",
-        "map": 0,
-        "attributes": {
-            "name": "Joe",
-            "speed": 120,
-            "maxLife": 70,
-            "life": 70,
-            "maxSkill": 12,
-            "skill": 15,
-            "baseAttack": 1,
-            "baseDefense": 1,
-            "baseMagic": 1,
-            "baseAgility": 4,
-            "exp": 0,
-            "level": 3,
-            "nextLevelExp": 1
-        },
-        "position": {
-            "defaultCol": 3,
-            "defaultRow": 7
-        },
-        "moves": {
-            "1": 2
-        }
-    },
-
-    "6": {
-        "type": "character",
-        "class": "Npc_Test3",
-        "collision": true,
-        "defaultAction": "randomSteps",
-        "map": 0,
-        "attributes": {
-            "name": "Howie",
-            "speed": 120,
-            "maxLife": 80,
-            "life": 40,
-            "maxSkill": 3,
-            "skill": 3,
-            "baseAttack": 1,
-            "baseDefense": 1,
-            "baseMagic": 1,
-            "baseAgility": 3,
-            "exp": 0,
-            "level": 1,
-            "nextLevelExp": 1
-        },
-        "position": {
-            "defaultCol": 14,
-            "defaultRow": 3
-        },
-        "moves": {
-        }
-    },
-
-    "7": {
-        "type": "character",
-        "class": "Npc_Test4",
+        "class": "Npc_Shadow",
         "collision": true,
         "defaultAction": "randomTurns",
-        "map": 0,
-        "attributes": {
-            "name": "Logan",
-            "speed": 120,
-            "maxLife": 60,
-            "life": 50,
-            "maxSkill": 6,
-            "skill": 6,
-            "baseAttack": 1,
-            "baseDefense": 1,
-            "baseMagic": 1,
-            "baseAgility": 1,
-            "level": 1
-        },
-        "position": {
-            "defaultCol": 13,
-            "defaultRow": 3
-        },
-        "moves": {
-            "1": 1
-        }
-    },
-
-    "8": {
-        "type": "character",
-        "class": "Npc_Test1",
-        "collision": true,
-        "defaultAction": "static",
         "map": 1,
         "attributes": {
-            "name": "Test Enemy 2",
+            "name": "Shadow",
             "speed": 120,
             "maxLife": 125,
             "life": 125,
@@ -174,8 +19,8 @@
             "level": 1
         },
         "position": {
-            "defaultCol": 15,
-            "defaultRow": 32
+            "defaultCol": 47,
+            "defaultRow": 8
         },
         "moves": {
             "1": 2

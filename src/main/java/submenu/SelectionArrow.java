@@ -15,7 +15,7 @@ import utility.UtilityTool;
 public class SelectionArrow extends Drawable {
 
     // FIELDS
-    GamePanel gp;
+    private final GamePanel gp;
 
     /**
      * Boolean tracking whether a render error has occurred. If true, this prevents a render error from repeatedly being

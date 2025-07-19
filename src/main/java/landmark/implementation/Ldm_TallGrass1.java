@@ -8,9 +8,9 @@ import org.joml.Vector4f;
 import java.util.HashMap;
 
 /**
- * This class defines a landmark (Grass1).
+ * This class defines a landmark (TallGrass1).
  */
-public class Ldm_Grass1 extends LandmarkBase {
+public class Ldm_TallGrass1 extends LandmarkBase {
 
     // FIELDS
     private static final int ldmId = 6;
@@ -23,7 +23,7 @@ public class Ldm_Grass1 extends LandmarkBase {
 
 
     // CONSTRUCTOR
-    public Ldm_Grass1(GamePanel gp, int col, int row) {
+    public Ldm_TallGrass1(GamePanel gp, int col, int row) {
         super(gp, ldmId, 1, 3, col, row);
     }
 
@@ -63,8 +63,8 @@ public class Ldm_Grass1 extends LandmarkBase {
         transform.scale.y = sprite.getNativeHeight();
 //        setColor(new Vector4f(255, 231, 168, 255));
 //        setColor(new Vector4f(146, 214, 233, 255));
-//        setColor(new Vector4f(241, 100, 75, 255));
-        setColor(new Vector4f(134, 255, 194, 255));
+        setColor(new Vector4f(241, 100, 75, 255));
+//        setColor(new Vector4f(134, 255, 194, 255));
     }
 
 

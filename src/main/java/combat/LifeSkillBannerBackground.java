@@ -16,7 +16,7 @@ import utility.UtilityTool;
 public class LifeSkillBannerBackground extends Drawable {
 
     // FIELDS
-    GamePanel gp;
+    private final GamePanel gp;
 
     /**
      * Last rendered banner color.

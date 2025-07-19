@@ -54,7 +54,7 @@ public class CollisionInspector {
 
         // Tile.
         if (calculateCollisionTile(targetCol, targetRow) != NO_COLLISION) {
-            if (!calculateCollisionTileException(targetCol, targetRow, incomingDirection)) {
+            if (!calculateCollisionTileException(targetCol, targetRow,entity, ignoreFollowers, incomingDirection)) {
                 return true;
             }
         }
@@ -261,15 +261,20 @@ public class CollisionInspector {
      *
      * @param targetCol column of the tile/node being checked
      * @param targetRow row of the tile/node being checked
+     * @param entity entity following the path
+     * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
+     *                        (false)
      * @param incomingDirection direction from which the tile/node will be checked relative to the previous tile/node
      * @return whether an exception was found (true) or not (false)
      */
-    private boolean calculateCollisionTileException(int targetCol, int targetRow, EntityDirection incomingDirection) {
+    private boolean calculateCollisionTileException(int targetCol, int targetRow, EntityBase entity,
+                                                    boolean ignoreFollowers, EntityDirection incomingDirection) {
 
         int tileNum = gp.getMapM().getLoadedMap().getMapTileNum()[targetCol][targetRow];
 
-        if (((tileNum == 132) || (tileNum == 133) || (tileNum == 134) || (tileNum == 135))                              // Check ledge hop.
-                && (incomingDirection == EntityDirection.DOWN)) {
+        if (((tileNum == 132) || (tileNum == 133) || (tileNum == 134) || (tileNum == 135))                              // Check ledge hop (downward).
+                && (incomingDirection == EntityDirection.DOWN)
+                && (calculateCollisionAll(targetCol, targetRow + 1, entity, ignoreFollowers))) {                        // Ensure tile being hopped onto is not solid.
 
             return true;
         }

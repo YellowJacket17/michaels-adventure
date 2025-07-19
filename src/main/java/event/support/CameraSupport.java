@@ -107,11 +107,11 @@ public class CameraSupport {
      * Each time the camera is updated, this will override any manual change made to the camera's position (position
      * matrix) unless the tracked entity is null or tracking is overridden.
      *
-     * @param entity entity to track
+     * @param entityId ID of entity to track
      */
-    public void setTrackedEntity(EntityBase entity) {
+    public void setTrackedEntity(int entityId) {
 
-        this.trackedEntity = entity;
+        this.trackedEntity = gp.getEntityM().getEntityById(entityId);
     }
 
 

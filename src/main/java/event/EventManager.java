@@ -9,7 +9,6 @@ import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
 import core.GamePanel;
 import entity.enumeration.EntityDirection;
-import event.implementation.map.Evt_Map000;
 import event.implementation.map.Evt_Map001;
 import event.implementation.submenu.Evt_SubMenu002;
 import event.implementation.submenu.Evt_SubMenu001;
@@ -33,18 +32,11 @@ public class EventManager {
 
 
     // MAP EVENT FIELDS
-    private final Evt_Map000 evt_map000;
     private final Evt_Map001 evt_map001;
 
 
     // CONVERSATION EVENT FIELDS
     private final Evt_Conv004 evt_conv004;
-    private final Evt_Conv005 evt_conv005;
-    private final Evt_Conv007 evt_conv007;
-    private final Evt_Conv009 evt_conv009;
-    private final Evt_Conv010 evt_conv010;
-    private final Evt_Conv011 evt_conv011;
-    private final Evt_Conv012 evt_conv012;
 
 
     // SUB-MENU EVENT FIELDS
@@ -62,16 +54,9 @@ public class EventManager {
     public EventManager(GamePanel gp) {
         this.gp = gp;
 
-        evt_map000 = new Evt_Map000(gp);
         evt_map001 = new Evt_Map001(gp);
 
         evt_conv004 = new Evt_Conv004(gp);
-        evt_conv005 = new Evt_Conv005(gp);
-        evt_conv007 = new Evt_Conv007(gp);
-        evt_conv009 = new Evt_Conv009(gp);
-        evt_conv010 = new Evt_Conv010(gp);
-        evt_conv011 = new Evt_Conv011(gp);
-        evt_conv012 = new Evt_Conv012(gp);
 
         evt_subMenu001 = new Evt_SubMenu001(gp);
         evt_subMenu002 = new Evt_SubMenu002(gp);
@@ -101,8 +86,6 @@ public class EventManager {
             if (!target.isMoving()) {                                                                                   // An NPC can only be interacted with if it's not currently in a state of motion.
 
                 switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
-                    case 0:
-                        return evt_map000.npcInteraction(dt, type, target);
                     case 1:
                         return evt_map001.npcInteraction(dt, type, target);
                 }
@@ -133,8 +116,6 @@ public class EventManager {
             if (!target.isMoving()) {                                                                                   // An object can only be interacted with if it's not currently in a state of motion.
 
                 switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
-                    case 0:
-                        return evt_map000.objInteraction(dt, type, target);
                     case 1:
                         return evt_map001.objInteraction(dt, type, target);
                 }
@@ -165,8 +146,6 @@ public class EventManager {
             if (!target.isMoving()) {                                                                                   // A party member can only be interacted with if it's not currently in a state of motion.
 
                 switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
-                    case 0:
-                        return evt_map000.partyInteraction(dt, type, target);
                     case 1:
                         return evt_map001.partyInteraction(dt, type, target);
                 }
@@ -187,14 +166,6 @@ public class EventManager {
      */
     public boolean handleTileInteraction(double dt, EventType type, int targetCol, int targetRow) {
 
-//        if ((type == EventType.STEP)                                                                                    // If interaction type is step.
-//                && ((gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getNpc(), true)
-//                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible NPC.
-//                || (gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getObj(), true)
-//                    != CollisionInspector.NO_COLLISION)                                                                 // Ensure tile is not already occupied by a solid, non-follower/followed, visible object.
-//                || (gp.getCollisionI().checkEntity(gp.getEntityM().getPlayer(), gp.getEntityM().getParty(), true)
-//                    != CollisionInspector.NO_COLLISION))) {                                                             // Ensure title is not already occupied by a solid, non-follower/followed, visible party member.
-
         if ((type == EventType.STEP) && (gp.getEntityM().getPlayer().isColliding())) {                                  // Ensure that the player entity can occupy the target tile.
 
             return false;
@@ -202,15 +173,11 @@ public class EventManager {
 
         // Map-specific events.
         switch (gp.getMapM().getLoadedMap().getMapId()) {                                                               // Switch which map to check for interaction events on depending on the current loaded map.
-                case 0:
-                    return evt_map000.tileInteraction(dt, type, targetCol, targetRow,
-                            gp.getEntityM().getPlayer().getDirectionCurrent());
                 case 1:
                     return evt_map001.tileInteraction(dt, type, targetCol, targetRow,
                             gp.getEntityM().getPlayer().getDirectionCurrent());
             }
 
-        // Tile/landmark-specific events.
         return false;
     }
 
@@ -232,7 +199,7 @@ public class EventManager {
 
         switch (type) {
             case GRASS_RUSTLE:
-                return handleStockStepInteractionGrass(targetCol, targetRow, entityId);
+                return handleStockStepInteractionTallGrass(targetCol, targetRow, entityId);
             case LEDGE_HOP:
                 return handleStockStepInteractionLedge(targetCol, targetRow, entityId);
         }
@@ -251,37 +218,25 @@ public class EventManager {
 
         switch (convId) {
             case 0:
-                cleanupConversation(2);
+                cleanupConversation(3);
                 break;
             case 1:
-                cleanupConversation(2);
+                cleanupConversation(3);
                 break;
             case 2:
-                cleanupConversation(2);
+                cleanupConversation(3);
                 break;
             case 3:
-                cleanupConversation(2);
+                cleanupConversation(3);
                 break;
             case 4:
-                evt_conv004.run();
+                cleanupConversation(3);
                 break;
             case 5:
-                evt_conv005.run();
+                cleanupConversation(3);
                 break;
-            case 7:
-                evt_conv007.run();
-                break;
-            case 9:
-                evt_conv009.run();
-                break;
-            case 10:
-                evt_conv010.run();
-                break;
-            case 11:
-                evt_conv011.run();
-                break;
-            case 12:
-                evt_conv012.run();
+            case 6:
+                cleanupConversation(3);
                 break;
             default:
                 cleanupConversation(1);
@@ -826,23 +781,23 @@ public class EventManager {
 
 
     /**
-     * Handles what to do if an entity steps onto a tile that may trigger a stock event (grass rustle).
+     * Handles what to do if an entity steps onto a tile that may trigger a stock event (tall grass rustle).
      *
      * @param targetCol column of the tile being checked
      * @param targetRow row of the tile being checked
      * @param entityId ID of interacting entity
      * @return whether a stock step interaction (grass rustle) was/may be triggered (true) or not (false)
      */
-    private boolean handleStockStepInteractionGrass(int targetCol, int targetRow, int entityId) {
+    private boolean handleStockStepInteractionTallGrass(int targetCol, int targetRow, int entityId) {
 
         try {
 
             EntityBase entity = gp.getEntityM().getEntityById(entityId);
 
             if ((!entity.isColliding())                                                                                 // Ensure that the entity can occupy the target tile.
-                    && (gp.getMapM().getLoadedMap().getMapLandmarkNum()[targetCol][targetRow + 1] == 6)) {
+                    && (gp.getMapM().getLoadedMap().getMapLandmarkNum()[targetCol][targetRow] == 6)) {
 
-                gp.getLandmarkM().initiateConditionalAnimation(targetCol, targetRow + 1);
+                gp.getLandmarkM().initiateConditionalAnimation(targetCol, targetRow);
                 return true;
             }
         } catch (ArrayIndexOutOfBoundsException e) {}
@@ -861,16 +816,21 @@ public class EventManager {
      */
     private boolean handleStockStepInteractionLedge(int targetCol, int targetRow, int entityId) {
 
-        EntityBase entity = gp.getEntityM().getEntityById(entityId);
-        int tileNumTarget = gp.getMapM().getLoadedMap().getMapTileNum()[targetCol][targetRow];
+        try {
 
-        if ((entity.getDirectionCurrent() == EntityDirection.DOWN)
-                && ((tileNumTarget == 132) || (tileNumTarget == 133)
-                || (tileNumTarget == 134) || (tileNumTarget == 135))) {
+            EntityBase entity = gp.getEntityM().getEntityById(entityId);
+            int tileNumTarget = gp.getMapM().getLoadedMap().getMapTileNum()[targetCol][targetRow];
 
-            entity.initiateHop();
-            return true;
-        }
+            if ((entity.getDirectionCurrent() == EntityDirection.DOWN)                                                  // Only downward ledge hops are supported.
+                    && ((tileNumTarget == 132) || (tileNumTarget == 133)
+                    || (tileNumTarget == 134) || (tileNumTarget == 135))
+                    && (!gp.getCollisionI().calculateCollisionAll(targetCol, targetRow + 1, entity, true))) {           // Ensure tile being hopped onto is not solid.
+
+                entity.initiateHop();
+                return true;
+            }
+
+        } catch (ArrayIndexOutOfBoundsException e) {}
 
         return false;
     }

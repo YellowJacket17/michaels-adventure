@@ -1150,7 +1150,7 @@ public class UserInterface {
         }
 
         // Sub-menu option descriptions.
-        if (gp.getSubMenuH().getSubMenuId() != -1) {
+        if (gp.getSubMenuH().getSubMenuId() != 0) {
             renderCombatSubMenuDescriptionScreen();
         }
     }

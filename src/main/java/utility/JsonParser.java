@@ -10,7 +10,7 @@ import dialogue.Conversation;
 import dialogue.Dialogue;
 import entity.EntityBase;
 import entity.enumeration.DefaultAction;
-import entity.implementation.character.Npc_Test1;
+import entity.implementation.character.Npc_Shadow;
 import entity.implementation.character.Npc_Test2;
 import entity.implementation.character.Npc_Test3;
 import entity.implementation.character.Npc_Test4;
@@ -332,26 +332,8 @@ public class JsonParser {
         switch (entityClass) {
 
             // Add additional entity subclasses here.
-            case "Npc_Test1":
-                entity = new Npc_Test1(gp, entityId);
-                break;
-            case "Npc_Test2":
-                entity = new Npc_Test2(gp, entityId);
-                break;
-            case "Npc_Test3":
-                entity = new Npc_Test3(gp, entityId);
-                break;
-            case "Npc_Test4":
-                entity = new Npc_Test4(gp, entityId);
-                break;
-            case "Obj_Chest":
-                entity = new Obj_Chest(gp, entityId);
-                break;
-            case "Obj_Controller":
-                entity = new Obj_Controller(gp, entityId);
-                break;
-            case "Obj_Key":
-                entity = new Obj_Key(gp, entityId);
+            case "Npc_Shadow":
+                entity = new Npc_Shadow(gp, entityId);
                 break;
         }
 

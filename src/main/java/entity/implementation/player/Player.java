@@ -518,10 +518,11 @@ public class Player extends EntityBase {
     private void setInitialValues() {
 
         // World position.
-//        setCol(7);
-//        setRow(90);
-        setCol(20);
-        setRow(82);
+        setCol(47); //6
+        setRow(17);//45
+
+        // Direction.
+        setDirectionCurrent(EntityDirection.UP);
 
         // Basic attributes.
         setName("Mary");

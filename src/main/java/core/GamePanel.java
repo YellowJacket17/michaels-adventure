@@ -62,12 +62,12 @@ public class GamePanel {
     /**
      * Maximum number of tiles allowed in a map column.
      */
-    public static final int MAX_WORLD_COL = 100;
+    public static final int MAX_WORLD_COL = 50;
 
     /**
      *  Maximum number of tiles allowed in a map row.
      */
-    public static final int MAX_WORLD_ROW = 100;
+    public static final int MAX_WORLD_ROW = 50;
 
 
     // SYSTEM
@@ -225,7 +225,7 @@ public class GamePanel {
         mapM.loadMap(1, 0, true);
 
         // Set camera to track player entity.
-        cameraS.setTrackedEntity(entityM.getPlayer());
+        cameraS.setTrackedEntity(entityM.getPlayer().getEntityId());
 
         // Initiate opening cutscene.
 //        cutsceneM.initiateCutscene(0);
@@ -238,7 +238,7 @@ public class GamePanel {
         // Set primary game state to player control.
         primaryGameState = PrimaryGameState.EXPLORE;
 
-        partyS.addEntityToParty(4, true);
+//        partyS.addEntityToParty(4, true);
     }
 
 
@@ -337,16 +337,14 @@ public class GamePanel {
             landmarkList = new ArrayList<>();                                                                           // Fail-safe to have empty landmark array if no map is loaded.
         }
         for (int row = 0; row < MAX_WORLD_ROW; row++) {                                                                 // Render the entities and landmarks row-by-row, starting at the top.
-            for (LandmarkBase landmark : landmarkList) {                                                                // Render all landmarks in the current row.
-                if ((landmark.getRow() >= row)
-                        && (landmark.getRow() < (row + 1))) {
-                    landmark.addToRenderPipeline(renderer);
+            for (EntityBase entity : entityList) {                                                                      // Render all entities in the current row.
+                if (Math.ceil(entity.getWorldY() / NATIVE_TILE_SIZE) == row) {                                          // Calculate row this way to accommodate proper layering for tall grass landmark.
+                    entity.addToRenderPipeline(renderer);
                 }
             }
-            for (EntityBase entity : entityList) {                                                                      // Render all entities in the current row.
-                if ((entity.getWorldY() >= (row * NATIVE_TILE_SIZE))
-                        && (entity.getWorldY() < ((row + 1) * NATIVE_TILE_SIZE))) {
-                    entity.addToRenderPipeline(renderer);
+            for (LandmarkBase landmark : landmarkList) {                                                                // Render all landmarks in the current row.
+                if (landmark.getRow() == row) {
+                    landmark.addToRenderPipeline(renderer);
                 }
             }
         }
@@ -383,7 +381,7 @@ public class GamePanel {
 
         // Tiles spritesheet (spritesheet 0).
         String filePath = "/spritesheets/tiles.png";
-        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 183, 32, 32, 1));
+        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 204, 32, 32, 1));
 
         // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";
@@ -401,7 +399,7 @@ public class GamePanel {
                 32};
         int[] heights = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 64, 64, 64, 64, 64, 64, 64, 64, 92, 92};
+                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 64, 64, 64, 64, 64, 64, 64, 64, 72, 72};
         AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 73, widths, heights, 1));
 
         // Items spritesheet (spritesheet 4).
@@ -416,9 +414,9 @@ public class GamePanel {
 
         // Miscellaneous spritesheet (spritesheet 6).
         filePath = "/spritesheets/miscellaneous.png";
-        widths = new int[] {48, 48, 14, 6, 10, 12};
-        heights = new int[] {20, 10, 18, 10, 6, 8};
-        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 6, widths, heights, 1));
+        widths = new int[] {48, 48, 14, 6, 10, 12, 24};
+        heights = new int[] {20, 10, 18, 10, 6, 8, 12};
+        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 7, widths, heights, 1));
 
         // Sounds.
         AssetPool.addSound("endOfTheLine", "sound/tracks/endOfTheLine_intro.ogg", "sound/tracks/endOfTheLine_loop.ogg");
