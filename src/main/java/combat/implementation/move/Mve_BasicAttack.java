@@ -19,11 +19,11 @@ public class Mve_BasicAttack extends MoveBase {
     private static final int mveId = 0;
     private static final String mveName = "Basic Attack";
     private static final String mveDescription = "Default attack.";
-    private static final int mvePower = 10;
+    private static final int mvePower = 40;
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 0;
     private static final Vector3f mveParticleEffectColor = new Vector3f(228, 166, 255);
-    private static final String mveSoundEffect = "testEffect2";
+    private static final String mveSoundEffect = "sneakstrike";
 
 
     // CONSTRUCTOR

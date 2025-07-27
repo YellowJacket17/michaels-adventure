@@ -6,18 +6,18 @@ import item.ItemBase;
 import asset.AssetPool;
 
 /**
- * This class defines an item (Controller).
+ * This class defines an item (Doll).
  */
-public class Itm_Controller extends ItemBase {
+public class Itm_Doll extends ItemBase {
 
     // FIELDS
-    private static final int itmId = 3;
-    private static final String itmName = "Controller";
-    private static final String itmDescription = "This controller invokes an odd feeling of nostalgia. . .";
+    private static final int itmId = 1;
+    private static final String itmName = "Doll";
+    private static final String itmDescription = "An old well-loved doll. It looks like it gave someone many years of joy.";
 
 
     // CONSTRUCTOR
-    public Itm_Controller(GamePanel gp) {
+    public Itm_Doll(GamePanel gp) {
         super(gp, itmId, false);
         name = itmName;
         description = itmDescription;
@@ -42,7 +42,7 @@ public class Itm_Controller extends ItemBase {
     @Override
     protected void setSprite() {
 
-        sprite = AssetPool.getSpritesheet("items").getSprite(3);
+        sprite = AssetPool.getSpritesheet("items").getSprite(1);
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
     }

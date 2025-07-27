@@ -1,5 +1,6 @@
 package event.implementation.map;
 
+import combat.enumeration.EnterCombatTransitionType;
 import core.GamePanel;
 import entity.EntityBase;
 import entity.enumeration.EntityDirection;
@@ -22,6 +23,30 @@ public class Evt_Map001 extends EventMapBase {
     public boolean objInteraction(double dt, EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
+            case 2:
+                if (type == EventType.CLICK) {
+                    if (gp.getEventM().pickupItem(0)) {
+                        gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
+                    }
+                    return true;
+                }
+                break;
+            case 3:
+                if (type == EventType.CLICK) {
+                    if (gp.getEventM().pickupItem(1)) {
+                        gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
+                    }
+                    return true;
+                }
+                break;
+            case 4:
+                if (type == EventType.CLICK) {
+                    if (gp.getEventM().pickupItem(2)) {
+                        gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
+                    }
+                    return true;
+                }
+                break;
         }
         return false;
     }
@@ -51,8 +76,9 @@ public class Evt_Map001 extends EventMapBase {
         // Shadow encounter cutscene.
         if ((col == 47) && (row == 13) && (direction == EntityDirection.UP)) {
             gp.getCutsceneM().initiateCutscene(1);
+//            gp.getCombatM().initiateCombat(43, 9, EnterCombatTransitionType.BASIC, "runningLate",
+//                    gp.getEntityM().getEntityById(1));
         }
-
         return false;
     }
 }

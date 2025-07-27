@@ -1,10 +1,8 @@
 package entity.implementation.player;
 
-import combat.implementation.move.Mve_Heal;
-import combat.implementation.move.Mve_Punch;
-import combat.implementation.move.Mve_Earthquake;
-import combat.implementation.move.Mve_Revive;
+import combat.implementation.move.*;
 import core.enumeration.PrimaryGameState;
+import entity.enumeration.DefaultAction;
 import event.enumeration.StockStepInteractionType;
 import miscellaneous.KeyListener;
 import entity.EntityBase;
@@ -33,6 +31,13 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Player extends EntityBase {
 
     // FIELDS
+    /**
+     * Travel direction that this entity may move in.
+     * This may differ from current direction (i.e., direction that the entity sprite is facing) (ex., entity walks
+     * backwards).
+     */
+    private EntityDirection travelDirection;
+
     /**
      * Number of seconds that the player has to change direction while retaining momentum upon leaving a state of motion.
      * This lets the player entity instantly being walking in a new direction if they're already moving, versus stopping
@@ -184,51 +189,6 @@ public class Player extends EntityBase {
     }
 
 
-    @Override
-    public void update(double dt) {
-
-        // These are core actions that take precedent over all others.
-        if (activeFadeEffect != null) {
-            updateFadeEffect(dt);
-        }
-
-        if (playingCombatAttackAnimation) {
-            updateCombatAttackAnimation(dt);
-            return;
-        }
-
-        if (playingCombatFaintAnimation) {
-            updateCombatFaintAnimation(dt);
-            return;
-        }
-
-        if (combating) {
-            updateCombatStanceAnimation(dt);
-            return;
-        }
-
-        if (hopping) {
-            updateHoppingState(dt);
-            return;
-        }
-
-        if (conversing) {return;}
-
-        if (isOnEntity()) {
-            actionFollowEntity(dt, onEntityId);
-            return;
-        }
-
-        if (onPath) {
-            actionPath(dt, onPathGoalCol, onPathGoalRow);
-            return;
-        }
-
-        // Set other actions.
-        updateWalkingAction(dt);
-    }
-
-
     /**
      * Updates the player entity as part of transition type STEP_PORTAL.
      * Note that this type is where the player entity takes a step into a portal before initiating a transition to
@@ -351,7 +311,7 @@ public class Player extends EntityBase {
 
 
     @Override
-    protected void updateWalkingAction(double dt) {
+    protected void updateMotionState(double dt) {
 
         if (moving) {                                                                                                   // This will execute if the player entity is currently in a state of motion.
 
@@ -359,43 +319,69 @@ public class Player extends EntityBase {
 
             if (!colliding) {                                                                                           // If collision is false, the player can move.
 
-                switch (directionCurrent) {
-                    case UP:
-                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move (i.e., change tiles) if it's in the same direction as the last movement OR if the player is still within the countdown from the last state of motion.
-                            worldY -= speed * dt;
-                            if (moveCountdown > 0) {
-                                directionLast = directionCurrent;
-                                moveCountdown = 0;                                                                      // Reset frame buffer.
+                if (worldXStart == worldXEnd) {
+
+                    if (worldYStart > worldYEnd) {
+
+                        travelDirection = EntityDirection.UP;
+                    } else {
+
+                        travelDirection = EntityDirection.DOWN;
+                    }
+                } else {
+
+                    if (worldXStart > worldXEnd) {
+
+                        travelDirection = EntityDirection.LEFT;
+                    } else {
+
+                        travelDirection = EntityDirection.RIGHT;
+                    }
+                }
+
+                if (travelDirection == directionCurrent) {                                                              // Player entity is walking forwards; the player may be controlling movement.
+
+                    switch (directionCurrent) {
+                        case UP:
+                            if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                           // Only move (i.e., change tiles) if it's in the same direction as the last movement OR if the player is still within the countdown from the last state of motion.
+                                worldY -= speed * dt;
+                                if (moveCountdown > 0) {
+                                    directionLast = directionCurrent;
+                                    moveCountdown = 0;                                                                  // Reset frame buffer.
+                                }
                             }
-                        }
-                        break;
-                    case DOWN:
-                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player entity is still within the countdown from the last state of motion.
-                            worldY += speed * dt;
-                            if (moveCountdown > 0) {
-                                directionLast = directionCurrent;
-                                moveCountdown = 0;                                                                      // Reset frame buffer.
+                            break;
+                        case DOWN:
+                            if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                           // Only move if it's in the same direction as the last movement OR if the player entity is still within the countdown from the last state of motion.
+                                worldY += speed * dt;
+                                if (moveCountdown > 0) {
+                                    directionLast = directionCurrent;
+                                    moveCountdown = 0;                                                                  // Reset frame buffer.
+                                }
                             }
-                        }
-                        break;
-                    case LEFT:
-                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player entity is still within the fcountdown from the last state of motion.
-                            worldX -= speed * dt;
-                            if (moveCountdown > 0) {
-                                directionLast = directionCurrent;
-                                moveCountdown = 0;                                                                      // Reset frame buffer.
+                            break;
+                        case LEFT:
+                            if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                           // Only move if it's in the same direction as the last movement OR if the player entity is still within the fcountdown from the last state of motion.
+                                worldX -= speed * dt;
+                                if (moveCountdown > 0) {
+                                    directionLast = directionCurrent;
+                                    moveCountdown = 0;                                                                  // Reset frame buffer.
+                                }
                             }
-                        }
-                        break;
-                    case RIGHT:
-                        if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                               // Only move if it's in the same direction as the last movement OR if the player is still within the countdown from the last state of motion.
-                            worldX += speed * dt;
-                            if (moveCountdown > 0) {
-                                directionLast = directionCurrent;
-                                moveCountdown = 0;                                                                      // Reset frame buffer.
+                            break;
+                        case RIGHT:
+                            if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                           // Only move if it's in the same direction as the last movement OR if the player is still within the countdown from the last state of motion.
+                                worldX += speed * dt;
+                                if (moveCountdown > 0) {
+                                    directionLast = directionCurrent;
+                                    moveCountdown = 0;                                                                  // Reset frame buffer.
+                                }
                             }
-                        }
-                        break;
+                            break;
+                    }
+                } else {                                                                                                // Player entity may be walking backwards or sideways; it is not possible for the player to control movement in this way (i.e., non-forward movement only possible when scripted).
+
+                    updateWorldPosition(dt);
                 }
             }
 
@@ -529,20 +515,20 @@ public class Player extends EntityBase {
         setSpeed(120);
 
         // Combat attributes.
-        setMaxLife(299);
-        setLife(299);
+        setMaxLife(300);
+        setLife(300);
         setMaxSkill(50);
         setSkill(50);
-        setBaseAttack(1);
-        setBaseDefense(1);
-        setBaseMagic(1);
-        setBaseAgility(10);
+        setBaseAttack(75);
+        setBaseDefense(85);
+        setBaseMagic(20);
+        setBaseAgility(120);
 
         // Combat moves.
-        moves.add(new Mve_Earthquake(gp));
-        moves.add(new Mve_Punch(gp));
-        moves.add(new Mve_Revive(gp));
-        moves.add(new Mve_Heal(gp));
+        moves.add(new Mve_Pickpocket(gp));
+        moves.add(new Mve_ButterflyBlade(gp));
+        moves.add(new Mve_BurningDagger(gp));
+        moves.add(new Mve_Sneakstrike(gp));
 
         // Items.
 //        for (int i = 0; i < 600; i++) {
@@ -860,7 +846,7 @@ public class Player extends EntityBase {
                     && (gp.getCameraS().isOverrideEntityTracking())) {
 
                 List<String> options = List.of("Yes", "No");                                                            // Immutable list.
-                String prompt = "Reset camera back to player?";
+                String prompt = "Reset camera back to tracked entity?";
                 gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 2, false);
             }
             gp.setDebugActive(!gp.isDebugActive());

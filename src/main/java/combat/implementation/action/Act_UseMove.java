@@ -95,7 +95,8 @@ public class Act_UseMove extends ActionBase {
      */
     private int calculateDamage(int targetEntityId) {
 
-        int targetDamage;
+        float rawTargetDamage;
+        int actTargetDamage;
         int targetFinalLife;
 
         if (move.getCategory() == MoveCategory.PHYSICAL) {
@@ -106,7 +107,8 @@ public class Act_UseMove extends ActionBase {
             int targetEntityDefense = gp.getEntityM().getEntityById(targetEntityId).getBaseDefense()
                     + (int)(gp.getEntityM().getEntityById(targetEntityId).getBaseDefense()
                     * gp.getEntityM().getEntityById(targetEntityId).getDefenseBuff());
-            targetDamage = move.getPower() * (sourceEntityAttack / targetEntityDefense);
+            rawTargetDamage = move.getPower() * ((float)sourceEntityAttack / targetEntityDefense);
+            actTargetDamage = (int)Math.ceil(rawTargetDamage - (rawTargetDamage * rollDamageVariance()));
 
         } else if (move.getCategory() == MoveCategory.MAGIC) {
 
@@ -116,33 +118,34 @@ public class Act_UseMove extends ActionBase {
             int targetEntityMagic = gp.getEntityM().getEntityById(targetEntityId).getBaseMagic()
                     + (int)(gp.getEntityM().getEntityById(targetEntityId).getBaseMagic()
                     * gp.getEntityM().getEntityById(targetEntityId).getMagicBuff());
-            targetDamage = move.getPower() * (sourceEntityMagic / targetEntityMagic);
+            rawTargetDamage = move.getPower() * ((float)sourceEntityMagic / targetEntityMagic);
+            actTargetDamage = (int)Math.ceil(rawTargetDamage - (rawTargetDamage * rollDamageVariance()));
 
         } else {
 
-            targetDamage = 0;
+            actTargetDamage = 0;
         }
 
         if (move.getCategory() != MoveCategory.SUPPORT) {
 
             if (gp.getCombatM().getGuardingEntities().contains(targetEntityId)) {                                       // Determine if the target entity is in a guarding state.
 
-                targetDamage /= 2;
+                actTargetDamage /= 2;
                 gp.getCombatM().getGuardingEntities().remove(targetEntityId);
             }
 
-            if (targetDamage <= 0) {
+            if (actTargetDamage <= 0) {
 
-                targetDamage = 1;                                                                                       // Guarantee that at least one life point is taken for non-support moves.
+                actTargetDamage = 1;                                                                                       // Guarantee that at least one life point is taken for non-support moves.
             }
         }
 
-        if (gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage < 0) {
+        if (gp.getEntityM().getEntityById(targetEntityId).getLife() - actTargetDamage < 0) {
 
             targetFinalLife = 0;
         } else {
 
-            targetFinalLife = gp.getEntityM().getEntityById(targetEntityId).getLife() - targetDamage;
+            targetFinalLife = gp.getEntityM().getEntityById(targetEntityId).getLife() - actTargetDamage;
         }
         return targetFinalLife;
     }
@@ -203,6 +206,17 @@ public class Act_UseMove extends ActionBase {
 
             return false;
         }
+    }
+
+
+    /**
+     * Rools to determine random variance to calculate damage.
+     * @return percent variance to subtract from calculated damage
+     */
+    private float rollDamageVariance() {
+
+        Random random = new Random();
+        return random.nextInt(16) / 100.0f;
     }
 
 

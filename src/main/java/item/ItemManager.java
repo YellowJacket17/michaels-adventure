@@ -1,8 +1,7 @@
 package item;
 
 import core.GamePanel;
-import item.implementation.Itm_Controller;
-import item.implementation.Itm_Key;
+import item.implementation.*;
 
 import java.util.HashMap;
 
@@ -37,6 +36,10 @@ public class ItemManager {
         this.gp = gp;
         referenceItems.put(0, retrieveNewInstance(0));
         referenceItems.put(1, retrieveNewInstance(1));
+        referenceItems.put(2, retrieveNewInstance(2));
+        referenceItems.put(3, retrieveNewInstance(3));
+        referenceItems.put(4, retrieveNewInstance(4));
+        referenceItems.put(5, retrieveNewInstance(5));
     }
 
 
@@ -51,9 +54,17 @@ public class ItemManager {
 
         switch (itemId) {
             case 0:
-                return new Itm_Key(gp);
+                return new Itm_Novel(gp);
             case 1:
+                return new Itm_Doll(gp);
+            case 2:
+                return new Itm_Watch(gp);
+            case 3:
                 return new Itm_Controller(gp);
+            case 4:
+                return new Itm_Ring(gp);
+            case 5:
+                return new Itm_Journal(gp);
             default:
                 return null;
         }

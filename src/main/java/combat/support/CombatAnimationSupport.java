@@ -488,6 +488,52 @@ public class CombatAnimationSupport {
      * If a custom effect animation is already active, nothing will happen.
      *
      * @param entityIds IDs of entities participating in the animation
+     * @param particleEffectColor particle effect color (r, g, b)
+     * @param soundEffectResourceName sound effect resource name
+     * @param waitToProgressCombat whether to wait to hand off control to the next queued combat action until all other
+     *                             running animations in the CombatAnimationSupport class are complete (true) or not
+     *                             (false, i.e., just progress combat after this animation is complete); the former
+     *                             allows multiple animations to run concurrently
+     * @param frontDelay time to delay the start of the actual animation from when this method ia called (seconds)
+     * @param backDelay time between when the actual animation is complete and control is handed off to the next queued
+     *                  combat action (seconds)
+     */
+    public void initiateCustomEffectAnimation(ArrayList<Integer> entityIds,
+                                              Vector3f particleEffectColor,
+                                              String soundEffectResourceName,
+                                              boolean waitToProgressCombat,
+                                              double frontDelay, double backDelay) {
+
+        if (!customEffectAnimationActive) {
+
+            for (int entityId : entityIds) {
+
+                ceaEntityIds.add(entityId);
+            }
+            ceaParticleEffectColor.x = particleEffectColor.x;
+            ceaParticleEffectColor.y = particleEffectColor.y;
+            ceaParticleEffectColor.z = particleEffectColor.z;
+            ceaSoundEffectResourceName = soundEffectResourceName;
+            ceaWaitToProgressCombat = waitToProgressCombat;
+            customEffectAnimationActive = true;
+
+            if (frontDelay <= 0) {
+
+                kickoffCustomEffectAnimation();
+            } else {
+
+                ceaFrontDelay = frontDelay;
+            }
+            ceaBackDelay = backDelay;
+        }
+    }
+
+
+    /**
+     * Initiates a custom effect animation to play.
+     * If a custom effect animation is already active, nothing will happen.
+     *
+     * @param entityIds IDs of entities participating in the animation
      * @param entitiesFinalSkillPoints calculated final skill points of each participating entity; entity ID is the key,
      *                                 skill points is the value; if a participating entity has no skill point
      *                                 modification, then in may be omitted from this map
@@ -612,7 +658,7 @@ public class CombatAnimationSupport {
     private void kickoffStandardMoveAnimation() {
 
         gp.getEntityM().getEntityById(smaSourceEntityId).initiateCombatAttackAnimation();                               // Play attack animation on source entity.
-        gp.getEntityM().getEntityById(smaSourceEntityId).subtractSkillPoints(smaMove.getSkillPoints());                 // Subtract skill points used by this move.
+        gp.getEntityM().getEntityById(smaSourceEntityId).subtractSkill(smaMove.getSkillPoints());                       // Subtract skill points used by this move.
 
         if ((smaMove.getSoundEffect() != null) && (!smaTargetEntitiesFinalLife.isEmpty())) {                            // Play move sound effect (as long as there are targets being hit).
 

@@ -6,16 +6,16 @@ import core.GamePanel;
 import asset.AssetPool;
 
 /**
- * This class defines an object entity (Controller).
+ * This class defines an object entity (Novel).
  */
-public class Obj_Controller extends EntityBase {
+public class Obj_Novel extends EntityBase {
 
-    // FIELDS
-    private static final String objName = "Controller";
+    // FIELD
+    private static final String objName = "Novel";
 
 
     // CONSTRUCTOR
-    public Obj_Controller(GamePanel gp, int entityId) {
+    public Obj_Novel(GamePanel gp, int entityId) {
         super(gp, entityId, EntityType.OBJECT);
         name = objName;                                                                                                 // Set name upon instantiation.
     }
@@ -25,7 +25,7 @@ public class Obj_Controller extends EntityBase {
     @Override
     protected void setSprites() {
 
-        idleDown = AssetPool.getSpritesheet("items").getSprite(3);
+        idleDown = AssetPool.getSpritesheet("items").getSprite(0);
 
         sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();

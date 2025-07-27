@@ -29,6 +29,7 @@ public class DialogueReader {
 
     /**
      * The current conversation being read.
+     * This variable will be null if there is no active conversation.
      */
     private Conversation activeConv;
 

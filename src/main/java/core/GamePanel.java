@@ -387,11 +387,7 @@ public class GamePanel {
         filePath = "/spritesheets/characters.png";
         AssetPool.addSpritesheet("characters", new Spritesheet(AssetPool.getTexture(filePath), 281, 32, 60, 1));
 
-        // Objects spritesheet (spritesheet 2).
-        filePath = "/spritesheets/objects.png";
-        AssetPool.addSpritesheet("objects", new Spritesheet(AssetPool.getTexture(filePath), 3, 32, 32, 1));
-
-        // Landmarks spritesheet (spritesheet 3).
+        // Landmarks spritesheet (spritesheet 2).
         filePath = "/spritesheets/landmarks.png";
         int[] widths = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
@@ -402,17 +398,17 @@ public class GamePanel {
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 64, 64, 64, 64, 64, 64, 64, 64, 72, 72};
         AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 73, widths, heights, 1));
 
-        // Items spritesheet (spritesheet 4).
+        // Items spritesheet (spritesheet 3).
         filePath = "/spritesheets/items.png";
-        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 2, 32, 32, 1));
+        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 6, 32, 32, 1));
 
-        // Icons spritesheet (spritesheet 5).
+        // Icons spritesheet (spritesheet 4).
         filePath = "/spritesheets/icons.png";
         widths = new int[] {152, 152, 10, 10, 40, 36, 36, 28, 28, 28, 28, 28, 28, 6, 6, 6, 6};
         heights = new int[] {58, 58, 8, 8, 40, 36, 36, 28, 28, 28, 28, 28, 28, 10, 10, 10, 10};
         AssetPool.addSpritesheet("icons", new Spritesheet(AssetPool.getTexture(filePath), 17, widths, heights, 1));
 
-        // Miscellaneous spritesheet (spritesheet 6).
+        // Miscellaneous spritesheet (spritesheet 5).
         filePath = "/spritesheets/miscellaneous.png";
         widths = new int[] {48, 48, 14, 6, 10, 12, 24};
         heights = new int[] {20, 10, 18, 10, 6, 8, 12};
@@ -425,12 +421,14 @@ public class GamePanel {
         AssetPool.addSound("runningLate", "sound/tracks/runningLate_intro.ogg", "sound/tracks/runningLate_loop.ogg");
         AssetPool.addSound("riftInTime", "sound/tracks/riftInTime_intro.ogg", "sound/tracks/riftInTime_loop.ogg");
         AssetPool.addSound("yesteryear", "sound/tracks/yesteryear_intro.ogg", "sound/tracks/yesteryear_loop.ogg");
-        AssetPool.addSound("testEffect1", "sound/effects/testEffect1.ogg");
-        AssetPool.addSound("testEffect2", "sound/effects/testEffect2.ogg");
-        AssetPool.addSound("testEffect3", "sound/effects/testEffect3.ogg");
-        AssetPool.addSound("testEffect4", "sound/effects/testEffect4.ogg");
-        AssetPool.addSound("testEffect5", "sound/effects/testEffect5.ogg");
-        AssetPool.addSound("testEffect6", "sound/effects/testEffect6.ogg");
+        AssetPool.addSound("pickpocket", "sound/effects/pickpocket.ogg");
+        AssetPool.addSound("butterflyBlade", "sound/effects/butterflyBlade.ogg");
+        AssetPool.addSound("burningDagger", "sound/effects/burningDagger.ogg");
+        AssetPool.addSound("sneakstrike", "sound/effects/sneakstrike.ogg");
+        AssetPool.addSound("heal", "sound/effects/heal.ogg");
+        AssetPool.addSound("attributeDecrease", "sound/effects/attributeDecrease.ogg");
+        AssetPool.addSound("hop", "sound/effects/hop.ogg");
+        AssetPool.addSound("obtain", "sound/effects/obtain.ogg");
 
         // Illustrations.
         filePath = "/illustrations/illustration1.png";

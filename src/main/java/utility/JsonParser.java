@@ -2,22 +2,15 @@ package utility;
 
 import asset.Sound;
 import combat.MoveBase;
-import combat.implementation.move.Mve_Earthquake;
-import combat.implementation.move.Mve_Heal;
-import combat.implementation.move.Mve_Punch;
-import combat.implementation.move.Mve_Revive;
+import combat.implementation.move.*;
 import dialogue.Conversation;
 import dialogue.Dialogue;
 import entity.EntityBase;
 import entity.enumeration.DefaultAction;
+import entity.enumeration.EntityDirection;
 import entity.implementation.character.Npc_Shadow;
-import entity.implementation.character.Npc_Test2;
-import entity.implementation.character.Npc_Test3;
-import entity.implementation.character.Npc_Test4;
-import entity.implementation.object.Obj_Chest;
-import entity.implementation.object.Obj_Controller;
-import entity.implementation.object.Obj_Key;
 import core.GamePanel;
+import entity.implementation.object.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -335,6 +328,24 @@ public class JsonParser {
             case "Npc_Shadow":
                 entity = new Npc_Shadow(gp, entityId);
                 break;
+            case "Obj_Novel":
+                entity = new Obj_Novel(gp, entityId);
+                break;
+            case "Obj_Doll":
+                entity = new Obj_Doll(gp, entityId);
+                break;
+            case "Obj_Watch":
+                entity = new Obj_Watch(gp, entityId);
+                break;
+            case "Obj_Controller":
+                entity = new Obj_Controller(gp, entityId);
+                break;
+            case "Obj_Ring":
+                entity = new Obj_Ring(gp, entityId);
+                break;
+            case "Obj_Journal":
+                entity = new Obj_Journal(gp, entityId);
+                break;
         }
 
         // Collision.
@@ -507,17 +518,41 @@ public class JsonParser {
             // Nothing here.
         }
 
-        // Idle action.
-        String defaultAction = (String)entityJson.get("defaultAction");
-        switch (defaultAction) {
-            case "randomSteps":
-                entity.setDefaultAction(DefaultAction.RANDOM_STEPS);
-                break;
-            case "randomTurns":
-                entity.setDefaultAction(DefaultAction.RANDOM_TURNS);
-                break;
+        // Default idle action.
+        // Default idle action is optional, hence the try-catch statement.
+        try {
+            String defaultAction = (String)entityJson.get("defaultAction");
+            switch (defaultAction) {
+                case "randomSteps":
+                    entity.setDefaultAction(DefaultAction.RANDOM_STEPS);
+                    break;
+                case "randomTurns":
+                    entity.setDefaultAction(DefaultAction.RANDOM_TURNS);
+                    break;
+            }
+        } catch (NullPointerException e) {
+            // Nothing here.
         }
         entity.resetDefaultActionInitialRest();
+
+        // Default direction.
+        // Default direction is optional, hence the try-catch statement.
+        try {
+            String defaultDirection = (String)entityJson.get("defaultDirection");
+            switch (defaultDirection) {
+                case "up":
+                    entity.setDirectionCurrent(EntityDirection.UP);
+                    break;
+                case "left":
+                    entity.setDirectionCurrent(EntityDirection.LEFT);
+                    break;
+                case "right":
+                    entity.setDirectionCurrent(EntityDirection.RIGHT);
+                    break;
+            }
+        } catch (NullPointerException e) {
+            // Nothing here.
+        }
 
         // Type.
         String type = (String)entityJson.get("type");
@@ -644,16 +679,19 @@ public class JsonParser {
 
         switch (moveId) {
             case 1:
-                move = new Mve_Earthquake(gp);
+                move = new Mve_Pickpocket(gp);
                 break;
             case 2:
-                move = new Mve_Punch(gp);
+                move = new Mve_ButterflyBlade(gp);
                 break;
             case 3:
-                move = new Mve_Revive(gp);
+                move = new Mve_BurningDagger(gp);
                 break;
             case 4:
-                move = new Mve_Heal(gp);
+                move = new Mve_Sneakstrike(gp);
+                break;
+            case 5:
+                move = new Mve_AnnoyingImpulse(gp);
                 break;
         }
         return move;

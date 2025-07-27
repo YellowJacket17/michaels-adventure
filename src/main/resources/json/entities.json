@@ -3,27 +3,57 @@
         "type": "character",
         "class": "Npc_Shadow",
         "collision": true,
-        "defaultAction": "randomTurns",
+        "defaultAction": "static",
+        "defaultDirection": "up",
         "map": 1,
         "attributes": {
             "name": "Shadow",
             "speed": 120,
-            "maxLife": 125,
-            "life": 125,
-            "maxSkill": 2,
-            "skill": 2,
-            "baseAttack": 1,
-            "baseDefense": 1,
-            "baseMagic": 1,
-            "baseAgility": 5,
-            "level": 1
+            "maxLife": 270,
+            "life": 270,
+            "maxSkill": 60,
+            "skill": 60,
+            "baseAttack": 60,
+            "baseDefense": 90,
+            "baseMagic": 60,
+            "baseAgility": 80
         },
         "position": {
             "defaultCol": 47,
             "defaultRow": 8
         },
         "moves": {
-            "1": 2
+            "1": 5
+        }
+    },
+
+    "2": {
+        "type": "object",
+        "class": "Obj_Novel",
+        "map": 1,
+        "position": {
+            "defaultCol": 1,
+            "defaultRow": 4
+        }
+    },
+    
+    "3": {
+        "type": "object",
+        "class": "Obj_Doll",
+        "map": 1,
+        "position": {
+            "defaultCol": 48,
+            "defaultRow": 38
+        }
+    },
+
+    "4": {
+        "type": "object",
+        "class": "Obj_Watch",
+        "map": 1,
+        "position": {
+            "defaultCol": 16,
+            "defaultRow": 6
         }
     }
 }

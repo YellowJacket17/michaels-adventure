@@ -9,24 +9,24 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 
 /**
- * This class defines a move (Punch).
+ * This class defines a move (Sneakstrike).
  */
-public class Mve_Punch extends MoveBase {
+public class Mve_Sneakstrike extends MoveBase {
 
     // FIELDS
-    private static final int mveId = 2;
-    private static final String mveName = "Punch";
-    private static final String mveDescription = "The user punches the opponent.";
-    private static final int mvePower = 30;
+    private static final int mveId = 4;
+    private static final String mveName = "Sneakstrike";
+    private static final String mveDescription = ". . .";
+    private static final int mvePower = 50;
     private static final int mveAccuracy = 85;
     private static final int mveSkillPoints = 2;
-    private static final Vector3f mveParticleEffectColor = new Vector3f(255, 186, 166);
-    private static final String mveSoundEffect = "testEffect3";
+    private static final Vector3f mveParticleEffectColor = new Vector3f(211, 186, 235);
+    private static final String mveSoundEffect = "sneakstrike";
 
 
     // CONSTRUCTOR
-    public Mve_Punch(GamePanel gp) {
-        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT_ALLY_SELF, false);
+    public Mve_Sneakstrike(GamePanel gp) {
+        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT, false);
         name = mveName;
         description = mveDescription;
         power = mvePower;

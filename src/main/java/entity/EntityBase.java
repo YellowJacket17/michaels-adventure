@@ -377,52 +377,52 @@ public abstract class EntityBase extends Drawable {
     protected int skill;
 
     /**
-     * Entity's base attack stat.
+     * Entity's base attack attribute.
      * Secondary attribute.
      */
     protected int baseAttack;
 
     /**
-     * Entity's base defense stat.
+     * Entity's base defense attribute.
      * Secondary attribute.
      */
     protected int baseDefense;
 
     /**
-     * Entity's base magic stat.
+     * Entity's base magic attribute.
      * Secondary attribute.
      */
     protected int baseMagic;
 
     /**
-     * Entity's base agility stat.
+     * Entity's base agility attribute.
      * Secondary attribute.
      */
     protected int baseAgility;
 
     /**
-     * Temporary multiplier to this entity's attack stat.
+     * Temporary multiplier to this entity's attack attribute.
      * For example, a value of 0.2 would result this entity's attack stat equaling the base attack plus 20% of the base
      * attack.
      */
     protected double attackBuff;
 
     /**
-     * Temporary multiplier to this entity's defense stat.
+     * Temporary multiplier to this entity's defense attribute.
      * For example, a value of 0.2 would result this entity's defense stat equaling the base defense plus 20% of the
      * base defense.
      */
     protected double defenseBuff;
 
     /**
-     * Temporary multiplier to this entity's magic stat.
+     * Temporary multiplier to this entity's magic attribute.
      * For example, a value of 0.2 would result this entity's magic stat equaling the base magic plus 20% of the base
      * magic.
      */
     protected double magicBuff;
 
     /**
-     * Temporary multiplier to this entity's agility stat.
+     * Temporary multiplier to this entity's agility attribute.
      * For example, a value of 0.2 would result this entity's agility stat equaling the base agility plus 20% of the
      * base agility.
      */
@@ -489,7 +489,7 @@ public abstract class EntityBase extends Drawable {
         if (hidden) {return;}
 
         if (activeFadeEffect != FadeEffectType.NONE) {
-            updateFadeEffect(dt);
+            updateFadeEffect(dt);                                                                                       // Purposefully no return statement here.
         }
 
         if (playingCombatAttackAnimation) {
@@ -512,7 +512,13 @@ public abstract class EntityBase extends Drawable {
             return;
         }
 
-        if (conversing) {return;}
+        if (conversing) {
+            return;
+        }
+
+        if (moving) {
+            updateMotionState(dt);                                                                                      // Purposefully no return statement here.
+        }
 
         if (isOnEntity()) {
             actionFollowEntity(dt, onEntityId);
@@ -588,37 +594,62 @@ public abstract class EntityBase extends Drawable {
      * It is recommended that this method be called after it has been determined that the given direction is valid.
      *
      * @param direction direction this entity will move in
+     * @param backwards whether the entity will walk backwards (true) or not (false)
      */
-    public void autoStep(EntityDirection direction) {
+    public void autoStep(EntityDirection direction, boolean backwards) {
 
         if (!moving) {                                                                                                  // Only force entity to move if it's not already in a state of motion.
 
             switch (direction) {
                 case UP:
-                    directionCurrent = EntityDirection.UP;
-                    directionCandidate = EntityDirection.UP;
-                    directionLast = EntityDirection.UP;
+                    if (!backwards) {
+                        directionCurrent = EntityDirection.UP;
+                        directionCandidate = EntityDirection.UP;
+                        directionLast = EntityDirection.UP;
+                    } else {
+                        directionCurrent = EntityDirection.DOWN;
+                        directionCandidate = EntityDirection.DOWN;
+                        directionLast = EntityDirection.DOWN;
+                    }
                     worldXEnd = worldX;
                     worldYEnd = worldY - GamePanel.NATIVE_TILE_SIZE;
                     break;
                 case DOWN:
-                    directionCurrent = EntityDirection.DOWN;
-                    directionCandidate = EntityDirection.DOWN;
-                    directionLast = EntityDirection.DOWN;
+                    if (!backwards) {
+                        directionCurrent = EntityDirection.DOWN;
+                        directionCandidate = EntityDirection.DOWN;
+                        directionLast = EntityDirection.DOWN;
+                    } else {
+                        directionCurrent = EntityDirection.UP;
+                        directionCandidate = EntityDirection.UP;
+                        directionLast = EntityDirection.UP;
+                    }
                     worldXEnd = worldX;
                     worldYEnd = worldY + GamePanel.NATIVE_TILE_SIZE;
                     break;
                 case LEFT:
-                    directionCurrent = EntityDirection.LEFT;
-                    directionCandidate = EntityDirection.LEFT;
-                    directionLast = EntityDirection.LEFT;
+                    if (!backwards) {
+                        directionCurrent = EntityDirection.LEFT;
+                        directionCandidate = EntityDirection.LEFT;
+                        directionLast = EntityDirection.LEFT;
+                    } else {
+                        directionCurrent = EntityDirection.RIGHT;
+                        directionCandidate = EntityDirection.RIGHT;
+                        directionLast = EntityDirection.RIGHT;
+                    }
                     worldXEnd = worldX - GamePanel.NATIVE_TILE_SIZE;
                     worldYEnd = worldY;
                     break;
                 case RIGHT:
-                    directionCurrent = EntityDirection.RIGHT;
-                    directionCandidate = EntityDirection.RIGHT;
-                    directionLast = EntityDirection.RIGHT;
+                    if (!backwards) {
+                        directionCurrent = EntityDirection.RIGHT;
+                        directionCandidate = EntityDirection.RIGHT;
+                        directionLast = EntityDirection.RIGHT;
+                    } else {
+                        directionCurrent = EntityDirection.LEFT;
+                        directionCandidate = EntityDirection.LEFT;
+                        directionLast = EntityDirection.LEFT;
+                    }
                     worldXEnd = worldX + GamePanel.NATIVE_TILE_SIZE;
                     worldYEnd = worldY;
                     break;
@@ -821,7 +852,7 @@ public abstract class EntityBase extends Drawable {
      */
     public void initiateHop() {
 
-        gp.getSoundS().playEffect("testEffect6");
+        gp.getSoundS().playEffect("hop");
         cancelAction();
         hopping = true;
         moving = true;
@@ -832,6 +863,146 @@ public abstract class EntityBase extends Drawable {
         directionCurrent = EntityDirection.DOWN;
         directionCandidate = EntityDirection.DOWN;
         directionLast = EntityDirection.DOWN;
+    }
+
+
+    /**
+     * Raises or lowers this entity's attack attribute multiplier by a specified number of stages.
+     *
+     * @param numStages number of stages to raise/lower attack attribute multiplier by
+     * @return whether attack attribute multiplier was modified (true) or not (false)
+     */
+    public boolean changeAttackStage(int numStages) {
+
+        if ((numStages > 0) && (attackBuff < 1.0)) {
+
+            if ((attackBuff + (0.25 * numStages)) > 1.0) {
+
+                attackBuff = 1.0;
+            } else {
+
+                attackBuff += (0.25 * numStages);
+            }
+            return true;
+        } else if ((numStages < 0) && (attackBuff > -0.5)) {
+
+            if ((attackBuff + (0.25 * numStages)) < -0.5) {
+
+                attackBuff = -0.5;
+            } else {
+
+                attackBuff += (0.25 * numStages);
+            }
+            return true;
+        } else {
+
+            return false;
+        }
+    }
+
+
+    /**
+     * Raises or lowers this entity's defense attribute multiplier by a specified number of stages.
+     *
+     * @param numStages number of stages to raise/lower defense attribute multiplier by
+     * @return whether defense attribute multiplier was modified (true) or not (false)
+     */
+    public boolean changeDefenseStage(int numStages) {
+
+        if ((numStages > 0) && (defenseBuff < 1.0)) {
+
+            if ((defenseBuff + (0.25 * numStages)) > 1.0) {
+
+                defenseBuff = 1.0;
+            } else {
+
+                defenseBuff += (0.25 * numStages);
+            }
+            return true;
+        } else if ((numStages < 0) && (defenseBuff > -0.5)) {
+
+            if ((defenseBuff + (0.25 * numStages)) < -0.5) {
+
+                defenseBuff = -0.5;
+            } else {
+
+                defenseBuff += (0.25 * numStages);
+            }
+            return true;
+        } else {
+
+            return false;
+        }
+    }
+
+
+    /**
+     * Raises or lowers this entity's magic attribute multiplier by a specified number of stages.
+     *
+     * @param numStages number of stages to raise/lower magic attribute multiplier by
+     * @return whether magic attribute multiplier was modified (true) or not (false)
+     */
+    public boolean changeMagicStage(int numStages) {
+
+        if ((numStages > 0) && (magicBuff < 1.0)) {
+
+            if ((magicBuff + (0.25 * numStages)) > 1.0) {
+
+                magicBuff = 1.0;
+            } else {
+
+                magicBuff += (0.25 * numStages);
+            }
+            return true;
+        } else if ((numStages < 0) && (magicBuff > -0.5)) {
+
+            if ((magicBuff + (0.25 * numStages)) < -0.5) {
+
+                magicBuff = -0.5;
+            } else {
+
+                magicBuff += (0.25 * numStages);
+            }
+            return true;
+        } else {
+
+            return false;
+        }
+    }
+
+
+    /**
+     * Raises or lowers this entity's agility attribute multiplier by a specified number of stages.
+     *
+     * @param numStages number of stages to raise/lower agility attribute multiplier by
+     * @return whether agility attribute multiplier was modified (true) or not (false)
+     */
+    public boolean changeAgilityStage(int numStages) {
+
+        if ((numStages > 0) && (agilityBuff < 1.0)) {
+
+            if ((agilityBuff + (0.25 * numStages)) > 1.0) {
+
+                agilityBuff = 1.0;
+            } else {
+
+                agilityBuff += (0.25 * numStages);
+            }
+            return true;
+        } else if ((numStages < 0) && (agilityBuff > -0.5)) {
+
+            if ((agilityBuff + (0.25 * numStages)) < -0.5) {
+
+                agilityBuff = -0.5;
+            } else {
+
+                agilityBuff += (0.25 * numStages);
+            }
+            return true;
+        } else {
+
+            return false;
+        }
     }
 
 
@@ -1257,7 +1428,7 @@ public abstract class EntityBase extends Drawable {
      *
      * @param dt time since last frame (seconds)
      */
-    protected void updateWalkingAction(double dt) {
+    protected void updateMotionState(double dt) {
 
         if (moving) {
 
@@ -1292,8 +1463,9 @@ public abstract class EntityBase extends Drawable {
                 worldYLast = worldYStart;                                                                               // ^^^
                 worldXStart = worldXEnd;
                 worldYStart = worldYEnd;
+                setRest(rest);
 
-                if (walkSpriteNumLast == 2) {                                                                               // Swap which foot will step forward for the next walking cycle.
+                if (walkSpriteNumLast == 2) {                                                                           // Swap which foot will step forward for the next walking cycle.
 
                     walkSpriteNumLast = 3;
                 } else {
@@ -1369,25 +1541,31 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Updates the world position of this entity according to its speed in its current direction.
+     * Updates the world position of this entity according to its speed and relative position of starting tile compared
+     * to ending tile.
      *
      * @param dt time since last frame (seconds)
      */
     protected void updateWorldPosition(double dt) {
 
-        switch (directionCurrent) {                                                                                     // Entity will change position in the appropriate direction.
-            case UP:
+        if (worldXStart == worldXEnd) {
+
+            if (worldYStart > worldYEnd) {
+
                 worldY -= speed * dt;
-                break;
-            case DOWN:
+            } else {
+
                 worldY += speed * dt;
-                break;
-            case LEFT:
+            }
+        } else {
+
+            if (worldXStart > worldXEnd) {
+
                 worldX -= speed * dt;
-                break;
-            case RIGHT:
+            } else {
+
                 worldX += speed * dt;
-                break;
+            }
         }
     }
 
@@ -1533,16 +1711,16 @@ public abstract class EntityBase extends Drawable {
             int nextWorldY = gp.getPathF().getPathList().get(0).getRow() * GamePanel.NATIVE_TILE_SIZE;
 
             if ((worldY > nextWorldY) && (worldX == nextWorldX)) {                                                      // Check if the entity can move up.
-                autoStep(EntityDirection.UP);
+                autoStep(EntityDirection.UP, false);
 
             } else if ((worldY < nextWorldY) && (worldX == nextWorldX)) {                                               // Check if the entity can move down.
-                autoStep(EntityDirection.DOWN);
+                autoStep(EntityDirection.DOWN, false);
 
             } else if ((worldY == nextWorldY) && (worldX > nextWorldX)) {                                               // Check if the entity can move left.
-                autoStep(EntityDirection.LEFT);
+                autoStep(EntityDirection.LEFT, false);
 
             } else if ((worldY == nextWorldY) && (worldX < nextWorldX)) {                                               // Check if the entity can move right.
-                autoStep(EntityDirection.RIGHT);
+                autoStep(EntityDirection.RIGHT, false);
             }
         } else {
 
@@ -1584,7 +1762,7 @@ public abstract class EntityBase extends Drawable {
 
         EntityBase target = gp.getEntityM().getEntityById(entityId);
 
-        if ((moving) || (getCol() != target.getColLast()) || (getRow() != target.getRowLast())) {                       // Only update if the entity being followed has changed position.
+        if ((getCol() != target.getColLast()) || (getRow() != target.getRowLast())) {                                   // Only update if the entity being followed has changed position.
 
             actionPath(dt, target.getColLast(), target.getRowLast());                                                   // Initiate a pathfinding operation.
         }
@@ -1604,7 +1782,6 @@ public abstract class EntityBase extends Drawable {
 
             searchPath(goalCol, goalRow);
         }
-        updateWalkingAction(dt);                                                                                        // The entity's position on the map will be updated each frame while `onPath` is true (i.e., it will continue walking).
     }
 
 
@@ -1615,17 +1792,14 @@ public abstract class EntityBase extends Drawable {
      */
     protected void actionRandomSteps(double dt) {
 
-        boolean movingFlag = moving;                                                                                    // Set a flag to see if the entity entered this method in a state of motion.
-
         if (rest <= 0) {
 
             initiateRandomStep();
-        }
-        updateWalkingAction(dt);
 
-        if ((!moving) && (movingFlag)) {                                                                                // If this statement is true, it means the entity exited a state a motion (i.e., concluded a step) while in this method.
+            if (moving) {
 
-            setRest(2);                                                                                                 // Set the number of seconds the entity must wait before entering a new state of motion.
+                setRest(2.5);                                                                                           // If entity has started moving, set rest to prepare for next random step.
+            }
         }
     }
 
@@ -1636,12 +1810,6 @@ public abstract class EntityBase extends Drawable {
      * @param dt time since last frame (seconds)
      */
     protected void actionRandomTurns(double dt) {
-
-        if (moving) {
-
-            updateWalkingAction(dt);                                                                                    // If entity is currently in a state of motion, it needs to finish that before doing anything else.
-            return;
-        }
 
         if (rest <= 0) {
 
@@ -2317,7 +2485,7 @@ public abstract class EntityBase extends Drawable {
         }
     }
 
-    public void addSkillPoints(int addition) {
+    public void addSkill(int addition) {
         int result = skill + addition;
         if ((result >= 0) && (result <= maxSkill)) {
             skill = result;
@@ -2328,7 +2496,7 @@ public abstract class EntityBase extends Drawable {
         }
     }
 
-    public void subtractSkillPoints(int subtraction) {
+    public void subtractSkill(int subtraction) {
         int result = skill - subtraction;
         if ((result >= 0) && (result <= maxSkill)) {
             skill = result;
@@ -2371,20 +2539,44 @@ public abstract class EntityBase extends Drawable {
         }
     }
 
-    public void setAttackBuff(int attackBuff) {
-        this.attackBuff = attackBuff;
+    public void setAttackBuff(double attackBuff) {
+        if (attackBuff > 1.0) {
+            this.attackBuff = 1.0;
+        } else if (attackBuff < -1.0) {
+            this.attackBuff = -1.0;
+        } else {
+            this.attackBuff = attackBuff;
+        }
     }
 
-    public void setDefenseBuff(int defenseBuff) {
-        this.defenseBuff = defenseBuff;
+    public void setDefenseBuff(double defenseBuff) {
+        if (defenseBuff > 1.0) {
+            this.defenseBuff = 1.0;
+        } else if (defenseBuff < -1.0) {
+            this.defenseBuff = -1.0;
+        } else {
+            this.defenseBuff = defenseBuff;
+        }
     }
 
-    public void setMagicBuff(int magicBuff) {
-        this.magicBuff = magicBuff;
+    public void setMagicBuff(double magicBuff) {
+        if (magicBuff > 1.0) {
+            this.magicBuff = 1.0;
+        } else if (magicBuff < -1.0) {
+            this.magicBuff = -1.0;
+        } else {
+            this.magicBuff = magicBuff;
+        }
     }
 
-    public void setAgilityBuff(int agilityBuff) {
-        this.agilityBuff = agilityBuff;
+    public void setAgilityBuff(double agilityBuff) {
+        if (agilityBuff > 1.0) {
+            this.agilityBuff = 1.0;
+        } else if (agilityBuff < -1.0) {
+            this.agilityBuff = -1.0;
+        } else {
+            this.agilityBuff = agilityBuff;
+        }
     }
 
     public void setStatus(EntityStatus status) {

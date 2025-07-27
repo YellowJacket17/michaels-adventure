@@ -2,7 +2,6 @@ package event;
 
 import event.enumeration.EventType;
 import event.enumeration.StockStepInteractionType;
-import event.implementation.conversation.*;
 import event.implementation.submenu.Evt_SubMenu003;
 import miscellaneous.CollisionInspector;
 import core.enumeration.PrimaryGameState;
@@ -36,7 +35,7 @@ public class EventManager {
 
 
     // CONVERSATION EVENT FIELDS
-    private final Evt_Conv004 evt_conv004;
+    // None here... yet.
 
 
     // SUB-MENU EVENT FIELDS
@@ -56,7 +55,7 @@ public class EventManager {
 
         evt_map001 = new Evt_Map001(gp);
 
-        evt_conv004 = new Evt_Conv004(gp);
+        // No conversation events here... yet.
 
         evt_subMenu001 = new Evt_SubMenu001(gp);
         evt_subMenu002 = new Evt_SubMenu002(gp);
@@ -652,7 +651,7 @@ public class EventManager {
 
         if (added) {
 
-            gp.getSoundS().playEffect("testEffect1");
+            gp.getSoundS().playEffect("obtain");
             text = gp.getEntityM().getPlayer().getName() + " got a " + gp.getItemM().checkName(itemId) + "!";
         } else {
 

@@ -16,14 +16,14 @@ import java.util.HashMap;
 public class Mve_Revive extends MoveBase {
 
     // FIELDS
-    private static final int mveId = 3;
+    private static final int mveId = 6;
     private static final String mveName = "Revive";
     private static final String mveDescription = "Revives a fallen ally.";
     private static final int mvePower = 0;
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 2;
     private static final Vector3f mveParticleEffectColor = new Vector3f(166, 255, 168);
-    private static final String mveSoundEffect = "testEffect5";
+    private static final String mveSoundEffect = "heal";
 
 
     // CONSTRUCTOR

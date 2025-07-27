@@ -6,16 +6,16 @@ import core.GamePanel;
 import asset.AssetPool;
 
 /**
- * This class defines an object entity (Chest).
+ * This class defines an object entity (Watch).
  */
-public class Obj_Chest extends EntityBase {
+public class Obj_Watch extends EntityBase {
 
     // FIELD
-    private static final String objName = "Chest";
+    private static final String objName = "Watch";
 
 
     // CONSTRUCTOR
-    public Obj_Chest(GamePanel gp, int entityId) {
+    public Obj_Watch(GamePanel gp, int entityId) {
         super(gp, entityId, EntityType.OBJECT);
         name = objName;                                                                                                 // Set name upon instantiation.
     }
@@ -25,7 +25,7 @@ public class Obj_Chest extends EntityBase {
     @Override
     protected void setSprites() {
 
-        idleDown = AssetPool.getSpritesheet("objects").getSprite(1);
+        idleDown = AssetPool.getSpritesheet("items").getSprite(2);
 
         sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();

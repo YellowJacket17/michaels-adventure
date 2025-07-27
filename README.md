@@ -128,7 +128,8 @@ Dialogue IDs MUST start at "0" in the JSON file, working down as 0, 1, 2, etc.
     "<entity_ID>": {
         "type": "<character/object>",
         "class": "<name_of_entity_subclass>",
-        "defaultAction": <action_name>,
+        *"defaultAction": <action_name>,
+        *"defaultDirection": <direction>,
         *"collision": <true/false>,
         *"hidden": <true/false>,
         *"map": <ID_of_map_to_load_entity_into>,
@@ -183,6 +184,13 @@ The options are:
 + "static"
 + "randomSteps"
 + "randomTurns"
+
+The "defaultDirection" field determines the default direction that an entity will be facing when loaded.
+The options are:
++ "up"
++ "down"
++ "left"
++ "right"
 
 Anything other than the above three will automatically result in "static" as a default value.
 

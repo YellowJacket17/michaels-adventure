@@ -132,7 +132,7 @@
             },
             "1": {
                 "speakerName": "Mary",
-                "text": "Can it see me . . . ?"
+                "text": "Does it know I'm here . . . ?"
             }
         }   
     },
@@ -144,7 +144,7 @@
         "dialogue": {
             "0": {
                 "speakerName": "Mary",
-                "text": "Yes, it can!"
+                "text": "Yes, it does!"
             }
         }
     },
@@ -160,7 +160,59 @@
             },
             "1": {
                 "speakerName": "Mary",
-                "text": "Ahh, pl . . . please, go away!"
+                "text": "Ahh, pl . . . please, I didn't do anything!"
+            }
+
+        }
+    },
+
+    "7": {
+        "convName": "Map001ShadowEncounter2",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speakerName": "Mary",
+                "text": "Ummm, what can I do here. . . ?"
+            }
+
+        }
+    },
+
+     "8": {
+        "convName": "Map001ShadowEncounter3",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speakerName": "Mary",
+                "text": "I, um, have that knife Joe gave me."
+            }
+
+        }
+    },
+
+    "9": {
+        "convName": "Map001ShadowEncounter4",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speakerName": "Mary",
+                "text": "I also have those matches that I brought for making a fire."
+            }
+
+        }
+    },
+
+    "10": {
+        "convName": "Map001ShadowEncounter5",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speakerName": "Mary",
+                "text": "Well, here we go."
             }
 
         }

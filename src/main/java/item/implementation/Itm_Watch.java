@@ -6,18 +6,18 @@ import item.ItemBase;
 import asset.AssetPool;
 
 /**
- * This class defines an item (Controller).
+ * This class defines an item (Watch).
  */
-public class Itm_Controller extends ItemBase {
+public class Itm_Watch extends ItemBase {
 
     // FIELDS
-    private static final int itmId = 3;
-    private static final String itmName = "Controller";
-    private static final String itmDescription = "This controller invokes an odd feeling of nostalgia. . .";
+    private static final int itmId = 2;
+    private static final String itmName = "Watch";
+    private static final String itmDescription = "Nick's moonphase watch. It looks like it needs to be wound, but is otherwise in great condition.";
 
 
     // CONSTRUCTOR
-    public Itm_Controller(GamePanel gp) {
+    public Itm_Watch(GamePanel gp) {
         super(gp, itmId, false);
         name = itmName;
         description = itmDescription;
@@ -42,7 +42,7 @@ public class Itm_Controller extends ItemBase {
     @Override
     protected void setSprite() {
 
-        sprite = AssetPool.getSpritesheet("items").getSprite(3);
+        sprite = AssetPool.getSpritesheet("items").getSprite(2);
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
     }
