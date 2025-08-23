@@ -29,7 +29,7 @@ public class SubMenuMemory {
 
     /**
      * Index of the sub-menu option that was selected.
-     * A value of -1 means that no options has been selected.
+     * A value of '-1' means that no option has been selected.
      * This value must be between zero (inclusive) and the size of the list of options that was displayed (exclusive).
      */
     private int selectedOption = -1;

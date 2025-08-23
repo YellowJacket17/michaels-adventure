@@ -149,10 +149,9 @@ public class Cts_001 extends CutsceneBase {
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getCameraS().setTrackedEntity(gp.getEntityM().getPlayer().getEntityId());
                     gp.getCameraS().setOverrideEntityTracking(true);                                                    // Prevent camera from immediately snapping to player entity.
-                    gp.getCombatM().initiateCombat(43, 9, EnterCombatTransitionType.BASIC, "runningLate",
-                            gp.getEntityM().getEntityById(1));
+                    gp.getCombatM().initiateCombat(43, 9, EnterCombatTransitionType.BASIC, "runningLate", 1);
                     // TODO : Make sure this cutscene cannot be triggered again.
-                    //  If te player loses the fight, a different, quicker cutscene should be triggered.
+                    //  If the player loses the fight, a different, quicker cutscene should be triggered.
                     //  If the player wins the fight, no cutscene should be triggered.
                     exitCutscene();
                     resetCutscene();

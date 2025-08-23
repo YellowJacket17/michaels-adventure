@@ -3,11 +3,11 @@
 
 **IDE:** JetBrains IntelliJ IDEA
 
-**Java version:** 17.0.8 (Eclipse Temurin)
+**Java version:** 17.0.16.8 (Eclipse Temurin)
 
 **Dependency management:** Apache Maven
 
-**Overview:** This project is a 2D game engine currently in development.
+**Overview:** This project is both a 2D game engine and an actual game in development.
 
 ## Controls
 **W:** Upward character movement and menu control.

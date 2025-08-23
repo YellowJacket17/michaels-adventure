@@ -2,7 +2,6 @@ package entity.implementation.player;
 
 import combat.implementation.move.*;
 import core.enumeration.PrimaryGameState;
-import entity.enumeration.DefaultAction;
 import event.enumeration.StockStepInteractionType;
 import miscellaneous.KeyListener;
 import entity.EntityBase;
@@ -504,11 +503,11 @@ public class Player extends EntityBase {
     private void setInitialValues() {
 
         // World position.
-        setCol(47); //6
-        setRow(17);//45
+        setCol(8);  //47
+        setRow(43); //16
 
         // Direction.
-        setDirectionCurrent(EntityDirection.UP);
+        setDirectionCurrent(EntityDirection.DOWN);
 
         // Basic attributes.
         setName("Mary");

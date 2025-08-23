@@ -24,7 +24,7 @@ public class Tile {
     /**
      * Passive animation group that this tile is part of.
      * Passive animation groups can have values of 0, 1, 2, etc.
-     * A value of -1 means that this tile is not passively animated.
+     * A value of '-1' means that this tile is not passively animated.
      */
     private int passiveAnimationGroup = -1;
 

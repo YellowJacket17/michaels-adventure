@@ -76,8 +76,7 @@ public class Evt_Map001 extends EventMapBase {
         // Shadow encounter cutscene.
         if ((col == 47) && (row == 13) && (direction == EntityDirection.UP)) {
             gp.getCutsceneM().initiateCutscene(1);
-//            gp.getCombatM().initiateCombat(43, 9, EnterCombatTransitionType.BASIC, "runningLate",
-//                    gp.getEntityM().getEntityById(1));
+//            gp.getCombatM().initiateCombat(43, 9, EnterCombatTransitionType.BASIC, "runningLate", 1);
         }
         return false;
     }

@@ -108,7 +108,7 @@ public abstract class LandmarkBase extends Drawable {
     /**
      * Passive animation group that this landmark is part of.
      * Passive animation groups can have values of 0, 1, 2, etc.
-     * A value of -1 means that this landmark is not passively animated.
+     * A value of '-1' means that this landmark is not passively animated.
      */
     protected int passiveAnimationGroup = -1;
 

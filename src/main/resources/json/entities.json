@@ -42,8 +42,8 @@
         "class": "Obj_Doll",
         "map": 1,
         "position": {
-            "defaultCol": 48,
-            "defaultRow": 38
+            "defaultCol": 36,
+            "defaultRow": 45
         }
     },
 

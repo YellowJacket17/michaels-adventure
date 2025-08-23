@@ -109,6 +109,9 @@ public abstract class MoveBase {
     // METHODS
     /**
      * Runs move effect logic.
+     *
+     * @param sourceEntityId ID of entity using move
+     * @param targetEntityId IDs of entities targeted by move
      */
     public abstract void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityId);
 

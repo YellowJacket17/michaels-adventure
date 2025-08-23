@@ -162,6 +162,25 @@ public class CombatManager {
     private final LinkedHashSet<Integer> guardingEntities = new LinkedHashSet<>();
 
     /**
+     * Variable to store ID of entity for target lock.
+     * If an entity ID is stored here, then a move can only target this entity if that entity is a valid option.
+     * The number of turns for this to last after activated must be set in the variable `targetLockTurns`.
+     * Note that an entity cannot lock onto itself (i.e., the locked on entity itself will still have access to the
+     * normal full range of targets allowed by a move).
+     * Note that an entity can always use a move on itself, regardless of if there is a locked target.
+     * For example, if the locked target is an opponent and a move lets the user target either itself or any opponent,
+     * the user will be able to select either themself or the locked target.
+     * A value of '-1' means that no entity is locked onto.
+
+     */
+    private int targetLockEntityId = -1;
+
+    /**
+     * Variable to store number of turns that target lock on an entity will last for after activated.
+     */
+    private int targetLockTurns = 0;
+
+    /**
      * Boolean indicating whether the last action that was run was to generate a sub-menu.
      */
     private boolean lastActionSubmenu = false;
@@ -243,6 +262,7 @@ public class CombatManager {
      * Initiates combat fade-to-black transition and performs necessary loading.
      * Applicable entities will be set to a state of combating.
      * Note that any entities in a state of conversing will be removed from said state.
+     * Note that an entity ID of '-1' is a reserved default for no entity and will not be considered.
      *
      * @param col center column of combat field
      * @param row center row of combat field
@@ -250,14 +270,14 @@ public class CombatManager {
      *             of different types
      * @param trackName name/title of track to be played during combat (Sound.NO_TRACK to swap to no track playing,
      *                  Sound.RETAIN_TRACK to retain current track playing upon entering and exiting combat)
-     * @param opponent non-player-side entity to be fought
+     * @param entityId entity ID of non-player-side entity to be fought (opponent)
      * @throws IllegalArgumentException if no non-null opponents are available, if a party member is passed as an
      * opponent, or if the player entity is passed as an opponent
      */
     public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackName,
-                               EntityBase opponent) {
+                               int entityId) {
 
-        initiateCombat(col, row, type, trackName, opponent, null, null);
+        initiateCombat(col, row, type, trackName, entityId, -1, -1);
     }
 
 
@@ -265,6 +285,7 @@ public class CombatManager {
      * Initiates entering combat with a fade-to-black transition and performs necessary loading.
      * Applicable entities will be set to a state of combating.
      * Note that any entities in a state of conversing will be removed from said state.
+     * Note that an entity ID of '-1' is a reserved default for no entity and will not be considered.
      *
      * @param col center column of combat field
      * @param row center row of combat field
@@ -272,15 +293,15 @@ public class CombatManager {
      *             of different types
      * @param trackName name/title of track to be played during combat (Sound.NO_TRACK to swap to no track playing,
      *                  Sound.RETAIN_TRACK to retain current track playing upon entering and exiting combat)
-     * @param opponent1 first non-player-side entity to be fought
-     * @param opponent2 second non-player-side entity to be fought
+     * @param entityId1 entity ID of first non-player-side entity to be fought (opponent 1)
+     * @param entityId2 entity ID of second non-player-side entity to be fought (opponent 2)
      * @throws IllegalArgumentException if no non-null opponents are available, if a party member is passed as an
      * opponent, or if the player entity is passed as an opponent
      */
     public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackName,
-                               EntityBase opponent1, EntityBase opponent2) {
+                               int entityId1, int entityId2) {
 
-        initiateCombat(col, row, type, trackName, opponent1, opponent2, null);
+        initiateCombat(col, row, type, trackName, entityId1, entityId2, -1);
     }
 
 
@@ -288,6 +309,7 @@ public class CombatManager {
      * Initiates combat with a fade-to-black transition and performs necessary loading.
      * Applicable entities will be set to a state of combating.
      * Note that any entities in a state of conversing will be removed from said state.
+     * Note that an entity ID of '-1' is a reserved default for no entity and will not be considered.
      *
      * @param col center column of combat field
      * @param row center row of combat field
@@ -295,14 +317,33 @@ public class CombatManager {
      *             of different types
      * @param trackName name/title of track to be played during combat (Sound.NO_TRACK to swap to no track playing,
      *                  Sound.RETAIN_TRACK to retain current track playing upon entering and exiting combat)
-     * @param opponent1 first non-player-side entity to be fought
-     * @param opponent2 second non-player-side entity to be fought
-     * @param opponent3 third non-player-side entity to be fought
+     * @param entityId1 entity ID of first non-player-side entity to be fought (opponent 1)
+     * @param entityId2 entity ID of second non-player-side entity to be fought (opponent 2)
+     * @param entityId3 entity ID of third non-player-side entity to be fought (opponent 3)
      * @throws IllegalArgumentException if no non-null opponents are available, if a party member is passed as an
      * opponent, or if the player entity is passed as an opponent
      */
     public void initiateCombat(int col, int row, EnterCombatTransitionType type, String trackName,
-                               EntityBase opponent1, EntityBase opponent2, EntityBase opponent3) {
+                               int entityId1, int entityId2, int entityId3) {
+
+        EntityBase opponent1 = null;
+        EntityBase opponent2 = null;
+        EntityBase opponent3 = null;
+
+        if (entityId1 != -1) {
+
+             opponent1 = gp.getEntityM().getEntityById(entityId1);
+        }
+
+        if (entityId2 != -1) {
+
+             opponent2 = gp.getEntityM().getEntityById(entityId2);
+        }
+
+        if (entityId3 != -1) {
+
+             opponent3 = gp.getEntityM().getEntityById(entityId3);
+        }
 
         boolean playerOpponent = false;
         boolean partyOpponent1 = false;
@@ -311,26 +352,26 @@ public class CombatManager {
 
         if (opponent1 != null) {
 
-            playerOpponent = (opponent1.getEntityId() == gp.getEntityM().getPlayer().getEntityId());
-            partyOpponent1 = (gp.getEntityM().getParty().get(opponent1.getEntityId()) != null);
+            playerOpponent = (entityId1 == gp.getEntityM().getPlayer().getEntityId());
+            partyOpponent1 = (gp.getEntityM().getParty().get(entityId1) != null);
         }
 
         if (opponent2 != null) {
 
             if (!playerOpponent) {
 
-                playerOpponent = (opponent2.getEntityId() == gp.getEntityM().getPlayer().getEntityId());
+                playerOpponent = (entityId2 == gp.getEntityM().getPlayer().getEntityId());
             }
-            partyOpponent2 = (gp.getEntityM().getParty().get(opponent2.getEntityId()) != null);
+            partyOpponent2 = (gp.getEntityM().getParty().get(entityId2) != null);
         }
 
         if (opponent3 != null) {
 
             if (playerOpponent) {
 
-                playerOpponent = (opponent3.getEntityId() == gp.getEntityM().getPlayer().getEntityId());
+                playerOpponent = (entityId3 == gp.getEntityM().getPlayer().getEntityId());
             }
-            partyOpponent3 = (gp.getEntityM().getParty().get(opponent3.getEntityId()) != null);
+            partyOpponent3 = (gp.getEntityM().getParty().get(entityId3) != null);
         }
 
         if (!((opponent1 == null) && (opponent2 == null) && (opponent3 == null))
@@ -364,21 +405,21 @@ public class CombatManager {
 
             // Store non-player-side entities to be called later.
             if (opponent1 != null) {
-                nonPlayerSideEntities.add(opponent1.getEntityId());
+                nonPlayerSideEntities.add(entityId1);
             }
 
             if (opponent2 != null) {
-                nonPlayerSideEntities.add(opponent2.getEntityId());
+                nonPlayerSideEntities.add(entityId2);
             }
 
             if (opponent3 != null) {
-                nonPlayerSideEntities.add(opponent3.getEntityId());
+                nonPlayerSideEntities.add(entityId3);
             }
         } else {
 
             if ((opponent1 == null) && (opponent2 == null) && (opponent3 == null)) {
 
-                throw new IllegalArgumentException("Attempted to initiate combat with no opponents");
+                throw new IllegalArgumentException("Attempted to initiate combat with no non-null opponents");
             } else if (playerOpponent) {
 
                 throw new IllegalArgumentException("Attempted to initiate combat with the player entity as an opponent");
@@ -537,6 +578,22 @@ public class CombatManager {
         boolean generateTurnOrderCalled = false;                                                                        // Boolean tracking whether the turn order has already been re-generated.
         newTurnRootSubMenuDisplayed = false;                                                                            // Reset variable tracking whether root combat sub-menu has been displayed this turn yet or not.
 
+        if ((targetLockEntityId != -1) && (targetLockTurns <= 0)) {
+
+            String message =
+                    gp.getEntityM().getEntityById(targetLockEntityId).getName()
+                    + " is no longer the center of attention.";
+            addQueuedActionBack(new Act_ReadMessage(
+                    gp,
+                    message,
+                    true,
+                    true));
+            resetTargetLockEntity();
+        } else {
+
+            targetLockTurns--;
+        }
+
         while (!viableEntity) {
 
             queuedEntityTurnOrder.removeFirst();
@@ -689,6 +746,16 @@ public class CombatManager {
             gp.getDialogueR().initiatePlaceholderMessage(
                     buildSkillSubMenuDialogue(gp.getSubMenuH().getIndexSelected()), false);
         }
+    }
+
+
+    /**
+     * Resets the target lock entity to its default value (i.e., no target lock entity).
+     */
+    public void resetTargetLockEntity() {
+
+        targetLockEntityId = -1;
+        targetLockTurns = 0;
     }
 
 
@@ -1026,7 +1093,7 @@ public class CombatManager {
             EntityBase targetEntity = gp.getEntityM().getEntityById(
                     lastGeneratedTargetOptions.get(
                             getLatestSubMenuMemory().getSelectedOption()));
-            String message = buildUseMoveDialogue(sourceEntity.getName(), move.getName());
+            String message = buildUseMoveDialogue(sourceEntity.getName(), move.getName(), move.getMoveId());
             addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
             addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntity.getEntityId()));
         }
@@ -1054,7 +1121,7 @@ public class CombatManager {
                     move = sourceEntity.getMoves().get(subMenuLog.get(subMenuLog.size() - 2).getSelectedOption());
                     break;
             }
-            String message = buildUseMoveDialogue(sourceEntity.getName(), move.getName());
+            String message = buildUseMoveDialogue(sourceEntity.getName(), move.getName(), move.getMoveId());
             addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
             addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), lastGeneratedTargetOptions));
         }
@@ -1541,7 +1608,7 @@ public class CombatManager {
         }
 
         // Add move action.
-        String message = buildUseMoveDialogue(sourceEntity.getName(), move.getName());
+        String message = buildUseMoveDialogue(sourceEntity.getName(), move.getName(), move.getMoveId());
         addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
         addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntityIds));
         runNextQueuedAction();
@@ -1731,14 +1798,15 @@ public class CombatManager {
                 addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case OPPONENT_SELF:
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
+                addSelfEntityToTargetOptions(targetOptions, move);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case ALLY_SELF:
                 addPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 break;
             case OPPONENT_ALLY_SELF:
                 addPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
-                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
+                addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
         }
         return targetOptions;
@@ -1778,18 +1846,19 @@ public class CombatManager {
                 addSelfEntityToTargetOptions(targetOptions, move);
                 break;
             case OPPONENT_ALLY:
-                addPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case OPPONENT_SELF:
-                addPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
+                addSelfEntityToTargetOptions(targetOptions, move);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
             case ALLY_SELF:
                 addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 break;
             case OPPONENT_ALLY_SELF:
-                addPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
                 addNonPlayerSideEntitiesToTargetOptions(targetOptions, move, true);
+                addPlayerSideEntitiesToTargetOptions(targetOptions, move, false);
                 break;
         }
         return targetOptions;
@@ -1800,7 +1869,7 @@ public class CombatManager {
      * Adds non-player-side combating entity names to a list of selectable targets.
      * This method may be used for either a player-side entity's turn or a non-player-side entity's turn.
      * Non-player-side entities refers to combating entities fighting against the player's side.
-     * Only non-fainted entities will be added.
+     * Only valid entities per the move rules will be added.
      * The IDs of all added entities will also be added to the list of last generated selectable targets in the same
      * order.
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
@@ -1820,15 +1889,26 @@ public class CombatManager {
         }
         Collections.sort(tempNonPlayerSideEntities, (o1, o2) -> (int)(o1.getWorldY() - o2.getWorldY()));
 
-        for (EntityBase entity : tempNonPlayerSideEntities) {
+        if ((targetLockEntityId != -1)
+                && (tempNonPlayerSideEntities.contains(gp.getEntityM().getEntityById(targetLockEntityId)))
+                && (move.verifyTarget(targetLockEntityId))
+                && (gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
+                    != targetLockEntityId)) {                                                                           // An entity cannot lock onto itself.
 
-            if ((includeSelf
-                    || (gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
-                    != entity.getEntityId()))
-                    && (move.verifyTarget(entity.getEntityId()))) {
+            targetOptions.add(gp.getEntityM().getEntityById(targetLockEntityId).getName());
+            lastGeneratedTargetOptions.add(targetLockEntityId);
+        } else {
 
-                targetOptions.add(entity.getName());
-                lastGeneratedTargetOptions.add(entity.getEntityId());
+            for (EntityBase entity : tempNonPlayerSideEntities) {
+
+                if ((includeSelf                                                                                        // Check if entity whose turn it is (i.e., "self") is selectable.
+                        || (gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
+                        != entity.getEntityId()))                                                                       // If "self" is not selectable, ensure entity is not "self".
+                        && (move.verifyTarget(entity.getEntityId()))) {
+                    targetOptions.add(entity.getName());
+                    lastGeneratedTargetOptions.add(entity.getEntityId());
+
+                }
             }
         }
     }
@@ -1838,7 +1918,7 @@ public class CombatManager {
      * Adds player-side combating entity names to a list of selectable targets.
      * This method may be used for either a player-side entity's turn or a non-player-side entity's turn.
      * Player-side entities refer to combating entities (including the player entity) fighting on the player's side.
-     * Only non-fainted entities will be added.
+     * Only valid entities per the move rules will be added.
      * The IDs of all added entities will also be added to the list of last generated selectable targets in the same
      * order.
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
@@ -1867,15 +1947,26 @@ public class CombatManager {
         }
         Collections.sort(tempPlayerSideEntities, (o1, o2) -> (int)(o1.getWorldY() - o2.getWorldY()));
 
-        for (EntityBase entity : tempPlayerSideEntities) {
+        if ((targetLockEntityId != -1)
+                && (tempPlayerSideEntities.contains(gp.getEntityM().getEntityById(targetLockEntityId)))
+                && (move.verifyTarget(targetLockEntityId))
+                && (gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
+                    != targetLockEntityId)) {                                                                           // An entity cannot lock onto itself.
 
-            if ((includeSelf
-                    || (gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
-                    != entity.getEntityId()))
-                    && (move.verifyTarget(entity.getEntityId()))) {
+            targetOptions.add(gp.getEntityM().getEntityById(targetLockEntityId).getName());
+            lastGeneratedTargetOptions.add(targetLockEntityId);
+        } else {
 
-                targetOptions.add(entity.getName());
-                lastGeneratedTargetOptions.add(entity.getEntityId());
+            for (EntityBase entity : tempPlayerSideEntities) {
+
+                if ((includeSelf                                                                                        // Check if entity whose turn it is (i.e., "self") is selectable.
+                        || (gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
+                        != entity.getEntityId()))                                                                       // If "self" is not selectable, ensure entity is not "self".
+                        && (move.verifyTarget(entity.getEntityId()))) {
+
+                    targetOptions.add(entity.getName());
+                    lastGeneratedTargetOptions.add(entity.getEntityId());
+                }
             }
         }
     }
@@ -1885,7 +1976,7 @@ public class CombatManager {
      * Adds the name of the combating entity whose turn it is to a list of selectable targets.
      * This method may be used for either a player-side entity's turn or a non-player-side entity's turn.
      * The entity added may be either the player entity or a party member entity.
-     * Only non-fainted entities will be added.
+     * The entity will only be added if validated per the move rules.
      * The ID of the added entity will also be added to the list of last generated selectable targets.
      * Note that the list is pass-by-reference, so the original list passed is modified by this method with no need to
      * return a value.
@@ -1897,7 +1988,7 @@ public class CombatManager {
 
         if ((gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst()).getEntityId()
                     == gp.getEntityM().getPlayer().getEntityId())                                                       // Check if player entity is the self.
-                && (gp.getEntityM().getPlayer().getStatus() != EntityStatus.FAINT)) {
+                && (move.verifyTarget(gp.getEntityM().getPlayer().getEntityId()))) {
 
             targetOptions.add(gp.getEntityM().getPlayer().getName());
             lastGeneratedTargetOptions.add(gp.getEntityM().getPlayer().getEntityId());
@@ -2036,10 +2127,11 @@ public class CombatManager {
      * Builds a message for the use move message according to the passed entity name and move name.
      *
      * @param entityName attacking entity
-     * @param moveName move being used
+     * @param moveName name of move being used
+     * @param moveId ID of move being used
      * @return message
      */
-    private String buildUseMoveDialogue(String entityName, String moveName) {
+    private String buildUseMoveDialogue(String entityName, String moveName, int moveId) {
 
         String buildEntityName = "???";
         String buildMoveName = "???";
@@ -2048,10 +2140,15 @@ public class CombatManager {
             buildEntityName = entityName;
         }
 
-        if (!moveName.equals("")) {
-            buildMoveName = moveName;
+        if (moveId == 0) {
+            return buildEntityName + " attacked!";
+
+        } else {
+            if (!moveName.equals("")) {
+                buildMoveName = moveName;
+            }
+            return buildEntityName + " used " + buildMoveName + "!";
         }
-        return buildEntityName + " used " + buildMoveName + "!";
     }
 
 
@@ -2329,6 +2426,8 @@ public class CombatManager {
         lastGeneratedInactivePlayerSideOptions.clear();
         lastGeneratedTargetOptions.clear();
         guardingEntities.clear();
+        targetLockEntityId = -1;
+        targetLockTurns = 0;
         lastActionSubmenu = false;
         combatUiVisible = false;
         newTurnRootSubMenuDisplayed = false;
@@ -2387,6 +2486,16 @@ public class CombatManager {
 
     public void setLatestSubMenuSelectedOption(int selectedOption) {
         getLatestSubMenuMemory().setSelectedOption(selectedOption);
+    }
+
+    public void setTargetLockEntityId(int targetLockEntityId) {
+        this.targetLockEntityId = targetLockEntityId;
+    }
+
+    public void setTargetLockTurns(int targetLockTurns) {
+        if (targetLockTurns > 0) {
+            this.targetLockTurns = targetLockTurns;
+        }
     }
 
     public void setLastActionSubmenu(boolean lastActionSubmenu) {
