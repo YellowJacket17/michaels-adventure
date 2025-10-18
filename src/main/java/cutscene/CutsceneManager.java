@@ -4,6 +4,7 @@ import core.GamePanel;
 import cutscene.implementation.Cts_000;
 import cutscene.implementation.Cts_002;
 import cutscene.implementation.Cts_001;
+import utility.UtilityTool;
 
 /**
  * This class handles operations related to in-game cutscenes.
@@ -92,6 +93,10 @@ public class CutsceneManager {
      */
     public void initiateCutscene(int cutsceneNum) {
 
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Entering cutscene state with cutscene number '" + cutsceneNum + "'.");
+        }
         cutsceneActive = true;
         activeCutsceneNum = cutsceneNum;
     }
@@ -106,6 +111,10 @@ public class CutsceneManager {
      */
     public void exitCutscene() {
 
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Exiting cutscene state.");
+        }
         cutsceneActive = false;
         activeCutsceneNum = 0;
     }

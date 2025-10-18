@@ -17,9 +17,6 @@ import java.util.HashMap;
  */
 public class LandmarkManager {
 
-    // TODO : Consider pre-calculating collision on all tiles due to landmarks and storing it here in an boolean[][] the
-    //  size of the map (will decrease calculations in CollisionInspector class).
-
     // FIELDS
     private final GamePanel gp;
 

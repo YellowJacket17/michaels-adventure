@@ -3,8 +3,10 @@ package combat.implementation.move;
 import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import combat.enumeration.MoveTargets;
+import combat.implementation.action.Act_CustomEffect;
 import core.GamePanel;
 import org.joml.Vector3f;
+import utility.UtilityTool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +17,7 @@ import java.util.HashMap;
 public class Mve_Heal extends MoveBase {
 
     // FIELDS
-    private static final int mveId = 7;
+    private static final int mveId = -1;
     private static final String mveName = "Heal";
     private static final String mveDescription = "Restores 50% of an ally's HP.";
     private static final int mvePower = 0;
@@ -40,8 +42,9 @@ public class Mve_Heal extends MoveBase {
 
     // METHOD
     @Override
-    public void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityIds) {
+    public void runEffects(int sourceEntityId, HashMap<Integer, Integer> targetEntityDeltaLife) {
 
+        ArrayList<Integer> targetEntityIds = UtilityTool.extractKeySetAsArrayList(targetEntityDeltaLife);
         HashMap<Integer, Integer> targetEntitiesFinalLife = new HashMap<>();
         int calculatedFinalLife;
 
@@ -61,8 +64,8 @@ public class Mve_Heal extends MoveBase {
         entitiesFinalSkillPoints.put(
                 sourceEntityId,
                 gp.getEntityM().getEntityById(sourceEntityId).getSkill() - skillPoints);
-        gp.getCombatAnimationS().initiateCustomEffectAnimation(
-                targetEntitiesFinalLife, entitiesFinalSkillPoints, particleEffectColor, soundEffect, false, 0.4, 0.4);
+        gp.getCombatM().addQueuedActionBack(
+                new Act_CustomEffect(gp, targetEntitiesFinalLife, entitiesFinalSkillPoints, particleEffectColor, soundEffect, true));
     }
 
 

@@ -5,6 +5,7 @@ import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import core.GamePanel;
 import utility.LimitedArrayList;
+import utility.UtilityTool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,9 +57,28 @@ public class Act_UseMove extends ActionBase {
     @Override
     public void run() {
 
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Running combat move "
+                    + (((move.getName() != null)
+                    && (!move.getName().equals("")))
+                    ? "'" + (move.getName() + "' ")
+                    : "")
+                    + "with ID '"
+                    + move.getMoveId()
+                    + "'.");
+        }
+
         if (move.getCategory() == MoveCategory.SUPPORT) {
 
-            move.runEffects(sourceEntityId, targetEntityIds);
+            HashMap<Integer, Integer> targetEntitiesDeltaLife = new HashMap<>();
+
+            for (int targetEntityId : targetEntityIds) {
+
+                targetEntitiesDeltaLife.put(targetEntityId, 0);
+            }
+            move.runEffects(sourceEntityId, targetEntitiesDeltaLife);
+            gp.getCombatM().progressCombat();
         } else {
 
             HashMap<Integer, Integer> targetEntitiesFinalLife = new HashMap<>();
@@ -82,6 +102,10 @@ public class Act_UseMove extends ActionBase {
             }
             gp.getCombatAnimationS().initiateStandardMoveAnimation(
                     sourceEntityId, targetEntitiesFinalLife, move, 0.4, 0.4);                                           // Play standard attack animation (fainting + move affects applied afterward).
+
+            // NOTE: The `progressCombat()` method in CombatManager to hand off control to the next queued action will
+            // automatically be called once this move animation in the `updateStandardMoveAnimation()` method in
+            // CombatAnimationSupport is complete, hence why it is not called here.
         }
     }
 
@@ -91,13 +115,12 @@ public class Act_UseMove extends ActionBase {
      * Note that this method does not actually apply damage to the entity.
      *
      * @param targetEntityId ID of the entity to calculate damage for
-     * @return final life points of the targeted entity after applying damage
+     * @return change in life points of the targeted entity after applying damage
      */
     private int calculateDamage(int targetEntityId) {
 
         float rawTargetDamage;
         int actTargetDamage;
-        int targetFinalLife;
 
         if (move.getCategory() == MoveCategory.PHYSICAL) {
 
@@ -136,18 +159,10 @@ public class Act_UseMove extends ActionBase {
 
             if (actTargetDamage <= 0) {
 
-                actTargetDamage = 1;                                                                                       // Guarantee that at least one life point is taken for non-support moves.
+                actTargetDamage = 1;                                                                                    // Guarantee that at least one life point is taken for non-support moves.
             }
         }
-
-        if (gp.getEntityM().getEntityById(targetEntityId).getLife() - actTargetDamage < 0) {
-
-            targetFinalLife = 0;
-        } else {
-
-            targetFinalLife = gp.getEntityM().getEntityById(targetEntityId).getLife() - actTargetDamage;
-        }
-        return targetFinalLife;
+        return actTargetDamage;
     }
 
 

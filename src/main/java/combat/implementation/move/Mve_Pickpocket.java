@@ -3,10 +3,12 @@ package combat.implementation.move;
 import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import combat.enumeration.MoveTargets;
+import combat.implementation.action.Act_CustomEffect;
 import combat.implementation.action.Act_ReadMessage;
 import core.GamePanel;
 import entity.EntityBase;
 import org.joml.Vector3f;
+import utility.UtilityTool;
 
 import javax.swing.text.html.parser.Entity;
 import java.util.ArrayList;
@@ -43,12 +45,13 @@ public class Mve_Pickpocket extends MoveBase {
 
     // METHOD
     @Override
-    public void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityIds) {
+    public void runEffects(int sourceEntityId, HashMap<Integer, Integer> targetEntityDeltaLife) {
 
         int skillStolenPerEntity = 5;
         EntityBase targetEntity;
         int numEntitiesSkillStolen = 0;
         HashMap<Integer, Integer> entitiesFinalSkill = new HashMap<>();
+        ArrayList<Integer> targetEntityIds = UtilityTool.extractKeySetAsArrayList(targetEntityDeltaLife);
 
         for (int targetEntityId : targetEntityIds) {
 
@@ -69,16 +72,8 @@ public class Mve_Pickpocket extends MoveBase {
                     sourceEntityId,
                     gp.getEntityM().getEntityById(sourceEntityId).getSkill()
                             + (skillStolenPerEntity * numEntitiesSkillStolen));
-            ArrayList<Integer> animationEntityIds = new ArrayList<>();
-            animationEntityIds.add(sourceEntityId);
-            gp.getCombatAnimationS().initiateCustomEffectAnimation(
-                    animationEntityIds,
-                    entitiesFinalSkill,
-                    new Vector3f(166, 172, 255),
-                    "heal",
-                    true,
-                    0.4,
-                    0.4);
+            gp.getCombatM().addQueuedActionBack(
+                    new Act_CustomEffect(gp, entitiesFinalSkill, new Vector3f(166, 172, 255), "heal", true));
             String message = gp.getEntityM().getEntityById(sourceEntityId).getName()
                     + " stole "
                     + skillStolenPerEntity * numEntitiesSkillStolen

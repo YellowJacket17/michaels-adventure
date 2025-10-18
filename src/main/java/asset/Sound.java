@@ -1,6 +1,7 @@
 package asset;
 
 import asset.enumeration.SoundType;
+import utility.UtilityTool;
 import utility.exceptions.AssetLoadException;
 
 import java.nio.IntBuffer;
@@ -198,6 +199,14 @@ public class Sound {
      * @throws AssetLoadException
      */
     private void load() {
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+            if (type == SoundType.TRACK) {
+                UtilityTool.logInfo("Loading sound (track) from file: '" + introFilePath + "' + '" + loopFilePath + "'");
+            } else {
+                UtilityTool.logInfo("Loading sound (effect) from file: '" + introFilePath + "'");
+            }
+        }
 
         // Generate sound source.
         sourceId = alGenSources();

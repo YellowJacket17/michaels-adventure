@@ -29,6 +29,7 @@ public class UserInterface {
 
     // FIELDS
     private final GamePanel gp;
+
     private Renderer renderer;
 
     /**
@@ -208,7 +209,7 @@ public class UserInterface {
         }
 
         // SUB-MENU
-        if (gp.getSubMenuH().getSubMenuId() != 0) {
+        if (gp.getSubMenuH().getSubMenuId() != -1) {
             renderSubMenuScreen();
         }
 
@@ -1150,7 +1151,7 @@ public class UserInterface {
         }
 
         // Sub-menu option descriptions.
-        if (gp.getSubMenuH().getSubMenuId() != 0) {
+        if (gp.getSubMenuH().getSubMenuId() != -1) {
             renderCombatSubMenuDescriptionScreen();
         }
     }

@@ -1,2 +1,121 @@
-08/22/2025 23:26:30:739  INFO     Application started.
-08/22/2025 23:26:34:923  INFO     Starting game loop.
+10/17/2025 21:38:29:253  INFO     Starting application.
+10/17/2025 21:38:30:848  INFO     Loading shader from file: '/shaders/font.glsl'
+10/17/2025 21:38:30:851  INFO     Compiling and linking shader: '/shaders/font.glsl'
+10/17/2025 21:38:31:602  INFO     Loading shader from file: '/shaders/default.glsl'
+10/17/2025 21:38:31:604  INFO     Compiling and linking shader: '/shaders/default.glsl'
+10/17/2025 21:38:31:606  INFO     Loading shader from file: '/shaders/rounded.glsl'
+10/17/2025 21:38:31:609  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
+10/17/2025 21:38:31:613  INFO     Loading texture from file: '/spritesheets/tiles.png'
+10/17/2025 21:38:31:629  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
+10/17/2025 21:38:31:630  INFO     Loading texture from file: '/spritesheets/characters.png'
+10/17/2025 21:38:31:647  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
+10/17/2025 21:38:31:648  INFO     Loading texture from file: '/spritesheets/landmarks.png'
+10/17/2025 21:38:31:655  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
+10/17/2025 21:38:31:656  INFO     Loading texture from file: '/spritesheets/items.png'
+10/17/2025 21:38:31:657  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
+10/17/2025 21:38:31:658  INFO     Loading texture from file: '/spritesheets/icons.png'
+10/17/2025 21:38:31:660  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
+10/17/2025 21:38:31:661  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
+10/17/2025 21:38:31:662  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
+10/17/2025 21:38:31:663  INFO     Loading sound (track) from file: 'sound/tracks/endOfTheLine_intro.ogg' + 'sound/tracks/endOfTheLine_loop.ogg'
+10/17/2025 21:38:31:976  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
+10/17/2025 21:38:32:136  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
+10/17/2025 21:38:32:311  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
+10/17/2025 21:38:32:513  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
+10/17/2025 21:38:32:801  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
+10/17/2025 21:38:33:104  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
+10/17/2025 21:38:33:108  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
+10/17/2025 21:38:33:110  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
+10/17/2025 21:38:33:119  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
+10/17/2025 21:38:33:122  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
+10/17/2025 21:38:33:125  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
+10/17/2025 21:38:33:133  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
+10/17/2025 21:38:33:135  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
+10/17/2025 21:38:33:138  INFO     Loading texture from file: '/illustrations/illustration1.png'
+10/17/2025 21:38:33:568  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
+10/17/2025 21:38:33:568  INFO     Loading texture from file: '/illustrations/illustration2.png'
+10/17/2025 21:38:33:942  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
+10/17/2025 21:38:33:943  INFO     Loading texture from file: '/illustrations/illustration3.png'
+10/17/2025 21:38:34:348  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
+10/17/2025 21:38:34:349  INFO     Loading texture from file: '/illustrations/illustration5.png'
+10/17/2025 21:38:34:746  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
+10/17/2025 21:38:34:816  INFO     Loading map with ID '1' from file: '/json/maps.json'
+10/17/2025 21:38:34:826  INFO     Parsing map with ID '1' from JSON data.
+10/17/2025 21:38:34:840  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
+10/17/2025 21:38:34:843  INFO     Parsing entity with ID '1' from JSON data.
+10/17/2025 21:38:34:845  INFO     Parsing entity with ID '2' from JSON data.
+10/17/2025 21:38:34:845  INFO     Parsing entity with ID '3' from JSON data.
+10/17/2025 21:38:34:846  INFO     Parsing entity with ID '4' from JSON data.
+10/17/2025 21:38:34:846  INFO     Parsing entity with ID '5' from JSON data.
+10/17/2025 21:38:34:847  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
+10/17/2025 21:38:34:849  INFO     Parsing conversation with ID '0' from JSON data.
+10/17/2025 21:38:34:851  INFO     Parsing conversation with ID '1' from JSON data.
+10/17/2025 21:38:34:851  INFO     Parsing conversation with ID '2' from JSON data.
+10/17/2025 21:38:34:851  INFO     Parsing conversation with ID '3' from JSON data.
+10/17/2025 21:38:34:852  INFO     Parsing conversation with ID '4' from JSON data.
+10/17/2025 21:38:34:852  INFO     Parsing conversation with ID '5' from JSON data.
+10/17/2025 21:38:34:853  INFO     Parsing conversation with ID '6' from JSON data.
+10/17/2025 21:38:34:853  INFO     Parsing conversation with ID '7' from JSON data.
+10/17/2025 21:38:34:854  INFO     Parsing conversation with ID '8' from JSON data.
+10/17/2025 21:38:34:854  INFO     Parsing conversation with ID '9' from JSON data.
+10/17/2025 21:38:34:854  INFO     Parsing conversation with ID '10' from JSON data.
+10/17/2025 21:38:34:855  INFO     Setting fade state to 'ACTIVE'.
+10/17/2025 21:38:34:855  INFO     Setting fade state to 'FADE_FROM'.
+10/17/2025 21:38:34:875  INFO     Starting game loop.
+10/17/2025 21:38:35:433  INFO     Setting fade state to 'INACTIVE'.
+10/17/2025 21:38:36:634  INFO     Entering combat state with combat ID '0'.
+10/17/2025 21:38:36:635  INFO     Entering transition state of type 'ENTER_COMBAT'.
+10/17/2025 21:38:36:636  INFO     Locking player control.
+10/17/2025 21:38:36:637  INFO     Setting fade state to 'FADE_TO'.
+10/17/2025 21:38:37:132  INFO     Setting fade state to 'ACTIVE'.
+10/17/2025 21:38:37:383  INFO     Setting fade state to 'FADE_FROM'.
+10/17/2025 21:38:37:882  INFO     Setting fade state to 'INACTIVE'.
+10/17/2025 21:38:37:884  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:38:37:884  INFO     Exiting transition state of type 'ENTER_COMBAT'.
+10/17/2025 21:38:37:885  INFO     Unlocking player control.
+10/17/2025 21:38:38:966  INFO     Running combat action: Act_ToggleCombatUi
+10/17/2025 21:38:38:967  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:38:39:250  INFO     Running combat action: Act_GenerateSubMenu
+10/17/2025 21:38:40:966  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:38:41:433  INFO     Running combat action: Act_ToggleCombatUi
+10/17/2025 21:38:41:433  INFO     Running combat action: Act_ExitCombat
+10/17/2025 21:38:41:434  INFO     Entering transition state of type 'EXIT_COMBAT'.
+10/17/2025 21:38:41:435  INFO     Locking player control.
+10/17/2025 21:38:41:435  INFO     Setting fade state to 'FADE_TO'.
+10/17/2025 21:38:41:932  INFO     Setting fade state to 'ACTIVE'.
+10/17/2025 21:38:42:199  INFO     Setting fade state to 'FADE_FROM'.
+10/17/2025 21:38:42:698  INFO     Setting fade state to 'INACTIVE'.
+10/17/2025 21:38:42:699  INFO     Exiting combat state.
+10/17/2025 21:38:42:699  INFO     Exiting transition state of type 'EXIT_COMBAT'.
+10/17/2025 21:38:42:700  INFO     Unlocking player control.
+10/17/2025 21:38:43:465  INFO     Entering combat state with combat ID '0'.
+10/17/2025 21:38:43:466  INFO     Entering transition state of type 'ENTER_COMBAT'.
+10/17/2025 21:38:43:467  INFO     Locking player control.
+10/17/2025 21:38:43:468  INFO     Setting fade state to 'FADE_TO'.
+10/17/2025 21:38:43:965  INFO     Setting fade state to 'ACTIVE'.
+10/17/2025 21:38:44:216  INFO     Setting fade state to 'FADE_FROM'.
+10/17/2025 21:38:44:716  INFO     Setting fade state to 'INACTIVE'.
+10/17/2025 21:38:44:716  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:38:44:716  INFO     Exiting transition state of type 'ENTER_COMBAT'.
+10/17/2025 21:38:44:718  INFO     Unlocking player control.
+10/17/2025 21:38:52:164  INFO     Running combat action: Act_ToggleCombatUi
+10/17/2025 21:38:52:165  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:38:52:449  INFO     Running combat action: Act_GenerateSubMenu
+10/17/2025 21:38:56:465  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:38:56:466  INFO     Running combat action: Act_GenerateSubMenu
+10/17/2025 21:38:56:682  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:38:56:898  INFO     Running combat action: Act_UseMove
+10/17/2025 21:38:56:899  INFO     Running combat move 'Basic Attack' with ID '0'.
+10/17/2025 21:38:59:130  INFO     Starting combat turn of entity 'Shadow Test' with ID '5'.
+10/17/2025 21:38:59:131  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:38:59:630  INFO     Running combat action: Act_UseMove
+10/17/2025 21:38:59:631  INFO     Running combat move 'Dented Shield' with ID '6'.
+10/17/2025 21:39:02:463  INFO     Running combat action: Act_CustomEffect
+10/17/2025 21:39:04:029  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:39:12:928  INFO     Starting combat turn of entity 'Shadow' with ID '1'.
+10/17/2025 21:39:12:929  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:39:13:179  INFO     Running combat action: Act_UseMove
+10/17/2025 21:39:13:179  INFO     Running combat move 'Basic Attack' with ID '0'.
+10/17/2025 21:39:15:231  INFO     Starting combat turn of entity 'Mary' with ID '0'.
+10/17/2025 21:39:15:231  INFO     Running combat action: Act_ReadMessage
+10/17/2025 21:39:15:546  INFO     Running combat action: Act_GenerateSubMenu

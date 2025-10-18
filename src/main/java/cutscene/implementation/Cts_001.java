@@ -1,11 +1,8 @@
 package cutscene.implementation;
 
-import combat.enumeration.EnterCombatTransitionType;
 import core.enumeration.PrimaryGameState;
 import cutscene.CutsceneBase;
-import entity.EntityBase;
 import core.GamePanel;
-import entity.enumeration.DefaultAction;
 import entity.enumeration.EntityDirection;
 
 /**
@@ -149,7 +146,7 @@ public class Cts_001 extends CutsceneBase {
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getCameraS().setTrackedEntity(gp.getEntityM().getPlayer().getEntityId());
                     gp.getCameraS().setOverrideEntityTracking(true);                                                    // Prevent camera from immediately snapping to player entity.
-                    gp.getCombatM().initiateCombat(43, 9, EnterCombatTransitionType.BASIC, "runningLate", 1);
+                    gp.getCombatM().initiateCombat(0, 43, 9, "runningLate", 1);
                     // TODO : Make sure this cutscene cannot be triggered again.
                     //  If the player loses the fight, a different, quicker cutscene should be triggered.
                     //  If the player wins the fight, no cutscene should be triggered.

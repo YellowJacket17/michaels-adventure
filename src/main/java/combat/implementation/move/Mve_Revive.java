@@ -3,9 +3,11 @@ package combat.implementation.move;
 import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import combat.enumeration.MoveTargets;
+import combat.implementation.action.Act_CustomEffect;
 import core.GamePanel;
 import entity.enumeration.EntityStatus;
 import org.joml.Vector3f;
+import utility.UtilityTool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +18,7 @@ import java.util.HashMap;
 public class Mve_Revive extends MoveBase {
 
     // FIELDS
-    private static final int mveId = 6;
+    private static final int mveId = -2;
     private static final String mveName = "Revive";
     private static final String mveDescription = "Revives a fallen ally.";
     private static final int mvePower = 0;
@@ -41,13 +43,15 @@ public class Mve_Revive extends MoveBase {
 
     // METHODS
     @Override
-    public void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityIds) {
+    public void runEffects(int sourceEntityId, HashMap<Integer, Integer> targetEntityDeltaLife) {
+
+        ArrayList<Integer> targetEntityIds = UtilityTool.extractKeySetAsArrayList(targetEntityDeltaLife);
         HashMap<Integer, Integer> entitiesFinalSkillPoints = new HashMap<>();
         entitiesFinalSkillPoints.put(
                 sourceEntityId,
                 gp.getEntityM().getEntityById(sourceEntityId).getSkill() - skillPoints);
-        gp.getCombatAnimationS().initiateCustomEffectAnimation(
-                targetEntityIds,entitiesFinalSkillPoints, particleEffectColor, soundEffect, true, 0.4, 0.4);
+        gp.getCombatM().addQueuedActionBack(
+                new Act_CustomEffect(gp, entitiesFinalSkillPoints, particleEffectColor, soundEffect, true));
         gp.getCombatAnimationS().initiateStandardReviveAnimation(targetEntityIds, 0.4, 0.4);
     }
 

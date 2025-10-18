@@ -4,6 +4,7 @@ import core.GamePanel;
 import event.enumeration.FadeState;
 import event.enumeration.TransitionType;
 import org.joml.Vector3f;
+import utility.UtilityTool;
 
 /**
  * This class contains methods to facilitate transitions, defined as a dressed-up as a fade to/from loading screen that
@@ -94,6 +95,10 @@ public class TransitionSupport {
      */
     public void initiateTransition(TransitionType transitionType) {
 
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Entering transition state of type '" + transitionType + "'.");
+        }
         gp.setLockPlayerControl(true);                                                                                  // Prevent player from providing inputs.
         transitionActive = true;                                                                                        // Indicate that a transition is being actioned.
         activeTransitionType = transitionType;                                                                          // Set the overarching transition type.
@@ -140,6 +145,11 @@ public class TransitionSupport {
             case EXIT_COMBAT:
                 gp.getCombatM().concludeExitCombatTransition();
                 break;
+        }
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Exiting transition state of type '" + activeTransitionType + "'.");
         }
         gp.getFadeS().reset();                                                                                          // Reset.
         activeTransitionType = TransitionType.DEFAULT;                                                                  // Reset.

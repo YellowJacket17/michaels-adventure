@@ -136,11 +136,11 @@ public class AssetPool {
     /**
      * Purges all loaded spritesheets along with their underlying textures, which are freed from memory.
      * If said textures are loaded in the TEXTURES (hash)map, they will also be removed from there.
-     * Note that if said textures were associated with any other assets (illustrations, spritesheets, etc.) or otherwise
-     * referenced, said assets/references will no longer be valid.
+     * Note that if said textures were associated with any other assets (e.g., illustrations) or otherwise referenced,
+     * said assets/references will no longer be valid despite the Texture instances not being destructed.
      * This invalidation includes any derived sprites.
-     * Also note that this method does not destruct any object instances, which must be managed by JVM garbage
-     * collection.
+     * Also note that this method does not destruct any object instances (Spritesheet, Texture, etc.), which must be
+     * managed by JVM garbage collection.
      * If no spritesheets are currently loaded, nothing will happen.
      */
     public static void purgeSpritesheets() {
@@ -324,10 +324,10 @@ public class AssetPool {
     /**
      * Purges all loaded illustrations along with their underlying textures, which are freed from memory.
      * If said textures are loaded in the TEXTURES (hash)map, they will also be removed from there.
-     * Note that if said textures were associated with any other assets (illustrations, spritesheets, etc.) or otherwise
-     * referenced, said assets/references will no longer be valid.
-     * Also note that this method does not destruct any object instances, which must be managed by JVM garbage
-     * collection.
+     * Note that if said textures were associated with any other assets (e.g., spritesheets) or otherwise referenced,
+     * said assets/references will no longer be valid despite the Texture instances not being destructed.
+     * Also note that this method does not destruct any object instances (Spritesheet, Texture, etc.), which must be
+     * managed by JVM garbage collection.
      * If no illustrations are currently loaded, nothing will happen.
      */
     public static void purgeIllustrations() {

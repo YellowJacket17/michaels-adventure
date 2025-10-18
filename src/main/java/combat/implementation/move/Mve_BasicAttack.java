@@ -7,6 +7,7 @@ import core.GamePanel;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -41,5 +42,5 @@ public class Mve_BasicAttack extends MoveBase {
 
     // METHOD
     @Override
-    public void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityIds) {}
+    public void runEffects(int sourceEntityId, HashMap<Integer, Integer> targetEntityDeltaLife) {}
 }

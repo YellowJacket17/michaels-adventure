@@ -489,7 +489,7 @@ public class Player extends EntityBase {
         combatFaintRight3_2 = AssetPool.getSpritesheet("characters").getSprite(35);
         combatFaintRight4_2 = AssetPool.getSpritesheet("characters").getSprite(37);
         combatFaintRight5_2 = AssetPool.getSpritesheet("characters").getSprite(39);
-        combatFaintRight5_2 = AssetPool.getSpritesheet("characters").getSprite(41);
+        combatFaintRight6_2 = AssetPool.getSpritesheet("characters").getSprite(41);
 
         sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();
@@ -503,11 +503,11 @@ public class Player extends EntityBase {
     private void setInitialValues() {
 
         // World position.
-        setCol(8);  //47
-        setRow(43); //16
+        setCol(47); //8
+        setRow(16); //43
 
         // Direction.
-        setDirectionCurrent(EntityDirection.DOWN);
+        setDirectionCurrent(EntityDirection.UP);
 
         // Basic attributes.
         setName("Mary");

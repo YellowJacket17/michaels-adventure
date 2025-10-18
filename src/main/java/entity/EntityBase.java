@@ -1415,8 +1415,8 @@ public abstract class EntityBase extends Drawable {
                 break;
         }
 
-        if (!((this.entityId == gp.getEntityM().getPlayer().getEntityId()) && gp.isDebugActive())                       // Allow player entity to walk sans-collision when debug mode is active.
-                && gp.getCollisionI().calculateCollisionAll(targetCol, targetRow, this, true)) {     // Check all possible collision of entity.
+        if (!(gp.isDebugActive() && (this.entityId == gp.getEntityM().getPlayer().getEntityId()))                       // Allow player entity to walk sans-collision when debug mode is active.
+                && gp.getCollisionI().calculateCollisionAll(targetCol, targetRow, this, true)) {                        // Check all possible collision of entity.
 
             colliding = true;
         }

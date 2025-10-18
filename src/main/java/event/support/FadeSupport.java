@@ -3,6 +3,7 @@ package event.support;
 import core.GamePanel;
 import event.enumeration.FadeState;
 import org.joml.Vector3f;
+import utility.UtilityTool;
 
 /**
  * This class contains methods to facilitate fading the screen to and from a solid color.
@@ -75,6 +76,9 @@ public class FadeSupport {
             case FADE_TO:
                 fadeCounter += dt;
                 if (fadeCounter >= fadeCounterFadeToMax) {
+                    if (UtilityTool.VERBOSE_LOGGING) {
+                        logVerbose(FadeState.ACTIVE);
+                    }
                     state = FadeState.ACTIVE;
                     if (flashActive) {
                         fadeCounter -= fadeCounterFadeToMax;
@@ -85,6 +89,9 @@ public class FadeSupport {
                 if (flashActive) {
                     fadeCounter += dt;
                     if (fadeCounter >= fadeCounterActiveMax) {
+                        if (UtilityTool.VERBOSE_LOGGING) {
+                            logVerbose(FadeState.FADE_FROM);
+                        }
                         state = FadeState.FADE_FROM;
                         if (flashActive) {
                             fadeCounter -= fadeCounterActiveMax;
@@ -96,6 +103,9 @@ public class FadeSupport {
                 fadeCounter += dt;
                 if (fadeCounter >= fadeCounterFadeFromMax) {
                     fadeCounter -= fadeCounterFadeFromMax;
+                    if (UtilityTool.VERBOSE_LOGGING) {
+                        logVerbose(FadeState.INACTIVE);
+                    }
                     state = FadeState.INACTIVE;
                     if (flashActive) {
                         flashActive = false;
@@ -120,6 +130,10 @@ public class FadeSupport {
 
         if ((state == FadeState.INACTIVE) && (!flashActive)) {
 
+            if (UtilityTool.VERBOSE_LOGGING) {
+
+                logVerbose(FadeState.FADE_TO);
+            }
             flashActive = true;
             state = FadeState.FADE_TO;
             fadeCounter = 0;                                                                                            // Reset in case not already.
@@ -142,6 +156,10 @@ public class FadeSupport {
 
         if ((state == FadeState.INACTIVE) && (!flashActive)) {
 
+            if (UtilityTool.VERBOSE_LOGGING) {
+
+                logVerbose(FadeState.FADE_TO);
+            }
             state = FadeState.FADE_TO;
             fadeCounter = 0;                                                                                            // Reset in case not already.
             fadeCounterFadeToMax = fadeToDuration;
@@ -160,6 +178,10 @@ public class FadeSupport {
 
         if ((state == FadeState.ACTIVE) && (!flashActive)) {
 
+            if (UtilityTool.VERBOSE_LOGGING) {
+
+                logVerbose(FadeState.FADE_FROM);
+            }
             state = FadeState.FADE_FROM;
             fadeCounter = 0;                                                                                            // Reset in case not already.
             fadeCounterFadeFromMax = fadeFromDuration;
@@ -177,9 +199,24 @@ public class FadeSupport {
 
         if ((state != FadeState.FADE_TO) && (state != FadeState.FADE_FROM) && (!flashActive)) {
 
+            if (UtilityTool.VERBOSE_LOGGING) {
+
+                logVerbose(FadeState.ACTIVE);
+            }
             state = FadeState.ACTIVE;
             this.color = color;
         }
+    }
+
+
+    /**
+     * Logs a verbose message to the console and temporary log file.
+     *
+     * @param fadeState state change to log
+     */
+    private void logVerbose(FadeState fadeState) {
+
+        UtilityTool.logInfo("Setting fade state to '" + fadeState + "'.");
     }
 
 
@@ -192,7 +229,14 @@ public class FadeSupport {
 
         if (((state == FadeState.ACTIVE) || (state == FadeState.INACTIVE)) && (!flashActive)) {
 
-            state = FadeState.INACTIVE;
+            if (state != FadeState.INACTIVE) {
+
+                if (UtilityTool.VERBOSE_LOGGING) {
+
+                    logVerbose(FadeState.INACTIVE);
+                }
+                state = FadeState.INACTIVE;
+            }
             fadeCounterFadeToMax = 0;
             fadeCounterFadeFromMax = 0;
             fadeCounterActiveMax = 0;

@@ -224,6 +224,10 @@ public class Shader {
      */
     private void load() {
 
+        if (UtilityTool.VERBOSE_LOGGING) {
+            UtilityTool.logInfo("Loading shader from file: '" + filePath + "'");
+        }
+
         try (InputStream is = getClass().getResourceAsStream(filePath)) {
 
             // Load file.
@@ -270,6 +274,10 @@ public class Shader {
      * @throws AssetLoadException
      */
     private void compileAndLink() {
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+            UtilityTool.logInfo("Compiling and linking shader: '" + filePath + "'");
+        }
 
         // Compile vertex shaders.
         int vertexId = glCreateShader(GL_VERTEX_SHADER);                                                                // Load and compile vertex shader.

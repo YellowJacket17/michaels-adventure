@@ -23,7 +23,7 @@
             "defaultRow": 8
         },
         "moves": {
-            "1": 5
+          "1": 5
         }
     },
 
@@ -55,5 +55,33 @@
             "defaultCol": 16,
             "defaultRow": 6
         }
+    },
+
+  "5": {
+    "type": "character",
+    "class": "Npc_Shadow",
+    "collision": true,
+    "defaultAction": "static",
+    "defaultDirection": "up",
+    "map": 1,
+    "attributes": {
+      "name": "Shadow Test",
+      "speed": 110,
+      "maxLife": 270,
+      "life": 270,
+      "maxSkill": 60,
+      "skill": 60,
+      "baseAttack": 60,
+      "baseDefense": 90,
+      "baseMagic": 60,
+      "baseAgility": 85
+    },
+    "position": {
+      "defaultCol": 45,
+      "defaultRow": 8
+    },
+    "moves": {
+      "1": 6
     }
+  }
 }

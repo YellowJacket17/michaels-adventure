@@ -7,6 +7,7 @@ import core.GamePanel;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This class defines a move (Sneakstrike).
@@ -39,5 +40,5 @@ public class Mve_Sneakstrike extends MoveBase {
 
     // METHOD
     @Override
-    public void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityIds) {}
+    public void runEffects(int sourceEntityId, HashMap<Integer, Integer> targetEntityDeltaLife) {}
 }

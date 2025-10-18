@@ -1,6 +1,7 @@
 package cutscene;
 
 import core.GamePanel;
+import utility.UtilityTool;
 
 /**
  * This abstract class defines base logic for a cutscene.
@@ -48,6 +49,10 @@ public abstract class CutsceneBase {
      */
     public void progressCutscene() {
 
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Progressing cutscene to phase '" + scenePhase + "'.");
+        }
         scenePhase++;
     }
 

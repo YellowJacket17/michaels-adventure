@@ -1,7 +1,9 @@
 package asset;
 
+import asset.enumeration.SoundType;
 import core.GamePanel;
 import org.joml.Vector2f;
+import utility.UtilityTool;
 
 /**
  * This class defines an illustration to be displayed.
@@ -10,9 +12,14 @@ public class Illustration {
 
     // FIELDS
     /**
+     * Parent texture of this illustration.
+     */
+    private final Texture texture;
+
+    /**
      * Sprite containing this illustration.
      */
-    private final Sprite sprite;
+    private Sprite sprite;
 
     /**
      * Argument to be passed when no illustration is to be displayed.
@@ -27,6 +34,22 @@ public class Illustration {
      * @param texture parent texture of this illustration
      */
     public Illustration(Texture texture) {
+
+        this.texture = texture;
+        load();
+    }
+
+
+    // METHOD
+    /**
+     * Derives a sprite from a texture containing this illustration.
+     */
+    private void load() {
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Loading illustration from texture: '" + texture.getFilePath() + "'");
+        }
         Vector2f[] textureCoords = {
                 new Vector2f(1, 1),
                 new Vector2f(1, 0),

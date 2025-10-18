@@ -41,7 +41,16 @@ public class Act_FaintEntity extends ActionBase {
                 gp.getCombatM().getGuardingEntities().remove(entityId);
             }
             gp.getEntityM().getEntityById(entityId).resetSecondaryAttributes();                                         // Reset attack, defense, magic, and agility attributes if applicable.
+
+            if (gp.getCombatM().getTargetLockEntityId() == entityId) {
+
+                gp.getCombatM().resetTargetLockEntity();
+            }
         }
         gp.getCombatAnimationS().initiateStandardFaintAnimation(entityIds, 0, 0.1);
+
+        // NOTE: The `progressCombat()` method in CombatManager to hand off control to the next queued action will
+        // automatically be called once this animation in the `updateStandardFaintAnimation()` method in
+        // CombatAnimationSupport is complete, hence why it is not called here.
     }
 }

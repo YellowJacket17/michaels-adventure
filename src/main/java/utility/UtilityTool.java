@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 /**
  * This class contains miscellaneous methods to support the game.
@@ -16,6 +16,11 @@ import java.util.Date;
 public class UtilityTool {
 
     // FIELDS
+    /**
+     * Boolean indicating whether verbose logging is active (true) or not (false).
+     */
+    public static final boolean VERBOSE_LOGGING = true;
+
     /**
      * Output stream (console).
      */
@@ -197,6 +202,58 @@ public class UtilityTool {
                 }
             } catch (IOException ex) {}
         }
+    }
+
+
+    /**
+     * Builds message listing entity names.
+     * (Example: "EntityName1, EntityName2, and EntityName3")
+     *
+     * @param entityNames names of entities to be listed
+     * @return message
+     */
+    public static String buildEntityListMessage(ArrayList<String> entityNames) {
+
+        String build = "";
+        int i = 0;
+
+        for (String entityName : entityNames) {
+
+            if (i == (entityNames.size() - 1)) {
+
+                if (i > 0) {
+
+                    build += "and ";
+                }
+                build += entityName + "'s";
+            } else {
+
+                build += entityName;
+
+                if (entityNames.size() > 2) {
+
+                    build += ", ";
+                } else {
+
+                    build += " ";
+                }
+            }
+            i++;
+        }
+        return build;
+    }
+
+
+    /**
+     * Extracts a keyset from a map.
+     *
+     * @param map map from which to extract keys
+     * @return keyset as ArrayList
+     */
+    public static ArrayList<Integer> extractKeySetAsArrayList(Map<Integer, Integer> map) {
+
+        Set<Integer> set = map.keySet();
+        return new ArrayList<>(set);
     }
 
 

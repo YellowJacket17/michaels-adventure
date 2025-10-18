@@ -3,12 +3,15 @@ package combat.implementation.move;
 import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import combat.enumeration.MoveTargets;
+import combat.implementation.action.Act_CustomEffect;
 import combat.implementation.action.Act_ReadMessage;
 import core.GamePanel;
 import entity.EntityBase;
 import org.joml.Vector3f;
+import utility.UtilityTool;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This class defines a move (Burning Dagger).
@@ -41,10 +44,11 @@ public class Mve_BurningDagger extends MoveBase {
 
     // METHOD
     @Override
-    public void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityIds) {
+    public void runEffects(int sourceEntityId, HashMap<Integer, Integer> targetEntityDeltaLife) {
 
         EntityBase targetEntity;
         ArrayList<Integer> affectedTargetEntityIds = new ArrayList<>();
+        ArrayList<Integer> targetEntityIds = UtilityTool.extractKeySetAsArrayList(targetEntityDeltaLife);
 
         for (int targetEntityId : targetEntityIds) {
 
@@ -58,13 +62,8 @@ public class Mve_BurningDagger extends MoveBase {
 
         if (affectedTargetEntityIds.size() > 0) {
 
-            gp.getCombatAnimationS().initiateCustomEffectAnimation(
-                    targetEntityIds,
-                    new Vector3f(255, 166, 190),
-                    "attributeDecrease",
-                    true,
-                    0.4,
-                    0.4);
+            gp.getCombatM().addQueuedActionBack(
+                    new Act_CustomEffect(gp, targetEntityIds, new Vector3f(255, 166, 190), "attributeDecrease", true));
             String message = buildEffectMessage(affectedTargetEntityIds);
             gp.getCombatM().addQueuedActionBack(
                     new Act_ReadMessage(gp, message, true, true));
@@ -80,33 +79,14 @@ public class Mve_BurningDagger extends MoveBase {
      */
     private String buildEffectMessage(ArrayList<Integer> targetEntityIds) {
 
-        String build = "";
-        int i = 0;
+        ArrayList<String> targetEntityNames = new ArrayList<>();
 
         for (int entityId : targetEntityIds) {
 
-            if (i == (targetEntityIds.size() - 1)) {
-
-                if (i > 0) {
-
-                    build += "and ";
-                }
-                build += gp.getEntityM().getEntityById(entityId).getName() + "'s";
-            } else {
-
-                build += gp.getEntityM().getEntityById(entityId).getName();
-
-                if (targetEntityIds.size() > 2) {
-
-                    build += ", ";
-                } else {
-
-                    build += " ";
-                }
-            }
-            i++;
+            targetEntityNames.add(gp.getEntityM().getEntityById(entityId).getName());
         }
-        build += " attack fell!";
-        return build;
+        String message = UtilityTool.buildEntityListMessage(targetEntityNames);
+        message += " attack fell!";
+        return message;
     }
 }

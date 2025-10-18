@@ -96,6 +96,10 @@ public class Texture {
      */
     private void load() {
 
+        if (UtilityTool.VERBOSE_LOGGING) {
+            UtilityTool.logInfo("Loading texture from file: '" + filePath + "'");
+        }
+
         // Generate texture on GPU.
         textureId = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, textureId);
@@ -161,7 +165,7 @@ public class Texture {
 
     /**
      * Frees this memory if this texture is finished being used.
-     * Note that this does not destruct this texture instance, which must be managed by JVM garbage collection.
+     * Note that this does not destruct this Texture instance, which must be managed by JVM garbage collection.
      */
     public void delete() {
 

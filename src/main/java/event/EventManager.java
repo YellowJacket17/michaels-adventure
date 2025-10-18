@@ -11,6 +11,7 @@ import entity.enumeration.EntityDirection;
 import event.implementation.map.Evt_Map001;
 import event.implementation.submenu.Evt_SubMenu002;
 import event.implementation.submenu.Evt_SubMenu001;
+import utility.UtilityTool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -237,7 +238,23 @@ public class EventManager {
             case 6:
                 cleanupConversation(3);
                 break;
+            case 7:
+                cleanupConversation(3);
+                break;
+            case 8:
+                cleanupConversation(3);
+                break;
+            case 9:
+                cleanupConversation(3);
+                break;
+            case 10:
+                cleanupConversation(3);
+                break;
             default:
+                // TODO : It would be best practice to have the default execution mode be '3'.
+                //  At the moment, default behaviour executes for standard messages, (ID of '-1'), etc.
+                //  A standard message, for example is what executes when picking up an item.
+                //  To change the default execution mode, downstream ramifications would need to be evaluated.
                 cleanupConversation(1);
         }
     }
@@ -245,8 +262,7 @@ public class EventManager {
 
     /**
      * Handles what logic should be run based on the selection the player made in a sub-menu.
-     * If a valid sub-menu ID is not passed, the primary game state defaults to an explore state and nothing else
-     * happens.
+     * If a valid sub-menu ID is not passed, then nothing will happen.
      *
      * @param subMenuId ID of sub-menu being handled
      * @param selectedIndex index of selected sub-menu option
@@ -256,6 +272,11 @@ public class EventManager {
         if (!gp.getSubMenuH().getDisabledOptions().contains(selectedIndex)) {
 
             switch (subMenuId) {
+                case 0:
+                    UtilityTool.logWarning("Sub-menu with default ID '"
+                            + subMenuId
+                            + "' detected; no selection logic will execute.");
+                    cleanupSubmenu(3);
                 case 1:
                     evt_subMenu001.run(selectedIndex);
                     break;
@@ -266,7 +287,10 @@ public class EventManager {
                     evt_subMenu003.run(selectedIndex);
                     break;
                 default:
-                    cleanupSubmenu(1);
+                    UtilityTool.logWarning("No selection logic specified for sub-menu with ID '"
+                            + subMenuId
+                            + "'.");
+                    cleanupSubmenu(3);
             }
         }
     }

@@ -7,6 +7,7 @@ import entity.enumeration.EntityStatus;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -109,11 +110,15 @@ public abstract class MoveBase {
     // METHODS
     /**
      * Runs move effect logic.
+     * Note that the `progressCombat()` method in CombatManager should NOT be called somewhere through this method's
+     * logic to hand off control to the next queued action.
+     * This will be called automatically in Act_UseMove (support) or CombatAnimationSupport (non-support).
      *
      * @param sourceEntityId ID of entity using move
-     * @param targetEntityId IDs of entities targeted by move
+     * @param targetEntityDeltaLife Calculated change in life points (positive for decrease, negative for increase) of
+     *                              each targeted entity; entity ID is the key, life points is the value.
      */
-    public abstract void runEffects(int sourceEntityId, ArrayList<Integer> targetEntityId);
+    public abstract void runEffects(int sourceEntityId, HashMap<Integer, Integer> targetEntityDeltaLife);
 
 
     /**

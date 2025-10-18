@@ -1,6 +1,7 @@
 package asset;
 
 import org.joml.Vector2f;
+import utility.UtilityTool;
 
 import java.util.ArrayList;
 
@@ -72,6 +73,9 @@ public class Spritesheet {
      */
     private void loadUniform(int numSprites, int spriteWidth, int spriteHeight, int padding) {
 
+        if (UtilityTool.VERBOSE_LOGGING) {
+            UtilityTool.logInfo("Loading uniform spritesheet from texture: '" + texture.getFilePath() + "'");
+        }
         int currentX = padding;
         int currentY = texture.getNativeHeight() - spriteHeight - padding;
 
@@ -120,6 +124,9 @@ public class Spritesheet {
      */
     private void loadNonUniform(int numSprites, int[] spriteWidths, int[] spriteHeights, int padding) {
 
+        if (UtilityTool.VERBOSE_LOGGING) {
+            UtilityTool.logInfo("Loading non-uniform spritesheet from texture: '" + texture.getFilePath() + "'");
+        }
         int currentX = padding;
         int currentY = texture.getNativeHeight() - spriteHeights[0] - padding;
 

@@ -1,6 +1,5 @@
 package event.implementation.map;
 
-import combat.enumeration.EnterCombatTransitionType;
 import core.GamePanel;
 import entity.EntityBase;
 import entity.enumeration.EntityDirection;
@@ -75,8 +74,8 @@ public class Evt_Map001 extends EventMapBase {
 
         // Shadow encounter cutscene.
         if ((col == 47) && (row == 13) && (direction == EntityDirection.UP)) {
-            gp.getCutsceneM().initiateCutscene(1);
-//            gp.getCombatM().initiateCombat(43, 9, EnterCombatTransitionType.BASIC, "runningLate", 1);
+//            gp.getCutsceneM().initiateCutscene(1);
+            gp.getCombatM().initiateCombat(0, 43, 9, "runningLate", 1, 5);
         }
         return false;
     }

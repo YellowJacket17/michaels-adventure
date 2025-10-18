@@ -161,6 +161,10 @@ public class Act_GenerateSubMenu extends ActionBase {
         gp.getCombatM().addSubMenuMemory(subMenuMemory);
         gp.getCombatM().setLastActionSubmenu(true);
         displaySubMenu();
+
+        // NOTE: The `progressCombat()` method in CombatManager to hand off control to the next queued action will
+        // automatically be called once this sub-menu is progressed in the `run()` method in Evt_SubMenu001, hence
+        // why it is not called here.
     }
 
 

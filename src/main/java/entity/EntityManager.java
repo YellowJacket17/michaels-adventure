@@ -254,9 +254,9 @@ public class EntityManager {
                 throw new EntityTransferException("Failed to transfer entity "
                         + (((entity.getName() != null) && (!entity.getName().equals("")))
                         ? "'" + (entity.getName() + "' ") : "")
-                        + "with ID "
+                        + "with ID '"
                         + entityId
-                        + " from source map to target map: target map full");
+                        + "' from source map to target map: target map full");
             }
             source.remove(entityId);
         } else {

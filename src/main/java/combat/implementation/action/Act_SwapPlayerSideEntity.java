@@ -39,5 +39,9 @@ public class Act_SwapPlayerSideEntity extends ActionBase {
             gp.getCombatM().getGuardingEntities().remove(entityId2);
         }
         gp.getCombatAnimationS().initiateStandardPartySwapAnimation(entityId1, entityId2, 0, 0.1);
+
+        // NOTE: The `progressCombat()` method in CombatManager to hand off control to the next queued action will
+        // automatically be called once this animation in the `updateStandardPartySwapAnimation()` method in
+        // CombatAnimationSupport is complete, hence why it is not called here.
     }
 }

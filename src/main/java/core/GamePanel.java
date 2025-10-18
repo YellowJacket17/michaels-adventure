@@ -6,6 +6,7 @@ import asset.AssetPool;
 import asset.Illustration;
 import combat.*;
 import combat.support.CombatAnimationSupport;
+import combat.support.CombatLoadSupport;
 import core.enumeration.PrimaryGameState;
 import cutscene.CutsceneManager;
 import dialogue.DialogueArrow;
@@ -98,6 +99,7 @@ public class GamePanel {
     private final TransitionSupport transitionS = new TransitionSupport(this);
     private final IllustrationSupport illustrationS = new IllustrationSupport(this);
     private final CombatAnimationSupport combatAnimationS = new CombatAnimationSupport(this);
+    private final CombatLoadSupport combatLoadS = new CombatLoadSupport(this);
     private final PathFinder pathF = new PathFinder(this);
     private final UserInterface ui = new UserInterface(this);
 
@@ -547,6 +549,10 @@ public class GamePanel {
         return combatAnimationS;
     }
 
+    public CombatLoadSupport getCombatLoadS() {
+        return combatLoadS;
+    }
+
     public PathFinder getPathF() {
         return pathF;
     }
@@ -609,6 +615,13 @@ public class GamePanel {
     }
 
     public void setLockPlayerControl(boolean lockPlayerControl) {
+        if (UtilityTool.VERBOSE_LOGGING) {
+            if (lockPlayerControl) {
+                UtilityTool.logInfo("Locking player control.");
+            } else {
+                UtilityTool.logInfo("Unlocking player control.");
+            }
+        }
         this.lockPlayerControl = lockPlayerControl;
     }
 

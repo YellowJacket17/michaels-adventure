@@ -40,6 +40,11 @@ public class Act_ReadMessage extends ActionBase {
     public void run() {
 
         displayMessage();
+
+        // NOTE: The `progressCombat()` method in CombatManager to hand off control to the next queued action will
+        // automatically be called once this dialogue is progressed in the `updateDialogueInput()` method in Player
+        // (interactive) or the `handlePostConversation()` method in DialogueReader (noninteractive), hence why it is
+        // not called here.
     }
 
 

@@ -38,6 +38,12 @@ public class CombatAnimationSupport {
     private MoveBase smaMove;
 
     /**
+     * Calculated change in life points (positive for decrease, negative for increase) of each targeted entity after
+     * applying damage/restoration for a standard move animation; entity ID is the key, life points is the value.
+     */
+    private final HashMap<Integer, Integer> smaTargetEntitiesDeltaLife = new HashMap<>();
+
+    /**
      * Calculated final life points of each targeted entity after applying damage/restoration for a standard move
      * animation; entity ID is the key, life points is the value.
      */
@@ -242,15 +248,6 @@ public class CombatAnimationSupport {
     }
 
 
-    // TODO : Consider modifying standard move animation to only finish once sound effect is complete.
-
-
-    // TODO : Consider making versions of `initiateCustomEffectAnimation()` that do not require skill points as arguments.
-
-
-    // TODO : Consider making smooth skill point bar animation, similar to health bar animation.
-
-
     // METHODS
     /**
      * Updates the state of any active combat animation by one frame.
@@ -338,30 +335,34 @@ public class CombatAnimationSupport {
      * If a standard move animation is already active, nothing will happen.
      *
      * @param sourceEntityId ID of entity using the animated combat move
-     * @param targetEntitiesFinalLife calculated final life points of each targeted entity after applying damage; entity
-     *                                ID is the key, life points is the value
+     * @param targetEntitiesDeltaLife calculated change in life points (positive for decrease, negative for increase) of
+     *                                each targeted entity after applying damage/restoration; entity ID is the key, life
+     *                                points is the value
      * @param move combat move being used for animation
      * @param frontDelay time to delay the start of the actual animation from when this method ia called (seconds)
      * @param backDelay time between when the actual animation is complete and control is handed off to the next queued
      *                  combat action (seconds)
      */
-    public void initiateStandardMoveAnimation(int sourceEntityId, HashMap<Integer, Integer> targetEntitiesFinalLife,
+    public void initiateStandardMoveAnimation(int sourceEntityId, HashMap<Integer, Integer> targetEntitiesDeltaLife,
                                               MoveBase move, double frontDelay, double backDelay) {
 
         if (!standardMoveAnimationActive) {
 
             smaSourceEntityId = sourceEntityId;
 
-            for (int targetEntityId : targetEntitiesFinalLife.keySet()) {
+            for (int targetEntityId : targetEntitiesDeltaLife.keySet()) {
 
-                smaTargetEntitiesFinalLife.put(targetEntityId, targetEntitiesFinalLife.get(targetEntityId));
+                smaTargetEntitiesDeltaLife.put(targetEntityId, targetEntitiesDeltaLife.get(targetEntityId));
+                smaTargetEntitiesFinalLife.put(targetEntityId,
+                        calculateFinalLife(targetEntityId, targetEntitiesDeltaLife.get(targetEntityId)));
                 smaTargetEntitiesDamageRemainder.put(targetEntityId, 0.0);
 
-                if (targetEntitiesFinalLife.get(targetEntityId)
+                if (smaTargetEntitiesFinalLife.get(targetEntityId)
                         > gp.getEntityM().getEntityById(targetEntityId).getLife()) {
 
                     smaTargetEntitiesLifeIncrease.put(targetEntityId, true);
                 } else {
+
                     smaTargetEntitiesLifeIncrease.put(targetEntityId, false);
                 }
             }
@@ -533,10 +534,8 @@ public class CombatAnimationSupport {
      * Initiates a custom effect animation to play.
      * If a custom effect animation is already active, nothing will happen.
      *
-     * @param entityIds IDs of entities participating in the animation
      * @param entitiesFinalSkillPoints calculated final skill points of each participating entity; entity ID is the key,
-     *                                 skill points is the value; if a participating entity has no skill point
-     *                                 modification, then in may be omitted from this map
+     *                                 skill points is the value
      * @param particleEffectColor particle effect color (r, g, b)
      * @param soundEffectResourceName sound effect resource name
      * @param waitToProgressCombat whether to wait to hand off control to the next queued combat action until all other
@@ -547,8 +546,7 @@ public class CombatAnimationSupport {
      * @param backDelay time between when the actual animation is complete and control is handed off to the next queued
      *                  combat action (seconds)
      */
-    public void initiateCustomEffectAnimation(ArrayList<Integer> entityIds,
-                                              HashMap<Integer, Integer> entitiesFinalSkillPoints,
+    public void initiateCustomEffectAnimation(HashMap<Integer, Integer> entitiesFinalSkillPoints,
                                               Vector3f particleEffectColor,
                                               String soundEffectResourceName,
                                               boolean waitToProgressCombat,
@@ -556,13 +554,9 @@ public class CombatAnimationSupport {
 
         if (!customEffectAnimationActive) {
 
-            for (int entityId : entityIds) {
-
-                ceaEntityIds.add(entityId);
-            }
-
             for (int entityId : entitiesFinalSkillPoints.keySet()) {
 
+                ceaEntityIds.add(entityId);
                 ceaEntitiesFinalSkillPoints.put(entityId, entitiesFinalSkillPoints.get(entityId));
             }
             ceaParticleEffectColor.x = particleEffectColor.x;
@@ -593,8 +587,7 @@ public class CombatAnimationSupport {
      * @param entitiesFinalLife calculated final life points of each entity participating in the animation; entity ID is
      *                          the key, life points is the value
      * @param entitiesFinalSkillPoints calculated final skill points of each participating entity; entity ID is the key,
-     *                                 skill points is the value; if a participating entity has no skill point
-     *                                 modification, then in may be omitted from this map
+     *                                 skill points is the value
      * @param particleEffectColor particle effect color (r, g, b)
      * @param soundEffectResourceName sound effect resource name
      * @param waitToProgressCombat whether to wait to hand off control to the next queued combat action until all other
@@ -776,8 +769,7 @@ public class CombatAnimationSupport {
 
                     targetEntityIds.add(targetEntityId);
                 }
-                smaMove.runEffects(smaSourceEntityId, targetEntityIds);                                                 // Apply any additional affects that this move may have.
-                gp.getCombatM().pollFainting();                                                                         // Check whether any entities fainted as a result of this move; appropriate actions will be queued if so.
+                smaMove.runEffects(smaSourceEntityId, smaTargetEntitiesDeltaLife);                                      // Apply any additional affects that this move may have.
                 resetStandardMoveAnimation();
 
                 if (!ceaWaitToProgressCombat) {
@@ -946,12 +938,35 @@ public class CombatAnimationSupport {
                         && !standardFaintAnimationActive
                         && !standardReviveAnimationActive)) {                                                           // Check if waiting for all other active animations to complete before progressing combat.
 
-                    gp.getCombatM().pollFainting();                                                                     // Check whether any entities fainted as a result of this move; appropriate actions will be queued if so.
                     resetCustomEffectAnimation();
                     gp.getCombatM().progressCombat();
                 }
             }
         }
+    }
+
+
+    /**
+     * Calculates the final life points of the target entity based on the change in life points.
+     *
+     * @param targetEntityId ID of target entity
+     * @param deltaLife calculated change in life points (positive for decrease, negative for increase) of each the
+     *                  target entity after applying damage/restoration
+     * @return calculated final life points
+     */
+    private int calculateFinalLife(int targetEntityId, int deltaLife) {
+
+        int finalLife = 0;
+
+        if (gp.getEntityM().getEntityById(targetEntityId).getLife() - deltaLife
+                > gp.getEntityM().getEntityById(targetEntityId).getMaxLife()) {
+
+            finalLife = gp.getEntityM().getEntityById(targetEntityId).getMaxLife();
+        } else if (gp.getEntityM().getEntityById(targetEntityId).getLife() - deltaLife > 0) {
+
+            finalLife = gp.getEntityM().getEntityById(targetEntityId).getLife() - deltaLife;
+        }
+        return finalLife;
     }
 
 
@@ -1067,6 +1082,7 @@ public class CombatAnimationSupport {
         standardMoveAnimationActive = false;
         smaSourceEntityId = 0;
         smaMove = null;
+        smaTargetEntitiesDeltaLife.clear();
         smaTargetEntitiesFinalLife.clear();
         smaTargetEntitiesDamageRemainder.clear();
         smaTargetEntitiesLifeIncrease.clear();

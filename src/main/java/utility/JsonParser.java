@@ -36,16 +36,25 @@ public class JsonParser {
      */
     public static Map loadMapJson(GamePanel gp, int mapId) {
 
+        String filePath = "/json/maps.json";
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Loading map with ID '"
+                    + mapId
+                    + "' from file: '"
+                    + filePath
+                    + "'");
+        }
         JSONParser parser = new JSONParser();
 
-        try (InputStream is = JsonParser.class.getResourceAsStream("/json/maps.json")) {
+        try (InputStream is = JsonParser.class.getResourceAsStream(filePath)) {
 
             String contents = readFromInputStream(is);
 
             Object maps = parser.parse(contents);
             JSONObject mapsJson = (JSONObject)maps;
             JSONObject mapJson = (JSONObject)mapsJson.get(Integer.toString(mapId));                                     // Retrieve the appropriate map from the loaded JSON data.
-
             return parseMap(gp, mapId, mapJson);
 
         } catch (Exception e) {
@@ -64,9 +73,19 @@ public class JsonParser {
      */
     public static void loadConversationsJson(GamePanel gp, int mapId) {
 
+        String filePath = "/json/dialogue.json";
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Loading conversations for map with ID '"
+                    + mapId
+                    + "' from file: '"
+                    + filePath
+                    + "'");
+        }
         JSONParser parser = new JSONParser();
 
-        try (InputStream is = JsonParser.class.getResourceAsStream("/json/dialogue.json")) {
+        try (InputStream is = JsonParser.class.getResourceAsStream(filePath)) {
 
             String contents = readFromInputStream(is);
 
@@ -116,9 +135,19 @@ public class JsonParser {
      */
     public static void loadConversationJson(GamePanel gp, int convId) {
 
+        String filePath = "/json/dialogue.json";
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Loading conversation with ID '"
+                    + convId
+                    + "' from file: '"
+                    + filePath
+                    + "'");
+        }
         JSONParser parser = new JSONParser();
 
-        try (InputStream is = JsonParser.class.getResourceAsStream("/json/dialogue.json")) {
+        try (InputStream is = JsonParser.class.getResourceAsStream(filePath)) {
 
             String contents = readFromInputStream(is);
 
@@ -130,6 +159,7 @@ public class JsonParser {
                 JSONObject conversationJson = (JSONObject)conversationsJson.get(Integer.toString(convId));
                 parseConversation(gp, convId, conversationJson);
             }
+
         } catch (Exception e) {
 
             throw new JsonParseException(e.getMessage());
@@ -148,9 +178,20 @@ public class JsonParser {
      */
     public static void loadEntitiesJson(GamePanel gp, int mapId, int mapState) {
 
+        String filePath = "/json/entities.json";
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Loading entities for map with ID '"
+                    + mapId + "' in state '"
+                    + mapState
+                    + "' from file: '"
+                    + filePath
+                    + "'");
+        }
         JSONParser parser = new JSONParser();
 
-        try (InputStream is = JsonParser.class.getResourceAsStream("/json/entities.json")) {
+        try (InputStream is = JsonParser.class.getResourceAsStream(filePath)) {
 
             String contents = readFromInputStream(is);
 
@@ -211,9 +252,19 @@ public class JsonParser {
      */
     public static void loadEntityJson(GamePanel gp, int entityId) {
 
+        String filePath = "/json/entities.json";
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Loading entity with ID '"
+                    + entityId
+                    + "' from file: '"
+                    + filePath
+                    + "'");
+        }
         JSONParser parser = new JSONParser();
 
-        try (InputStream is = JsonParser.class.getResourceAsStream("/json/entities.json")) {
+        try (InputStream is = JsonParser.class.getResourceAsStream(filePath)) {
 
             String contents = readFromInputStream(is);
 
@@ -242,6 +293,10 @@ public class JsonParser {
      */
     private static Map parseMap(GamePanel gp, int mapId, JSONObject mapJson) {
 
+        if (UtilityTool.VERBOSE_LOGGING) {
+
+            UtilityTool.logInfo("Parsing map with ID '" + mapId + "' from JSON data.");
+        }
         Map map = new Map(gp, mapId);
 
         JSONObject tracksJson = (JSONObject)mapJson.get("tracks");
@@ -268,6 +323,10 @@ public class JsonParser {
      * @param conversationJson JSON data representing conversation with dialogue to parse
      */
     private static void parseConversation(GamePanel gp, int convId, JSONObject conversationJson) {
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+            UtilityTool.logInfo("Parsing conversation with ID '" + convId + "' from JSON data.");
+        }
 
         Conversation conversation = new Conversation(convId);
 
@@ -316,6 +375,10 @@ public class JsonParser {
      * @param entityJson JSON data representing entity to parse
      */
     private static void parseEntity(GamePanel gp, int entityId, JSONObject entityJson) {
+
+        if (UtilityTool.VERBOSE_LOGGING) {
+            UtilityTool.logInfo("Parsing entity with ID '" + entityId + "' from JSON data.");
+        }
 
         // Entity class.
         String entityClass = (String)entityJson.get("class");                                                           // Get the class of the entity.
@@ -692,6 +755,15 @@ public class JsonParser {
                 break;
             case 5:
                 move = new Mve_AnnoyingImpulse(gp);
+                break;
+            case 6:
+                move = new Mve_DentedShield(gp);
+                break;
+            case 7:
+                move = new Mve_SlidingSlash(gp);
+                break;
+            case 8:
+                move = new Mve_WaveSlash(gp);
                 break;
         }
         return move;

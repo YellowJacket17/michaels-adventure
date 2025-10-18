@@ -1,7 +1,6 @@
 package combat.implementation.action;
 
 import combat.ActionBase;
-import combat.enumeration.ExitCombatTransitionType;
 import core.GamePanel;
 
 /**
@@ -9,17 +8,9 @@ import core.GamePanel;
  */
 public class Act_ExitCombat extends ActionBase {
 
-    // FIELD
-    /**
-     * Variable to store exit combat transition type to be performed.
-     */
-    private final ExitCombatTransitionType type;
-
-
     // CONSTRUCTOR
-    public Act_ExitCombat(GamePanel gp, ExitCombatTransitionType type) {
+    public Act_ExitCombat(GamePanel gp) {
         super(gp);
-        this.type = type;
     }
 
 
@@ -27,6 +18,6 @@ public class Act_ExitCombat extends ActionBase {
     @Override
     public void run() {
 
-        gp.getCombatM().exitCombat(type);
+        gp.getCombatM().exitCombat();
     }
 }

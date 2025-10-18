@@ -10,7 +10,7 @@ public class App {
     public static void main(String[] args) {
 
         UtilityTool.initializeTempLog();
-        UtilityTool.logInfo("Application started.");
+        UtilityTool.logInfo("Starting application.");
         Window window = new Window();
 
         try {

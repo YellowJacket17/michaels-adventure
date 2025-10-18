@@ -31,5 +31,9 @@ public class Act_ReviveEntity extends ActionBase {
     public void run() {
 
         gp.getCombatAnimationS().initiateStandardReviveAnimation(entityIds, 0.4, 0.4);
+
+        // NOTE: The `progressCombat()` method in CombatManager to hand off control to the next queued action will
+        // automatically be called once this animation in the `updateStandardReviveAnimation()` method in
+        // CombatAnimationSupport is complete, hence why it is not called here.
     }
 }

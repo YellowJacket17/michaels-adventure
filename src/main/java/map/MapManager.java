@@ -2,6 +2,7 @@ package map;
 
 import core.GamePanel;
 import utility.JsonParser;
+import utility.UtilityTool;
 
 import java.util.HashMap;
 
