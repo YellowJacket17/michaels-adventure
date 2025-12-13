@@ -63,12 +63,12 @@ public class GamePanel {
     /**
      * Maximum number of tiles allowed in a map column.
      */
-    public static final int MAX_WORLD_COL = 50;
+    public static final int MAX_WORLD_COL = 100;
 
     /**
      *  Maximum number of tiles allowed in a map row.
      */
-    public static final int MAX_WORLD_ROW = 50;
+    public static final int MAX_WORLD_ROW = 100;
 
 
     // SYSTEM

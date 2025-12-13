@@ -5,6 +5,7 @@ import entity.EntityBase;
 import entity.enumeration.EntityDirection;
 import event.*;
 import event.enumeration.EventType;
+import event.enumeration.WarpTransitionType;
 
 /**
  * This class implements event logic for map with ID 1.
@@ -76,6 +77,14 @@ public class Evt_Map001 extends EventMapBase {
         if ((col == 47) && (row == 13) && (direction == EntityDirection.UP)) {
 //            gp.getCutsceneM().initiateCutscene(1);
             gp.getCombatM().initiateCombat(0, 43, 9, "runningLate", 1, 5);
+            return true;
+        }
+
+        // Map warp.
+        if ((col == 49) && ((row == 8) || (row == 9)) && (direction == EntityDirection.RIGHT)) {
+            gp.getWarpS().initiateWarp(dt, 2, 0, 49, 66, WarpTransitionType.STEP_PORTAL, EntityDirection.RIGHT);
+            gp.getSoundS().playEffect("obtain");
+            return true;
         }
         return false;
     }
