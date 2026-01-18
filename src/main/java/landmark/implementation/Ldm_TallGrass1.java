@@ -61,10 +61,10 @@ public class Ldm_TallGrass1 extends LandmarkBase {
         sprite = sprites.get(0);
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
-//        setColor(new Vector4f(255, 231, 168, 255));
-//        setColor(new Vector4f(146, 214, 233, 255));
-        setColor(new Vector4f(241, 100, 75, 255));
-//        setColor(new Vector4f(134, 255, 194, 255));
+//        setColor(new Vector4f(255, 231, 168, 255));  //yellow
+//        setColor(new Vector4f(146, 214, 233, 255));  //blue
+//        setColor(new Vector4f(241, 100, 75, 255));  //red
+        setColor(new Vector4f(134, 255, 194, 255));  //green
     }
 
 

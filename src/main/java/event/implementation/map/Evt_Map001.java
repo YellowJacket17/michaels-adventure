@@ -80,9 +80,14 @@ public class Evt_Map001 extends EventMapBase {
             return true;
         }
 
-        // Map warp.
-        if ((col == 49) && ((row == 8) || (row == 9)) && (direction == EntityDirection.RIGHT)) {
-            gp.getWarpS().initiateWarp(dt, 2, 0, 49, 66, WarpTransitionType.STEP_PORTAL, EntityDirection.RIGHT);
+        // Map 2 warp.
+        if ((col == 50) && ((row == 8)) && (direction == EntityDirection.RIGHT)) {
+            gp.getWarpS().initiateWarp(dt, 2, 0, 57, 5, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
+            gp.getSoundS().playEffect("obtain");
+            return true;
+        }
+        if ((col == 50) && ((row == 9)) && (direction == EntityDirection.RIGHT)) {
+            gp.getWarpS().initiateWarp(dt, 2, 0, 57, 6, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
             gp.getSoundS().playEffect("obtain");
             return true;
         }

@@ -481,7 +481,7 @@ public class TileManager {
 
         setup(101, AssetPool.getSpritesheet("tiles").getSprite(130), false);                                            // bridgeLongitude1
 
-        setup(102, AssetPool.getSpritesheet("tiles").getSprite(131), false);                                            // bridgeLongitude2_1
+        setup(102, AssetPool.getSpritesheet("tiles").getSprite(131), false, 0);                                         // bridgeLongitude2_1
 
             addSprite(102, AssetPool.getSpritesheet("tiles").getSprite(132));                                           // bridgeLongitude2_2
 
@@ -648,6 +648,10 @@ public class TileManager {
         setup(151, AssetPool.getSpritesheet("tiles").getSprite(202), true);                                             // floorLeftStraightWallEdge6
 
         setup(152, AssetPool.getSpritesheet("tiles").getSprite(203), true);                                             // floorRightStraightWallEdge6
+
+        setup(153, AssetPool.getSpritesheet("tiles").getSprite(204), false);                                             // floorPortalLatitude5
+
+        setup(154, AssetPool.getSpritesheet("tiles").getSprite(205), false);                                             // floorPortalLongitude5
     }
 
 

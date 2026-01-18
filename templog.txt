@@ -1,77 +1,123 @@
-12/10/2025 20:31:31:554  INFO     Starting application.
-12/10/2025 20:31:33:051  INFO     Loading shader from file: '/shaders/font.glsl'
-12/10/2025 20:31:33:056  INFO     Compiling and linking shader: '/shaders/font.glsl'
-12/10/2025 20:31:34:241  INFO     Loading shader from file: '/shaders/default.glsl'
-12/10/2025 20:31:34:246  INFO     Compiling and linking shader: '/shaders/default.glsl'
-12/10/2025 20:31:34:246  INFO     Loading shader from file: '/shaders/rounded.glsl'
-12/10/2025 20:31:34:246  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
-12/10/2025 20:31:34:251  INFO     Loading texture from file: '/spritesheets/tiles.png'
-12/10/2025 20:31:34:261  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
-12/10/2025 20:31:34:261  INFO     Loading texture from file: '/spritesheets/characters.png'
-12/10/2025 20:31:34:276  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
-12/10/2025 20:31:34:276  INFO     Loading texture from file: '/spritesheets/landmarks.png'
-12/10/2025 20:31:34:286  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
-12/10/2025 20:31:34:286  INFO     Loading texture from file: '/spritesheets/items.png'
-12/10/2025 20:31:34:286  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
-12/10/2025 20:31:34:286  INFO     Loading texture from file: '/spritesheets/icons.png'
-12/10/2025 20:31:34:286  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
-12/10/2025 20:31:34:286  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
-12/10/2025 20:31:34:286  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
-12/10/2025 20:31:34:286  INFO     Loading sound (track) from file: 'sound/tracks/endOfTheLine_intro.ogg' + 'sound/tracks/endOfTheLine_loop.ogg'
-12/10/2025 20:31:34:496  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
-12/10/2025 20:31:34:606  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
-12/10/2025 20:31:34:726  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
-12/10/2025 20:31:34:861  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
-12/10/2025 20:31:35:046  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
-12/10/2025 20:31:35:228  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
-12/10/2025 20:31:35:236  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
-12/10/2025 20:31:35:236  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
-12/10/2025 20:31:35:246  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
-12/10/2025 20:31:35:246  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
-12/10/2025 20:31:35:246  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
-12/10/2025 20:31:35:256  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
-12/10/2025 20:31:35:256  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
-12/10/2025 20:31:35:256  INFO     Loading texture from file: '/illustrations/illustration1.png'
-12/10/2025 20:31:35:591  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
-12/10/2025 20:31:35:591  INFO     Loading texture from file: '/illustrations/illustration2.png'
-12/10/2025 20:31:35:866  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
-12/10/2025 20:31:35:866  INFO     Loading texture from file: '/illustrations/illustration3.png'
-12/10/2025 20:31:36:182  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
-12/10/2025 20:31:36:182  INFO     Loading texture from file: '/illustrations/illustration5.png'
-12/10/2025 20:31:36:491  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
-12/10/2025 20:31:36:551  INFO     Loading map with ID '1' from file: '/json/maps.json'
-12/10/2025 20:31:36:556  INFO     Parsing map with ID '1' from JSON data.
-12/10/2025 20:31:36:576  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
-12/10/2025 20:31:36:576  INFO     Parsing entity with ID '1' from JSON data.
-12/10/2025 20:31:36:576  INFO     Parsing entity with ID '2' from JSON data.
-12/10/2025 20:31:36:576  INFO     Parsing entity with ID '3' from JSON data.
-12/10/2025 20:31:36:586  INFO     Parsing entity with ID '4' from JSON data.
-12/10/2025 20:31:36:586  INFO     Parsing entity with ID '5' from JSON data.
-12/10/2025 20:31:36:586  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
-12/10/2025 20:31:36:586  INFO     Parsing conversation with ID '0' from JSON data.
-12/10/2025 20:31:36:596  INFO     Parsing conversation with ID '1' from JSON data.
-12/10/2025 20:31:36:596  INFO     Parsing conversation with ID '2' from JSON data.
-12/10/2025 20:31:36:596  INFO     Parsing conversation with ID '3' from JSON data.
-12/10/2025 20:31:36:596  INFO     Parsing conversation with ID '4' from JSON data.
-12/10/2025 20:31:36:596  INFO     Parsing conversation with ID '5' from JSON data.
-12/10/2025 20:31:36:596  INFO     Parsing conversation with ID '6' from JSON data.
-12/10/2025 20:31:36:596  INFO     Parsing conversation with ID '7' from JSON data.
-12/10/2025 20:31:36:596  INFO     Parsing conversation with ID '8' from JSON data.
-12/10/2025 20:31:36:596  INFO     Parsing conversation with ID '9' from JSON data.
-12/10/2025 20:31:36:596  INFO     Parsing conversation with ID '10' from JSON data.
-12/10/2025 20:31:36:596  INFO     Setting fade state to 'ACTIVE'.
-12/10/2025 20:31:36:596  INFO     Setting fade state to 'FADE_FROM'.
-12/10/2025 20:31:36:636  INFO     Starting game loop.
-12/10/2025 20:31:37:366  INFO     Setting fade state to 'INACTIVE'.
-12/10/2025 20:31:43:049  INFO     Entering transition state of type 'WARP'.
-12/10/2025 20:31:43:049  INFO     Locking player control.
-12/10/2025 20:31:43:049  INFO     Setting fade state to 'FADE_TO'.
-12/10/2025 20:31:43:538  INFO     Setting fade state to 'ACTIVE'.
-12/10/2025 20:31:43:549  INFO     Loading map with ID '2' from file: '/json/maps.json'
-12/10/2025 20:31:43:549  INFO     Parsing map with ID '2' from JSON data.
-12/10/2025 20:31:43:557  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
-12/10/2025 20:31:43:566  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
-12/10/2025 20:31:43:823  INFO     Setting fade state to 'FADE_FROM'.
-12/10/2025 20:31:44:320  INFO     Setting fade state to 'INACTIVE'.
-12/10/2025 20:31:44:322  INFO     Exiting transition state of type 'WARP'.
-12/10/2025 20:31:44:322  INFO     Unlocking player control.
+01/18/2026 13:45:42:385  INFO     Starting application.
+01/18/2026 13:45:43:770  INFO     Loading shader from file: '/shaders/font.glsl'
+01/18/2026 13:45:43:771  INFO     Compiling and linking shader: '/shaders/font.glsl'
+01/18/2026 13:45:44:166  INFO     Loading shader from file: '/shaders/default.glsl'
+01/18/2026 13:45:44:167  INFO     Compiling and linking shader: '/shaders/default.glsl'
+01/18/2026 13:45:44:168  INFO     Loading shader from file: '/shaders/rounded.glsl'
+01/18/2026 13:45:44:169  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
+01/18/2026 13:45:44:172  INFO     Loading texture from file: '/spritesheets/tiles.png'
+01/18/2026 13:45:44:176  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
+01/18/2026 13:45:44:176  INFO     Loading texture from file: '/spritesheets/characters.png'
+01/18/2026 13:45:44:186  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
+01/18/2026 13:45:44:186  INFO     Loading texture from file: '/spritesheets/landmarks.png'
+01/18/2026 13:45:44:189  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
+01/18/2026 13:45:44:190  INFO     Loading texture from file: '/spritesheets/items.png'
+01/18/2026 13:45:44:190  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
+01/18/2026 13:45:44:191  INFO     Loading texture from file: '/spritesheets/icons.png'
+01/18/2026 13:45:44:192  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
+01/18/2026 13:45:44:192  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
+01/18/2026 13:45:44:193  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
+01/18/2026 13:45:44:194  INFO     Loading sound (track) from file: 'sound/tracks/endOfTheLine_intro.ogg' + 'sound/tracks/endOfTheLine_loop.ogg'
+01/18/2026 13:45:44:399  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
+01/18/2026 13:45:44:495  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
+01/18/2026 13:45:44:614  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
+01/18/2026 13:45:44:726  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
+01/18/2026 13:45:44:856  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
+01/18/2026 13:45:45:042  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
+01/18/2026 13:45:45:222  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
+01/18/2026 13:45:45:227  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
+01/18/2026 13:45:45:228  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
+01/18/2026 13:45:45:232  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
+01/18/2026 13:45:45:232  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
+01/18/2026 13:45:45:232  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
+01/18/2026 13:45:45:240  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
+01/18/2026 13:45:45:240  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
+01/18/2026 13:45:45:242  INFO     Loading texture from file: '/illustrations/illustration1.png'
+01/18/2026 13:45:45:484  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
+01/18/2026 13:45:45:492  INFO     Loading texture from file: '/illustrations/illustration2.png'
+01/18/2026 13:45:45:717  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
+01/18/2026 13:45:45:717  INFO     Loading texture from file: '/illustrations/illustration3.png'
+01/18/2026 13:45:45:964  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
+01/18/2026 13:45:45:964  INFO     Loading texture from file: '/illustrations/illustration5.png'
+01/18/2026 13:45:46:222  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
+01/18/2026 13:45:46:247  INFO     Loading map with ID '3' from file: '/json/maps.json'
+01/18/2026 13:45:46:252  INFO     Parsing map with ID '3' from JSON data.
+01/18/2026 13:45:46:262  INFO     Loading entities for map with ID '3' in state '0' from file: '/json/entities.json'
+01/18/2026 13:45:46:262  INFO     Loading conversations for map with ID '3' from file: '/json/dialogue.json'
+01/18/2026 13:45:46:267  INFO     Setting fade state to 'ACTIVE'.
+01/18/2026 13:45:46:267  INFO     Setting fade state to 'FADE_FROM'.
+01/18/2026 13:45:46:282  INFO     Starting game loop.
+01/18/2026 13:45:46:282  WARNING  Unrecognized key with code '-1' was detected.
+01/18/2026 13:45:46:847  INFO     Setting fade state to 'INACTIVE'.
+01/18/2026 13:47:11:385  INFO     Entering transition state of type 'WARP'.
+01/18/2026 13:47:11:385  INFO     Locking player control.
+01/18/2026 13:47:11:385  INFO     Setting fade state to 'FADE_TO'.
+01/18/2026 13:47:11:872  INFO     Setting fade state to 'ACTIVE'.
+01/18/2026 13:47:11:887  INFO     Loading map with ID '2' from file: '/json/maps.json'
+01/18/2026 13:47:11:887  INFO     Parsing map with ID '2' from JSON data.
+01/18/2026 13:47:11:897  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
+01/18/2026 13:47:11:897  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
+01/18/2026 13:47:12:159  INFO     Setting fade state to 'FADE_FROM'.
+01/18/2026 13:47:12:659  INFO     Setting fade state to 'INACTIVE'.
+01/18/2026 13:47:12:660  INFO     Exiting transition state of type 'WARP'.
+01/18/2026 13:47:12:660  INFO     Unlocking player control.
+01/18/2026 13:47:35:502  INFO     Entering transition state of type 'WARP'.
+01/18/2026 13:47:35:502  INFO     Locking player control.
+01/18/2026 13:47:35:508  INFO     Setting fade state to 'FADE_TO'.
+01/18/2026 13:47:36:002  INFO     Setting fade state to 'ACTIVE'.
+01/18/2026 13:47:36:002  INFO     Loading map with ID '3' from file: '/json/maps.json'
+01/18/2026 13:47:36:002  INFO     Parsing map with ID '3' from JSON data.
+01/18/2026 13:47:36:002  INFO     Loading entities for map with ID '3' in state '0' from file: '/json/entities.json'
+01/18/2026 13:47:36:002  INFO     Loading conversations for map with ID '3' from file: '/json/dialogue.json'
+01/18/2026 13:47:36:256  INFO     Setting fade state to 'FADE_FROM'.
+01/18/2026 13:47:36:752  INFO     Setting fade state to 'INACTIVE'.
+01/18/2026 13:47:36:752  INFO     Exiting transition state of type 'WARP'.
+01/18/2026 13:47:36:752  INFO     Unlocking player control.
+01/18/2026 13:49:18:227  INFO     Entering transition state of type 'WARP'.
+01/18/2026 13:49:18:229  INFO     Locking player control.
+01/18/2026 13:49:18:229  INFO     Setting fade state to 'FADE_TO'.
+01/18/2026 13:49:18:722  INFO     Setting fade state to 'ACTIVE'.
+01/18/2026 13:49:18:722  INFO     Loading map with ID '2' from file: '/json/maps.json'
+01/18/2026 13:49:18:722  INFO     Parsing map with ID '2' from JSON data.
+01/18/2026 13:49:18:732  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
+01/18/2026 13:49:18:732  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
+01/18/2026 13:49:18:973  INFO     Setting fade state to 'FADE_FROM'.
+01/18/2026 13:49:19:472  INFO     Setting fade state to 'INACTIVE'.
+01/18/2026 13:49:19:479  INFO     Exiting transition state of type 'WARP'.
+01/18/2026 13:49:19:479  INFO     Unlocking player control.
+01/18/2026 13:49:19:644  INFO     Entering transition state of type 'WARP'.
+01/18/2026 13:49:19:644  INFO     Locking player control.
+01/18/2026 13:49:19:644  INFO     Setting fade state to 'FADE_TO'.
+01/18/2026 13:49:20:143  INFO     Setting fade state to 'ACTIVE'.
+01/18/2026 13:49:20:145  INFO     Loading map with ID '3' from file: '/json/maps.json'
+01/18/2026 13:49:20:146  INFO     Parsing map with ID '3' from JSON data.
+01/18/2026 13:49:20:146  INFO     Loading entities for map with ID '3' in state '0' from file: '/json/entities.json'
+01/18/2026 13:49:20:146  INFO     Loading conversations for map with ID '3' from file: '/json/dialogue.json'
+01/18/2026 13:49:20:394  INFO     Setting fade state to 'FADE_FROM'.
+01/18/2026 13:49:20:892  INFO     Setting fade state to 'INACTIVE'.
+01/18/2026 13:49:20:892  INFO     Exiting transition state of type 'WARP'.
+01/18/2026 13:49:20:892  INFO     Unlocking player control.
+01/18/2026 13:49:21:174  INFO     Entering transition state of type 'WARP'.
+01/18/2026 13:49:21:174  INFO     Locking player control.
+01/18/2026 13:49:21:178  INFO     Setting fade state to 'FADE_TO'.
+01/18/2026 13:49:21:675  INFO     Setting fade state to 'ACTIVE'.
+01/18/2026 13:49:21:675  INFO     Loading map with ID '2' from file: '/json/maps.json'
+01/18/2026 13:49:21:675  INFO     Parsing map with ID '2' from JSON data.
+01/18/2026 13:49:21:675  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
+01/18/2026 13:49:21:675  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
+01/18/2026 13:49:21:925  INFO     Setting fade state to 'FADE_FROM'.
+01/18/2026 13:49:22:427  INFO     Setting fade state to 'INACTIVE'.
+01/18/2026 13:49:22:428  INFO     Exiting transition state of type 'WARP'.
+01/18/2026 13:49:22:428  INFO     Unlocking player control.
+01/18/2026 13:49:22:575  INFO     Entering transition state of type 'WARP'.
+01/18/2026 13:49:22:575  INFO     Locking player control.
+01/18/2026 13:49:22:575  INFO     Setting fade state to 'FADE_TO'.
+01/18/2026 13:49:23:075  INFO     Setting fade state to 'ACTIVE'.
+01/18/2026 13:49:23:075  INFO     Loading map with ID '3' from file: '/json/maps.json'
+01/18/2026 13:49:23:075  INFO     Parsing map with ID '3' from JSON data.
+01/18/2026 13:49:23:079  INFO     Loading entities for map with ID '3' in state '0' from file: '/json/entities.json'
+01/18/2026 13:49:23:079  INFO     Loading conversations for map with ID '3' from file: '/json/dialogue.json'
+01/18/2026 13:49:23:332  INFO     Setting fade state to 'FADE_FROM'.
+01/18/2026 13:49:23:827  INFO     Setting fade state to 'INACTIVE'.
+01/18/2026 13:49:23:827  INFO     Exiting transition state of type 'WARP'.
+01/18/2026 13:49:23:827  INFO     Unlocking player control.

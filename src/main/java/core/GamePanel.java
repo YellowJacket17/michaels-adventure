@@ -63,12 +63,12 @@ public class GamePanel {
     /**
      * Maximum number of tiles allowed in a map column.
      */
-    public static final int MAX_WORLD_COL = 100;
+    public static final int MAX_WORLD_COL = 60;
 
     /**
      *  Maximum number of tiles allowed in a map row.
      */
-    public static final int MAX_WORLD_ROW = 100;
+    public static final int MAX_WORLD_ROW = 60;
 
 
     // SYSTEM
@@ -224,7 +224,7 @@ public class GamePanel {
         entityM.initPlayer();
 
         // Load map along with associated entities and dialogue.
-        mapM.loadMap(1, 0, true);
+        mapM.loadMap(3, 0, true);
 
         // Set camera to track player entity.
         cameraS.setTrackedEntity(entityM.getPlayer().getEntityId());
@@ -383,7 +383,7 @@ public class GamePanel {
 
         // Tiles spritesheet (spritesheet 0).
         String filePath = "/spritesheets/tiles.png";
-        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 204, 32, 32, 1));
+        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 206, 32, 32, 1));
 
         // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";
@@ -394,11 +394,12 @@ public class GamePanel {
         int[] widths = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 128, 128, 128, 128, 96, 96, 96, 96, 32,
-                32};
+                32, 64, 64, 32, 32, 38, 38, 38, 38};
         int[] heights = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 64, 64, 64, 64, 64, 64, 64, 64, 72, 72};
-        AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 73, widths, heights, 1));
+                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 64, 64, 64, 64, 64, 64, 64, 64, 72, 72,
+                32, 32, 64, 64, 40, 40, 40, 40};
+        AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 81, widths, heights, 1));
 
         // Items spritesheet (spritesheet 3).
         filePath = "/spritesheets/items.png";
@@ -420,6 +421,7 @@ public class GamePanel {
         AssetPool.addSound("endOfTheLine", "sound/tracks/endOfTheLine_intro.ogg", "sound/tracks/endOfTheLine_loop.ogg");
         AssetPool.addSound("dissipate", "sound/tracks/dissipate_intro.ogg", "sound/tracks/dissipate_loop.ogg");
         AssetPool.addSound("carvingCanyons", "sound/tracks/carvingCanyons_intro.ogg", "sound/tracks/carvingCanyons_loop.ogg");
+        AssetPool.addSound("sunkenSecrets", "sound/tracks/sunkenSecrets_intro.ogg", "sound/tracks/sunkenSecrets_loop.ogg");
         AssetPool.addSound("runningLate", "sound/tracks/runningLate_intro.ogg", "sound/tracks/runningLate_loop.ogg");
         AssetPool.addSound("riftInTime", "sound/tracks/riftInTime_intro.ogg", "sound/tracks/riftInTime_loop.ogg");
         AssetPool.addSound("yesteryear", "sound/tracks/yesteryear_intro.ogg", "sound/tracks/yesteryear_loop.ogg");

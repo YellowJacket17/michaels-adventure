@@ -276,6 +276,15 @@ public class LandmarkManager {
             case 6:
                 landmark = new Ldm_TallGrass1(gp, col, row);
                 break;
+            case 7:
+                landmark = new Ldm_Stream1(gp, col, row);
+                break;
+            case 8:
+                landmark = new Ldm_Stream2(gp, col, row);
+                break;
+            case 9:
+                landmark = new Ldm_Rock1(gp, col, row);
+                break;
             default:
                 UtilityTool.logError("Attempted to instantiate a landmark type that does not exist.");
                 return null;

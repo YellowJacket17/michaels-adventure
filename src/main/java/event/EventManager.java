@@ -2,6 +2,8 @@ package event;
 
 import event.enumeration.EventType;
 import event.enumeration.StockStepInteractionType;
+import event.implementation.map.Evt_Map002;
+import event.implementation.map.Evt_Map003;
 import event.implementation.submenu.Evt_SubMenu003;
 import miscellaneous.CollisionInspector;
 import core.enumeration.PrimaryGameState;
@@ -33,6 +35,8 @@ public class EventManager {
 
     // MAP EVENT FIELDS
     private final Evt_Map001 evt_map001;
+    private final Evt_Map002 evt_map002;
+    private final Evt_Map003 evt_map003;
 
 
     // CONVERSATION EVENT FIELDS
@@ -55,6 +59,8 @@ public class EventManager {
         this.gp = gp;
 
         evt_map001 = new Evt_Map001(gp);
+        evt_map002 = new Evt_Map002(gp);
+        evt_map003 = new Evt_Map003(gp);
 
         // No conversation events here... yet.
 
@@ -88,6 +94,10 @@ public class EventManager {
                 switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
                     case 1:
                         return evt_map001.npcInteraction(dt, type, target);
+                    case 2:
+                        return evt_map002.npcInteraction(dt, type, target);
+                    case 3:
+                        return evt_map003.npcInteraction(dt, type, target);
                 }
             }
         }
@@ -118,6 +128,10 @@ public class EventManager {
                 switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
                     case 1:
                         return evt_map001.objInteraction(dt, type, target);
+                    case 2:
+                        return evt_map002.objInteraction(dt, type, target);
+                    case 3:
+                        return evt_map003.objInteraction(dt, type, target);
                 }
             }
         }
@@ -148,6 +162,10 @@ public class EventManager {
                 switch (gp.getMapM().getLoadedMap().getMapId()) {                                                       // Switch which map to check for interaction events on depending on the current loaded map.
                     case 1:
                         return evt_map001.partyInteraction(dt, type, target);
+                    case 2:
+                        return evt_map002.partyInteraction(dt, type, target);
+                    case 3:
+                        return evt_map003.partyInteraction(dt, type, target);
                 }
             }
         }
@@ -176,6 +194,12 @@ public class EventManager {
                 case 1:
                     return evt_map001.tileInteraction(dt, type, targetCol, targetRow,
                             gp.getEntityM().getPlayer().getDirectionCurrent());
+                 case 2:
+                    return evt_map002.tileInteraction(dt, type, targetCol, targetRow,
+                            gp.getEntityM().getPlayer().getDirectionCurrent());
+            case 3:
+                return evt_map003.tileInteraction(dt, type, targetCol, targetRow,
+                        gp.getEntityM().getPlayer().getDirectionCurrent());
             }
 
         return false;
@@ -183,7 +207,7 @@ public class EventManager {
 
 
     /**
-     * Handles what to do if an entity steps onto a tile that may trigger a stock event.
+     * Handles what to do if an entity steps onto a tile that may trigger a stock (i.e., non-special) event.
      * These types of events are intended to occur whenever any tile/landmark of a particular type is interacted with.
      * An example is a grass landmark rustling each time an entity takes a step through it.
      * Another example is a puddle tile making a splashing sound effect each time an entity takes a step through it.

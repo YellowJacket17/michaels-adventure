@@ -1,9 +1,6 @@
 package animation;
 
-import animation.implementation.Anm_Lilypad;
-import animation.implementation.Anm_Sparkle;
-import animation.implementation.Anm_Foam;
-import animation.implementation.Anm_Waterfall;
+import animation.implementation.*;
 
 /**
  * This class handles the passive animation of overworld elements that have multiple sprites attached to them.
@@ -21,17 +18,20 @@ public class PassiveAnimationManager {
      */
     private final Anm_Waterfall anm_waterfall;
 
-
     /**
      * Foam passive animation group.
      */
     private final Anm_Foam anm_foam;
 
-
     /**
      * Lilypad passive animation group.
      */
     private final Anm_Lilypad anm_lilypad;
+
+    /**
+     * Stream passive animation group.
+     */
+    private final Anm_Stream anm_stream;
 
 
     // CONSTRUCTOR
@@ -44,6 +44,7 @@ public class PassiveAnimationManager {
         anm_waterfall = new Anm_Waterfall(1.26);
         anm_foam = new Anm_Foam(0.45);
         anm_lilypad = new Anm_Lilypad(10);
+        anm_stream = new Anm_Stream(0.2);
     }
 
 
@@ -59,6 +60,7 @@ public class PassiveAnimationManager {
         anm_waterfall.update(dt);
         anm_foam.update(dt);
         anm_lilypad.update(dt);
+        anm_stream.update(dt);
     }
 
 
@@ -82,6 +84,8 @@ public class PassiveAnimationManager {
                 return anm_foam.getSprite(worldCol, worldRow);
             case 3:
                 return anm_lilypad.getSprite(worldCol, worldRow);
+            case 4:
+                return anm_stream.getSprite(worldCol, worldRow);
             default:
                 return 0;
         }
