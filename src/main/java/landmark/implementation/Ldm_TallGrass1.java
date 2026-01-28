@@ -3,6 +3,7 @@ package landmark.implementation;
 import asset.AssetPool;
 import core.GamePanel;
 import landmark.LandmarkBase;
+import landmark.enumeration.TallGrassColor;
 import org.joml.Vector4f;
 
 import java.util.HashMap;
@@ -16,10 +17,9 @@ public class Ldm_TallGrass1 extends LandmarkBase {
     private static final int ldmId = 6;
 
     /**
-     * Static map to store all Ldm_Grass1 landmarks that are temporarily animating due to a triggered event; landmark
-     * position ID is the key, time passed since beginning to animate is the value.
+     * Static variable to set what color instantiated landmarks should be.
      */
-    private static HashMap<Integer, Double> eventAnimatingLandmarks = new HashMap<>();
+    private static TallGrassColor instantiationColor = TallGrassColor.DEFAULT;
 
 
     // CONSTRUCTOR
@@ -61,15 +61,35 @@ public class Ldm_TallGrass1 extends LandmarkBase {
         sprite = sprites.get(0);
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
-//        setColor(new Vector4f(255, 231, 168, 255));  //yellow
-//        setColor(new Vector4f(146, 214, 233, 255));  //blue
-//        setColor(new Vector4f(241, 100, 75, 255));  //red
-        setColor(new Vector4f(134, 255, 194, 255));  //green
+
+        switch (instantiationColor) {
+            case DEFAULT:
+                setColor(new Vector4f(255, 255, 255, 255));
+                break;
+            case GREEN:
+                setColor(new Vector4f(134, 255, 194, 255));
+                break;
+            case YELLOW:
+                setColor(new Vector4f(255, 231, 168, 255));
+                break;
+            case BLUE:
+                setColor(new Vector4f(146, 214, 233, 255));
+                break;
+            case RED:
+                setColor(new Vector4f(241, 100, 75, 255));
+                break;
+        }
     }
 
 
     // GETTER
     public int getPositionId() {
         return positionId;
+    }
+
+
+    // SETTER
+    public static void setInstantiationColor(TallGrassColor tallGrassColor) {
+        instantiationColor = tallGrassColor;
     }
 }

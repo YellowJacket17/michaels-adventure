@@ -649,9 +649,89 @@ public class TileManager {
 
         setup(152, AssetPool.getSpritesheet("tiles").getSprite(203), true);                                             // floorRightStraightWallEdge6
 
-        setup(153, AssetPool.getSpritesheet("tiles").getSprite(204), false);                                             // floorPortalLatitude5
+        setup(153, AssetPool.getSpritesheet("tiles").getSprite(204), false);                                            // floorPortalLatitude5
 
-        setup(154, AssetPool.getSpritesheet("tiles").getSprite(205), false);                                             // floorPortalLongitude5
+        setup(154, AssetPool.getSpritesheet("tiles").getSprite(205), false);                                            // floorPortalLongitude5
+
+        setup(155, AssetPool.getSpritesheet("tiles").getSprite(206), true);                                             // water4
+
+        setup(156, AssetPool.getSpritesheet("tiles").getSprite(207), true, 0);                                          // water5_1
+
+            addSprite(156, AssetPool.getSpritesheet("tiles").getSprite(208));                                           // water5_2
+
+            addSprite(156, AssetPool.getSpritesheet("tiles").getSprite(209));                                           // water5_3
+
+            addSprite(156, AssetPool.getSpritesheet("tiles").getSprite(206));                                           // water5_4
+
+        setup(157, AssetPool.getSpritesheet("tiles").getSprite(210), true);                                             // waterBottomStraightFloorEdge4
+
+        setup(158, AssetPool.getSpritesheet("tiles").getSprite(211), true);                                             // waterBottomStraightFloorEdge5
+
+        setup(159, AssetPool.getSpritesheet("tiles").getSprite(212), true);                                             // waterBottomStraightFloorEdge6
+
+        setup(160, AssetPool.getSpritesheet("tiles").getSprite(213), true);                                             // waterTopStraightFloorEdge4
+
+        setup(161, AssetPool.getSpritesheet("tiles").getSprite(214), true);                                             // waterTopStraightFloorEdge5
+
+        setup(162, AssetPool.getSpritesheet("tiles").getSprite(215), true);                                             // waterTopStraightFloorEdge6
+
+        setup(163, AssetPool.getSpritesheet("tiles").getSprite(216), true);                                             // waterLeftStraightFloorEdge4
+
+        setup(164, AssetPool.getSpritesheet("tiles").getSprite(217), true);                                             // waterLeftStraightFloorEdge5
+
+        setup(165, AssetPool.getSpritesheet("tiles").getSprite(218), true);                                             // waterLeftStraightFloorEdge6
+
+        setup(166, AssetPool.getSpritesheet("tiles").getSprite(219), true);                                             // waterRightStraightFloorEdge4
+
+        setup(167, AssetPool.getSpritesheet("tiles").getSprite(220), true);                                             // waterRightStraightFloorEdge5
+
+        setup(168, AssetPool.getSpritesheet("tiles").getSprite(221), true);                                             // waterRightStraightFloorEdge6
+
+        setup(169, AssetPool.getSpritesheet("tiles").getSprite(222), true);                                             // waterBottomLeftConcaveFloorEdge2
+
+        setup(170, AssetPool.getSpritesheet("tiles").getSprite(223), true);                                             // waterBottomRightConcaveFloorEdge2
+
+        setup(171, AssetPool.getSpritesheet("tiles").getSprite(224), true);                                             // waterTopLeftConcaveFloorEdge3
+
+        setup(172, AssetPool.getSpritesheet("tiles").getSprite(225), true);                                             // waterTopRightConcaveFloorEdge2
+
+        setup(173, AssetPool.getSpritesheet("tiles").getSprite(226), true);                                             // waterBottomLeftConvexFloorEdge5
+
+        setup(174, AssetPool.getSpritesheet("tiles").getSprite(227), true);                                             // waterBottomLeftConvexFloorEdge6
+
+        setup(175, AssetPool.getSpritesheet("tiles").getSprite(228), true);                                             // waterBottomLeftConvexFloorEdge7
+
+        setup(176, AssetPool.getSpritesheet("tiles").getSprite(229), true);                                             // waterBottomRightConvexFloorEdge5
+
+        setup(177, AssetPool.getSpritesheet("tiles").getSprite(230), true);                                             // waterBottomRightConvexFloorEdge6
+
+        setup(178, AssetPool.getSpritesheet("tiles").getSprite(231), true);                                             // waterBottomRightConvexFloorEdge7
+
+        setup(179, AssetPool.getSpritesheet("tiles").getSprite(232), true);                                             // waterTopLeftConvexFloorEdge4
+
+        setup(180, AssetPool.getSpritesheet("tiles").getSprite(233), true);                                             // waterTopLeftConvexFloorEdge5
+
+        setup(181, AssetPool.getSpritesheet("tiles").getSprite(234), true);                                             // waterTopRightConvexFloorEdge4
+
+        setup(182, AssetPool.getSpritesheet("tiles").getSprite(235), true);                                             // waterTopRightConvexFloorEdge5
+
+        setup(183, AssetPool.getSpritesheet("tiles").getSprite(236), false);                                            // floorLit1
+
+        setup(184, AssetPool.getSpritesheet("tiles").getSprite(237), false);                                            // floorLit2
+
+        setup(185, AssetPool.getSpritesheet("tiles").getSprite(238), false);                                            // floorLit3
+
+        setup(186, AssetPool.getSpritesheet("tiles").getSprite(239), false);                                            // floorLit4
+
+        setup(187, AssetPool.getSpritesheet("tiles").getSprite(240), false);                                            // floorLit5
+
+        setup(188, AssetPool.getSpritesheet("tiles").getSprite(241), false);                                            // floorLit6
+
+        setup(189, AssetPool.getSpritesheet("tiles").getSprite(242), false);                                            // floorLit7
+
+        setup(190, AssetPool.getSpritesheet("tiles").getSprite(243), false);                                            // floorLit8
+
+        setup(191, AssetPool.getSpritesheet("tiles").getSprite(244), false);                                            // floorLit9
     }
 
 

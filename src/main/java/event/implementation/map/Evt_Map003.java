@@ -6,6 +6,8 @@ import entity.enumeration.EntityDirection;
 import event.*;
 import event.enumeration.EventType;
 import event.enumeration.WarpTransitionType;
+import landmark.enumeration.TallGrassColor;
+import landmark.implementation.Ldm_TallGrass1;
 
 /**
  * This class implements event logic for map with ID 3.
@@ -62,6 +64,20 @@ public class Evt_Map003 extends EventMapBase {
         }
         if ((col == 13) && ((row == 53)) && (direction == EntityDirection.LEFT)) {
             gp.getWarpS().initiateWarp(dt, 2, 0, 57, 51, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
+            gp.getSoundS().playEffect("obtain");
+            return true;
+        }
+
+        // Map 4 warp.
+        if ((col == 21) && ((row == 10)) && (direction == EntityDirection.UP)) {
+            Ldm_TallGrass1.setInstantiationColor(TallGrassColor.YELLOW);
+            gp.getWarpS().initiateWarp(dt, 4, 0, 6, 57, WarpTransitionType.STEP_PORTAL, EntityDirection.UP);
+            gp.getSoundS().playEffect("obtain");
+            return true;
+        }
+        if ((col == 22) && ((row == 10)) && (direction == EntityDirection.UP)) {
+            Ldm_TallGrass1.setInstantiationColor(TallGrassColor.YELLOW);
+            gp.getWarpS().initiateWarp(dt, 4, 0, 7, 57, WarpTransitionType.STEP_PORTAL, EntityDirection.UP);
             gp.getSoundS().playEffect("obtain");
             return true;
         }

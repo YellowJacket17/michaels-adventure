@@ -6,6 +6,8 @@ import entity.enumeration.EntityDirection;
 import event.*;
 import event.enumeration.EventType;
 import event.enumeration.WarpTransitionType;
+import landmark.enumeration.TallGrassColor;
+import landmark.implementation.Ldm_TallGrass1;
 
 /**
  * This class implements event logic for map with ID 2.
@@ -149,13 +151,6 @@ public class Evt_Map002 extends EventMapBase {
         // Inner warp points (fifth set).
         if ((col == 3) && (row == 57)) {
             gp.getWarpS().initiateWarp(
-                    dt, 2, gp.getMapM().getLoadedMap().getMapState(), 46, 4,
-                    WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
-            return true;
-        }
-        if ((col == 1) && (row == 58)) {
-            gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 34, 12,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.UP);
             gp.getSoundS().playEffect("obtain");
@@ -163,8 +158,8 @@ public class Evt_Map002 extends EventMapBase {
         }
         if ((col == 34) && (row == 12)) {
             gp.getWarpS().initiateWarp(
-                    dt, 2, gp.getMapM().getLoadedMap().getMapState(), 1, 58,
-                    WarpTransitionType.STEP_PORTAL, EntityDirection.UP);
+                    dt, 2, gp.getMapM().getLoadedMap().getMapState(), 3, 57,
+                    WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
             gp.getSoundS().playEffect("obtain");
             return true;
         }
@@ -178,16 +173,19 @@ public class Evt_Map002 extends EventMapBase {
 
         // Map 3 warp.
         if ((col == 58) && ((row == 49)) && (direction == EntityDirection.RIGHT)) {
+            Ldm_TallGrass1.setInstantiationColor(TallGrassColor.GREEN);
             gp.getWarpS().initiateWarp(dt, 3, 0, 14, 51, WarpTransitionType.STEP_PORTAL, EntityDirection.RIGHT);
             gp.getSoundS().playEffect("obtain");
             return true;
         }
         if ((col == 58) && ((row == 50)) && (direction == EntityDirection.RIGHT)) {
+            Ldm_TallGrass1.setInstantiationColor(TallGrassColor.GREEN);
             gp.getWarpS().initiateWarp(dt, 3, 0, 14, 52, WarpTransitionType.STEP_PORTAL, EntityDirection.RIGHT);
             gp.getSoundS().playEffect("obtain");
             return true;
         }
         if ((col == 58) && ((row == 51)) && (direction == EntityDirection.RIGHT)) {
+            Ldm_TallGrass1.setInstantiationColor(TallGrassColor.GREEN);
             gp.getWarpS().initiateWarp(dt, 3, 0, 14, 53, WarpTransitionType.STEP_PORTAL, EntityDirection.RIGHT);
             gp.getSoundS().playEffect("obtain");
             return true;

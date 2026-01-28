@@ -1,123 +1,278 @@
-01/18/2026 13:45:42:385  INFO     Starting application.
-01/18/2026 13:45:43:770  INFO     Loading shader from file: '/shaders/font.glsl'
-01/18/2026 13:45:43:771  INFO     Compiling and linking shader: '/shaders/font.glsl'
-01/18/2026 13:45:44:166  INFO     Loading shader from file: '/shaders/default.glsl'
-01/18/2026 13:45:44:167  INFO     Compiling and linking shader: '/shaders/default.glsl'
-01/18/2026 13:45:44:168  INFO     Loading shader from file: '/shaders/rounded.glsl'
-01/18/2026 13:45:44:169  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
-01/18/2026 13:45:44:172  INFO     Loading texture from file: '/spritesheets/tiles.png'
-01/18/2026 13:45:44:176  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
-01/18/2026 13:45:44:176  INFO     Loading texture from file: '/spritesheets/characters.png'
-01/18/2026 13:45:44:186  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
-01/18/2026 13:45:44:186  INFO     Loading texture from file: '/spritesheets/landmarks.png'
-01/18/2026 13:45:44:189  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
-01/18/2026 13:45:44:190  INFO     Loading texture from file: '/spritesheets/items.png'
-01/18/2026 13:45:44:190  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
-01/18/2026 13:45:44:191  INFO     Loading texture from file: '/spritesheets/icons.png'
-01/18/2026 13:45:44:192  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
-01/18/2026 13:45:44:192  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
-01/18/2026 13:45:44:193  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
-01/18/2026 13:45:44:194  INFO     Loading sound (track) from file: 'sound/tracks/endOfTheLine_intro.ogg' + 'sound/tracks/endOfTheLine_loop.ogg'
-01/18/2026 13:45:44:399  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
-01/18/2026 13:45:44:495  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
-01/18/2026 13:45:44:614  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
-01/18/2026 13:45:44:726  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
-01/18/2026 13:45:44:856  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
-01/18/2026 13:45:45:042  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
-01/18/2026 13:45:45:222  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
-01/18/2026 13:45:45:227  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
-01/18/2026 13:45:45:228  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
-01/18/2026 13:45:45:232  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
-01/18/2026 13:45:45:232  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
-01/18/2026 13:45:45:232  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
-01/18/2026 13:45:45:240  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
-01/18/2026 13:45:45:240  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
-01/18/2026 13:45:45:242  INFO     Loading texture from file: '/illustrations/illustration1.png'
-01/18/2026 13:45:45:484  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
-01/18/2026 13:45:45:492  INFO     Loading texture from file: '/illustrations/illustration2.png'
-01/18/2026 13:45:45:717  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
-01/18/2026 13:45:45:717  INFO     Loading texture from file: '/illustrations/illustration3.png'
-01/18/2026 13:45:45:964  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
-01/18/2026 13:45:45:964  INFO     Loading texture from file: '/illustrations/illustration5.png'
-01/18/2026 13:45:46:222  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
-01/18/2026 13:45:46:247  INFO     Loading map with ID '3' from file: '/json/maps.json'
-01/18/2026 13:45:46:252  INFO     Parsing map with ID '3' from JSON data.
-01/18/2026 13:45:46:262  INFO     Loading entities for map with ID '3' in state '0' from file: '/json/entities.json'
-01/18/2026 13:45:46:262  INFO     Loading conversations for map with ID '3' from file: '/json/dialogue.json'
-01/18/2026 13:45:46:267  INFO     Setting fade state to 'ACTIVE'.
-01/18/2026 13:45:46:267  INFO     Setting fade state to 'FADE_FROM'.
-01/18/2026 13:45:46:282  INFO     Starting game loop.
-01/18/2026 13:45:46:282  WARNING  Unrecognized key with code '-1' was detected.
-01/18/2026 13:45:46:847  INFO     Setting fade state to 'INACTIVE'.
-01/18/2026 13:47:11:385  INFO     Entering transition state of type 'WARP'.
-01/18/2026 13:47:11:385  INFO     Locking player control.
-01/18/2026 13:47:11:385  INFO     Setting fade state to 'FADE_TO'.
-01/18/2026 13:47:11:872  INFO     Setting fade state to 'ACTIVE'.
-01/18/2026 13:47:11:887  INFO     Loading map with ID '2' from file: '/json/maps.json'
-01/18/2026 13:47:11:887  INFO     Parsing map with ID '2' from JSON data.
-01/18/2026 13:47:11:897  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
-01/18/2026 13:47:11:897  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
-01/18/2026 13:47:12:159  INFO     Setting fade state to 'FADE_FROM'.
-01/18/2026 13:47:12:659  INFO     Setting fade state to 'INACTIVE'.
-01/18/2026 13:47:12:660  INFO     Exiting transition state of type 'WARP'.
-01/18/2026 13:47:12:660  INFO     Unlocking player control.
-01/18/2026 13:47:35:502  INFO     Entering transition state of type 'WARP'.
-01/18/2026 13:47:35:502  INFO     Locking player control.
-01/18/2026 13:47:35:508  INFO     Setting fade state to 'FADE_TO'.
-01/18/2026 13:47:36:002  INFO     Setting fade state to 'ACTIVE'.
-01/18/2026 13:47:36:002  INFO     Loading map with ID '3' from file: '/json/maps.json'
-01/18/2026 13:47:36:002  INFO     Parsing map with ID '3' from JSON data.
-01/18/2026 13:47:36:002  INFO     Loading entities for map with ID '3' in state '0' from file: '/json/entities.json'
-01/18/2026 13:47:36:002  INFO     Loading conversations for map with ID '3' from file: '/json/dialogue.json'
-01/18/2026 13:47:36:256  INFO     Setting fade state to 'FADE_FROM'.
-01/18/2026 13:47:36:752  INFO     Setting fade state to 'INACTIVE'.
-01/18/2026 13:47:36:752  INFO     Exiting transition state of type 'WARP'.
-01/18/2026 13:47:36:752  INFO     Unlocking player control.
-01/18/2026 13:49:18:227  INFO     Entering transition state of type 'WARP'.
-01/18/2026 13:49:18:229  INFO     Locking player control.
-01/18/2026 13:49:18:229  INFO     Setting fade state to 'FADE_TO'.
-01/18/2026 13:49:18:722  INFO     Setting fade state to 'ACTIVE'.
-01/18/2026 13:49:18:722  INFO     Loading map with ID '2' from file: '/json/maps.json'
-01/18/2026 13:49:18:722  INFO     Parsing map with ID '2' from JSON data.
-01/18/2026 13:49:18:732  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
-01/18/2026 13:49:18:732  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
-01/18/2026 13:49:18:973  INFO     Setting fade state to 'FADE_FROM'.
-01/18/2026 13:49:19:472  INFO     Setting fade state to 'INACTIVE'.
-01/18/2026 13:49:19:479  INFO     Exiting transition state of type 'WARP'.
-01/18/2026 13:49:19:479  INFO     Unlocking player control.
-01/18/2026 13:49:19:644  INFO     Entering transition state of type 'WARP'.
-01/18/2026 13:49:19:644  INFO     Locking player control.
-01/18/2026 13:49:19:644  INFO     Setting fade state to 'FADE_TO'.
-01/18/2026 13:49:20:143  INFO     Setting fade state to 'ACTIVE'.
-01/18/2026 13:49:20:145  INFO     Loading map with ID '3' from file: '/json/maps.json'
-01/18/2026 13:49:20:146  INFO     Parsing map with ID '3' from JSON data.
-01/18/2026 13:49:20:146  INFO     Loading entities for map with ID '3' in state '0' from file: '/json/entities.json'
-01/18/2026 13:49:20:146  INFO     Loading conversations for map with ID '3' from file: '/json/dialogue.json'
-01/18/2026 13:49:20:394  INFO     Setting fade state to 'FADE_FROM'.
-01/18/2026 13:49:20:892  INFO     Setting fade state to 'INACTIVE'.
-01/18/2026 13:49:20:892  INFO     Exiting transition state of type 'WARP'.
-01/18/2026 13:49:20:892  INFO     Unlocking player control.
-01/18/2026 13:49:21:174  INFO     Entering transition state of type 'WARP'.
-01/18/2026 13:49:21:174  INFO     Locking player control.
-01/18/2026 13:49:21:178  INFO     Setting fade state to 'FADE_TO'.
-01/18/2026 13:49:21:675  INFO     Setting fade state to 'ACTIVE'.
-01/18/2026 13:49:21:675  INFO     Loading map with ID '2' from file: '/json/maps.json'
-01/18/2026 13:49:21:675  INFO     Parsing map with ID '2' from JSON data.
-01/18/2026 13:49:21:675  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
-01/18/2026 13:49:21:675  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
-01/18/2026 13:49:21:925  INFO     Setting fade state to 'FADE_FROM'.
-01/18/2026 13:49:22:427  INFO     Setting fade state to 'INACTIVE'.
-01/18/2026 13:49:22:428  INFO     Exiting transition state of type 'WARP'.
-01/18/2026 13:49:22:428  INFO     Unlocking player control.
-01/18/2026 13:49:22:575  INFO     Entering transition state of type 'WARP'.
-01/18/2026 13:49:22:575  INFO     Locking player control.
-01/18/2026 13:49:22:575  INFO     Setting fade state to 'FADE_TO'.
-01/18/2026 13:49:23:075  INFO     Setting fade state to 'ACTIVE'.
-01/18/2026 13:49:23:075  INFO     Loading map with ID '3' from file: '/json/maps.json'
-01/18/2026 13:49:23:075  INFO     Parsing map with ID '3' from JSON data.
-01/18/2026 13:49:23:079  INFO     Loading entities for map with ID '3' in state '0' from file: '/json/entities.json'
-01/18/2026 13:49:23:079  INFO     Loading conversations for map with ID '3' from file: '/json/dialogue.json'
-01/18/2026 13:49:23:332  INFO     Setting fade state to 'FADE_FROM'.
-01/18/2026 13:49:23:827  INFO     Setting fade state to 'INACTIVE'.
-01/18/2026 13:49:23:827  INFO     Exiting transition state of type 'WARP'.
-01/18/2026 13:49:23:827  INFO     Unlocking player control.
+01/28/2026 00:44:34:144  INFO     Starting application.
+01/28/2026 00:44:35:827  INFO     Loading shader from file: '/shaders/font.glsl'
+01/28/2026 00:44:35:827  INFO     Compiling and linking shader: '/shaders/font.glsl'
+01/28/2026 00:44:36:246  INFO     Loading shader from file: '/shaders/default.glsl'
+01/28/2026 00:44:36:246  INFO     Compiling and linking shader: '/shaders/default.glsl'
+01/28/2026 00:44:36:246  INFO     Loading shader from file: '/shaders/rounded.glsl'
+01/28/2026 00:44:36:246  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
+01/28/2026 00:44:36:256  INFO     Loading texture from file: '/spritesheets/tiles.png'
+01/28/2026 00:44:36:256  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
+01/28/2026 00:44:36:256  INFO     Loading texture from file: '/spritesheets/characters.png'
+01/28/2026 00:44:36:271  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
+01/28/2026 00:44:36:271  INFO     Loading texture from file: '/spritesheets/landmarks.png'
+01/28/2026 00:44:36:276  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
+01/28/2026 00:44:36:276  INFO     Loading texture from file: '/spritesheets/items.png'
+01/28/2026 00:44:36:276  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
+01/28/2026 00:44:36:276  INFO     Loading texture from file: '/spritesheets/icons.png'
+01/28/2026 00:44:36:278  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
+01/28/2026 00:44:36:278  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
+01/28/2026 00:44:36:278  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
+01/28/2026 00:44:36:278  INFO     Loading sound (track) from file: 'sound/tracks/endOfTheLine_intro.ogg' + 'sound/tracks/endOfTheLine_loop.ogg'
+01/28/2026 00:44:36:486  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
+01/28/2026 00:44:36:580  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
+01/28/2026 00:44:36:696  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
+01/28/2026 00:44:36:806  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
+01/28/2026 00:44:36:929  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
+01/28/2026 00:44:37:117  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
+01/28/2026 00:44:37:298  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
+01/28/2026 00:44:37:298  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
+01/28/2026 00:44:37:298  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
+01/28/2026 00:44:37:308  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
+01/28/2026 00:44:37:308  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
+01/28/2026 00:44:37:308  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
+01/28/2026 00:44:37:308  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
+01/28/2026 00:44:37:316  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
+01/28/2026 00:44:37:316  INFO     Loading texture from file: '/illustrations/illustration1.png'
+01/28/2026 00:44:37:576  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
+01/28/2026 00:44:37:576  INFO     Loading texture from file: '/illustrations/illustration2.png'
+01/28/2026 00:44:37:811  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
+01/28/2026 00:44:37:811  INFO     Loading texture from file: '/illustrations/illustration3.png'
+01/28/2026 00:44:38:050  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
+01/28/2026 00:44:38:056  INFO     Loading texture from file: '/illustrations/illustration5.png'
+01/28/2026 00:44:38:276  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
+01/28/2026 00:44:38:306  INFO     Loading map with ID '1' from file: '/json/maps.json'
+01/28/2026 00:44:38:306  INFO     Parsing map with ID '1' from JSON data.
+01/28/2026 00:44:38:326  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
+01/28/2026 00:44:38:326  INFO     Parsing entity with ID '1' from JSON data.
+01/28/2026 00:44:38:326  INFO     Parsing entity with ID '2' from JSON data.
+01/28/2026 00:44:38:326  INFO     Parsing entity with ID '3' from JSON data.
+01/28/2026 00:44:38:326  INFO     Parsing entity with ID '4' from JSON data.
+01/28/2026 00:44:38:326  INFO     Parsing entity with ID '5' from JSON data.
+01/28/2026 00:44:38:326  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
+01/28/2026 00:44:38:326  INFO     Parsing conversation with ID '0' from JSON data.
+01/28/2026 00:44:38:326  INFO     Parsing conversation with ID '1' from JSON data.
+01/28/2026 00:44:38:326  INFO     Parsing conversation with ID '2' from JSON data.
+01/28/2026 00:44:38:326  INFO     Parsing conversation with ID '3' from JSON data.
+01/28/2026 00:44:38:326  INFO     Parsing conversation with ID '4' from JSON data.
+01/28/2026 00:44:38:326  INFO     Parsing conversation with ID '5' from JSON data.
+01/28/2026 00:44:38:326  INFO     Parsing conversation with ID '6' from JSON data.
+01/28/2026 00:44:38:334  INFO     Parsing conversation with ID '7' from JSON data.
+01/28/2026 00:44:38:334  INFO     Parsing conversation with ID '8' from JSON data.
+01/28/2026 00:44:38:335  INFO     Parsing conversation with ID '9' from JSON data.
+01/28/2026 00:44:38:335  INFO     Parsing conversation with ID '10' from JSON data.
+01/28/2026 00:44:38:335  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:44:38:336  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:44:38:361  INFO     Starting game loop.
+01/28/2026 00:44:38:911  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:12:024  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:12:024  INFO     Locking player control.
+01/28/2026 00:45:12:024  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:12:521  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:12:525  INFO     Loading map with ID '2' from file: '/json/maps.json'
+01/28/2026 00:45:12:525  INFO     Parsing map with ID '2' from JSON data.
+01/28/2026 00:45:12:527  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:12:531  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
+01/28/2026 00:45:12:773  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:13:274  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:13:274  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:13:275  INFO     Unlocking player control.
+01/28/2026 00:45:13:424  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:13:424  INFO     Locking player control.
+01/28/2026 00:45:13:425  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:13:924  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:13:924  INFO     Loading map with ID '1' from file: '/json/maps.json'
+01/28/2026 00:45:13:925  INFO     Parsing map with ID '1' from JSON data.
+01/28/2026 00:45:13:927  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:13:928  INFO     Parsing entity with ID '1' from JSON data.
+01/28/2026 00:45:13:929  INFO     Parsing entity with ID '2' from JSON data.
+01/28/2026 00:45:13:929  INFO     Parsing entity with ID '3' from JSON data.
+01/28/2026 00:45:13:930  INFO     Parsing entity with ID '4' from JSON data.
+01/28/2026 00:45:13:931  INFO     Parsing entity with ID '5' from JSON data.
+01/28/2026 00:45:13:931  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
+01/28/2026 00:45:13:932  INFO     Parsing conversation with ID '0' from JSON data.
+01/28/2026 00:45:13:932  INFO     Parsing conversation with ID '1' from JSON data.
+01/28/2026 00:45:13:933  INFO     Parsing conversation with ID '2' from JSON data.
+01/28/2026 00:45:13:933  INFO     Parsing conversation with ID '3' from JSON data.
+01/28/2026 00:45:13:933  INFO     Parsing conversation with ID '4' from JSON data.
+01/28/2026 00:45:13:934  INFO     Parsing conversation with ID '5' from JSON data.
+01/28/2026 00:45:13:934  INFO     Parsing conversation with ID '6' from JSON data.
+01/28/2026 00:45:13:934  INFO     Parsing conversation with ID '7' from JSON data.
+01/28/2026 00:45:13:935  INFO     Parsing conversation with ID '8' from JSON data.
+01/28/2026 00:45:13:935  INFO     Parsing conversation with ID '9' from JSON data.
+01/28/2026 00:45:13:935  INFO     Parsing conversation with ID '10' from JSON data.
+01/28/2026 00:45:14:174  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:14:674  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:14:674  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:14:675  INFO     Unlocking player control.
+01/28/2026 00:45:14:956  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:14:956  INFO     Locking player control.
+01/28/2026 00:45:14:956  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:15:457  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:15:457  INFO     Loading map with ID '2' from file: '/json/maps.json'
+01/28/2026 00:45:15:817  INFO     Parsing map with ID '2' from JSON data.
+01/28/2026 00:45:16:218  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:16:583  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
+01/28/2026 00:45:17:040  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:17:540  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:17:541  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:17:541  INFO     Unlocking player control.
+01/28/2026 00:45:18:156  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:18:156  INFO     Locking player control.
+01/28/2026 00:45:18:157  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:18:656  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:18:657  INFO     Loading map with ID '1' from file: '/json/maps.json'
+01/28/2026 00:45:18:658  INFO     Parsing map with ID '1' from JSON data.
+01/28/2026 00:45:18:660  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:18:661  INFO     Parsing entity with ID '1' from JSON data.
+01/28/2026 00:45:18:662  INFO     Parsing entity with ID '2' from JSON data.
+01/28/2026 00:45:18:662  INFO     Parsing entity with ID '3' from JSON data.
+01/28/2026 00:45:18:663  INFO     Parsing entity with ID '4' from JSON data.
+01/28/2026 00:45:18:663  INFO     Parsing entity with ID '5' from JSON data.
+01/28/2026 00:45:18:663  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
+01/28/2026 00:45:18:664  INFO     Parsing conversation with ID '0' from JSON data.
+01/28/2026 00:45:18:665  INFO     Parsing conversation with ID '1' from JSON data.
+01/28/2026 00:45:18:665  INFO     Parsing conversation with ID '2' from JSON data.
+01/28/2026 00:45:18:665  INFO     Parsing conversation with ID '3' from JSON data.
+01/28/2026 00:45:18:666  INFO     Parsing conversation with ID '4' from JSON data.
+01/28/2026 00:45:18:666  INFO     Parsing conversation with ID '5' from JSON data.
+01/28/2026 00:45:18:666  INFO     Parsing conversation with ID '6' from JSON data.
+01/28/2026 00:45:18:667  INFO     Parsing conversation with ID '7' from JSON data.
+01/28/2026 00:45:18:667  INFO     Parsing conversation with ID '8' from JSON data.
+01/28/2026 00:45:18:667  INFO     Parsing conversation with ID '9' from JSON data.
+01/28/2026 00:45:18:668  INFO     Parsing conversation with ID '10' from JSON data.
+01/28/2026 00:45:18:906  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:19:406  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:19:407  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:19:407  INFO     Unlocking player control.
+01/28/2026 00:45:19:690  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:19:690  INFO     Locking player control.
+01/28/2026 00:45:19:690  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:20:186  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:20:186  INFO     Loading map with ID '2' from file: '/json/maps.json'
+01/28/2026 00:45:20:191  INFO     Parsing map with ID '2' from JSON data.
+01/28/2026 00:45:20:191  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:20:191  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
+01/28/2026 00:45:20:438  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:20:936  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:20:936  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:20:940  INFO     Unlocking player control.
+01/28/2026 00:45:21:086  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:21:086  INFO     Locking player control.
+01/28/2026 00:45:21:086  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:21:589  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:21:589  INFO     Loading map with ID '1' from file: '/json/maps.json'
+01/28/2026 00:45:21:591  INFO     Parsing map with ID '1' from JSON data.
+01/28/2026 00:45:21:591  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:21:591  INFO     Parsing entity with ID '1' from JSON data.
+01/28/2026 00:45:21:595  INFO     Parsing entity with ID '2' from JSON data.
+01/28/2026 00:45:21:595  INFO     Parsing entity with ID '3' from JSON data.
+01/28/2026 00:45:21:595  INFO     Parsing entity with ID '4' from JSON data.
+01/28/2026 00:45:21:596  INFO     Parsing entity with ID '5' from JSON data.
+01/28/2026 00:45:21:596  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
+01/28/2026 00:45:21:596  INFO     Parsing conversation with ID '0' from JSON data.
+01/28/2026 00:45:21:596  INFO     Parsing conversation with ID '1' from JSON data.
+01/28/2026 00:45:21:596  INFO     Parsing conversation with ID '2' from JSON data.
+01/28/2026 00:45:21:598  INFO     Parsing conversation with ID '3' from JSON data.
+01/28/2026 00:45:21:599  INFO     Parsing conversation with ID '4' from JSON data.
+01/28/2026 00:45:21:599  INFO     Parsing conversation with ID '5' from JSON data.
+01/28/2026 00:45:21:599  INFO     Parsing conversation with ID '6' from JSON data.
+01/28/2026 00:45:21:599  INFO     Parsing conversation with ID '7' from JSON data.
+01/28/2026 00:45:21:600  INFO     Parsing conversation with ID '8' from JSON data.
+01/28/2026 00:45:21:600  INFO     Parsing conversation with ID '9' from JSON data.
+01/28/2026 00:45:21:600  INFO     Parsing conversation with ID '10' from JSON data.
+01/28/2026 00:45:21:836  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:22:338  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:22:338  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:22:338  INFO     Unlocking player control.
+01/28/2026 00:45:22:486  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:22:486  INFO     Locking player control.
+01/28/2026 00:45:22:490  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:22:988  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:22:990  INFO     Loading map with ID '2' from file: '/json/maps.json'
+01/28/2026 00:45:22:990  INFO     Parsing map with ID '2' from JSON data.
+01/28/2026 00:45:22:990  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:22:990  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
+01/28/2026 00:45:23:236  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:23:736  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:23:736  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:23:741  INFO     Unlocking player control.
+01/28/2026 00:45:24:157  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:24:157  INFO     Locking player control.
+01/28/2026 00:45:24:157  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:24:653  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:24:657  INFO     Loading map with ID '1' from file: '/json/maps.json'
+01/28/2026 00:45:24:657  INFO     Parsing map with ID '1' from JSON data.
+01/28/2026 00:45:24:661  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:24:661  INFO     Parsing entity with ID '1' from JSON data.
+01/28/2026 00:45:24:661  INFO     Parsing entity with ID '2' from JSON data.
+01/28/2026 00:45:24:662  INFO     Parsing entity with ID '3' from JSON data.
+01/28/2026 00:45:24:663  INFO     Parsing entity with ID '4' from JSON data.
+01/28/2026 00:45:24:663  INFO     Parsing entity with ID '5' from JSON data.
+01/28/2026 00:45:24:663  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
+01/28/2026 00:45:24:664  INFO     Parsing conversation with ID '0' from JSON data.
+01/28/2026 00:45:24:664  INFO     Parsing conversation with ID '1' from JSON data.
+01/28/2026 00:45:24:664  INFO     Parsing conversation with ID '2' from JSON data.
+01/28/2026 00:45:24:665  INFO     Parsing conversation with ID '3' from JSON data.
+01/28/2026 00:45:24:665  INFO     Parsing conversation with ID '4' from JSON data.
+01/28/2026 00:45:24:665  INFO     Parsing conversation with ID '5' from JSON data.
+01/28/2026 00:45:24:665  INFO     Parsing conversation with ID '6' from JSON data.
+01/28/2026 00:45:24:666  INFO     Parsing conversation with ID '7' from JSON data.
+01/28/2026 00:45:24:666  INFO     Parsing conversation with ID '8' from JSON data.
+01/28/2026 00:45:24:666  INFO     Parsing conversation with ID '9' from JSON data.
+01/28/2026 00:45:24:666  INFO     Parsing conversation with ID '10' from JSON data.
+01/28/2026 00:45:24:908  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:25:404  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:25:404  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:25:406  INFO     Unlocking player control.
+01/28/2026 00:45:25:555  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:25:555  INFO     Locking player control.
+01/28/2026 00:45:25:556  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:26:053  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:26:053  INFO     Loading map with ID '2' from file: '/json/maps.json'
+01/28/2026 00:45:26:056  INFO     Parsing map with ID '2' from JSON data.
+01/28/2026 00:45:26:056  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:26:056  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
+01/28/2026 00:45:26:306  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:26:801  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:26:806  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:26:806  INFO     Unlocking player control.
+01/28/2026 00:45:26:951  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:26:951  INFO     Locking player control.
+01/28/2026 00:45:26:956  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:27:453  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:27:456  INFO     Loading map with ID '1' from file: '/json/maps.json'
+01/28/2026 00:45:27:456  INFO     Parsing map with ID '1' from JSON data.
+01/28/2026 00:45:27:456  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:27:456  INFO     Parsing entity with ID '1' from JSON data.
+01/28/2026 00:45:27:456  INFO     Parsing entity with ID '2' from JSON data.
+01/28/2026 00:45:27:456  INFO     Parsing entity with ID '3' from JSON data.
+01/28/2026 00:45:27:456  INFO     Parsing entity with ID '4' from JSON data.
+01/28/2026 00:45:27:456  INFO     Parsing entity with ID '5' from JSON data.
+01/28/2026 00:45:27:456  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
+01/28/2026 00:45:27:462  INFO     Parsing conversation with ID '0' from JSON data.
+01/28/2026 00:45:27:462  INFO     Parsing conversation with ID '1' from JSON data.
+01/28/2026 00:45:27:462  INFO     Parsing conversation with ID '2' from JSON data.
+01/28/2026 00:45:27:463  INFO     Parsing conversation with ID '3' from JSON data.
+01/28/2026 00:45:27:463  INFO     Parsing conversation with ID '4' from JSON data.
+01/28/2026 00:45:27:463  INFO     Parsing conversation with ID '5' from JSON data.
+01/28/2026 00:45:27:463  INFO     Parsing conversation with ID '6' from JSON data.
+01/28/2026 00:45:27:465  INFO     Parsing conversation with ID '7' from JSON data.
+01/28/2026 00:45:27:465  INFO     Parsing conversation with ID '8' from JSON data.
+01/28/2026 00:45:27:466  INFO     Parsing conversation with ID '9' from JSON data.
+01/28/2026 00:45:27:466  INFO     Parsing conversation with ID '10' from JSON data.
+01/28/2026 00:45:27:706  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:28:199  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:28:206  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:28:206  INFO     Unlocking player control.
+01/28/2026 00:45:29:186  INFO     Entering transition state of type 'WARP'.
+01/28/2026 00:45:29:186  INFO     Locking player control.
+01/28/2026 00:45:29:186  INFO     Setting fade state to 'FADE_TO'.
+01/28/2026 00:45:29:688  INFO     Setting fade state to 'ACTIVE'.
+01/28/2026 00:45:29:688  INFO     Loading map with ID '2' from file: '/json/maps.json'
+01/28/2026 00:45:29:689  INFO     Parsing map with ID '2' from JSON data.
+01/28/2026 00:45:29:689  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
+01/28/2026 00:45:29:689  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
+01/28/2026 00:45:29:936  INFO     Setting fade state to 'FADE_FROM'.
+01/28/2026 00:45:30:438  INFO     Setting fade state to 'INACTIVE'.
+01/28/2026 00:45:30:438  INFO     Exiting transition state of type 'WARP'.
+01/28/2026 00:45:30:438  INFO     Unlocking player control.

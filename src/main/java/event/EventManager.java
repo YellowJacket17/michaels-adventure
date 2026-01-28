@@ -4,6 +4,7 @@ import event.enumeration.EventType;
 import event.enumeration.StockStepInteractionType;
 import event.implementation.map.Evt_Map002;
 import event.implementation.map.Evt_Map003;
+import event.implementation.map.Evt_Map004;
 import event.implementation.submenu.Evt_SubMenu003;
 import miscellaneous.CollisionInspector;
 import core.enumeration.PrimaryGameState;
@@ -37,6 +38,7 @@ public class EventManager {
     private final Evt_Map001 evt_map001;
     private final Evt_Map002 evt_map002;
     private final Evt_Map003 evt_map003;
+    private final Evt_Map004 evt_map004;
 
 
     // CONVERSATION EVENT FIELDS
@@ -61,6 +63,7 @@ public class EventManager {
         evt_map001 = new Evt_Map001(gp);
         evt_map002 = new Evt_Map002(gp);
         evt_map003 = new Evt_Map003(gp);
+        evt_map004 = new Evt_Map004(gp);
 
         // No conversation events here... yet.
 
@@ -98,6 +101,8 @@ public class EventManager {
                         return evt_map002.npcInteraction(dt, type, target);
                     case 3:
                         return evt_map003.npcInteraction(dt, type, target);
+                    case 4:
+                        return evt_map004.npcInteraction(dt, type, target);
                 }
             }
         }
@@ -132,6 +137,8 @@ public class EventManager {
                         return evt_map002.objInteraction(dt, type, target);
                     case 3:
                         return evt_map003.objInteraction(dt, type, target);
+                    case 4:
+                        return evt_map004.objInteraction(dt, type, target);
                 }
             }
         }
@@ -166,6 +173,8 @@ public class EventManager {
                         return evt_map002.partyInteraction(dt, type, target);
                     case 3:
                         return evt_map003.partyInteraction(dt, type, target);
+                    case 4:
+                        return evt_map004.partyInteraction(dt, type, target);
                 }
             }
         }
@@ -191,17 +200,19 @@ public class EventManager {
 
         // Map-specific events.
         switch (gp.getMapM().getLoadedMap().getMapId()) {                                                               // Switch which map to check for interaction events on depending on the current loaded map.
-                case 1:
-                    return evt_map001.tileInteraction(dt, type, targetCol, targetRow,
-                            gp.getEntityM().getPlayer().getDirectionCurrent());
-                 case 2:
-                    return evt_map002.tileInteraction(dt, type, targetCol, targetRow,
-                            gp.getEntityM().getPlayer().getDirectionCurrent());
+            case 1:
+                return evt_map001.tileInteraction(dt, type, targetCol, targetRow,
+                        gp.getEntityM().getPlayer().getDirectionCurrent());
+            case 2:
+                return evt_map002.tileInteraction(dt, type, targetCol, targetRow,
+                        gp.getEntityM().getPlayer().getDirectionCurrent());
             case 3:
                 return evt_map003.tileInteraction(dt, type, targetCol, targetRow,
                         gp.getEntityM().getPlayer().getDirectionCurrent());
-            }
-
+            case 4:
+                return evt_map004.tileInteraction(dt, type, targetCol, targetRow,
+                        gp.getEntityM().getPlayer().getDirectionCurrent());
+        }
         return false;
     }
 
@@ -227,7 +238,6 @@ public class EventManager {
             case LEDGE_HOP:
                 return handleStockStepInteractionLedge(targetCol, targetRow, entityId);
         }
-
         return false;
     }
 

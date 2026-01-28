@@ -4,42 +4,42 @@ import animation.PassiveAnimationBase;
 import utility.UtilityTool;
 
 /**
- * This class handles animation of the sparkle passive animation group.
+ * This class handles animation of the blink passive animation group.
  */
-public class Anm_Sparkle extends PassiveAnimationBase {
+public class Anm_Blink extends PassiveAnimationBase {
 
     // FIELDS
     /**
-     * Array of base tiles that control the sparkle animation depending on column and row.
-     * The values contained within the array are the start times (seconds) of the sparkle animation for various column
+     * Array of base tiles that control the blink animation depending on column and row.
+     * The values contained within the array are the start times (seconds) of the blink animation for various column
      * and row combinations, relative to the `counter` value.
      * In practice, these start times will repeat for each 10x10 chunk of tiles on a map.
      */
     private final double[][] baseTiles = new double[10][10];
 
     /**
-     * Time to individually fade the sparkle in and out (seconds).
-     * The fade in and out durations will each take this amount of time.
-     * It is assumed that there are two dedicated frames of animation for both fade in and fade out.
+     * Time to individually close and open (seconds).
+     * The close and open durations will each take this amount of time.
+     * It is assumed that there are three dedicated frames of animation for both close and open.
      */
-    private final double fadeInOutDuration;
+    private final double closeOpenDuration;
 
     /**
-     * Time that the full sparkle will be visible (seconds).
-     * It is assumed that there is only one frame of animation where the full sparkle is visible.
+     * Time that the fully-closed state will be visible (seconds).
+     * It is assumed that there is only one frame of animation where the fully-closed state is visible.
      */
-    private final double fullVisibleDuration;
+    private final double fullyClosedDuration;
 
 
     // CONSTRUCTOR
-    public Anm_Sparkle(double counterMax, double fadeInOutDuration, double fullVisibleDuration) {
+    public Anm_Blink(double counterMax, double closeOpenDuration, double fullyClosedDuration) {
         super(counterMax);
-        if (((fadeInOutDuration * 2) + fullVisibleDuration) > counterMax) {
-            UtilityTool.logWarning("'(fadeInOutDuration * 2) + fullVisibleDuration)' for sparkle animation is greater"
+        if (((closeOpenDuration * 2) + fullyClosedDuration) > counterMax) {
+            UtilityTool.logWarning("'(closeOpenDuration * 2) + fullyClosedDuration)' for blink animation is greater"
                     + " than 'counterMax'; animation will behave strangely.");
         }
-        this.fadeInOutDuration = fadeInOutDuration;
-        this.fullVisibleDuration = fullVisibleDuration;
+        this.closeOpenDuration = closeOpenDuration;
+        this.fullyClosedDuration = fullyClosedDuration;
         initBaseArray(counterMax);
     }
 
@@ -62,26 +62,32 @@ public class Anm_Sparkle extends PassiveAnimationBase {
 
         if (difference > 0) {
 
-            if (difference <= fadeInOutDuration * 0.5) {
-                return 2;
-
-            } else if (difference <= fadeInOutDuration) {
+            if (difference <= closeOpenDuration * 0.33) {
                 return 1;
 
-            } else if (difference <= fadeInOutDuration + fullVisibleDuration) {
-                return 0;
-
-            } else if (difference <= (fadeInOutDuration * 1.5) + fullVisibleDuration) {
-                return 1;
-
-            } else if (difference <= (fadeInOutDuration * 2) + fullVisibleDuration) {
+            } else if (difference <= closeOpenDuration * 0.66) {
                 return 2;
+
+            } else if (difference <= closeOpenDuration * 0.99) {
+                return 3;
+
+            } else if (difference <= closeOpenDuration + fullyClosedDuration) {
+                return 4;
+
+            } else if (difference <= (closeOpenDuration * 1.33) + fullyClosedDuration) {
+                return 3;
+
+            } else if (difference <= (closeOpenDuration * 1.66) + fullyClosedDuration) {
+                return 2;
+
+            } else if (difference <= (closeOpenDuration * 1.99) + fullyClosedDuration) {
+                return 1;
 
             } else {
-                return 3;
+                return 0;
             }
         }
-        return 3;
+        return 0;
     }
 
 

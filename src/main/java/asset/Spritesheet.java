@@ -129,6 +129,7 @@ public class Spritesheet {
         }
         int currentX = padding;
         int currentY = texture.getNativeHeight() - spriteHeights[0] - padding;
+        int spriteHeightLeftmostInRow = spriteHeights[0];
 
         for (int i = 0; i < numSprites; i++) {
 
@@ -154,9 +155,10 @@ public class Spritesheet {
             if (i < (numSprites - 1)) {
                 currentX += spriteWidths[i] + (2 * padding);
                 if (((currentX + spriteWidths[i + 1]) > texture.getNativeWidth())                                       // If width of next sprite cannot fit in current row, it must be in the next row up.
-                        || (spriteHeights[i + 1] > spriteHeights[i])) {                                                 // If height of next sprite is taller than current sprite, it must be in the next row up.
+                        || (spriteHeights[i + 1] > spriteHeightLeftmostInRow)) {                                        // If height of next sprite is taller than the leftmost in the current spritesheet row, it must be in the next row up.
                     currentX = padding;
                     currentY -= spriteHeights[i + 1] + (2 * padding);
+                    spriteHeightLeftmostInRow = spriteHeights[i + 1];
                 }
             }
         }

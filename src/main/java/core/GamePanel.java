@@ -224,7 +224,7 @@ public class GamePanel {
         entityM.initPlayer();
 
         // Load map along with associated entities and dialogue.
-        mapM.loadMap(3, 0, true);
+        mapM.loadMap(1, 0, true);
 
         // Set camera to track player entity.
         cameraS.setTrackedEntity(entityM.getPlayer().getEntityId());
@@ -383,7 +383,7 @@ public class GamePanel {
 
         // Tiles spritesheet (spritesheet 0).
         String filePath = "/spritesheets/tiles.png";
-        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 206, 32, 32, 1));
+        AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 245, 32, 32, 1));
 
         // Characters spritesheet (spritesheet 1).
         filePath = "/spritesheets/characters.png";
@@ -394,12 +394,12 @@ public class GamePanel {
         int[] widths = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 128, 128, 128, 128, 96, 96, 96, 96, 32,
-                32, 64, 64, 32, 32, 38, 38, 38, 38};
+                32, 64, 64, 32, 32, 38, 38, 38, 38, 32, 32, 32, 32, 32, 32};
         int[] heights = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 64, 64, 64, 64, 64, 64, 64, 64, 72, 72,
-                32, 32, 64, 64, 40, 40, 40, 40};
-        AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 81, widths, heights, 1));
+                32, 32, 64, 64, 40, 40, 40, 40, 32, 32, 32, 32, 32, 32};
+        AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 87, widths, heights, 1));
 
         // Items spritesheet (spritesheet 3).
         filePath = "/spritesheets/items.png";

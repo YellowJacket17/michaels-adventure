@@ -15,5 +15,11 @@
     "tracks": {
       "0": "sunkenSecrets"
     }
+  },
+
+  "4": {
+    "tracks": {
+      "0": "NO_TRACK"
+    }
   }
 }

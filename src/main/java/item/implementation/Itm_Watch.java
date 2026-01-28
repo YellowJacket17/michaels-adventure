@@ -13,7 +13,7 @@ public class Itm_Watch extends ItemBase {
     // FIELDS
     private static final int itmId = 2;
     private static final String itmName = "Watch";
-    private static final String itmDescription = "Nick's moonphase watch. It looks like it needs to be wound, but is otherwise in great condition.";
+    private static final String itmDescription = "Nick's moonphase watch. It looks like it needs to be wound, but is otherwise in good working order.";
 
 
     // CONSTRUCTOR

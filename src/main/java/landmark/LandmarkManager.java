@@ -172,7 +172,7 @@ public class LandmarkManager {
 
         } catch (Exception e) {
 
-            throw new AssetLoadException("Could not instantiate landmark data for map with ID '" + mapId);
+            throw new AssetLoadException("Could not instantiate landmark data for map with ID '" + mapId + "'");
         }
         return mapLandmarks;
     }
@@ -284,6 +284,9 @@ public class LandmarkManager {
                 break;
             case 9:
                 landmark = new Ldm_Rock1(gp, col, row);
+                break;
+            case 10:
+                landmark = new Ldm_Eye1(gp, col, row);
                 break;
             default:
                 UtilityTool.logError("Attempted to instantiate a landmark type that does not exist.");

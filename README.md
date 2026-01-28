@@ -7,7 +7,7 @@
 
 **Dependency management:** Apache Maven
 
-**Overview:** This project is both a 2D game engine and an actual game in development.
+**Overview:** This project is both a 2D game engine concept and an actual game in development.
 
 ## Controls
 **W:** Upward character movement and menu control.
@@ -18,7 +18,7 @@
 
 **D:** Rightward character movement and menu control.
 
-**Enter:** Interaction with the world (talk to NPC, et cetera) and menu selection.
+**Enter:** Interaction with the world (talk to NPC, etc.) and menu selection.
 
 **Space:** Open/close the main menu.
 

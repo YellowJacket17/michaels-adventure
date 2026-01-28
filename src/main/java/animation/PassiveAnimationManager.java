@@ -33,6 +33,11 @@ public class PassiveAnimationManager {
      */
     private final Anm_Stream anm_stream;
 
+    /**
+     * Blink passive animation group.
+     */
+    private final Anm_Blink anm_blink;
+
 
     // CONSTRUCTOR
     /**
@@ -45,6 +50,7 @@ public class PassiveAnimationManager {
         anm_foam = new Anm_Foam(0.45);
         anm_lilypad = new Anm_Lilypad(10);
         anm_stream = new Anm_Stream(0.2);
+        anm_blink = new Anm_Blink(4.0, 0.20, 0.2);
     }
 
 
@@ -61,6 +67,7 @@ public class PassiveAnimationManager {
         anm_foam.update(dt);
         anm_lilypad.update(dt);
         anm_stream.update(dt);
+        anm_blink.update(dt);
     }
 
 
@@ -86,6 +93,8 @@ public class PassiveAnimationManager {
                 return anm_lilypad.getSprite(worldCol, worldRow);
             case 4:
                 return anm_stream.getSprite(worldCol, worldRow);
+            case 5:
+                return anm_blink.getSprite(worldCol, worldRow);
             default:
                 return 0;
         }
