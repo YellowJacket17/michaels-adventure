@@ -41,6 +41,16 @@ public enum SubMenuType {
     PLAYER_SIDE_MANAGE,
 
     /**
+     * View the attributes of a player-side entity.
+     */
+    PLAYER_SIDE_ATTRIBUTES,
+
+    /**
+     * View the skills of a player-side entity.
+     */
+    PLAYER_SIDE_SKILLS,
+
+    /**
      * Select from a list of inactive party members to swap into combat.
      */
     PLAYER_SIDE_SWAP

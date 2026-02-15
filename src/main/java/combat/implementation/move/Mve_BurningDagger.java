@@ -25,7 +25,7 @@ public class Mve_BurningDagger extends MoveBase {
     private static final int mvePower = 70;
     private static final int mveAccuracy = 90;
     private static final int mveSkillPoints = 4;
-    private static final Vector3f mveParticleEffectColor = new Vector3f(255, 190, 166);
+    private static final Vector3f mveEffectColor = new Vector3f(255, 190, 166);
     private static final String mveSoundEffect = "burningDagger";
 
 
@@ -37,7 +37,7 @@ public class Mve_BurningDagger extends MoveBase {
         power = mvePower;
         accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
-        particleEffectColor = mveParticleEffectColor;
+        effectColor = mveEffectColor;
         soundEffect = mveSoundEffect;
     }
 
@@ -63,7 +63,7 @@ public class Mve_BurningDagger extends MoveBase {
         if (affectedTargetEntityIds.size() > 0) {
 
             gp.getCombatM().addQueuedActionBack(
-                    new Act_CustomEffect(gp, targetEntityIds, new Vector3f(255, 166, 190), "attributeDecrease", true));
+                    new Act_CustomEffect(gp, targetEntityIds, MoveBase.ATTRIBUTE_DECREASE_COLOR, "attributeDecrease", true));
             String message = buildEffectMessage(affectedTargetEntityIds);
             gp.getCombatM().addQueuedActionBack(
                     new Act_ReadMessage(gp, message, true, true));
@@ -85,7 +85,7 @@ public class Mve_BurningDagger extends MoveBase {
 
             targetEntityNames.add(gp.getEntityM().getEntityById(entityId).getName());
         }
-        String message = UtilityTool.buildEntityListMessage(targetEntityNames);
+        String message = UtilityTool.buildEntityListMessage(targetEntityNames, true);
         message += " attack fell!";
         return message;
     }

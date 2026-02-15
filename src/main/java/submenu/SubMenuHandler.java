@@ -41,7 +41,7 @@ public class SubMenuHandler {
     /**
      * Boolean indicating whether the sub-menu window will be rendered at the default screen position or a custom screen
      * position.
-     * If this is marked as true, then the values of `subMenuScreenX` and `subMenuScreenY` will be ignored.
+     * If this is marked as true, then the values of 'subMenuScreenX' and 'subMenuScreenY' will be ignored.
      * The default value is true.
      */
     private boolean subMenuDefaultPosition = true;
@@ -64,6 +64,21 @@ public class SubMenuHandler {
      */
     private final HashSet<Integer> disabledOptions = new HashSet<>();
 
+    /**
+     * Color of the 'Back' (or equivalent) option in sub-menus.
+     */
+    public static final Vector3f BACK_OPTION_COLOR = new Vector3f(255, 46, 102);
+
+    /**
+     * Color of a disabled option in sub-menus.
+     */
+    public static final Vector3f DISABLED_OPTION_COLOR = new Vector3f(112, 112, 112);
+
+    /**
+     * Color of an informative option in sub-menus.
+     */
+    public static final Vector3f INFO_OPTION_COLOR = new Vector3f(100, 193, 255);
+
 
     // CONSTRUCTOR
     /**
@@ -76,6 +91,7 @@ public class SubMenuHandler {
     }
 
 
+    // METHODS
     /**
      * Generates and displays a sub-menu.
      * The primary game state is set to sub-menu.
@@ -86,7 +102,7 @@ public class SubMenuHandler {
      * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      * @param disabledOptions set of indices of disabled sub-menu options
-     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     * @throws IllegalArgumentException if an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
                                 HashMap<Integer, Vector3f> colors, HashSet<Integer> disabledOptions) {
@@ -107,7 +123,7 @@ public class SubMenuHandler {
      * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
      * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
-     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     * @throws IllegalArgumentException if an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
                                 HashMap<Integer, Vector3f> colors) {
@@ -127,7 +143,7 @@ public class SubMenuHandler {
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
      * @param disabledOptions set of indices of disabled sub-menu options
-     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     * @throws IllegalArgumentException if an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors,
                                 HashSet<Integer> disabledOptions) {
@@ -146,7 +162,7 @@ public class SubMenuHandler {
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
      * @param colors map of colors for each sub-menu option; option index is the key, color (r, g, b) is the value
-     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     * @throws IllegalArgumentException if an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId, HashMap<Integer, Vector3f> colors) {
 
@@ -166,7 +182,7 @@ public class SubMenuHandler {
      * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
      * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
      * @param disabledOptions set of indices of disabled sub-menu options
-     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     * @throws IllegalArgumentException if an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY,
                                 HashSet<Integer> disabledOptions) {
@@ -186,7 +202,7 @@ public class SubMenuHandler {
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
      * @param subMenuScreenX screen x-coordinate of the window (leftmost, normalized from 0 to 1, both inclusive)
      * @param subMenuScreenY screen y-coordinate of the window (topmost, normalized from 0 to 1, both inclusive)
-     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     * @throws IllegalArgumentException if an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId, float subMenuScreenX, float subMenuScreenY) {
 
@@ -204,7 +220,7 @@ public class SubMenuHandler {
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
      * @param disabledOptions set of indices of disabled sub-menu options
-     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     * @throws IllegalArgumentException if an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId, HashSet<Integer> disabledOptions) {
 
@@ -221,7 +237,7 @@ public class SubMenuHandler {
      *
      * @param options list of options to be displayed in the sub-menu (minimum size of 1, maximum of 8)
      * @param subMenuId ID of the sub-menu; this is used to determine what logic should be triggered upon selecting an option
-     * @throws IllegalArgumentException if either an illegal number of options is passed as argument
+     * @throws IllegalArgumentException if an illegal number of options is passed as argument
      */
     public void generateSubMenu(List<String> options, int subMenuId) {
 

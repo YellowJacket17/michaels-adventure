@@ -23,7 +23,7 @@ public class Mve_Heal extends MoveBase {
     private static final int mvePower = 0;
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 3;
-    private static final Vector3f mveParticleEffectColor = new Vector3f(166, 255, 168);
+    private static final Vector3f mveEffectColor = new Vector3f(166, 255, 168);
     private static final String mveSoundEffect = "heal";
 
 
@@ -35,7 +35,7 @@ public class Mve_Heal extends MoveBase {
         power = mvePower;
         accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
-        particleEffectColor = mveParticleEffectColor;
+        effectColor = mveEffectColor;
         soundEffect = mveSoundEffect;
     }
 
@@ -65,7 +65,7 @@ public class Mve_Heal extends MoveBase {
                 sourceEntityId,
                 gp.getEntityM().getEntityById(sourceEntityId).getSkill() - skillPoints);
         gp.getCombatM().addQueuedActionBack(
-                new Act_CustomEffect(gp, targetEntitiesFinalLife, entitiesFinalSkillPoints, particleEffectColor, soundEffect, true));
+                new Act_CustomEffect(gp, targetEntitiesFinalLife, entitiesFinalSkillPoints, effectColor, soundEffect, true));
     }
 
 

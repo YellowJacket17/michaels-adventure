@@ -206,13 +206,39 @@ public class UtilityTool {
 
 
     /**
+     * Appends entity name with apostrophe "s" at the end.
+     * This method will determine whether to use "'" or "'s" based on whether the entity name ends in "s" or not.
+     *
+     * @param entityName name of entity to append
+     * @return appended entity name
+     */
+    public static String appendEntityNameApostropheS(String entityName) {
+
+        String build = entityName;
+
+        if (!entityName.equals("")) {
+
+            if (entityName.charAt(entityName.length() - 1) == 's') {
+
+                build += "'";
+            } else {
+
+                build += "'s";
+            }
+        }
+        return build;
+    }
+
+
+    /**
      * Builds message listing entity names.
      * (Example: "EntityName1, EntityName2, and EntityName3")
      *
      * @param entityNames names of entities to be listed
+     * @param apostropheS whether to include an apostrophe "s" at the end of the list (true) or not (false)
      * @return message
      */
-    public static String buildEntityListMessage(ArrayList<String> entityNames) {
+    public static String buildEntityListMessage(ArrayList<String> entityNames, boolean apostropheS) {
 
         String build = "";
         int i = 0;
@@ -225,7 +251,13 @@ public class UtilityTool {
 
                     build += "and ";
                 }
-                build += entityName + "'s";
+                if (apostropheS) {
+
+                    build += appendEntityNameApostropheS(entityName);
+                } else {
+
+                    build += entityName;
+                }
             } else {
 
                 build += entityName;

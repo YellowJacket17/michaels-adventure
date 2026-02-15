@@ -6,19 +6,17 @@ import core.GamePanel;
 import entity.enumeration.EntityStatus;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
- * This abstract class defines base logic for a move in combat.
+ * This abstract class defines base logic for a move (i.e., skill) in combat.
  */
 public abstract class MoveBase {
 
     /*
-     * A move represents an action that an entity can take during combat.
+     * A move (i.e., skill) represents an action that an entity can take during combat.
      *
-     * Each type of Move (i.e., each Attack subclass) has a unique ID defined in its subclass definition.
+     * Each type of Move (i.e., each Move subclass) has a unique ID defined in its subclass definition.
      * This ID is NOT unique to each Move instance; all Move instances of the same subclass share the same ID.
      */
 
@@ -33,8 +31,8 @@ public abstract class MoveBase {
     protected final int moveId;
 
     /**
-     * Defines whether this move will apply direct damage with a possible secondary effect (`PHYSICAL` or `MAGIC`), or
-     * only apply an effect (`SUPPORT`).
+     * Defines whether this move will apply direct damage with a possible secondary effect ('PHYSICAL' or 'MAGIC'), or
+     * only apply an effect ('SUPPORT').
      */
     protected final MoveCategory category;
 
@@ -61,13 +59,13 @@ public abstract class MoveBase {
 
     /**
      * Move base power.
-     * If the move category is `SUPPORT`, then this value will not be used to apply direct damage.
+     * If the move category is 'SUPPORT', then this value will not be used to apply direct damage.
      */
     protected int power;
 
     /**
      * Move base accuracy (from zero to one hundred, both inclusive).
-     * If the move category is `SUPPORT`, then this value will be ignored and always assumed to be one hundred.
+     * If the move category is 'SUPPORT', then this value will be ignored and always assumed to be one hundred.
      */
     protected int accuracy;
 
@@ -77,14 +75,39 @@ public abstract class MoveBase {
     protected int skillPoints;
 
     /**
-     * Particle effect color (i.e., splash animation color on target entities).
+     * Effect animation color (i.e., particle effect color, flash color).
      */
-    protected Vector3f particleEffectColor;
+    protected Vector3f effectColor;
 
     /**
      * Sound effect (plays when move is used).
      */
     protected String soundEffect;
+
+    /**
+     * Boolean setting whether this move will use a flash animation (true) or not (false) in combat.
+     */
+    protected boolean flashAnimation = false;
+
+    /**
+     * Boolean setting whether this move has a higher critical hit chance.
+     */
+    protected boolean highCriticalHit = false;
+
+    /**
+     * Color of effects for attribute increases in combat.
+     */
+    public static final Vector3f ATTRIBUTE_INCREASE_COLOR = new Vector3f(166, 255, 168);
+
+    /**
+     * Color of effects for attribute decreases in combat.
+     */
+    public static final Vector3f ATTRIBUTE_DECREASE_COLOR = new Vector3f(255, 166, 190);
+
+    /**
+     * Color of effects for skill recovery in combat.
+     */
+    public static final Vector3f SKILL_RECOVERY_COLOR = new Vector3f(166, 172, 255);
 
 
     // CONSTRUCTOR
@@ -110,7 +133,7 @@ public abstract class MoveBase {
     // METHODS
     /**
      * Runs move effect logic.
-     * Note that the `progressCombat()` method in CombatManager should NOT be called somewhere through this method's
+     * Note that the 'progressCombat()' method in CombatManager should NOT be called somewhere through this method's
      * logic to hand off control to the next queued action.
      * This will be called automatically in Act_UseMove (support) or CombatAnimationSupport (non-support).
      *
@@ -178,11 +201,19 @@ public abstract class MoveBase {
         return skillPoints;
     }
 
-    public Vector3f getParticleEffectColor() {
-        return particleEffectColor;
+    public Vector3f getEffectColor() {
+        return effectColor;
     }
 
     public String getSoundEffect() {
         return soundEffect;
+    }
+
+    public boolean isFlashAnimation() {
+        return flashAnimation;
+    }
+
+    public boolean isHighCriticalHit() {
+        return highCriticalHit;
     }
 }

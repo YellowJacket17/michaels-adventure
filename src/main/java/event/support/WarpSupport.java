@@ -55,8 +55,8 @@ public class WarpSupport {
     /**
      * Warps the player to a new location.
      * Any followers (both party and non-party) will be warped as well.
-     * Any additional entities in the `npc` and `obj` (hash)maps will be purged if warping to a new map.
-     * To retain these additional entities, they should first be transferred to the `standby` (hash)map.
+     * Any additional entities in the 'npc' and 'obj' (hash)maps will be purged if warping to a new map.
+     * To retain these additional entities, they should first be transferred to the 'standby' (hash)map.
      *
      * @param mapId ID of the map that the player entity will be warped to
      * @param mapState state of the map that the player entity will be warped to
@@ -157,8 +157,8 @@ public class WarpSupport {
      * @param row row that the player entity will be warped to
      * @param type type of warp transition
      * @param loadDirection direction that the player entity will be facing once the transition completes
-     * @param trackName name/title of track to be swapped in during transition (Sound.NO_TRACK to swap to no track
-     *                  playing, Sound.RETAIN_TRACK to retain current track playing)
+     * @param trackName name/title of track to be swapped in during transition ('Sound.NO_TRACK' to swap to no track
+     *                  playing, 'Sound.RETAIN_TRACK' to retain current track playing)
      */
     public void initiateWarp(double dt, int mapId, int mapState, int col, int row, WarpTransitionType type,
                              EntityDirection loadDirection, String trackName) {

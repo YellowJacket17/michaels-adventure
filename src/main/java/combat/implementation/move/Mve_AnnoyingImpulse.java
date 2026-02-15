@@ -24,7 +24,7 @@ public class Mve_AnnoyingImpulse extends MoveBase {
     private static final int mvePower = 60;
     private static final int mveAccuracy = 95;
     private static final int mveSkillPoints = 6;
-    private static final Vector3f mveParticleEffectColor = new Vector3f(255, 255, 255);
+    private static final Vector3f mveEffectColor = new Vector3f(255, 255, 255);
     private static final String mveSoundEffect = "sneakstrike";
 
 
@@ -36,7 +36,7 @@ public class Mve_AnnoyingImpulse extends MoveBase {
         power = mvePower;
         accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
-        particleEffectColor = mveParticleEffectColor;
+        effectColor = mveEffectColor;
         soundEffect = mveSoundEffect;
     }
 
@@ -55,7 +55,7 @@ public class Mve_AnnoyingImpulse extends MoveBase {
             gp.getCombatM().addQueuedActionBack(
                     new Act_CustomEffect(gp, targetEntityIds, new Vector3f(255, 255, 255), "hop", true));
             gp.getCombatM().addQueuedActionBack(
-                    new Act_CustomEffect(gp, targetEntityIds, new Vector3f(166, 255, 168), "heal", true));
+                    new Act_CustomEffect(gp, targetEntityIds, MoveBase.ATTRIBUTE_INCREASE_COLOR, "heal", true));
             String message = buildEffectMessageDefenseIncrease(sourceEntityId);
             gp.getCombatM().addQueuedActionBack(
                     new Act_ReadMessage(gp, message, true, true));
@@ -74,7 +74,7 @@ public class Mve_AnnoyingImpulse extends MoveBase {
      */
     private String buildEffectMessageDefenseIncrease(int entityId) {
 
-        return (gp.getEntityM().getEntityById(entityId).getName() + "'s defense rose!");
+        return (UtilityTool.appendEntityNameApostropheS(gp.getEntityM().getEntityById(entityId).getName()) + " defense rose!");
     }
 
 

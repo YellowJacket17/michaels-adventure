@@ -38,7 +38,30 @@ public class Act_SwapPlayerSideEntity extends ActionBase {
 
             gp.getCombatM().getGuardingEntities().remove(entityId2);
         }
+
+        if (gp.getCombatM().getTurnSkipEntities().containsKey(entityId1)) {                                             // Remove entity swapped in/out from list of entities to skip the turn of, if applicable.
+
+            gp.getCombatM().getTurnSkipEntities().remove(entityId1);
+        }
+
+        if (gp.getCombatM().getTurnSkipEntities().containsKey(entityId2)) {                                             // Remove entity swapped in/out from list of entities to skip the turn of, if applicable.
+
+            gp.getCombatM().getTurnSkipEntities().remove(entityId2);
+        }
+
+        if (gp.getCombatM().getTargetLockEntityId() == entityId1) {                                                     // Remove entity swapped in/out as locked target entity, if applicable.
+
+            gp.getCombatM().resetTargetLockEntity();
+        }
+
+        if (gp.getCombatM().getTargetLockEntityId() == entityId2) {                                                     // Remove entity swapped in/out as locked target entity, if applicable.
+
+            gp.getCombatM().resetTargetLockEntity();
+        }
         gp.getCombatAnimationS().initiateStandardPartySwapAnimation(entityId1, entityId2, 0, 0.1);
+
+        // NOTE: Entity secondary attributes (attack, defense, magic, and agility) are purposefully not reset upon swap
+        // in/out.
 
         // NOTE: The `progressCombat()` method in CombatManager to hand off control to the next queued action will
         // automatically be called once this animation in the `updateStandardPartySwapAnimation()` method in

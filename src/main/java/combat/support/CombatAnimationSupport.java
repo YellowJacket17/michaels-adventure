@@ -74,7 +74,7 @@ public class CombatAnimationSupport {
     private final double smaHealthBarSpeed = 20.0;
 
     /**
-     * Time to delay the start of the actual standard move animation from when the `initiateStandardMoveAnimation()`
+     * Time to delay the start of the actual standard move animation from when the 'initiateStandardMoveAnimation()'
      * method is called (seconds).
      */
     private double smaFrontDelay;
@@ -84,6 +84,66 @@ public class CombatAnimationSupport {
      * action (seconds).
      */
     private double smaBackDelay;
+
+
+    // FLASH MOVE ANIMATION (FMA) FIELDS
+    /**
+     * Boolean indicating whether a flash move animation is staged/playing (true) or not (false).
+     */
+    private boolean flashMoveAnimationActive = false;
+
+    /**
+     * ID of the entity using a move during a flash move animation.
+     */
+    private int fmaSourceEntityId;
+
+    /**
+     * Combat move being used during a flash move animation.
+     */
+    private MoveBase fmaMove;
+
+    /**
+     * Calculated change in life points (positive for decrease, negative for increase) of each targeted entity after
+     * applying damage/restoration for a flash move animation; entity ID is the key, life points is the value.
+     */
+    private final HashMap<Integer, Integer> fmaTargetEntitiesDeltaLife = new HashMap<>();
+
+    /**
+     * Calculated final life points of each targeted entity after applying damage/restoration for a flash move
+     * animation; entity ID is the key, life points is the value.
+     */
+    private final HashMap<Integer, Integer> fmaTargetEntitiesFinalLife = new HashMap<>();
+
+    /**
+     * Non-whole number remainder of target entity life points to be carried over to the next update during a flash
+     * move animation; entity ID is the key, life is the value.
+     * This exists because life values on entities are only updated by whole numbers.
+     */
+    private final HashMap<Integer, Double> fmaTargetEntitiesDamageRemainder = new HashMap<>();
+
+    /**
+     * Indicates whether an entity's life will increase (true) or decrease (false) as a result of a flash move
+     * animation; entity ID is the key, life increase/decrease is the value.
+     */
+    private final HashMap<Integer, Boolean> fmaTargetEntitiesLifeIncrease = new HashMap<>();
+
+    /**
+     * Number of life points that an entity will gain/lose per second while a flash move animation is playing.
+     * Increasing this value will increase the speed of the animation.
+     */
+    private final double fmaHealthBarSpeed = 20.0;
+
+    /**
+     * Time to delay the start of the actual flash move animation from when the 'initiateFlashMoveAnimation()'
+     * method is called (seconds).
+     */
+    private double fmaFrontDelay;
+
+    /**
+     * Time between when the actual flash move animation is complete and control is handed off to the next combat
+     * action (seconds).
+     */
+    private double fmaBackDelay;
 
 
     // STANDARD PARTY SWAP ANIMATION (SPSA) FIELDS
@@ -99,7 +159,7 @@ public class CombatAnimationSupport {
 
     /**
      * Time to delay the start of the actual standard party swap animation from when the
-     * `initiateStandardPartySwapAnimation()` method ia called (seconds).
+     * 'initiateStandardPartySwapAnimation()' method ia called (seconds).
      */
     private double spsaFrontDelay;
 
@@ -108,7 +168,6 @@ public class CombatAnimationSupport {
      * combat action (seconds).
      */
     private double spsaBackDelay;
-
 
     // STANDARD FAINT ANIMATION (SFA) FIELDS
     /**
@@ -122,7 +181,7 @@ public class CombatAnimationSupport {
     private final ArrayList<Integer> sfaFaintingEntityIds = new ArrayList<>();
 
     /**
-     * Time to delay the start of the actual standard faint animation from when the `initiateStandardFaintAnimation()`
+     * Time to delay the start of the actual standard faint animation from when the 'initiateStandardFaintAnimation()'
      * method ia called (seconds).
      */
     private double sfaFrontDelay;
@@ -146,7 +205,7 @@ public class CombatAnimationSupport {
     private final ArrayList<Integer> sraRevivingEntityIds = new ArrayList<>();
 
     /**
-     * Time to delay the start of the actual standard revive animation from when the `initiateStandardReviveAnimation()`
+     * Time to delay the start of the actual standard revive animation from when the 'initiateStandardReviveAnimation()'
      * method ia called (seconds).
      */
     private double sraFrontDelay;
@@ -225,7 +284,7 @@ public class CombatAnimationSupport {
     private boolean ceaWaitToProgressCombat = false;
 
     /**
-     * Time to delay the start of the actual custom effect animation from when the `initiateCustomEffectAnimation()`
+     * Time to delay the start of the actual custom effect animation from when the 'initiateCustomEffectAnimation()'
      * method ia called (seconds).
      */
     private double ceaFrontDelay;
@@ -266,6 +325,19 @@ public class CombatAnimationSupport {
             }
             if (smaFrontDelay <= 0) {
                 updateStandardMoveAnimation(dt);
+            }
+        }
+
+        // Flash move animation.
+        if (flashMoveAnimationActive) {
+            if (fmaFrontDelay > 0) {
+                fmaFrontDelay -= dt;
+                if (fmaFrontDelay <= 0) {
+                    kickoffFlashMoveAnimation();
+                }
+            }
+            if (fmaFrontDelay <= 0) {
+                updateFlashMoveAnimation(dt);
             }
         }
 
@@ -328,11 +400,11 @@ public class CombatAnimationSupport {
      * The remaining life points of the target entities will be modified by this animation to their final values.
      * The remaining skill points of the source entity will be modified by this animation to its final value as
      * determined by the move being used.
-     * The sound effect associated with the move is also played.
+     * The sound effect associated with the move will also be played.
      * Both life addition and subtraction from target entities are supported.
      * Once the animation is complete and effects/fainting have been polled, combat will be progressed to the next
      * queued action.
-     * If a standard move animation is already active, nothing will happen.
+     * If a standard or flash move animation is already active, nothing will happen.
      *
      * @param sourceEntityId ID of entity using the animated combat move
      * @param targetEntitiesDeltaLife calculated change in life points (positive for decrease, negative for increase) of
@@ -346,7 +418,7 @@ public class CombatAnimationSupport {
     public void initiateStandardMoveAnimation(int sourceEntityId, HashMap<Integer, Integer> targetEntitiesDeltaLife,
                                               MoveBase move, double frontDelay, double backDelay) {
 
-        if (!standardMoveAnimationActive) {
+        if (!standardMoveAnimationActive && !flashMoveAnimationActive) {
 
             smaSourceEntityId = sourceEntityId;
 
@@ -377,6 +449,64 @@ public class CombatAnimationSupport {
                 smaFrontDelay = frontDelay;
             }
             smaBackDelay = backDelay;
+        }
+    }
+
+
+    /**
+     * Initiates a flash move animation to play.
+     * The remaining life points of the target entities will be modified by this animation to their final values.
+     * The remaining skill points of the source entity will be modified by this animation to its final value as
+     * determined by the move being used.
+     * The sound effect associated with the move will also be played.
+     * Both life addition and subtraction from target entities are supported.
+     * Once the animation is complete and effects/fainting have been polled, combat will be progressed to the next
+     * queued action.
+     * If a standard or flash move animation is already active, nothing will happen.
+     *
+     * @param sourceEntityId ID of entity using the animated combat move
+     * @param targetEntitiesDeltaLife calculated change in life points (positive for decrease, negative for increase) of
+     *                                each targeted entity after applying damage/restoration; entity ID is the key, life
+     *                                points is the value
+     * @param move combat move being used for animation
+     * @param frontDelay time to delay the start of the actual animation from when this method ia called (seconds)
+     * @param backDelay time between when the actual animation is complete and control is handed off to the next queued
+     *                  combat action (seconds)
+     */
+    public void initiateFlashMoveAnimation(int sourceEntityId, HashMap<Integer, Integer> targetEntitiesDeltaLife,
+                                             MoveBase move, double frontDelay, double backDelay) {
+
+        if (!standardMoveAnimationActive && !flashMoveAnimationActive) {
+
+            fmaSourceEntityId = sourceEntityId;
+
+            for (int targetEntityId : targetEntitiesDeltaLife.keySet()) {
+
+                fmaTargetEntitiesDeltaLife.put(targetEntityId, targetEntitiesDeltaLife.get(targetEntityId));
+                fmaTargetEntitiesFinalLife.put(targetEntityId,
+                        calculateFinalLife(targetEntityId, targetEntitiesDeltaLife.get(targetEntityId)));
+                fmaTargetEntitiesDamageRemainder.put(targetEntityId, 0.0);
+
+                if (fmaTargetEntitiesFinalLife.get(targetEntityId)
+                        > gp.getEntityM().getEntityById(targetEntityId).getLife()) {
+
+                    fmaTargetEntitiesLifeIncrease.put(targetEntityId, true);
+                } else {
+
+                    fmaTargetEntitiesLifeIncrease.put(targetEntityId, false);
+                }
+            }
+            fmaMove = move;
+            flashMoveAnimationActive = true;
+
+            if (frontDelay <= 0) {
+
+                kickoffFlashMoveAnimation();
+            } else {
+
+                fmaFrontDelay = frontDelay;
+            }
+            fmaBackDelay = backDelay;
         }
     }
 
@@ -415,7 +545,7 @@ public class CombatAnimationSupport {
 
     /**
      * Initiates a standard faint animation to play.
-     * The status of each target entity will be modified to `FAINT` by this animation.
+     * The status of each target entity will be modified to 'FAINT' by this animation.
      * Once the animation is complete, control will be handed off to the next queued combat action.
      * If a standard faint animation is already active, nothing will happen.
      *
@@ -448,9 +578,9 @@ public class CombatAnimationSupport {
 
     /**
      * Initiates a standard revive animation to play.
-     * The status of each target entity will be modified to `HEALTHY` by this animation.
+     * The status of each target entity will be modified to 'HEALTHY' by this animation.
      * The entity will automatically be revived with one life point if a previous higher value has not already been set.
-     * If a target entity does not have a `FAINT` status, nothing will happen.
+     * If a target entity does not have a 'FAINT' status, nothing will happen.
      * Once the animation is complete, control will be handed off to the next queued combat action.
      * If a standard revive animation is already active, nothing will happen.
      *
@@ -534,8 +664,10 @@ public class CombatAnimationSupport {
      * Initiates a custom effect animation to play.
      * If a custom effect animation is already active, nothing will happen.
      *
-     * @param entitiesFinalSkillPoints calculated final skill points of each participating entity; entity ID is the key,
+     * @param entitiesFinalPoints calculated final life/skill points of each participating entity; entity ID is the key,
      *                                 skill points is the value
+     * @param affectSkillPoints whether skill points (true) or life points (false) will be modified by the
+     *                          'entitiesFinalPoints' values.
      * @param particleEffectColor particle effect color (r, g, b)
      * @param soundEffectResourceName sound effect resource name
      * @param waitToProgressCombat whether to wait to hand off control to the next queued combat action until all other
@@ -546,7 +678,8 @@ public class CombatAnimationSupport {
      * @param backDelay time between when the actual animation is complete and control is handed off to the next queued
      *                  combat action (seconds)
      */
-    public void initiateCustomEffectAnimation(HashMap<Integer, Integer> entitiesFinalSkillPoints,
+    public void initiateCustomEffectAnimation(HashMap<Integer, Integer> entitiesFinalPoints,
+                                              boolean affectSkillPoints,
                                               Vector3f particleEffectColor,
                                               String soundEffectResourceName,
                                               boolean waitToProgressCombat,
@@ -554,10 +687,26 @@ public class CombatAnimationSupport {
 
         if (!customEffectAnimationActive) {
 
-            for (int entityId : entitiesFinalSkillPoints.keySet()) {
+            for (int entityId : entitiesFinalPoints.keySet()) {
 
                 ceaEntityIds.add(entityId);
-                ceaEntitiesFinalSkillPoints.put(entityId, entitiesFinalSkillPoints.get(entityId));
+
+                if (affectSkillPoints) {
+
+                    ceaEntitiesFinalSkillPoints.put(entityId, entitiesFinalPoints.get(entityId));
+                } else {
+
+                    ceaEntitiesFinalLife.put(entityId, entitiesFinalPoints.get(entityId));
+                    ceaEntitiesDamageRemainder.put(entityId, 0.0);
+
+                    if (entitiesFinalPoints.get(entityId)
+                            > gp.getEntityM().getEntityById(entityId).getLife()) {
+
+                        ceaEntitiesLifeIncrease.put(entityId, true);
+                    } else {
+                        ceaEntitiesLifeIncrease.put(entityId, false);
+                    }
+                }
             }
             ceaParticleEffectColor.x = particleEffectColor.x;
             ceaParticleEffectColor.y = particleEffectColor.y;
@@ -665,10 +814,31 @@ public class CombatAnimationSupport {
                     new Vector2f(
                             gp.getEntityM().getEntityById(targetEntityId).getWorldX() + (GamePanel.NATIVE_TILE_SIZE / 2),
                             gp.getEntityM().getEntityById(targetEntityId).getWorldY() + (GamePanel.NATIVE_TILE_SIZE / 4)),
-                    smaMove.getParticleEffectColor() != null ? smaMove.getParticleEffectColor() : new Vector3f(255, 255, 255),
+                    smaMove.getEffectColor() != null
+                            ? smaMove.getEffectColor()
+                            : new Vector3f(255, 255, 255),
                     4.0f)
             );
         }
+    }
+
+
+    /**
+     * Kicks off the staged flash move animation.
+     */
+    private void kickoffFlashMoveAnimation() {
+
+        gp.getEntityM().getEntityById(fmaSourceEntityId).initiateCombatAttackAnimation();                               // Play attack animation on source entity.
+        gp.getEntityM().getEntityById(fmaSourceEntityId).subtractSkill(fmaMove.getSkillPoints());                       // Subtract skill points used by this move.
+
+        if ((fmaMove.getSoundEffect() != null) && (!fmaTargetEntitiesFinalLife.isEmpty())) {                            // Play move sound effect (as long as there are targets being hit).
+
+            gp.getSoundS().playEffect(fmaMove.getSoundEffect());
+        }
+        gp.getFadeS().initiateFlash(0.2, 0.5, 0.1,                                                                      // Play flash effect animation.
+                fmaMove.getEffectColor() != null
+                        ? fmaMove.getEffectColor()
+                        : new Vector3f(255, 255, 255));
     }
 
 
@@ -771,6 +941,55 @@ public class CombatAnimationSupport {
                 }
                 smaMove.runEffects(smaSourceEntityId, smaTargetEntitiesDeltaLife);                                      // Apply any additional affects that this move may have.
                 resetStandardMoveAnimation();
+
+                if (!ceaWaitToProgressCombat) {
+
+                    gp.getCombatM().progressCombat();
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Updates the state of the active flash combat move animation by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void updateFlashMoveAnimation(double dt) {
+
+        boolean sourceAttackComplete =
+                !gp.getEntityM().getEntityById(fmaSourceEntityId).isPlayingCombatAttackAnimation();                     // Check if attack animation for source entity is complete.
+
+        boolean healthBarsComplete = progressAndCheckHealthBarAnimations(
+                fmaTargetEntitiesFinalLife,
+                fmaTargetEntitiesDamageRemainder,
+                fmaTargetEntitiesLifeIncrease,
+                fmaHealthBarSpeed, dt);                                                                                 // Check if life bar animation for each target entity is complete.
+
+        boolean flashEffectComplete = !gp.getFadeS().isFlashActive();                                                   // Check if flash effect animation is complete.
+
+        boolean soundEffectComplete =
+                fmaMove.getSoundEffect() != null ? (!gp.getSoundS().isSoundPlaying(fmaMove.getSoundEffect())) : true;   // Check if sound effect is complete.
+
+        if (sourceAttackComplete && healthBarsComplete && flashEffectComplete && soundEffectComplete) {                 // Check if all animations and sound effect have completed; if so, combat can be progressed to the next action.
+
+            if (fmaBackDelay > 0) {
+
+                fmaBackDelay -= dt;
+            }
+
+            if (fmaBackDelay <= 0) {
+
+                ArrayList<Integer> targetEntityIds = new ArrayList<>();
+
+                for (int targetEntityId : fmaTargetEntitiesFinalLife.keySet()) {
+
+                    targetEntityIds.add(targetEntityId);
+                }
+                fmaMove.runEffects(fmaSourceEntityId, fmaTargetEntitiesDeltaLife);                                      // Apply any additional affects that this move may have.
+                gp.getFadeS().reset();
+                resetFlashMoveAnimation();
 
                 if (!ceaWaitToProgressCombat) {
 
@@ -1074,7 +1293,7 @@ public class CombatAnimationSupport {
 
 
     /**
-     * Resets CombatAnimationSupport standard move animation fields back to their default state.
+     * Resets CombatAnimationSupport standard move animation fields back to their default states.
      * Intended to be called to clean up after a standard move animation has completed.
      */
     private void resetStandardMoveAnimation() {
@@ -1093,7 +1312,25 @@ public class CombatAnimationSupport {
 
 
     /**
-     * Resets CombatAnimationSupport standard party swap animation fields back to their default state.
+     * Resets CombatAnimationSupport flash move animation fields back to their default states.
+     * Intended to be called to clean up after a flash move animation has completed.
+     */
+    private void resetFlashMoveAnimation() {
+
+        flashMoveAnimationActive = false;
+        fmaSourceEntityId = 0;
+        fmaMove = null;
+        fmaTargetEntitiesDeltaLife.clear();
+        fmaTargetEntitiesFinalLife.clear();
+        fmaTargetEntitiesDamageRemainder.clear();
+        fmaTargetEntitiesLifeIncrease.clear();
+        fmaFrontDelay = 0;
+        fmaBackDelay = 0;
+    }
+
+
+    /**
+     * Resets CombatAnimationSupport standard party swap animation fields back to their default states.
      * Intended to be called to clean up after a standard party swap animation has completed.
      */
     private void resetStandardPartySwapAnimation() {
@@ -1106,7 +1343,7 @@ public class CombatAnimationSupport {
 
 
     /**
-     * Resets CombatAnimationSupport standard faint animation fields back to their default state.
+     * Resets CombatAnimationSupport standard faint animation fields back to their default states.
      * Intended to be called to clean up after a standard faint animation has completed.
      */
     private void resetStandardFaintAnimation() {
@@ -1119,7 +1356,7 @@ public class CombatAnimationSupport {
 
 
     /**
-     * Resets CombatAnimationSupport standard revive animation fields back to their default state.
+     * Resets CombatAnimationSupport standard revive animation fields back to their default states.
      * Intended to be called to clean up after a standard revive animation has completed.
      */
     private void resetStandardReviveAnimation() {
@@ -1132,7 +1369,7 @@ public class CombatAnimationSupport {
 
 
     /**
-     * Resets CombatAnimationSupport custom effect animation fields back to their default state.
+     * Resets CombatAnimationSupport custom effect animation fields back to their default states.
      * Intended to be called to clean up after a custom effect animation has completed.
      */
     public void resetCustomEffectAnimation() {

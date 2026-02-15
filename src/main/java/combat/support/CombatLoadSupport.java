@@ -70,8 +70,9 @@ public class CombatLoadSupport {
      * An example is placing entities in specific non-default locations post-combat.
      *
      * @param combatId ID of the combat scenario
+     * @param combatLost whether combat was lost by the player (true) or not (false)
      */
-    public void handleExitCombatTransitionLoading(int combatId) {
+    public void handleExitCombatTransitionLoading(int combatId, boolean combatLost) {
 
         switch (combatId) {
             case 0:
@@ -86,8 +87,9 @@ public class CombatLoadSupport {
      * An example is initiating a cutscene post-combat.
      *
      * @param combatId ID of the combat scenario
+     * @param combatLost whether combat was lost by the player (true) or not (false)
      */
-    public void concludeExitCombatTransition(int combatId) {
+    public void concludeExitCombatTransition(int combatId, boolean combatLost) {
 
         switch (combatId) {
             case 0:

@@ -117,13 +117,13 @@ public class UserInterface {
     private int itemColSelected;
 
     /**
-     * Variable to store the index that the current selected item occupies in the `inventory` array of the Player class.
+     * Variable to store the index that the current selected item occupies in the 'inventory' array of the Player class.
      * The default value is zero (first item).
      */
     private int inventoryIndexSelected;
 
     /**
-     * Array tracking which item slots in the player's inventory (i.e., `inventory` array of the Player class) are
+     * Array tracking which item slots in the player's inventory (i.e., 'inventory' array of the Player class) are
      * occupied (true) or not (false).
      */
     private boolean[][] occupiedItemSlots;
@@ -182,6 +182,11 @@ public class UserInterface {
             this.renderer = renderer;                                                                                   // Makes it easier to access current renderer across entire class.
         }
 
+        // FADE
+        if ((gp.getFadeS().getState() != FadeState.INACTIVE) || (gp.getFadeS().isFlashActive())) {
+            renderFadeScreen();
+        }
+
         // PRIMARY MENU
         switch (primaryMenuState) {
             case PARTY:
@@ -211,11 +216,6 @@ public class UserInterface {
         // SUB-MENU
         if (gp.getSubMenuH().getSubMenuId() != -1) {
             renderSubMenuScreen();
-        }
-
-        // FADE
-        if ((gp.getFadeS().getState() != FadeState.INACTIVE) || (gp.getFadeS().isFlashActive())) {
-            renderFadeScreen();
         }
 
         // DEBUG
@@ -1034,7 +1034,7 @@ public class UserInterface {
                                 gp.getFadeS().getColor().z,
                                 alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.SECOND_LAYER);
+                        ZIndex.FIRST_LAYER);
                 break;
             case ACTIVE:                                                                                                // Wait on colored screen.
                 renderer.addRectangle(
@@ -1044,7 +1044,7 @@ public class UserInterface {
                                 gp.getFadeS().getColor().z,
                                 alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.SECOND_LAYER);
+                        ZIndex.FIRST_LAYER);
                 break;
             case FADE_FROM:                                                                                             // Fade from color.
                 alpha = 255 - ((float)(gp.getFadeS().getFadeCounter()
@@ -1056,7 +1056,7 @@ public class UserInterface {
                                 gp.getFadeS().getColor().z,
                                 alpha),
                         new Transform(worldCoords, new Vector2f(worldWidth, worldHeight)),
-                        ZIndex.SECOND_LAYER);
+                        ZIndex.FIRST_LAYER);
                 break;
         }
     }

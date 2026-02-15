@@ -136,9 +136,9 @@ public class SoundSupport {
      * Swaps the playing track out for a new one.
      * The playing track can either be swapped out instantly or faded out.
      * If the playing track is already fading out when this method is called, then the new track will not play until the
-     * fade out is complete, regardless of the value of the `fadeOut` parameter.
+     * fade out is complete, regardless of the value of the 'fadeOut' parameter.
      *
-     * @param resourceName name/title of new track to play from root directory (Sound.NO_TRACK to swap to no track
+     * @param resourceName name/title of new track to play from root directory ('Sound.NO_TRACK' to swap to no track
      *                         playing)
      * @param fadeOut whether the playing track will fade out (true) or not (false)
      */

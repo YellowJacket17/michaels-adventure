@@ -177,10 +177,10 @@ public class GuiIconManager {
         icons.put(guiIcon.getIconId(), guiIcon);
 
         // Party swap indicator - Icon ID 11.
-        guiIcon = new GuiIcon(11);
-        guiIcon.setName("Party swap indicator");
-        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(2));
-        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(3));
-        icons.put(guiIcon.getIconId(), guiIcon);
+//        guiIcon = new GuiIcon(11);
+//        guiIcon.setName("Party swap indicator");
+//        guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(2));
+//        guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(3));
+//        icons.put(guiIcon.getIconId(), guiIcon);
     }
 }

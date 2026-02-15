@@ -103,10 +103,15 @@ public class Act_CustomEffect extends ActionBase {
 
             gp.getCombatAnimationS().initiateCustomEffectAnimation(
                     entityIds, particleEffectColor, soundEffectResourceName, waitToProgressCombat, 0.4, 0.4);
+
+        } else if (entitiesFinalSkillPoints.isEmpty()) {
+
+            gp.getCombatAnimationS().initiateCustomEffectAnimation(
+                    entitiesFinalLifePoints, false, particleEffectColor, soundEffectResourceName, waitToProgressCombat, 0.4, 0.4);
         } else if (entitiesFinalLifePoints.isEmpty()) {
 
             gp.getCombatAnimationS().initiateCustomEffectAnimation(
-                    entitiesFinalSkillPoints, particleEffectColor, soundEffectResourceName, waitToProgressCombat, 0.4, 0.4);
+                    entitiesFinalSkillPoints, true, particleEffectColor, soundEffectResourceName, waitToProgressCombat, 0.4, 0.4);
         } else {
 
             gp.getCombatAnimationS().initiateCustomEffectAnimation(

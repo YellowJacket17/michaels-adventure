@@ -778,10 +778,10 @@ public class EventManager {
      * Note that only the specified entity maps will be polled for followers.
      *
      * @param followed followed entity
-     * @param npc whether to poll the `npc` entity map (true) or not (false)
-     * @param obj whether to poll the `obj` entity map (true) or not (false)
-     * @param party whether to poll the `party` entity map (true) or not (false)
-     * @param standby whether to poll the `standby` entity map (true) or not (false)
+     * @param npc whether to poll the 'npc' entity map (true) or not (false)
+     * @param obj whether to poll the 'obj' entity map (true) or not (false)
+     * @param party whether to poll the 'party' entity map (true) or not (false)
+     * @param standby whether to poll the 'standby' entity map (true) or not (false)
      * @return list of entity IDs of followers
      */
     public ArrayList<Integer> seekFollowers(EntityBase followed,

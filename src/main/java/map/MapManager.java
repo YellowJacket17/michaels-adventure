@@ -40,10 +40,10 @@ public class MapManager {
     // METHOD
     /**
      * Loads a new map into memory and sets it as the current map to render.
-     * The following will be purged before loading the new map: prior loaded map, prior NPCs in `npc` (hash)map, prior
-     * objects in `obj` (hash)map, and prior conversations in `conv` (hash)map.
+     * The following will be purged before loading the new map: prior loaded map, prior NPCs in 'npc' (hash)map, prior
+     * objects in 'obj' (hash)map, and prior conversations in 'conv' (hash)map.
      * New NPCs, objects, and conversations will be loaded with the new map.
-     * To retain an NPC or object between map loads, it should first be transferred to the `standby` (hash)map.
+     * To retain an NPC or object between map loads, it should first be transferred to the 'standby' (hash)map.
      *
      * @param mapId ID of map to load
      * @param mapState state in which to load map

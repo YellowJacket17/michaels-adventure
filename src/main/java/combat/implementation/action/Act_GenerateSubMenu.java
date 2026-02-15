@@ -37,7 +37,7 @@ public class Act_GenerateSubMenu extends ActionBase {
     /**
      * Boolean indicating whether the sub-menu window will be rendered at the default screen position or a custom screen
      * position.
-     * If this is marked as true, then the values of `subMenuScreenX` and `subMenuScreenY` will be ignored.
+     * If this is marked as true, then the values of 'subMenuScreenX' and 'subMenuScreenY' will be ignored.
      * The default value is true.
      */
     private final boolean subMenuDefaultPosition;

@@ -10,7 +10,6 @@ import entity.EntityBase;
 import org.joml.Vector3f;
 import utility.UtilityTool;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,7 +25,7 @@ public class Mve_Pickpocket extends MoveBase {
     private static final int mvePower = 45;
     private static final int mveAccuracy = 85;
     private static final int mveSkillPoints = 2;
-    private static final Vector3f mveParticleEffectColor = new Vector3f(88, 92, 141);
+    private static final Vector3f mveEffectColor = new Vector3f(88, 92, 141);
     private static final String mveSoundEffect = "pickpocket";
 
 
@@ -38,7 +37,7 @@ public class Mve_Pickpocket extends MoveBase {
         power = mvePower;
         accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
-        particleEffectColor = mveParticleEffectColor;
+        effectColor = mveEffectColor;
         soundEffect = mveSoundEffect;
     }
 
@@ -73,7 +72,7 @@ public class Mve_Pickpocket extends MoveBase {
                     gp.getEntityM().getEntityById(sourceEntityId).getSkill()
                             + (skillStolenPerEntity * numEntitiesSkillStolen));
             gp.getCombatM().addQueuedActionBack(
-                    new Act_CustomEffect(gp, entitiesFinalSkill, new Vector3f(166, 172, 255), "heal", true));
+                    new Act_CustomEffect(gp, entitiesFinalSkill, MoveBase.SKILL_RECOVERY_COLOR, "heal", true));
             String message = gp.getEntityM().getEntityById(sourceEntityId).getName()
                     + " stole "
                     + skillStolenPerEntity * numEntitiesSkillStolen

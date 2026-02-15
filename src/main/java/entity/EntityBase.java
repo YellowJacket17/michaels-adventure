@@ -355,12 +355,12 @@ public abstract class EntityBase extends Drawable {
 
     // COMBAT ATTRIBUTES
     /**
-     * Entity's maximum life/health points.
+     * Entity's maximum life points (i.e., health points).
      */
     protected int maxLife;
 
     /**
-     * Entity's remaining life/health points.
+     * Entity's remaining life points (i.e., health points).
      */
     protected int life;
 
@@ -452,7 +452,7 @@ public abstract class EntityBase extends Drawable {
 
     // COMBAT MOVES
     /**
-     * List to store this entity's combat moves.
+     * List to store this entity's combat moves (i.e., skills).
      */
     protected final LimitedArrayList<MoveBase> moves = new LimitedArrayList<>(4);
 
@@ -1728,10 +1728,26 @@ public abstract class EntityBase extends Drawable {
             if (onPath) {
 
                 stopFollowingPath();                                                                                    // Entity has either arrived at destination or path to destination could not be found, so exit this state.
+                UtilityTool.logError("Entity"
+                        + (((name != null) && (!name.equals(""))) ? (" '" + name + "'") : "")
+                        + " with ID '"
+                        + entityId
+                        + "' is no longer following a path due to a pathfinding error.");
             }
 
             if (onEntityId != NO_ENTITY_FOLLOWED) {
 
+                UtilityTool.logError("Entity"
+                        + (((name != null) && (!name.equals(""))) ? (" '" + name + "'") : "")
+                        + " with ID '"
+                        + entityId
+                        + "' is not longer following entity"
+                        + (((gp.getEntityM().getEntityById(onEntityId).getName() != null)
+                            && (!gp.getEntityM().getEntityById(onEntityId).getName().equals("")))
+                                ? (" '" + gp.getEntityM().getEntityById(onEntityId).getName() + "'") : "")
+                        + " with ID '"
+                        + onEntityId
+                        + "' due to a pathfinding error.");
                 onEntityId = NO_ENTITY_FOLLOWED;
             }
 

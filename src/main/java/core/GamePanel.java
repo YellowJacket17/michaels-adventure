@@ -197,28 +197,7 @@ public class GamePanel {
         selectionA = new SelectionArrow(this);
 
         // Initialize system settings.
-        Setting vSyncSetting = new Setting("VSync", "Syncs frame rate with monitor refresh rate to prevent screen tearing.");
-        vSyncSetting.addOption("Disabled");
-        vSyncSetting.addOption("Enabled");
-        systemSettings.add(vSyncSetting);
-
-        Setting FrameRateLimitSetting = new Setting("Frame Rate Limit", "Maximum frame rate that the game will run at.");
-        systemSettings.add(FrameRateLimitSetting);
-
-        Setting tetherGameSpeedSetting = new Setting("Tether Game Speed", "Tethers game speed to the frame rate limit.");
-        tetherGameSpeedSetting.addOption("Disabled");
-        tetherGameSpeedSetting.addOption("Enabled");
-        systemSettings.add(tetherGameSpeedSetting);
-
-        Setting fullScreenSetting = new Setting("Full Screen", "Sets the game viewport to occupy the full monitor screen.");
-        fullScreenSetting.addOption("Disabled");
-        fullScreenSetting.addOption("Enabled");
-        systemSettings.add(fullScreenSetting);
-
-        Setting eEqualsEnterSetting = new Setting("E = Enter", "Sets the 'E' key to function the same as the 'Enter' key.");
-        eEqualsEnterSetting.addOption("Disabled");
-        eEqualsEnterSetting.addOption("Enabled");
-        systemSettings.add(eEqualsEnterSetting);
+        initSystemSettings();
 
         // Initialize player.
         entityM.initPlayer();
@@ -234,13 +213,8 @@ public class GamePanel {
         fadeS.displayColor(new Vector3f(255, 255, 255));
         fadeS.initiateFadeFrom(0.5);
 
-        // Other setup.
-        environmentM.setup();
-
         // Set primary game state to player control.
         primaryGameState = PrimaryGameState.EXPLORE;
-
-//        partyS.addEntityToParty(4, true);
     }
 
 
@@ -304,70 +278,116 @@ public class GamePanel {
      */
     public void render(double dt) {
 
-        // NOTE: Drawables are added to the render pipeline in the following order to control layering.
+        // NOTE: Drawables are purposefully added to the render pipeline in the following order to control layering.
 
-        // Tile.
-        tileM.addToRenderPipeline(renderer);                                                                            // Render tile sprites as defined in the TileManager class.
+        addRenderPipelineTiles();
+        addRenderPipelineEntitiesLandmarks();
+        addRenderPipelineParticleEffects();
+        addRenderPipelineIllustrations();
+        addRenderPipelineUserInterface(dt);
+        renderer.render();                                                                                              // Flush the render pipeline to draw the frame.
+        entityList.clear();                                                                                             // Reset/cleanup the list of all entities by emptying it.
+    }
 
-        // Entity and landmark.
+
+    /**
+     * Adds tile sprites to the render pipeline,
+     */
+    private void addRenderPipelineTiles() {
+
+        tileM.addToRenderPipeline(renderer);
+    }
+
+
+    /**
+     * Adds entity and landmark sprites to the render pipeline.
+     * Both entities and landmarks are added at the same time to control layering.
+     */
+    private void addRenderPipelineEntitiesLandmarks() {
+
         for (EntityBase entity : entityM.getObj().values()) {                                                           // Add all objects in the current map to the list of entities.
+
             if (entity != null) {
+
                 entityList.add(entity);
             }
         }
 
         for (EntityBase entity : entityM.getNpc().values()) {                                                           // Add all loaded NPCs to the list of entities.
+
             if (entity != null) {
+
                 entityList.add(entity);
             }
         }
-
         Set<Integer> keySet = entityM.getParty().keySet();
         Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
+
         for (int i = (entityM.getParty().size() - 1); i >= 0; i--) {                                                    // Add all loaded party members (active and inactive) to the list of entities; iterates backwards.
+
             if (entityM.getParty().get(keyArray[i]) != null) {
+
                 entityList.add(entityM.getParty().get(keyArray[i]));
             }
         }
-
         entityList.add(entityM.getPlayer());                                                                            // Add player entity to the list of all entities.
-
         ArrayList<LandmarkBase> landmarkList;
+
         if (mapM.getLoadedMap() != null) {
+
             landmarkList = mapM.getLoadedMap().getMapLandmarks();                                                       // Get the list of landmarks on the loaded map.
         } else {
+
             landmarkList = new ArrayList<>();                                                                           // Fail-safe to have empty landmark array if no map is loaded.
         }
+
         for (int row = 0; row < MAX_WORLD_ROW; row++) {                                                                 // Render the entities and landmarks row-by-row, starting at the top.
+
             for (EntityBase entity : entityList) {                                                                      // Render all entities in the current row.
+
                 if (Math.ceil(entity.getWorldY() / NATIVE_TILE_SIZE) == row) {                                          // Calculate row this way to accommodate proper layering for tall grass landmark.
+
                     entity.addToRenderPipeline(renderer);
                 }
             }
+
             for (LandmarkBase landmark : landmarkList) {                                                                // Render all landmarks in the current row.
+
                 if (landmark.getRow() == row) {
+
                     landmark.addToRenderPipeline(renderer);
                 }
             }
         }
+    }
 
-        // Particle Effect.
+
+    /**
+     * Adds particle effects to the render pipeline.
+     */
+    private void addRenderPipelineParticleEffects() {
+
         particleEffectM.addToRenderPipeline(renderer);
+    }
 
-        // Environment.
-//        environmentM.addToRenderPipeline(renderer);
 
-        // Illustration.
+    /**
+     * Adds illustrations to the render pipeline.
+     */
+    private void addRenderPipelineIllustrations() {
+
         illustrationS.addToRenderPipeline(renderer);
+    }
 
-        // UI.
+
+    /**
+     * Adds user interface elements to the render pipeline.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void addRenderPipelineUserInterface(double dt) {
+
         ui.addToRenderPipeline(renderer, dt);
-
-        // Flush the render pipeline to draw the frame.
-        renderer.render();
-
-        // Cleanup.
-        entityList.clear();                                                                                             // Reset the list of all entities by emptying it.
     }
 
 
@@ -443,6 +463,36 @@ public class GamePanel {
         AssetPool.addIllustration("illustration3", new Illustration(AssetPool.getTexture(filePath)));
         filePath = "/illustrations/illustration5.png";
         AssetPool.addIllustration("illustration5", new Illustration(AssetPool.getTexture(filePath)));
+    }
+
+
+    /**
+     * Initializes game system settings.
+     */
+    private void initSystemSettings() {
+
+        Setting vSyncSetting = new Setting("VSync", "Syncs frame rate with monitor refresh rate to prevent screen tearing.");
+        vSyncSetting.addOption("Disabled");
+        vSyncSetting.addOption("Enabled");
+        systemSettings.add(vSyncSetting);
+
+        Setting FrameRateLimitSetting = new Setting("Frame Rate Limit", "Sets the target frame rate that the game will run at.");
+        systemSettings.add(FrameRateLimitSetting);
+
+        Setting tetherGameSpeedSetting = new Setting("Tether Game Speed", "Tethers game speed to the frame rate limit.");
+        tetherGameSpeedSetting.addOption("Disabled");
+        tetherGameSpeedSetting.addOption("Enabled");
+        systemSettings.add(tetherGameSpeedSetting);
+
+        Setting fullScreenSetting = new Setting("Full Screen", "Sets the game viewport to occupy the full monitor screen.");
+        fullScreenSetting.addOption("Disabled");
+        fullScreenSetting.addOption("Enabled");
+        systemSettings.add(fullScreenSetting);
+
+        Setting eEqualsEnterSetting = new Setting("E = Enter", "Sets the 'E' key to function the same as the 'Enter' key.");
+        eEqualsEnterSetting.addOption("Disabled");
+        eEqualsEnterSetting.addOption("Enabled");
+        systemSettings.add(eEqualsEnterSetting);
     }
 
 

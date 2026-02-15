@@ -51,7 +51,7 @@ public class Renderer {
     private final HashMap<String, CFont> fonts = new HashMap<>();
 
     /**
-     * Drawable to use when rendering all rectangles requested by the `addRectangle()` and `addRoundRectangle()`
+     * Drawable to use when rendering all rectangles requested by the 'addRectangle()' and 'addRoundRectangle()'
      * methods.
      * Working with this single drawable for all rectangles significantly improves memory usage/efficiency, especially when
      * rendering large batches of rectangles each frame.

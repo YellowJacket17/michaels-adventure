@@ -42,7 +42,7 @@ public class SubMenuSupport {
      * Stored boolean indicating whether a sub-menu will be rendered at the default screen position or a custom screen
      * position.
      * This is used for a sub-menu to be displayed after a corresponding dialogue prompt has been read.
-     * If this is marked as true, then the values of `tempSubMenuScreenX` and `tempSubMenuScreenY` will be ignored.
+     * If this is marked as true, then the values of 'tempSubMenuScreenX' and 'tempSubMenuScreenY' will be ignored.
      * The default value is true.
      */
     private boolean tempSubMenuDefaultPosition = true;

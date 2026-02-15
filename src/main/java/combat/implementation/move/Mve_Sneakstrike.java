@@ -6,7 +6,6 @@ import combat.enumeration.MoveTargets;
 import core.GamePanel;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -21,7 +20,7 @@ public class Mve_Sneakstrike extends MoveBase {
     private static final int mvePower = 50;
     private static final int mveAccuracy = 85;
     private static final int mveSkillPoints = 2;
-    private static final Vector3f mveParticleEffectColor = new Vector3f(211, 186, 235);
+    private static final Vector3f mveEffectColor = new Vector3f(211, 186, 235);
     private static final String mveSoundEffect = "sneakstrike";
 
 
@@ -33,7 +32,7 @@ public class Mve_Sneakstrike extends MoveBase {
         power = mvePower;
         accuracy = mveAccuracy;
         skillPoints = mveSkillPoints;
-        particleEffectColor = mveParticleEffectColor;
+        effectColor = mveEffectColor;
         soundEffect = mveSoundEffect;
     }
 

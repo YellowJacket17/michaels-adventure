@@ -74,11 +74,11 @@ public class Evt_Map001 extends EventMapBase {
     public boolean tileInteraction(double dt, EventType type, int col, int row, EntityDirection direction) {
 
         // Shadow encounter cutscene.
-//        if ((col == 47) && (row == 13) && (direction == EntityDirection.UP)) {
-////            gp.getCutsceneM().initiateCutscene(1);
-//            gp.getCombatM().initiateCombat(0, 43, 9, "runningLate", 1, 5);
-//            return true;
-//        }
+        if ((col == 47) && (row == 13) && (direction == EntityDirection.UP)) {
+//            gp.getCutsceneM().initiateCutscene(1);
+            gp.getCombatM().initiateCombat(0, 43, 9, "runningLate", 1);
+            return true;
+        }
 
         // Map 2 warp.
         if ((col == 50) && ((row == 8)) && (direction == EntityDirection.RIGHT)) {

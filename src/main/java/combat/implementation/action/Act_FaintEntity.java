@@ -36,16 +36,21 @@ public class Act_FaintEntity extends ActionBase {
 
         for (int entityId : entityIds) {
 
-            if (gp.getCombatM().getGuardingEntities().contains(entityId)) {                                             // Remove fainting entity from guarding state if applicable.
+            if (gp.getCombatM().getGuardingEntities().contains(entityId)) {                                             // Remove fainting entity from guarding state, if applicable.
 
                 gp.getCombatM().getGuardingEntities().remove(entityId);
             }
-            gp.getEntityM().getEntityById(entityId).resetSecondaryAttributes();                                         // Reset attack, defense, magic, and agility attributes if applicable.
 
-            if (gp.getCombatM().getTargetLockEntityId() == entityId) {
+            if (gp.getCombatM().getTurnSkipEntities().containsKey(entityId)) {                                          // Remove entity from list of entities to skip the turn of, if applicable.
+
+                gp.getCombatM().getTurnSkipEntities().remove(entityId);
+            }
+
+            if (gp.getCombatM().getTargetLockEntityId() == entityId) {                                                  // Remove entity as locked target entity, if applicable.
 
                 gp.getCombatM().resetTargetLockEntity();
             }
+            gp.getEntityM().getEntityById(entityId).resetSecondaryAttributes();                                         // Reset attack, defense, magic, and agility attributes, if applicable.
         }
         gp.getCombatAnimationS().initiateStandardFaintAnimation(entityIds, 0, 0.1);
 

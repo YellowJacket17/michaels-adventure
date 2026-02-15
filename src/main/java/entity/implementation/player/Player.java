@@ -1,5 +1,6 @@
 package entity.implementation.player;
 
+import combat.enumeration.SubMenuType;
 import combat.implementation.move.*;
 import core.enumeration.PrimaryGameState;
 import event.enumeration.StockStepInteractionType;
@@ -11,6 +12,7 @@ import core.GamePanel;
 import event.enumeration.EventType;
 import item.ItemBase;
 import org.joml.Vector3f;
+import submenu.SubMenuHandler;
 import ui.enumeration.PrimaryMenuState;
 import org.joml.Vector2f;
 import asset.AssetPool;
@@ -41,7 +43,7 @@ public class Player extends EntityBase {
      * Number of seconds that the player has to change direction while retaining momentum upon leaving a state of motion.
      * This lets the player entity instantly being walking in a new direction if they're already moving, versus stopping
      * and then turning.
-     * The value of this variable will be set to `moveCountdown` whenever the player entity exits a state of motion.
+     * The value of this variable will be set to 'moveCountdown' whenever the player entity exits a state of motion.
      * This value will have a noticeable impact on the "feel" of the game while walking.
      */
     private final double stagedMoveCountdown = 0.033;
@@ -60,7 +62,7 @@ public class Player extends EntityBase {
      * leaving a state of motion.
      * This makes turning while walking seamless AND makes it possible to change direction from a static state without
      * changing tile location.
-     * On each frame where `updatePlayerInput()` is called, this variable is decremented by one if greater than zero.
+     * On each frame where 'updatePlayerInput()' is called, this variable is decremented by one if greater than zero.
      */
     private double moveCountdown;
 
@@ -191,7 +193,7 @@ public class Player extends EntityBase {
     /**
      * Updates the player entity as part of transition type STEP_PORTAL.
      * Note that this type is where the player entity takes a step into a portal before initiating a transition to
-     * another location according to the `warpTransition()` method in EventHandler.
+     * another location according to the 'warpTransition()' method in EventHandler.
      * The player entity loads into an idle sprite and is not in a state of motion when the transition is complete.
      *
      * @param dt time since last frame (seconds)
@@ -498,7 +500,7 @@ public class Player extends EntityBase {
 
 
     /**
-     * Sets initial values for the player entity.
+     * Sets initial (default) values for the player entity.
      */
     private void setInitialValues() {
 
@@ -662,7 +664,8 @@ public class Player extends EntityBase {
                 menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
             }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
+            else if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER))
+                    || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
 
                 generatePartySwapSubMenuPrompt();
             }
@@ -1060,7 +1063,7 @@ public class Player extends EntityBase {
             }
             options.add("Cancel");
             HashMap<Integer, Vector3f> colors = new HashMap<>();
-            colors.put(options.size() - 1, new Vector3f(255, 46, 102));
+            colors.put(options.size() - 1, SubMenuHandler.BACK_OPTION_COLOR);
             String prompt = "Swap " + selectedEntity.getName() + " with who?";
             gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 3, false, colors);
         }

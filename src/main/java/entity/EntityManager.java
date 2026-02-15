@@ -35,7 +35,7 @@ public class EntityManager {
 
     /**
      * Map to store party members loaded into the game; entity ID is the key, entity is the value.
-     * The number of entities at the front of the map (indices 0, 1, etc.) according to the `numActivePartyMembers` field are the active
+     * The number of entities at the front of the map (indices 0, 1, etc.) according to the 'numActivePartyMembers' field are the active
      * party members.
      */
     private final LimitedLinkedHashMap<Integer, EntityBase> party = new LimitedLinkedHashMap<>(5);
@@ -58,6 +58,7 @@ public class EntityManager {
      * Sets the number of active party members allowed at a time.
      * Active party members are those that actively follow the player entity, actively participate in combat, etc.
      * This is in contrast to reserve party members.
+     * This number does NOT include the player entity.
      */
     private final int numActivePartyMembers = 2;
 

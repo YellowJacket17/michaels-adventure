@@ -32,7 +32,7 @@ public class Node {
     private int hCost;
 
     /**
-     * Sum of `gCost` and `hCost`.
+     * Sum of 'gCost' and 'hCost'.
      */
     private int fCost;
 

@@ -10,6 +10,7 @@ import entity.enumeration.DefaultAction;
 import entity.enumeration.EntityDirection;
 import entity.implementation.character.Npc_Shadow;
 import core.GamePanel;
+import entity.implementation.character.Npc_Test2;
 import entity.implementation.object.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
