@@ -71,7 +71,7 @@ public class Npc_Shadow extends EntityBase {
         combatFaintRight3_2 = AssetPool.getSpritesheet("characters").getSprite(245);
         combatFaintRight4_2 = AssetPool.getSpritesheet("characters").getSprite(247);
         combatFaintRight5_2 = AssetPool.getSpritesheet("characters").getSprite(249);
-        combatFaintRight5_2 = AssetPool.getSpritesheet("characters").getSprite(251);
+        combatFaintRight6_2 = AssetPool.getSpritesheet("characters").getSprite(251);
 
         sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();

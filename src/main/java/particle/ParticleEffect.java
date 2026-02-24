@@ -122,6 +122,7 @@ public class ParticleEffect {
         if (elapsedTime < maximumTime) {
 
             for (int i = 0; i < worldPositions.length; i++) {
+
                 transform.position.x = worldPositions[i].x - (transform.scale.x / 2);                                   // Adjust since world position represents center of particle (i.e., rectangle).
                 transform.position.y = worldPositions[i].y - (transform.scale.y / 2);                                   // ^^^
                 renderer.addRectangle(color, transform, ZIndex.THIRD_LAYER);

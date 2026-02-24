@@ -212,6 +212,11 @@ public class GamePanel {
 //        cutsceneM.initiateCutscene(0);
         fadeS.displayColor(new Vector3f(255, 255, 255));
         fadeS.initiateFadeFrom(0.5);
+//        partyS.addEntityToParty(5, false);
+//        partyS.addEntityToParty(6, false);
+//        partyS.addEntityToParty(7, false);
+//        partyS.addEntityToParty(8, false);
+//        partyS.addEntityToParty(9, false);
 
         // Set primary game state to player control.
         primaryGameState = PrimaryGameState.EXPLORE;
@@ -225,49 +230,21 @@ public class GamePanel {
      */
     public void update(double dt) {
 
-        // Player input.
-        entityM.updateInput(dt);
-
-        // Fade.
-        fadeS.update(dt);
-
-        // Transition.
-        transitionS.update(dt);
-
-        // Dialogue.
-        dialogueR.update(dt);
-        dialogueA.update(dt);
-
-        // Cutscene.
-        cutsceneM.update(dt);
-
-        // Landmark.
-        landmarkM.update(dt);
-
-        // Animation.
-        passiveAnimationM.update(dt);
-        combatAnimationS.update(dt);
-
-        // Particle Effect.
-        particleEffectM.update(dt);
-
-        // Entities.
-        entityM.update(dt);
-
-        // Entity icons.
-        entityIconM.update(dt);
-
-        // Environment.
-//        environmentM.update();
-
-        // Party.
-        partyS.update(dt);
-
-        // Camera.
-        cameraS.update(dt);
-
-        // Sound
-        soundS.update(dt);
+        entityM.updateInput(dt);                                                                                        // Player input.
+        fadeS.update(dt);                                                                                               // Fade effect.
+        transitionS.update(dt);                                                                                         // Transition effect.
+        dialogueR.update(dt);                                                                                           // Dialogue reader.
+        dialogueA.update(dt);                                                                                           // Dialogue arrow.
+        cutsceneM.update(dt);                                                                                           // Cutscenes.
+        landmarkM.update(dt);                                                                                           // Landmarks.
+        passiveAnimationM.update(dt);                                                                                   // Passive animations.
+        combatAnimationS.update(dt);                                                                                    // Combat animations.
+        particleEffectM.update(dt);                                                                                     // Particle effects.
+        entityM.update(dt);                                                                                             // All entities.
+        entityIconM.update(dt);                                                                                         // Entity icons.
+        partyS.update(dt);                                                                                              // Party management processes.
+        cameraS.update(dt);                                                                                             // Camera tracking/effects.
+        soundS.update(dt);                                                                                              // Audio.
     }
 
 
@@ -301,7 +278,6 @@ public class GamePanel {
 
     /**
      * Adds entity and landmark sprites to the render pipeline.
-     * Both entities and landmarks are added at the same time to control layering.
      */
     private void addRenderPipelineEntitiesLandmarks() {
 
@@ -392,25 +368,59 @@ public class GamePanel {
 
 
     /**
-     * Loads resources like shaders and spritesheets into memory.
+     * Loads all resources into memory.
      */
     private void loadResources() {
 
-        // Shaders.
+        loadShaders();
+        loadTileSpritesheet();                                                                                          // Spritesheet 0.
+        loadCharacterSpritesheet();                                                                                     // Spritesheet 1.
+        loadLandmarkSpritesheet();                                                                                      // Spritesheet 2.
+        loadItemSpritesheet();                                                                                          // Spritesheet 3.
+        loadIconSpritesheet();                                                                                          // Spritesheet 4.
+        loadMiscellaneousSpritesheet();                                                                                 // Spritesheet 5.
+        loadSounds();
+        loadIllustrations();
+    }
+
+
+    /**
+     * Loads shader resources into memory.
+     */
+    private void loadShaders() {
+
         AssetPool.getShader("/shaders/default.glsl");
         AssetPool.getShader("/shaders/rounded.glsl");
         AssetPool.getShader("/shaders/font.glsl");
+    }
 
-        // Tiles spritesheet (spritesheet 0).
+
+    /**
+     * Loads spritesheet containing tile sprites into memory.
+     */
+    private void loadTileSpritesheet() {
+
         String filePath = "/spritesheets/tiles.png";
         AssetPool.addSpritesheet("tiles", new Spritesheet(AssetPool.getTexture(filePath), 245, 32, 32, 1));
+    }
 
-        // Characters spritesheet (spritesheet 1).
-        filePath = "/spritesheets/characters.png";
+
+    /**
+     * Loads spritesheet containing character sprites into memory.
+     */
+    private void loadCharacterSpritesheet() {
+
+        String filePath = "/spritesheets/characters.png";
         AssetPool.addSpritesheet("characters", new Spritesheet(AssetPool.getTexture(filePath), 281, 32, 60, 1));
+    }
 
-        // Landmarks spritesheet (spritesheet 2).
-        filePath = "/spritesheets/landmarks.png";
+
+    /**
+     * Loads spritesheet containing landmark sprites into memory.
+     */
+    private void loadLandmarkSpritesheet() {
+
+        String filePath = "/spritesheets/landmarks.png";
         int[] widths = new int[] {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 128, 128, 128, 128, 96, 96, 96, 96, 32,
@@ -420,24 +430,48 @@ public class GamePanel {
                 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 64, 64, 64, 64, 64, 64, 64, 64, 72, 72,
                 32, 32, 64, 64, 40, 40, 40, 40, 32, 32, 32, 32, 32, 32};
         AssetPool.addSpritesheet("landmarks", new Spritesheet(AssetPool.getTexture(filePath), 87, widths, heights, 1));
+    }
 
-        // Items spritesheet (spritesheet 3).
-        filePath = "/spritesheets/items.png";
+
+    /**
+     * Loads spritesheet containing item sprites into memory.
+     */
+    private void loadItemSpritesheet() {
+
+        String filePath = "/spritesheets/items.png";
         AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 6, 32, 32, 1));
+    }
 
-        // Icons spritesheet (spritesheet 4).
-        filePath = "/spritesheets/icons.png";
-        widths = new int[] {152, 152, 10, 10, 40, 36, 36, 28, 28, 28, 28, 28, 28, 6, 6, 6, 6};
-        heights = new int[] {58, 58, 8, 8, 40, 36, 36, 28, 28, 28, 28, 28, 28, 10, 10, 10, 10};
+
+    /**
+     * Loads spritesheet containing icon sprites into memory.
+     */
+    private void loadIconSpritesheet() {
+
+        String filePath = "/spritesheets/icons.png";
+        int[] widths = new int[] {152, 152, 10, 10, 40, 36, 36, 28, 28, 28, 28, 28, 28, 6, 6, 6, 6};
+        int[] heights = new int[] {58, 58, 8, 8, 40, 36, 36, 28, 28, 28, 28, 28, 28, 10, 10, 10, 10};
         AssetPool.addSpritesheet("icons", new Spritesheet(AssetPool.getTexture(filePath), 17, widths, heights, 1));
+    }
 
-        // Miscellaneous spritesheet (spritesheet 5).
-        filePath = "/spritesheets/miscellaneous.png";
-        widths = new int[] {48, 48, 14, 6, 10, 12, 24};
-        heights = new int[] {20, 10, 18, 10, 6, 8, 12};
+
+    /**
+     * Loads spritesheet containing miscellaneous sprites into memory.
+     */
+    private void loadMiscellaneousSpritesheet() {
+
+        String filePath = "/spritesheets/miscellaneous.png";
+        int[] widths = new int[] {48, 48, 14, 6, 10, 12, 24};
+        int[] heights = new int[] {20, 10, 18, 10, 6, 8, 12};
         AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 7, widths, heights, 1));
+    }
 
-        // Sounds.
+
+    /**
+     * Loads sound resources into memory.
+     */
+    private void loadSounds() {
+
         AssetPool.addSound("endOfTheLine", "sound/tracks/endOfTheLine_intro.ogg", "sound/tracks/endOfTheLine_loop.ogg");
         AssetPool.addSound("dissipate", "sound/tracks/dissipate_intro.ogg", "sound/tracks/dissipate_loop.ogg");
         AssetPool.addSound("carvingCanyons", "sound/tracks/carvingCanyons_intro.ogg", "sound/tracks/carvingCanyons_loop.ogg");
@@ -453,9 +487,15 @@ public class GamePanel {
         AssetPool.addSound("attributeDecrease", "sound/effects/attributeDecrease.ogg");
         AssetPool.addSound("hop", "sound/effects/hop.ogg");
         AssetPool.addSound("obtain", "sound/effects/obtain.ogg");
+    }
 
-        // Illustrations.
-        filePath = "/illustrations/illustration1.png";
+
+    /**
+     * Loads illustration resources into memory.
+     */
+    private void loadIllustrations() {
+
+        String filePath = "/illustrations/illustration1.png";
         AssetPool.addIllustration("illustration1", new Illustration(AssetPool.getTexture(filePath)));
         filePath = "/illustrations/illustration2.png";
         AssetPool.addIllustration("illustration2", new Illustration(AssetPool.getTexture(filePath)));
@@ -463,6 +503,7 @@ public class GamePanel {
         AssetPool.addIllustration("illustration3", new Illustration(AssetPool.getTexture(filePath)));
         filePath = "/illustrations/illustration5.png";
         AssetPool.addIllustration("illustration5", new Illustration(AssetPool.getTexture(filePath)));
+
     }
 
 

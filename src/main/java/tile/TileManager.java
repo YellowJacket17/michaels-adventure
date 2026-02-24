@@ -82,11 +82,15 @@ public class TileManager {
 
             while ((worldCol < GamePanel.MAX_WORLD_COL) && (worldRow < GamePanel.MAX_WORLD_ROW)) {                      // Render each tile from left to right for each row, starting with the top row and working downwards.
 
-                int tileNum;
+                int tileNum = defaultTile;
+
                 try {
+
                     tileNum = gp.getMapM().getLoadedMap().getMapTileNum()[worldCol][worldRow];                          // Determine which tile type to render from the loaded map data, determined by which map is currently being displayed.
+
                 } catch (NullPointerException e) {
-                    tileNum = defaultTile;                                                                              // If no map is loaded, just use the default tile.
+
+                    // Nothing here.
                 }
                 int spriteNum = gp.getPassiveAnimationM().getSprite(
                         tiles[tileNum].getPassiveAnimationGroup(), worldCol, worldRow);                                 // Render appropriate tile in passive animation cycle, if applicable.
@@ -97,7 +101,11 @@ public class TileManager {
 
                     Sprite sprite = tiles[tileNum].getSprites().get(spriteNum);
                     drawables[worldCol][worldRow].setSprite(sprite);
-                    renderer.addDrawable(drawables[worldRow][worldCol], ZIndex.THIRD_LAYER);
+
+                    if (gp.getCamera().isInCameraView(drawables[worldCol][worldRow])) {
+
+                        renderer.addDrawable(drawables[worldCol][worldRow], ZIndex.THIRD_LAYER);
+                    }
 
                 } else if (!renderErrors.contains(tileNum)) {
                     UtilityTool.logError("Failed to add tile at index '"

@@ -183,7 +183,11 @@ public abstract class LandmarkBase extends Drawable {
                 transform.position.y = worldY + worldYAdjustment;
                 transform.scale.x = sprite.getNativeWidth();
                 transform.scale.y = sprite.getNativeHeight();
-                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+
+                if (gp.getCamera().isInCameraView(this)) {
+
+                    renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+                }
 
             } catch (IndexOutOfBoundsException | NullPointerException e) {
 

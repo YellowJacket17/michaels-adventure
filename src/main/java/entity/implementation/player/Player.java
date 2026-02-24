@@ -1,6 +1,5 @@
 package entity.implementation.player;
 
-import combat.enumeration.SubMenuType;
 import combat.implementation.move.*;
 import core.enumeration.PrimaryGameState;
 import event.enumeration.StockStepInteractionType;
@@ -11,17 +10,12 @@ import entity.enumeration.EntityType;
 import core.GamePanel;
 import event.enumeration.EventType;
 import item.ItemBase;
-import org.joml.Vector3f;
-import submenu.SubMenuHandler;
 import ui.enumeration.PrimaryMenuState;
 import org.joml.Vector2f;
 import asset.AssetPool;
 import utility.LimitedArrayList;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -33,11 +27,13 @@ public class Player extends EntityBase {
 
     // FIELDS
     /**
-     * Travel direction that this entity may move in.
-     * This may differ from current direction (i.e., direction that the entity sprite is facing) (ex., entity walks
-     * backwards).
+     * Boolean indicating whether the player entity is currently in a state of turning or not.
+     * This is used when the player entity turns (i.e., changes direction) from a static state and is NOT used when
+     * changing direction when coming directly off of a state of motion.
+     * It is a matter of seamless (i.e., instantaneous) versus non-seamless (i.e., dedicated turning animation) change
+     * in direction.
      */
-    private EntityDirection travelDirection;
+    protected boolean turning = false;
 
     /**
      * Number of seconds that the player has to change direction while retaining momentum upon leaving a state of motion.
@@ -58,48 +54,48 @@ public class Player extends EntityBase {
     private final double stagedStandardInteractionCountdown = 0.16;
 
     /**
-     * Variable to store the number of seconds that the player has to change direction while retaining momentum upon
-     * leaving a state of motion.
+     * Variable to store the number of seconds that the player has to seamlessly change direction (i.e., retain
+     * momentum) upon leaving a state of motion.
+     * The value of this variable is decremented each frame.
      * This makes turning while walking seamless AND makes it possible to change direction from a static state without
      * changing tile location.
-     * On each frame where 'updatePlayerInput()' is called, this variable is decremented by one if greater than zero.
      */
-    private double moveCountdown;
+    private double turnCountdown;
 
     /**
      * Variable to store the number of seconds that must pass before the player can press a key (same or different as
      * previous) to interact with a menu option.
-     * On each frame where appropriate update input methods are called, this variable is decremented by one if greater
-     * than zero.
+     * The value of this variable is decremented each frame.
      * This variable may also be set by other classes via its setter.
      */
     private double interactionCountdown;
 
     /**
-     * Variable to store the number of seconds that must pass before the player can press a key (same or different as
-     * previous) to toggle full screen mode.
-     * On each frame where appropriate update input methods are called, this variable is decremented by one if greater
-     * than zero.
-     * This variable may also be set by other classes via its setter.
+     * Variable to store whether the primary menu (i.e., main menu containing party, inventory, and settings) has
+     * already been opened/closed on the current toggle key press.
+     * This is set to true when the toggle key is pressed and false when released.
+     * The use for this is, when opening the menu via the toggle key, the menu cannot be manually closed until the user
+     * releases the toggle key and presses it again (reverse is also true for closing the menu).
+     * This prevents the menu from flickering if the user keeps the toggle key held down.
      */
-    private double fullScreenCountdown;
+    private boolean primaryMenuActioned = false;
 
     /**
-     * Variable to store whether the menu (i.e., main menu containing party, inventory, and settings) has already been
-     * opened/closed on the current Space key press.
-     * This is set to true when the Space key is pressed and false when released.
-     * The use for this is, when opening the menu via the Space key, the menu cannot be manually closed until the user
-     * releases the Space key and presses it again (reverse is also true for closing the menu).
-     * This prevents the menu from flickering if the user keeps the Space key held down.
+     * Variable to store whether the full screen mode has been enabled/disabled on the current toggle key press.
+     * This is set to true when the toggle key is pressed and false when released.
+     * The use for this is, when enabling full screen mode via the toggle key, full screen mode cannot be manually
+     * disabled by the toggle key until the user releases the toggle key and presses it again (reverse is also true for
+     * disabling full screen mode).
+     * This prevents full screen mode from flickering on/off if the user keeps the toggle key held down.
      */
-    private boolean menuActioned = false;
+    private boolean fullScreenActioned = false;
 
     /**
-     * Variable to store whether the debug mode has been enabled/disabled on the current Q key press.
-     * This is set to true when the Q key is pressed and false when released.
-     * The use for this is, when enabling debug mode via the Q key, debug mode cannot be manually disabled until the
-     * user releases the Q key and presses it again (reverse is also true for disabling debug mode).
-     * This prevents debug mode from flickering on/off if the user keeps the Q key held down.
+     * Variable to store whether the debug mode has been enabled/disabled on the current toggle key press.
+     * This is set to true when the toggle key is pressed and false when released.
+     * The use for this is, when enabling debug mode via the toggle key, debug mode cannot be manually disabled until the
+     * user releases the toggle key and presses it again (reverse is also true for disabling debug mode).
+     * This prevents debug mode from flickering on/off if the user keeps the toggle key held down.
      */
     private boolean debugActioned = false;
 
@@ -113,12 +109,27 @@ public class Player extends EntityBase {
     // CONSTRUCTOR
     public Player(GamePanel gp) {
         super(gp, 0, EntityType.CHARACTER);
-        setInitialValues();                                                                                             // Set default player values when a player instance is created.
+        setDefaultValues();                                                                                             // Set default player values when a player instance is created.
         setSprites();                                                                                                   // Load player sprites when a player instance is created.
     }
 
 
     // METHODS
+    @Override
+    public void cancelAction() {
+
+        moving = false;
+        turning = false;
+        hopping = false;
+        worldX = worldXStart;
+        worldY = worldYStart;
+        worldCounter = 0;
+        directionCurrent = directionLast;
+        walkSpriteNumCurrent = 1;
+        rest = 0;
+    }
+
+
     /**
      * Updates player input per the current frame.
      *
@@ -126,42 +137,9 @@ public class Player extends EntityBase {
      */
     public void updateInput(double dt) {
 
-        if (moveCountdown > 0) {
-            moveCountdown -= dt;                                                                                        // Decrease move frame countdown by one each time a new frame is drawn.
-        }
-
-        if (interactionCountdown > 0) {                                                                                 // Decrease interaction frame countdown by one each time a new frame is drawn.
-            interactionCountdown -= dt;
-            if ((interactionCountdown <= 0) && (gp.getDialogueR().getActiveConv() != null)) {                           // Reset dialogue arrow position to display, if applicable.
-                gp.getDialogueA().reset();
-            }
-        }
-
-        if (fullScreenCountdown > 0) {                                                                                  // Decrease full screen mode frame countdown by one each time a new frame is drawn.
-            fullScreenCountdown -= dt;
-        }
-
-        if ((menuActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_SPACE))) {
-            menuActioned = false;                                                                                       // Enable the ability of the player to open/close the menu (party, inventory, settings) by pressing the Space key.
-        }
-
-        if ((fullScreenCountdown <= 0)
-                && (gp.getSystemSetting(3).getActiveOption() == 0)
-                && (KeyListener.isKeyPressed(GLFW_KEY_F11))) {
-            gp.getSystemSetting(3).setActiveOption(1);                                                                  // Enter full screen mode if disabled.
-            if (gp.getUi().getSystemSettingSelected() == 3) {
-                gp.getUi().setSystemOptionSelected(1);
-            }
-            fullScreenCountdown = stagedStandardInteractionCountdown;
-        } else if ((fullScreenCountdown <= 0)
-                && (gp.getSystemSetting(3).getActiveOption() == 1)
-                && (KeyListener.isKeyPressed(GLFW_KEY_ESCAPE) || KeyListener.isKeyPressed(GLFW_KEY_F11))) {
-            gp.getSystemSetting(3).setActiveOption(0);                                                                  // Exit full screen mode if enabled.
-            if (gp.getUi().getSystemSettingSelected() == 3) {
-                gp.getUi().setSystemOptionSelected(0);
-            }
-            fullScreenCountdown = stagedStandardInteractionCountdown;
-        }
+        updateInputBuffers(dt);
+        updateFullScreenInput();
+        updateDebugInput(dt);
 
         if (!gp.isLockPlayerControl()) {
 
@@ -186,7 +164,6 @@ public class Player extends EntityBase {
                     break;
             }
         }
-        updateDebugInput();
     }
 
 
@@ -318,92 +295,46 @@ public class Player extends EntityBase {
 
             worldCounter += speed * dt;                                                                                 // Add to the number of world units the player entity has moved while in the current state of motion.
 
-            if (!colliding) {                                                                                           // If collision is false, the player can move.
+            if (!colliding && !turning) {                                                                               // If collision and turning are false, update player entity world position.
 
-                if (worldXStart == worldXEnd) {
+                updateWorldPosition(dt);
+            }
 
-                    if (worldYStart > worldYEnd) {
+            if (turning) {                                                                                              // Turning animation - player entity will have a foot forward for a shorter duration than with a walking animation.
 
-                        travelDirection = EntityDirection.UP;
+                if (worldCounter < (GamePanel.NATIVE_TILE_SIZE / 4)) {
+
+                    if (walkSpriteNumLast == 2) {
+
+                        walkSpriteNumCurrent = 3;
                     } else {
 
-                        travelDirection = EntityDirection.DOWN;
+                        walkSpriteNumCurrent = 2;
+                    }
+                }
+            } else {                                                                                                    // Walking animation - player entity will have a foot forward for half of the world units traversed.
+
+                if (worldCounter <= (GamePanel.NATIVE_TILE_SIZE / 2)) {
+
+                    if (walkSpriteNumLast == 2) {
+
+                        walkSpriteNumCurrent = 3;
+                    } else {
+
+                        walkSpriteNumCurrent = 2;
                     }
                 } else {
 
-                    if (worldXStart > worldXEnd) {
-
-                        travelDirection = EntityDirection.LEFT;
-                    } else {
-
-                        travelDirection = EntityDirection.RIGHT;
-                    }
-                }
-
-                if (travelDirection == directionCurrent) {                                                              // Player entity is walking forwards; the player may be controlling movement.
-
-                    switch (directionCurrent) {
-                        case UP:
-                            if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                           // Only move (i.e., change tiles) if it's in the same direction as the last movement OR if the player is still within the countdown from the last state of motion.
-                                worldY -= speed * dt;
-                                if (moveCountdown > 0) {
-                                    directionLast = directionCurrent;
-                                    moveCountdown = 0;                                                                  // Reset frame buffer.
-                                }
-                            }
-                            break;
-                        case DOWN:
-                            if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                           // Only move if it's in the same direction as the last movement OR if the player entity is still within the countdown from the last state of motion.
-                                worldY += speed * dt;
-                                if (moveCountdown > 0) {
-                                    directionLast = directionCurrent;
-                                    moveCountdown = 0;                                                                  // Reset frame buffer.
-                                }
-                            }
-                            break;
-                        case LEFT:
-                            if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                           // Only move if it's in the same direction as the last movement OR if the player entity is still within the fcountdown from the last state of motion.
-                                worldX -= speed * dt;
-                                if (moveCountdown > 0) {
-                                    directionLast = directionCurrent;
-                                    moveCountdown = 0;                                                                  // Reset frame buffer.
-                                }
-                            }
-                            break;
-                        case RIGHT:
-                            if ((directionCurrent == directionLast) || (moveCountdown > 0)) {                           // Only move if it's in the same direction as the last movement OR if the player is still within the countdown from the last state of motion.
-                                worldX += speed * dt;
-                                if (moveCountdown > 0) {
-                                    directionLast = directionCurrent;
-                                    moveCountdown = 0;                                                                  // Reset frame buffer.
-                                }
-                            }
-                            break;
-                    }
-                } else {                                                                                                // Player entity may be walking backwards or sideways; it is not possible for the player to control movement in this way (i.e., non-forward movement only possible when scripted).
-
-                    updateWorldPosition(dt);
+                    walkSpriteNumCurrent = 1;
                 }
             }
 
-            if ((turning && (worldCounter <= 16 / 2)) || (worldCounter <= GamePanel.NATIVE_TILE_SIZE / 2)) {            // Walking animation; player entity will have a foot forward for half of the world units traversed.
+            if ((turning && (worldCounter >= (GamePanel.NATIVE_TILE_SIZE / 2)))                                         // Check if the world unit counter meets criteria to finish turning
+                    || (worldCounter >= GamePanel.NATIVE_TILE_SIZE)) {                                                  // Check if the player entity has moved a number of world units equal to a tile size in the current state of motion.
 
-                if (walkSpriteNumLast == 2) {
-
-                    walkSpriteNumCurrent = 3;
-                } else {
-
-                    walkSpriteNumCurrent = 2;
-                }
-            } else {
-
-                walkSpriteNumCurrent = 1;
-            }
-
-            if ((turning && (worldCounter >= 16)) || (worldCounter >= GamePanel.NATIVE_TILE_SIZE)) {                    // Check if the world unit counter meets criteria to finish turning OR check if the player entity has moved a number of world units equal to a tile size in the current state of motion.
                 moving = false;                                                                                         // If we've moved a tile's length, the player character exits a state of motion and can again be controlled.
                 worldCounter = 0;                                                                                       // Reset the world unit counter.
-                moveCountdown = stagedMoveCountdown;                                                                    // Provide a 2 frame buffer for the player to change direction and keep momentum upon exiting the current state of motion.
+                turnCountdown = stagedMoveCountdown;                                                                    // Provide a 2 frame buffer for the player to change direction and keep momentum upon exiting the current state of motion.
 
                 if ((!colliding) && (!turning)) {
 
@@ -423,6 +354,7 @@ public class Player extends EntityBase {
 
                     turning = false;
                     directionLast = directionCurrent;
+                    walkSpriteNumCurrent = 1;
                 }
 
                 if (walkSpriteNumLast == 2) {                                                                           // Swap which foot will step forward for the next walking cycle.
@@ -502,7 +434,7 @@ public class Player extends EntityBase {
     /**
      * Sets initial (default) values for the player entity.
      */
-    private void setInitialValues() {
+    private void setDefaultValues() {
 
         // World position.
         setCol(8);
@@ -542,6 +474,45 @@ public class Player extends EntityBase {
 
 
     /**
+     * Updates variables controlling when player inputs may be registered by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void updateInputBuffers(double dt) {
+
+        if (turnCountdown > 0) {
+
+            turnCountdown -= dt;                                                                                        // Decrease move frame countdown by one each time a new frame is drawn.
+        }
+
+        if (interactionCountdown > 0) {                                                                                 // Decrease interaction frame countdown by one each time a new frame is drawn.
+
+            interactionCountdown -= dt;
+
+            if ((interactionCountdown <= 0) && (gp.getDialogueR().getActiveConv() != null)) {                           // Reset dialogue arrow position to display, if applicable.
+
+                gp.getDialogueA().reset();
+            }
+        }
+
+        if ((primaryMenuActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_SPACE))) {
+
+            primaryMenuActioned = false;                                                                                // Enable the ability of the player to open/close the menu (party, inventory, settings) by pressing the toggle key.
+        }
+
+        if ((fullScreenActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_F11))) {
+
+            fullScreenActioned = false;
+        }
+
+        if ((debugActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_P))) {
+
+            debugActioned = false;                                                                                      // Enable the ability of the player to enable the debug mode by pressing the P key.
+        }
+    }
+
+
+    /**
      * Updates the state of the game per player input by one frame when in explore state.
      * Checks for player key input for world interaction, movement, and opening the main menu if the player entity is
      * not in a state of motion.
@@ -550,67 +521,37 @@ public class Player extends EntityBase {
      */
     private void updateExploreInput(double dt) {
 
-        if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned) && (!moving)) {
+        if (!moving) {
 
-            gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
-            gp.getUi().setPrimaryMenuState(PrimaryMenuState.PARTY);
-            menuActioned = true;                                                                                        // Disable the ability of the player to close the menu (party, inventory, settings) by pressing the Space key.
-        }
-        else if (!moving) {                                                                                             // If the player is moving, they will not stop until they move the tile length (for grid-based movement); so, only accept key inputs when the player is not moving.
+            if (!primaryMenuActioned && (interactionCountdown <= 0) && KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
 
-            boolean interaction = false;                                                                                // Initialize a variable to determine if an object or npc is being interacted with or not.
+                handlePrimaryMenuInputToggleOnKey();
+            } else {
 
-            if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER)
-                    || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E)))
-                    && (interactionCountdown <= 0)) {
+                boolean interaction = false;                                                                            // Initialize a variable to determine if an object or npc is being interacted with or not.
 
-                interaction = checkClickInteraction(dt, directionCurrent);                                              // Check if any interactions triggered by a click (i.e., hitting the Enter key or other manual selection) have been hit.
-            }
+                if ((interactionCountdown <= 0)
+                        && (KeyListener.isKeyPressed(GLFW_KEY_ENTER)
+                        || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E)))) {
 
-            if (!interaction) {                                                                                         // If nothing is being interacted with, continue with logic to check if player will move.
+                    interaction = handleExploreInputProgressKey(dt);
+                }
 
-                if ((KeyListener.isKeyPressed(GLFW_KEY_W)) || (KeyListener.isKeyPressed(GLFW_KEY_S)) ||
-                        (KeyListener.isKeyPressed(GLFW_KEY_A)) || (KeyListener.isKeyPressed(GLFW_KEY_D))) {
+                if (!interaction) {                                                                                     // If nothing is being interacted with, continue with logic to check if player will move.
 
                     if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-                        directionCurrent = EntityDirection.UP;
-                        directionCandidate = EntityDirection.UP;
-                        worldXEnd = worldX;
-                        worldYEnd = worldY - GamePanel.NATIVE_TILE_SIZE;
 
+                        handleExploreInputUpKey(dt);
                     } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
-                        directionCurrent = EntityDirection.DOWN;
-                        directionCandidate = EntityDirection.DOWN;
-                        worldXEnd = worldX;
-                        worldYEnd = worldY + GamePanel.NATIVE_TILE_SIZE;
 
+                        handleExploreInputDownKey(dt);
                     } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
-                        directionCurrent = EntityDirection.LEFT;
-                        directionCandidate = EntityDirection.LEFT;
-                        worldXEnd = worldX - GamePanel.NATIVE_TILE_SIZE;
-                        worldYEnd = worldY;
 
+                        handleExploreInputLeftKey(dt);
                     } else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
-                        directionCurrent = EntityDirection.RIGHT;
-                        directionCandidate = EntityDirection.RIGHT;
-                        worldXEnd = worldX + GamePanel.NATIVE_TILE_SIZE;
-                        worldYEnd = worldY;
+
+                        handleExploreInputRightKey(dt);
                     }
-                    moving = true;                                                                                      // When a direction key is pressed, the player character enters a state of motion.
-                    worldXStart = worldX;                                                                               // Record current position before moving (x).
-                    worldYStart = worldY;                                                                               // Record current position before moving (y).
-                    updateCollisionState();                                                                             // Check and update colliding state of entity.
-
-                    if ((directionCurrent.equals(directionLast)) || (moveCountdown > 0)) {                              // The if statement ensures that simply changing direction to face a tile doesn't trigger an interaction.
-
-                        checkStepInteraction(dt, getColEnd(), getRowEnd());                                             // Check if any interactions triggered by a step have been hit.
-                    } else {
-
-                        turning = true;                                                                                 // Enter a state of turning since the frame buffer has lapsed (meaning the player is currently static) AND the new direction is different from the last.
-                    }
-                } else {                                                                                                // If player is not moving, set idle sprite.
-
-                    walkSpriteNumCurrent = 1;
                 }
             }
         }
@@ -623,11 +564,266 @@ public class Player extends EntityBase {
      */
     private void updateDialogueInput() {
 
-        if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER)
-                || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E)))
-                && (gp.getDialogueR().getActiveConv() != null)
-                && (!gp.getDialogueR().isReadingDialogue())
-                && (interactionCountdown <= 0)) {
+        if (interactionCountdown <= 0) {
+
+            if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER))
+                    || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
+
+                handleDialogueInputProgressKey();
+            }
+        }
+    }
+
+
+    /**
+     * Updates the state of the party menu screen per player input by one frame when in party menu state.
+     * Checks for player key input if menu is closed, changed, or otherwise interacted with.
+     */
+    private void updatePartyMenuInput() {
+
+        if (interactionCountdown <= 0) {
+
+            if (!primaryMenuActioned && KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+
+                handlePrimaryMenuInputToggleOffKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
+
+                handlePrimaryMenuInputSettingsKey();
+            } else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
+
+                handlePrimaryMenuInputInventoryKey();
+
+            } else if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER))
+                    || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
+
+                handlePartyMenuInputProgressKey();
+            }else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
+
+                handlePartyMenuInputUpKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
+
+                handlePartyMenuInputDownKey();
+            }
+        }
+    }
+
+
+    /**
+     * Updates the state of the inventory menu screen per player input by one frame when in inventory menu state.
+     * Checks for player key input if menu is closed, changed, or otherwise interacted with.
+     */
+    private void updateInventoryMenuInput() {
+
+        if (interactionCountdown <= 0) {
+
+            if (!primaryMenuActioned && KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+
+                handlePrimaryMenuInputToggleOffKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
+
+                handlePrimaryMenuInputPartyKey();
+            } else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
+
+                handlePrimaryMenuInputSettingsKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
+
+                handleInventoryMenuInputUpKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
+
+                handleInventoryMenuInputDownKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
+
+                handleInventoryMenuInputLeftKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
+
+                handleInventoryMenuInputRightKey();
+            }
+        }
+    }
+
+
+    /**
+     * Updates the state of the settings menu screen per player input by one frame when in settings menu state.
+     * Checks for player key input if menu is closed, changed, or otherwise interacted with.
+     */
+    private void updateSettingsMenuInput() {
+
+        if (interactionCountdown <= 0) {
+
+            if (!primaryMenuActioned && KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+
+                handlePrimaryMenuInputToggleOffKey();
+            } else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
+
+                handlePrimaryMenuInputPartyKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
+
+                handlePrimaryMenuInputInventoryKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
+
+                handleSettingsMenuInputUpKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
+
+                handleSettingsMenuInputDownKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
+
+                handleSettingsMenuInputLeftKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
+
+                handleSettingsMenuInputRightKey();
+            }
+        }
+    }
+
+
+    /**
+     * Updates the state of the sub-menu screen per player input by one frame when in sub-menu state.
+     * Checks for player key input if sub-menu option is changed or selected.
+     */
+    private void updateSubMenuInput() {
+
+        if (interactionCountdown <= 0) {
+
+            if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
+
+                handleSubMenuInputUpKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
+
+                handleSubMenuInputDownKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)
+                    || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
+
+                handleSubMenuInputProgressKey();
+            }
+        }
+    }
+
+
+    /**
+     * Updates system-level full screen toggle per player input.
+     */
+    private void updateFullScreenInput() {
+
+        if (!fullScreenActioned) {
+
+            if (gp.getSystemSetting(3).getActiveOption() == 0) {
+
+                if (KeyListener.isKeyPressed(GLFW_KEY_F11)) {
+
+                    handleFullScreenInputToggleOnKey();
+                }
+            }
+
+            else if (gp.getSystemSetting(3).getActiveOption() == 1) {
+
+                if (KeyListener.isKeyPressed(GLFW_KEY_ESCAPE) || KeyListener.isKeyPressed(GLFW_KEY_F11)) {
+
+                    handleFullScreenInputToggleOffKey();
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Updates the state of the debug mode by one frame.
+     * Checks whether debug mode is toggled on/off and whether the camera is panned when debug mode is enabled.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void updateDebugInput(double dt) {
+
+        if (!debugActioned && KeyListener.isKeyPressed(GLFW_KEY_P)) {
+
+            handleDebugInputToggleKey();
+        } else if (gp.isDebugActive()) {
+
+            if (KeyListener.isKeyPressed(GLFW_KEY_UP)) {
+
+                handleDebugInputUpKey(dt);
+            }
+
+            if (KeyListener.isKeyPressed(GLFW_KEY_DOWN)) {
+
+                handleDebugInputDownKey(dt);
+            }
+
+            if (KeyListener.isKeyPressed(GLFW_KEY_LEFT)) {
+
+                handleDebugInputLeftKey(dt);
+            }
+
+            if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT)) {
+
+                handleDebugInputRightKey(dt);
+            }
+        }
+    }
+
+
+    /**
+     * Handles input logic for explore progress key.
+     *
+     * @param dt time since last frame (seconds)
+     * @return whether a click interaction was triggered (true) or not (false)
+     */
+    private boolean handleExploreInputProgressKey(double dt) {
+
+        return checkClickInteraction(dt, directionCurrent);                                                             // Check if any interactions triggered by a click (i.e., hitting the progress key or other manual selection) have been hit.
+    }
+
+
+    /**
+     * Handles input logic for explore up key.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void handleExploreInputUpKey(double dt) {
+
+        initializeStateOfMotion(dt, EntityDirection.UP, worldX, worldY - GamePanel.NATIVE_TILE_SIZE);
+    }
+
+
+    /**
+     * Handles input logic for explore down key.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void handleExploreInputDownKey(double dt) {
+
+        initializeStateOfMotion(dt, EntityDirection.DOWN, worldX, worldY + GamePanel.NATIVE_TILE_SIZE);
+    }
+
+
+    /**
+     * Handles input logic for explore left key.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void handleExploreInputLeftKey(double dt) {
+
+        initializeStateOfMotion(dt, EntityDirection.LEFT, worldX - GamePanel.NATIVE_TILE_SIZE, worldY);
+    }
+
+
+    /**
+     * Handles input logic for explore right key.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void handleExploreInputRightKey(double dt) {
+
+        initializeStateOfMotion(dt, EntityDirection.RIGHT, worldX + GamePanel.NATIVE_TILE_SIZE, worldY);
+    }
+
+
+    /**
+     * Handles input logic for dialogue progress key.
+     */
+    private void handleDialogueInputProgressKey() {
+
+        if ((gp.getDialogueR().getActiveConv() != null)
+                && (!gp.getDialogueR().isReadingDialogue())) {
 
             if ((!gp.getDialogueR().isReadingConversation())
                     && (gp.getDialogueR().getActiveConv().isPlayerInputToEnd())) {                                      // If no longer reading a conversation AND player input is required to end the conversation.
@@ -651,259 +847,391 @@ public class Player extends EntityBase {
 
 
     /**
-     * Updates the state of the party menu screen per player input by one frame when in party menu state.
-     * Checks for player key input if menu is closed, changed, or otherwise interacted with.
+     * Handles input logic for primary menu (party, inventory, settings) toggle key (on).
      */
-    private void updatePartyMenuInput() {
+    private void handlePrimaryMenuInputToggleOnKey() {
 
-        if (interactionCountdown <= 0) {
+        gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
+        gp.getUi().setPrimaryMenuState(PrimaryMenuState.PARTY);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+        primaryMenuActioned = true;                                                                                     // Disable the ability of the player to close the menu (party, inventory, settings) by pressing the toggle key.
+    }
 
-            if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
-                gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
-                gp.getUi().setPrimaryMenuState(PrimaryMenuState.INACTIVE);
-                menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
-            }
 
-            else if ((KeyListener.isKeyPressed(GLFW_KEY_ENTER))
-                    || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
+    /**
+     * Handles input logic for primary menu (party, inventory, settings) toggle key (off).
+     */
+    private void handlePrimaryMenuInputToggleOffKey() {
 
-                generatePartySwapSubMenuPrompt();
-            }
+        gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
+        gp.getUi().setPrimaryMenuState(PrimaryMenuState.INACTIVE);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+        primaryMenuActioned = true;                                                                                     // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the toggle key.
+    }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
-                gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
-                gp.getUi().setPrimaryMenuState(PrimaryMenuState.SETTINGS);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
 
-            else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
-                gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
-                gp.getUi().setPrimaryMenuState(PrimaryMenuState.INVENTORY);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
+    /**
+     * Handles input logic for primary menu (party, inventory, settings) party key.
+     */
+    private void handlePrimaryMenuInputPartyKey() {
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-                if (gp.getUi().getPartySlotSelected() == 0) {
-                    gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() - 1);
-                } else {
-                    gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() - 1);
-                }
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
+        gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
+        gp.getUi().setPrimaryMenuState(PrimaryMenuState.PARTY);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
-                if (gp.getUi().getPartySlotSelected() == 2) {
-                    gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() + 1);
-                } else {
-                    gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() + 1);
-                }
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
+
+    /**
+     * Handles input logic for primary menu (party, inventory, settings) inventory key.
+     */
+    private void handlePrimaryMenuInputInventoryKey() {
+
+        gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
+        gp.getUi().setPrimaryMenuState(PrimaryMenuState.INVENTORY);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for primary menu (party, inventory, settings) settings key.
+     */
+    private void handlePrimaryMenuInputSettingsKey() {
+
+        gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
+        gp.getUi().setPrimaryMenuState(PrimaryMenuState.SETTINGS);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for party menu progress key.
+     */
+    private void handlePartyMenuInputProgressKey() {
+
+        if ((gp.getEntityM().getParty().size() > 1)
+                && (gp.getUi().getSelectedPartyMenuEntity() != entityId)                                                // Ensure that player entity is not selected (i.e., `partyMenuScrollLevel` and `partySlotSelected` do not both equal zero).
+                && gp.getPartyS().isActionComplete()) {                                                                 // Only generate if no entities party management operation is already occurring.
+            gp.getSubMenuS().generatePartySwapSubMenuPrompt();
+            setInteractionCountdown(stagedStandardInteractionCountdown);
         }
     }
 
 
     /**
-     * Updates the state of the inventory menu screen per player input by one frame when in inventory menu state.
-     * Checks for player key input if menu is closed, changed, or otherwise interacted with.
+     * Handles input logic for party menu up key.
      */
-    private void updateInventoryMenuInput() {
+    private void handlePartyMenuInputUpKey() {
 
-        if (interactionCountdown <= 0) {
+        if ((gp.getUi().getPartySlotSelected() == 1) && (gp.getUi().getPartyMenuScrollLevel() > 0)) {
 
-            if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
-                gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
-                gp.getUi().setPrimaryMenuState(PrimaryMenuState.INACTIVE);
-                menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
-            }
+            gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() - 1);
+        } else if (gp.getUi().getPartySlotSelected() == 0) {
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
-                gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
-                gp.getUi().setPrimaryMenuState(PrimaryMenuState.PARTY);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
+            gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() - 1);
+        } else {
 
-            else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
-                gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
-                gp.getUi().setPrimaryMenuState(PrimaryMenuState.SETTINGS);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
+            gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() - 1);
+        }
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-                gp.getUi().setItemRowSelected(gp.getUi().getItemRowSelected() - 1);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
-                gp.getUi().setItemColSelected(gp.getUi().getItemColSelected() - 1);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
+    /**
+     * Handles input logic for party menu down key.
+     */
+    private void handlePartyMenuInputDownKey() {
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
-                gp.getUi().setItemRowSelected(gp.getUi().getItemRowSelected() + 1);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
+        if ((gp.getUi().getPartySlotSelected() == 1)
+                && (gp.getUi().getPartyMenuScrollLevel() < (gp.getEntityM().getParty().size() - 2))) {
 
-            else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
-                gp.getUi().setItemColSelected(gp.getUi().getItemColSelected() + 1);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
+            gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() + 1);
+        } else if (gp.getUi().getPartySlotSelected() == 2) {
+
+            gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() + 1);
+        } else {
+
+            gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() + 1);
+        }
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for inventory menu up key.
+     */
+    private void handleInventoryMenuInputUpKey() {
+
+        gp.getUi().setItemRowSelected(gp.getUi().getItemRowSelected() - 1);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for inventory menu down key.
+     */
+    private void handleInventoryMenuInputDownKey() {
+
+        gp.getUi().setItemColSelected(gp.getUi().getItemColSelected() - 1);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for inventory menu left key.
+     */
+    private void handleInventoryMenuInputLeftKey() {
+
+        gp.getUi().setItemRowSelected(gp.getUi().getItemRowSelected() + 1);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for inventory menu right key.
+     */
+    private void handleInventoryMenuInputRightKey() {
+
+        gp.getUi().setItemColSelected(gp.getUi().getItemColSelected() + 1);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for settings menu up key.
+     */
+    private void handleSettingsMenuInputUpKey() {
+
+        gp.getUi().setSystemSettingSelected(gp.getUi().getSystemSettingSelected() - 1);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for settings menu down key.
+     */
+    private void handleSettingsMenuInputDownKey() {
+
+        gp.getUi().setSystemSettingSelected(gp.getUi().getSystemSettingSelected() + 1);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for settings menu left key.
+     */
+    private void handleSettingsMenuInputLeftKey() {
+
+        if (!((gp.getUi().getSystemSettingSelected() == 3) && fullScreenActioned)) {                                    // Full screen mode; if selected, check to ensure it's not already being affected by input key.
+
+            gp.getUi().setSystemOptionSelected(gp.getUi().getSystemOptionSelected() - 1);
+            setInteractionCountdown(stagedStandardInteractionCountdown);
         }
     }
 
 
     /**
-     * Updates the state of the settings menu screen per player input by one frame when in settings menu state.
-     * Checks for player key input if menu is closed, changed, or otherwise interacted with.
+     * Handles input logic for settings menu right key.
      */
-    private void updateSettingsMenuInput() {
+    private void handleSettingsMenuInputRightKey() {
 
-        if (interactionCountdown <= 0) {
+        if (!((gp.getUi().getSystemSettingSelected() == 3) && fullScreenActioned)) {                                    // Full screen mode; if selected, check to ensure it's not already being affected by input key.
 
-            if ((KeyListener.isKeyPressed(GLFW_KEY_SPACE)) && (!menuActioned)) {
-                gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
-                gp.getUi().setPrimaryMenuState(PrimaryMenuState.INACTIVE);
-                menuActioned = true;                                                                                    // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the Space key.
-            }
-
-            else if ((gp.getSystemSetting(4).getActiveOption() == 0) && KeyListener.isKeyPressed(GLFW_KEY_E)) {
-                gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
-                gp.getUi().setPrimaryMenuState(PrimaryMenuState.PARTY);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
-
-            else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
-                gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
-                gp.getUi().setPrimaryMenuState(PrimaryMenuState.INVENTORY);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
-
-            else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-                gp.getUi().setSystemSettingSelected(gp.getUi().getSystemSettingSelected() - 1);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
-
-            else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
-                gp.getUi().setSystemSettingSelected(gp.getUi().getSystemSettingSelected() + 1);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
-
-            else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
-                gp.getUi().setSystemOptionSelected(gp.getUi().getSystemOptionSelected() - 1);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
-
-            else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
-                gp.getUi().setSystemOptionSelected(gp.getUi().getSystemOptionSelected() + 1);
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
+            gp.getUi().setSystemOptionSelected(gp.getUi().getSystemOptionSelected() + 1);
+            setInteractionCountdown(stagedStandardInteractionCountdown);
         }
     }
 
 
     /**
-     * Updates the state of the sub-menu screen per player input by one frame when in sub-menu state.
-     * Checks for player key input if sub-menu option is changed or selected.
+     * Handles input logic for sub-menu progress key.
      */
-    private void updateSubMenuInput() {
+    private void handleSubMenuInputProgressKey() {
 
-        if (interactionCountdown <= 0) {
-
-            if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-                gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() - 1);                             // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
-                if (gp.getCombatM().isCombatActive()) {gp.getCombatM().refreshSkillSubMenuDialogue();}                  // Refresh skill combat sub-menu message, if applicable.
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
-
-            else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
-                gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() + 1);                             // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
-                if (gp.getCombatM().isCombatActive()) {gp.getCombatM().refreshSkillSubMenuDialogue();}                  // Refresh skill combat sub-menu message, if applicable.
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
-
-            else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)
-                    || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
-                gp.getEventM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected());
-                setInteractionCountdown(stagedStandardInteractionCountdown);
-            }
-        }
+        gp.getEventM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected());
+        setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
 
     /**
-     * Updates the state of the debug mode by one frame.
-     * Checks whether debug mode is toggled on/off and whether the camera is panned when debug mode is enabled.
+     * Handles input logic for sub-menu up key.
+     */
+    private void handleSubMenuInputUpKey() {
+
+        gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() - 1);                                     // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
+        if (gp.getCombatM().isCombatActive()) {gp.getCombatM().refreshSkillSubMenuDialogue();}                          // Refresh skill combat sub-menu message, if applicable.
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for sub-menu down key.
+     */
+    private void handleSubMenuInputDownKey() {
+
+        gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() + 1);                                     // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
+        if (gp.getCombatM().isCombatActive()) {gp.getCombatM().refreshSkillSubMenuDialogue();}                          // Refresh skill combat sub-menu message, if applicable.
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for full screen toggle key (on).
+     */
+    private void handleFullScreenInputToggleOnKey() {
+
+        gp.getSystemSetting(3).setActiveOption(1);                                                                  // Enter full screen mode if disabled.
+
+        if (gp.getUi().getSystemSettingSelected() == 3) {
+
+            gp.getUi().setSystemOptionSelected(1);
+        }
+        fullScreenActioned = true;                                                                                      // Temporarily disable the ability of the player to disable full screen mode by pressing the toggle key.
+    }
+
+
+    /**
+     * Handles input logic for full screen toggle key (off).
+     */
+    private void handleFullScreenInputToggleOffKey() {
+
+        gp.getSystemSetting(3).setActiveOption(0);                                                                  // Exit full screen mode if enabled.
+
+        if (gp.getUi().getSystemSettingSelected() == 3) {
+
+            gp.getUi().setSystemOptionSelected(0);
+        }
+        fullScreenActioned = true;                                                                                      // Temporarily disable the ability of the player to enable full screen mode by pressing the toggle key.
+    }
+
+
+    /**
+     * Handles input logic for debug toggle key (on and off).
+     */
+    private void handleDebugInputToggleKey() {
+
+        if ((gp.isDebugActive())
+                && (gp.getPrimaryGameState() == PrimaryGameState.EXPLORE)
+                && (gp.getCameraS().isOverrideEntityTracking())) {
+
+            gp.getSubMenuS().generateResetCameraSnapSubMenuPrompt();
+        }
+        gp.setDebugActive(!gp.isDebugActive());
+        debugActioned = true;                                                                                           // Temporarily disable the ability of the player to enable/disable the debug mode by pressing the toggle key.
+    }
+
+
+    /**
+     * Handles input logic for debug up key.
      *
+     * @param dt time since last frame (seconds)
      */
-    private void updateDebugInput() {
+    private void handleDebugInputUpKey(double dt) {
 
-        if ((debugActioned) && (!KeyListener.isKeyPressed(GLFW_KEY_P))) {
-            debugActioned = false;                                                                                      // Enable the ability of the player to enable the debug mode by pressing the P key.
+        if (!gp.getCameraS().isOverrideEntityTracking()) {
+
+            gp.getCameraS().setOverrideEntityTracking(true);
+        }
+        gp.getCamera().adjustPosition(
+                new Vector2f(
+                        gp.getCamera().getPositionMatrix().x,
+                        gp.getCamera().getPositionMatrix().y - (int)(240 * dt)
+                )
+        );
+    }
+
+
+    /**
+     * Handles input logic for debug down key.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void handleDebugInputDownKey(double dt) {
+
+        if (!gp.getCameraS().isOverrideEntityTracking()) {
+
+            gp.getCameraS().setOverrideEntityTracking(true);
+        }
+        gp.getCamera().adjustPosition(
+                new Vector2f(
+                        gp.getCamera().getPositionMatrix().x,
+                        gp.getCamera().getPositionMatrix().y + (int)(240 * dt)
+                )
+        );
+    }
+
+
+    /**
+     * Handles input logic for debug left key.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void handleDebugInputLeftKey(double dt) {
+
+        if (!gp.getCameraS().isOverrideEntityTracking()) {
+            gp.getCameraS().setOverrideEntityTracking(true);
+        }
+        gp.getCamera().adjustPosition(
+                new Vector2f(
+                        gp.getCamera().getPositionMatrix().x - (int)(240 * dt),
+                        gp.getCamera().getPositionMatrix().y
+                )
+        );
+    }
+
+
+    /**
+     * Handles input logic for debug right key.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    private void handleDebugInputRightKey(double dt) {
+
+        if (!gp.getCameraS().isOverrideEntityTracking()) {
+
+            gp.getCameraS().setOverrideEntityTracking(true);
+        }
+        gp.getCamera().adjustPosition(
+                new Vector2f(
+                        gp.getCamera().getPositionMatrix().x + (int)(240 * dt),
+                        gp.getCamera().getPositionMatrix().y
+                )
+        );
+    }
+
+
+    /**
+     * Initializes a new state of motion.
+     *
+     * @param dt time since last frame (seconds)
+     * @param direction direction in which to move this entity
+     * @param worldXEnd target ending world position of this entity (x-position)
+     * @param worldYEnd target ending world position of this entity (y-position)
+     */
+    private void initializeStateOfMotion(double dt, EntityDirection direction, float worldXEnd, float worldYEnd) {
+
+        moving = true;                                                                                                  // When a direction key is pressed, the player entity enters a state of motion.
+        directionCurrent = direction;
+        directionCandidate = direction;
+        worldXStart = worldX;                                                                                           // Record current position before moving (x).
+        worldYStart = worldY;                                                                                           // Record current position before moving (y).
+        this.worldXEnd = worldXEnd;
+        this.worldYEnd = worldYEnd;
+        updateCollisionState();                                                                                         // Check and update colliding state of entity.
+
+        if ((directionCurrent != directionLast)) {                                                                      // Check if the player entity may be turning from a static state (directions not matching is a possible indicator).
+
+            if (turnCountdown > 0) {                                                                                    // Check if the player entity was walking and is still withing frame buffer for seamless turning.
+
+                turnCountdown = 0;                                                                                      // Reset frame buffer.
+            } else {
+
+                turning = true;                                                                                         // Enter dedicated, non-seamless (i.e., non-instantaneous) state of turning.
+            }
         }
 
-        if ((KeyListener.isKeyPressed(GLFW_KEY_P)) && (!debugActioned)) {
+        if (!turning) {                                                                                                 // The if statement ensures that simply changing direction to face a tile doesn't trigger an interaction.
 
-            if ((gp.isDebugActive())
-                    && (gp.getPrimaryGameState() == PrimaryGameState.EXPLORE)
-                    && (gp.getCameraS().isOverrideEntityTracking())) {
-
-                List<String> options = List.of("Yes", "No");                                                            // Immutable list.
-                String prompt = "Reset camera back to tracked entity?";
-                gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 2, false);
-            }
-            gp.setDebugActive(!gp.isDebugActive());
-            debugActioned = true;                                                                                       // Disable the ability of the player to enable the debug mode by pressing the Q key.
-        }
-
-        else if (gp.isDebugActive()) {
-
-            if (KeyListener.isKeyPressed(GLFW_KEY_UP)) {
-                if (!gp.getCameraS().isOverrideEntityTracking()) {
-                    gp.getCameraS().setOverrideEntityTracking(true);
-                }
-                gp.getCamera().adjustPosition(
-                        new Vector2f(
-                                gp.getCamera().getPositionMatrix().x,
-                                gp.getCamera().getPositionMatrix().y - 4
-                        )
-                );
-            }
-
-            if (KeyListener.isKeyPressed(GLFW_KEY_DOWN)) {
-                if (!gp.getCameraS().isOverrideEntityTracking()) {
-                    gp.getCameraS().setOverrideEntityTracking(true);
-                }
-                gp.getCamera().adjustPosition(
-                        new Vector2f(
-                                gp.getCamera().getPositionMatrix().x,
-                                gp.getCamera().getPositionMatrix().y + 4
-                        )
-                );
-            }
-
-            if (KeyListener.isKeyPressed(GLFW_KEY_LEFT)) {
-                if (!gp.getCameraS().isOverrideEntityTracking()) {
-                    gp.getCameraS().setOverrideEntityTracking(true);
-                }
-                gp.getCamera().adjustPosition(
-                        new Vector2f(
-                                gp.getCamera().getPositionMatrix().x - 4,
-                                gp.getCamera().getPositionMatrix().y
-                        )
-                );
-            }
-
-            if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT)) {
-                if (!gp.getCameraS().isOverrideEntityTracking()) {
-                    gp.getCameraS().setOverrideEntityTracking(true);
-                }
-                gp.getCamera().adjustPosition(
-                        new Vector2f(
-                                gp.getCamera().getPositionMatrix().x + 4,
-                                gp.getCamera().getPositionMatrix().y
-                        )
-                );
-            }
+            checkStepInteraction(dt, getColEnd(), getRowEnd());                                                         // Check if any interactions triggered by a step have been hit.
         }
     }
 
@@ -1038,39 +1366,11 @@ public class Player extends EntityBase {
     }
 
 
-    /**
-     * Generates a sub-menu prompt for swapping party members in the party menu screen.
-     */
-    private void generatePartySwapSubMenuPrompt() {
-
-        if ((gp.getEntityM().getParty().size() > 1)
-                && !((gp.getUi().getPartyMenuScrollLevel() == 0) && (gp.getUi().getPartySlotSelected() == 0))           // Ensure that player entity is not selected (i.e., `partyMenuScrollLevel` and `partySlotSelected` do not both equal zero).
-                && gp.getPartyS().isActionComplete()) {                                                                 // Only generate if no entities party management operation is already occurring.
-
-            List<String> options = new ArrayList<>();
-            Set<Integer> keySet = gp.getEntityM().getParty().keySet();                                                  // Extract keys from party map.
-            Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);                                            // Convert set of keys to array of keys.
-            EntityBase selectedEntity =
-                    gp.getEntityM().getParty().get(keyArray[
-                            gp.getUi().getPartyMenuScrollLevel() + (gp.getUi().getPartySlotSelected() - 1)]);
-
-            for (EntityBase candidateEntity : gp.getEntityM().getParty().values()) {
-
-                if (candidateEntity.getEntityId() != selectedEntity.getEntityId()) {
-
-                    options.add(candidateEntity.getName());
-                }
-            }
-            options.add("Cancel");
-            HashMap<Integer, Vector3f> colors = new HashMap<>();
-            colors.put(options.size() - 1, SubMenuHandler.BACK_OPTION_COLOR);
-            String prompt = "Swap " + selectedEntity.getName() + " with who?";
-            gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 3, false, colors);
-        }
+    // GETTERS
+    public boolean isTurning() {
+        return turning;
     }
 
-
-    // GETTERS
     public double getStagedStandardInteractionCountdown() {
         return stagedStandardInteractionCountdown;
     }

@@ -4,6 +4,7 @@ import entity.EntityBase;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector2f;
+import render.drawable.Drawable;
 
 /**
  * This class defines the system-level camera.
@@ -169,6 +170,27 @@ public class Camera {
     public Vector2f getPositionMatrix() {
 
         return positionMatrix;
+    }
+
+
+    /**
+     * Determines whether a drawable is in view of the camera or not.
+     *
+     * @param drawable Drawable instance to check
+     * @return whether the drawable is in view of the camera (true) or not (false)
+     */
+    public boolean isInCameraView(Drawable drawable) {
+
+        if ((drawable.transform.position.y <= (positionMatrix.y + screenHeight))                                        // Top of sprite greater than bottom of screen.
+                && ((drawable.transform.position.y + drawable.transform.scale.y) >= positionMatrix.y)                   // Bottom of sprite less than top of screen.
+                && (drawable.transform.position.x <= (positionMatrix.x + screenWidth))                                  // Left of sprite less than right of screen.
+                && ((drawable.transform.position.x + drawable.transform.scale.x >= positionMatrix.x))) {                // Right of sprite greater than left of screen.
+
+            return true;
+        } else {
+
+            return false;
+        }
     }
 
 

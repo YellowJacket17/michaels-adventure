@@ -1,7 +1,11 @@
 package event.support;
 
 import core.GamePanel;
+import core.enumeration.PrimaryGameState;
+import entity.EntityBase;
 import org.joml.Vector3f;
+import submenu.SubMenuHandler;
+import utility.UtilityTool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -373,6 +377,48 @@ public class SubMenuSupport {
         }
         tempSubMenuId = subMenuId;
         gp.getDialogueR().initiateSubMenuMessage(prompt, charByChar);
+    }
+
+
+    /**
+     * Generates a sub-menu prompt to reset the camera (snap) back to the tracked entity.
+     */
+    public void generateResetCameraSnapSubMenuPrompt() {
+
+        List<String> options = List.of("Yes", "No");                                                                    // Immutable list.
+        String prompt = "Reset camera back to tracked entity?";
+        gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 2, false);
+    }
+
+
+    /**
+     * Generates a sub-menu prompt to swap party members in the party menu screen.
+     * Note that the party menu screen must be active and a non-player entity must be selected.
+     */
+    public void generatePartySwapSubMenuPrompt() {
+
+        if ((gp.getPrimaryGameState() == PrimaryGameState.PARTY_MENU)
+                && (gp.getUi().getSelectedPartyMenuEntity() != gp.getEntityM().getPlayer().getEntityId())) {
+
+            List<String> options = new ArrayList<>();
+            EntityBase primaryEntity = gp.getEntityM().getEntityById(gp.getUi().getSelectedPartyMenuEntity());
+
+            for (EntityBase candidateEntity : gp.getEntityM().getParty().values()) {
+
+                if (candidateEntity.getEntityId() != primaryEntity.getEntityId()) {
+
+                    options.add(candidateEntity.getName());
+                }
+            }
+            options.add("Cancel");
+            HashMap<Integer, Vector3f> colors = new HashMap<>();
+            colors.put(options.size() - 1, SubMenuHandler.BACK_OPTION_COLOR);
+            String prompt = "Swap " + primaryEntity.getName() + " with who?";
+            gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 3, false, colors);
+        } else {
+
+            UtilityTool.logWarning("Attempted to illegally generate a party menu sub-menu prompt to swap entities.");
+        }
     }
 
 

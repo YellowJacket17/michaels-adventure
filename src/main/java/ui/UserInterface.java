@@ -4,6 +4,7 @@ import combat.enumeration.BannerColor;
 import combat.enumeration.SubMenuType;
 import core.GamePanel;
 import miscellaneous.Setting;
+import submenu.SubMenuHandler;
 import ui.enumeration.PrimaryMenuState;
 import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
@@ -16,6 +17,9 @@ import render.Renderer;
 import render.enumeration.ZIndex;
 import render.drawable.Transform;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -271,6 +275,29 @@ public class UserInterface {
 
 
     /**
+     * Retrieves the party member (including the player entity) that is selected in the party menu screen.
+     *
+     * @return ID of selected entity
+     */
+    public int getSelectedPartyMenuEntity() {
+
+        int selectedEntityId;
+
+        if ((gp.getUi().getPartyMenuScrollLevel() == 0) && (gp.getUi().getPartySlotSelected() == 0)) {
+
+            selectedEntityId = gp.getEntityM().getPlayer().getEntityId();
+        } else {
+
+            Set<Integer> keySet = gp.getEntityM().getParty().keySet();                                                  // Extract keys from party map.
+            Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);                                            // Convert set of keys to array of keys.
+            selectedEntityId = gp.getEntityM().getParty().get(keyArray[
+                    gp.getUi().getPartyMenuScrollLevel() + (gp.getUi().getPartySlotSelected() - 1)]).getEntityId();
+        }
+        return selectedEntityId;
+    }
+
+
+    /**
      * Adds dialogue components (window and text) to the render pipeline.
      */
     private void renderDialogueScreen() {
@@ -450,11 +477,13 @@ public class UserInterface {
     private void renderPartyMenuScreen() {
 
         renderPartyMemberStatusIcons();
+        renderPartyMemberAttributesAndMoves();
     }
 
 
     /**
-     * Adds components of the status icons for each party member in the party menu screen to the render pipeline.
+     * Adds components of the status icons for each party member (including the player entity) in the party menu screen
+     * to the render pipeline.
      */
     private void renderPartyMemberStatusIcons() {
 
@@ -555,6 +584,16 @@ public class UserInterface {
                 miniIconWorldCoords.y += miniIconWorldVerticalSpacing + miniIconInactiveWorldSize;
             }
         }
+    }
+
+
+    /**
+     * Adds components of the attributes and moves for the selected party member (including the player entity) in the
+     * party menu screen to the render pipeline.
+     */
+    private void renderPartyMemberAttributesAndMoves() {
+
+        // TODO : COMPLETE THIS!
     }
 
 

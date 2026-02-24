@@ -204,12 +204,6 @@ public abstract class EntityBase extends Drawable {
     protected boolean moving = false;
 
     /**
-     * Boolean indicating whether this entity is currently in a state of turning or not.
-     * This is primarily used when the player entity turns (i.e., changes direction) from a static state.
-     */
-    protected boolean turning = false;
-
-    /**
      * Boolean indicating whether this entity is currently in a state of combating or not.
      * Note that this does not indicate whether this entity is a player-side or non-player-side combating entity.
      */
@@ -234,8 +228,7 @@ public abstract class EntityBase extends Drawable {
     protected boolean hidden = false;
 
     /**
-     * Default action/behavior that this entity will do when not being interacted with by the player or some other
-     * event.
+     * Default (i.e., idle) action that this entity will perform.
      */
     protected DefaultAction defaultAction = DefaultAction.STATIC;
 
@@ -305,6 +298,7 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Controls the number of seconds this entity must wait before executing its default action.
+     * This variable is only used to control default (i.e., idle) actions as set by 'defaultAction'.
      */
     protected double rest;
 
@@ -404,6 +398,7 @@ public abstract class EntityBase extends Drawable {
      * Temporary multiplier to this entity's attack attribute.
      * For example, a value of 0.2 would result this entity's attack stat equaling the base attack plus 20% of the base
      * attack.
+     * This multiplier can be a buff (positive) or debuff (negative).
      */
     protected double attackBuff;
 
@@ -411,6 +406,7 @@ public abstract class EntityBase extends Drawable {
      * Temporary multiplier to this entity's defense attribute.
      * For example, a value of 0.2 would result this entity's defense stat equaling the base defense plus 20% of the
      * base defense.
+     * This multiplier can be a buff (positive) or debuff (negative).
      */
     protected double defenseBuff;
 
@@ -418,6 +414,7 @@ public abstract class EntityBase extends Drawable {
      * Temporary multiplier to this entity's magic attribute.
      * For example, a value of 0.2 would result this entity's magic stat equaling the base magic plus 20% of the base
      * magic.
+     * This multiplier can be a buff (positive) or debuff (negative).
      */
     protected double magicBuff;
 
@@ -425,6 +422,7 @@ public abstract class EntityBase extends Drawable {
      * Temporary multiplier to this entity's agility attribute.
      * For example, a value of 0.2 would result this entity's agility stat equaling the base agility plus 20% of the
      * base agility.
+     * This multiplier can be a buff (positive) or debuff (negative).
      */
     protected double agilityBuff;
 
@@ -448,6 +446,54 @@ public abstract class EntityBase extends Drawable {
      * Amount of experience this entity requires to reach it next level.
      */
     protected int nextLevelExp;
+
+    /**
+     * Maximum attack buff multiplier allowed for an entity.
+     * This value should be a positive number.
+     */
+    public static final double MAX_ATTACK_BUFF = 1;
+
+    /**
+     * Maximum attack debuff multiplier allowed for an entity.
+     * This value should be a negative number.
+     */
+    public static final double MAX_ATTACK_DEBUFF = -0.5;
+
+    /**
+     * Maximum defense buff multiplier allowed for an entity.
+     * This value should be a positive number.
+     */
+    public static final double MAX_DEFENSE_BUFF = 1;
+
+    /**
+     * Maximum defense debuff multiplier allowed for an entity.
+     * This value should be a negative number.
+     */
+    public static final double MAX_DEFENSE_DEBUFF = -0.5;
+
+    /**
+     * Maximum magic buff multiplier allowed for an entity.
+     * This value should be a positive number.
+     */
+    public static final double MAX_MAGIC_BUFF = 1;
+
+    /**
+     * Maximum magic debuff multiplier allowed for an entity.
+     * This value should be a negative number.
+     */
+    public static final double MAX_MAGIC_DEBUFF = -0.5;
+
+    /**
+     * Maximum agility buff multiplier allowed for an entity.
+     * This value should be a positive number.
+     */
+    public static final double MAX_AGILITY_BUFF = 1;
+
+    /**
+     * Maximum agility debuff multiplier allowed for an entity.
+     * This value should be a negative number.
+     */
+    public static final double MAX_AGILITY_DEBUFF = -0.5;
 
 
     // COMBAT MOVES
@@ -575,7 +621,6 @@ public abstract class EntityBase extends Drawable {
     public void cancelAction() {
 
         moving = false;
-        turning = false;
         hopping = false;
         worldX = worldXStart;
         worldY = worldYStart;
@@ -874,21 +919,21 @@ public abstract class EntityBase extends Drawable {
      */
     public boolean changeAttackStage(int numStages) {
 
-        if ((numStages > 0) && (attackBuff < 1.0)) {
+        if ((numStages > 0) && (attackBuff < MAX_ATTACK_BUFF)) {
 
-            if ((attackBuff + (0.25 * numStages)) > 1.0) {
+            if ((attackBuff + (0.25 * numStages)) > MAX_ATTACK_BUFF) {
 
-                attackBuff = 1.0;
+                attackBuff = MAX_ATTACK_BUFF;
             } else {
 
                 attackBuff += (0.25 * numStages);
             }
             return true;
-        } else if ((numStages < 0) && (attackBuff > -0.5)) {
+        } else if ((numStages < 0) && (attackBuff > MAX_ATTACK_DEBUFF)) {
 
-            if ((attackBuff + (0.25 * numStages)) < -0.5) {
+            if ((attackBuff + (0.25 * numStages)) < MAX_ATTACK_DEBUFF) {
 
-                attackBuff = -0.5;
+                attackBuff = MAX_ATTACK_DEBUFF;
             } else {
 
                 attackBuff += (0.25 * numStages);
@@ -909,21 +954,21 @@ public abstract class EntityBase extends Drawable {
      */
     public boolean changeDefenseStage(int numStages) {
 
-        if ((numStages > 0) && (defenseBuff < 1.0)) {
+        if ((numStages > 0) && (defenseBuff < MAX_DEFENSE_BUFF)) {
 
-            if ((defenseBuff + (0.25 * numStages)) > 1.0) {
+            if ((defenseBuff + (0.25 * numStages)) > MAX_DEFENSE_BUFF) {
 
-                defenseBuff = 1.0;
+                defenseBuff = MAX_DEFENSE_BUFF;
             } else {
 
                 defenseBuff += (0.25 * numStages);
             }
             return true;
-        } else if ((numStages < 0) && (defenseBuff > -0.5)) {
+        } else if ((numStages < 0) && (defenseBuff > MAX_DEFENSE_DEBUFF)) {
 
-            if ((defenseBuff + (0.25 * numStages)) < -0.5) {
+            if ((defenseBuff + (0.25 * numStages)) < MAX_DEFENSE_DEBUFF) {
 
-                defenseBuff = -0.5;
+                defenseBuff = MAX_DEFENSE_DEBUFF;
             } else {
 
                 defenseBuff += (0.25 * numStages);
@@ -944,21 +989,21 @@ public abstract class EntityBase extends Drawable {
      */
     public boolean changeMagicStage(int numStages) {
 
-        if ((numStages > 0) && (magicBuff < 1.0)) {
+        if ((numStages > 0) && (magicBuff < MAX_MAGIC_BUFF)) {
 
-            if ((magicBuff + (0.25 * numStages)) > 1.0) {
+            if ((magicBuff + (0.25 * numStages)) > MAX_MAGIC_BUFF) {
 
-                magicBuff = 1.0;
+                magicBuff = MAX_MAGIC_BUFF;
             } else {
 
                 magicBuff += (0.25 * numStages);
             }
             return true;
-        } else if ((numStages < 0) && (magicBuff > -0.5)) {
+        } else if ((numStages < 0) && (magicBuff > MAX_MAGIC_DEBUFF)) {
 
-            if ((magicBuff + (0.25 * numStages)) < -0.5) {
+            if ((magicBuff + (0.25 * numStages)) < MAX_MAGIC_DEBUFF) {
 
-                magicBuff = -0.5;
+                magicBuff = MAX_MAGIC_DEBUFF;
             } else {
 
                 magicBuff += (0.25 * numStages);
@@ -979,21 +1024,21 @@ public abstract class EntityBase extends Drawable {
      */
     public boolean changeAgilityStage(int numStages) {
 
-        if ((numStages > 0) && (agilityBuff < 1.0)) {
+        if ((numStages > 0) && (agilityBuff < MAX_AGILITY_BUFF)) {
 
-            if ((agilityBuff + (0.25 * numStages)) > 1.0) {
+            if ((agilityBuff + (0.25 * numStages)) > MAX_AGILITY_BUFF) {
 
-                agilityBuff = 1.0;
+                agilityBuff = MAX_AGILITY_BUFF;
             } else {
 
                 agilityBuff += (0.25 * numStages);
             }
             return true;
-        } else if ((numStages < 0) && (agilityBuff > -0.5)) {
+        } else if ((numStages < 0) && (agilityBuff > MAX_AGILITY_DEBUFF)) {
 
-            if ((agilityBuff + (0.25 * numStages)) < -0.5) {
+            if ((agilityBuff + (0.25 * numStages)) < MAX_AGILITY_DEBUFF) {
 
-                agilityBuff = -0.5;
+                agilityBuff = MAX_AGILITY_DEBUFF;
             } else {
 
                 agilityBuff += (0.25 * numStages);
@@ -1088,7 +1133,11 @@ public abstract class EntityBase extends Drawable {
             transform.position.y = worldY + worldYAdjustment;
             transform.scale.x = sprite.getNativeWidth();
             transform.scale.y = sprite.getNativeHeight();
-            renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+
+            if (gp.getCamera().isInCameraView(this)) {
+
+                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+            }
 
         } else if (!renderError) {
 
@@ -1100,7 +1149,6 @@ public abstract class EntityBase extends Drawable {
                     + "initialization.");
             renderError = true;
         }
-
     }
 
 
@@ -1130,7 +1178,11 @@ public abstract class EntityBase extends Drawable {
             transform.position.y = worldY + worldYAdjustment;
             transform.scale.x = sprite.getNativeWidth();
             transform.scale.y = sprite.getNativeHeight();
-            renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+
+            if (gp.getCamera().isInCameraView(this)) {
+
+                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+            }
 
             switch (directionCurrent) {
                 case LEFT:
@@ -1143,7 +1195,11 @@ public abstract class EntityBase extends Drawable {
                     break;
             }
             transform.position.x = worldX + worldXAdjustment;
-            renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+
+            if (gp.getCamera().isInCameraView(this)) {
+
+                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+            }
 
         } catch (NullPointerException e) {
 
@@ -1464,7 +1520,6 @@ public abstract class EntityBase extends Drawable {
                 worldYLast = worldYStart;                                                                               // ^^^
                 worldXStart = worldXEnd;
                 worldYStart = worldYEnd;
-                setRest(rest);
 
                 if (walkSpriteNumLast == 2) {                                                                           // Swap which foot will step forward for the next walking cycle.
 
@@ -1728,44 +1783,62 @@ public abstract class EntityBase extends Drawable {
             if (onPath) {
 
                 stopFollowingPath();                                                                                    // Entity has either arrived at destination or path to destination could not be found, so exit this state.
-                UtilityTool.logError("Entity"
-                        + (((name != null) && (!name.equals(""))) ? (" '" + name + "'") : "")
-                        + " with ID '"
-                        + entityId
-                        + "' is no longer following a path due to a pathfinding error.");
             }
 
             if (onEntityId != NO_ENTITY_FOLLOWED) {
 
-                UtilityTool.logError("Entity"
-                        + (((name != null) && (!name.equals(""))) ? (" '" + name + "'") : "")
-                        + " with ID '"
-                        + entityId
-                        + "' is not longer following entity"
-                        + (((gp.getEntityM().getEntityById(onEntityId).getName() != null)
-                            && (!gp.getEntityM().getEntityById(onEntityId).getName().equals("")))
-                                ? (" '" + gp.getEntityM().getEntityById(onEntityId).getName() + "'") : "")
-                        + " with ID '"
-                        + onEntityId
-                        + "' due to a pathfinding error.");
+                logPathfindingErrorOne(onEntityId);
                 onEntityId = NO_ENTITY_FOLLOWED;
             }
 
             if ((startCol != goalCol) && (startRow != goalRow)) {                                                       // Check if a path could not be found for a reason other than already arrived at destination.
 
-                UtilityTool.logError("Entity"
-                        + (((name != null) && (!name.equals(""))) ? (" '" + name + "'") : "")
-                        + " with ID '"
-                        + entityId
-                        + "' was not able to find a path to the following destination: row '"
-                        + goalRow
-                        + "', column '"
-                        + goalCol
-                        + "', map ID '"
-                        + gp.getMapM().getLoadedMap().getMapId()
-                        + "'.");
+                logPathfindingErrorTwo(goalCol, goalRow);
             }
         }
+    }
+
+
+    /**
+     * Prints a pathfinding error message to the console and temporary log file.
+     *
+     * @param onEntityId of the entity that this entity is following.
+     */
+    protected void logPathfindingErrorOne(int onEntityId) {
+
+        UtilityTool.logError("Entity"
+                + (((name != null) && (!name.equals(""))) ? (" '" + name + "'") : "")
+                + " with ID '"
+                + entityId
+                + "' is not longer following entity"
+                + (((gp.getEntityM().getEntityById(onEntityId).getName() != null)
+                && (!gp.getEntityM().getEntityById(onEntityId).getName().equals("")))
+                ? (" '" + gp.getEntityM().getEntityById(onEntityId).getName() + "'") : "")
+                + " with ID '"
+                + onEntityId
+                + "' due to a pathfinding error.");
+    }
+
+
+    /**
+     * Prints a pathfinding error message to the console and temporary log file.
+     *
+     * @param goalCol column of the goal tile
+     * @param goalRow row of the goal tile
+     */
+    protected void logPathfindingErrorTwo(int goalCol, int goalRow) {
+
+        UtilityTool.logError("Entity"
+                + (((name != null) && (!name.equals(""))) ? (" '" + name + "'") : "")
+                + " with ID '"
+                + entityId
+                + "' was not able to find a path to the following destination: row '"
+                + goalRow
+                + "', column '"
+                + goalCol
+                + "', map ID '"
+                + gp.getMapM().getLoadedMap().getMapId()
+                + "'.");
     }
 
 
@@ -1815,7 +1888,7 @@ public abstract class EntityBase extends Drawable {
 
             if (moving) {
 
-                setRest(2.5);                                                                                           // If entity has started moving, set rest to prepare for next random step.
+                resetDefaultActionInitialRest();                                                                        // If entity has started moving, set rest to prepare for next random step.
             }
         }
     }
@@ -1836,7 +1909,7 @@ public abstract class EntityBase extends Drawable {
 
                 directionCurrent = directionCandidate;
                 directionLast = directionCurrent;
-                setRest(2);                                                                                             // Set the number of seconds the entity must wait before entering a new state of motion.
+                resetDefaultActionInitialRest();                                                                        // If entity has started moving, set rest to prepare for next random step.
             }
         }
     }
@@ -2174,10 +2247,6 @@ public abstract class EntityBase extends Drawable {
 
     public boolean isMoving() {
         return moving;
-    }
-
-    public boolean isTurning() {
-        return turning;
     }
 
     public boolean isCombating() {
@@ -2557,40 +2626,40 @@ public abstract class EntityBase extends Drawable {
     }
 
     public void setAttackBuff(double attackBuff) {
-        if (attackBuff > 1.0) {
-            this.attackBuff = 1.0;
-        } else if (attackBuff < -1.0) {
-            this.attackBuff = -1.0;
+        if (attackBuff > MAX_ATTACK_BUFF) {
+            this.attackBuff = MAX_ATTACK_BUFF;
+        } else if (attackBuff < MAX_ATTACK_DEBUFF) {
+            this.attackBuff = MAX_ATTACK_DEBUFF;
         } else {
             this.attackBuff = attackBuff;
         }
     }
 
     public void setDefenseBuff(double defenseBuff) {
-        if (defenseBuff > 1.0) {
-            this.defenseBuff = 1.0;
-        } else if (defenseBuff < -1.0) {
-            this.defenseBuff = -1.0;
+        if (defenseBuff > MAX_DEFENSE_BUFF) {
+            this.defenseBuff = MAX_DEFENSE_BUFF;
+        } else if (defenseBuff < MAX_DEFENSE_DEBUFF) {
+            this.defenseBuff = MAX_DEFENSE_DEBUFF;
         } else {
             this.defenseBuff = defenseBuff;
         }
     }
 
     public void setMagicBuff(double magicBuff) {
-        if (magicBuff > 1.0) {
-            this.magicBuff = 1.0;
-        } else if (magicBuff < -1.0) {
-            this.magicBuff = -1.0;
+        if (magicBuff > MAX_MAGIC_BUFF) {
+            this.magicBuff = MAX_MAGIC_BUFF;
+        } else if (magicBuff < MAX_MAGIC_DEBUFF) {
+            this.magicBuff = MAX_MAGIC_DEBUFF;
         } else {
             this.magicBuff = magicBuff;
         }
     }
 
     public void setAgilityBuff(double agilityBuff) {
-        if (agilityBuff > 1.0) {
-            this.agilityBuff = 1.0;
-        } else if (agilityBuff < -1.0) {
-            this.agilityBuff = -1.0;
+        if (agilityBuff > MAX_AGILITY_BUFF) {
+            this.agilityBuff = MAX_AGILITY_BUFF;
+        } else if (agilityBuff < MAX_AGILITY_DEBUFF) {
+            this.agilityBuff = MAX_AGILITY_DEBUFF;
         } else {
             this.agilityBuff = agilityBuff;
         }

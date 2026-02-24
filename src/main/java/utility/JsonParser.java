@@ -458,7 +458,7 @@ public class JsonParser {
         try {
             speed = (int)((long)attributesJson.get("speed"));
         } catch (NullPointerException e) {
-            speed = 2;
+            speed = 120;
         }
         int maxLife;
         try {

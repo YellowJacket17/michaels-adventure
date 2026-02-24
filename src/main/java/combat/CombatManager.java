@@ -757,14 +757,22 @@ public class CombatManager {
         if (actionPreFaint(gp.getEntityM().getPlayer().getEntityId())) {
 
             justFainted = true;
-        };
+        }
+        int entityIndex = 0;
 
         for (int entityId : gp.getEntityM().getParty().keySet()) {
 
-            if (actionPreFaint(entityId) && !justFainted) {
+            if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
-                justFainted = true;
-            };
+                if (actionPreFaint(entityId) && !justFainted) {
+
+                    justFainted = true;
+                }
+            } else {
+
+                break;
+            }
+            entityIndex++;
         }
 
         for (int entityId : nonPlayerSideEntities) {
@@ -835,6 +843,9 @@ public class CombatManager {
 
                     zeroLifeActivePartyCount++;
                 }
+            } else {
+
+                break;
             }
             entityIndex++;
         }
@@ -1361,7 +1372,7 @@ public class CombatManager {
 
 
     /**
-     * Generates a sub-menu action for the root sub-menu and adds it to the back of the queue of actions.
+     * Generates a sub-menu action for the root combat sub-menu and adds it to the back of the queue of actions.
      */
     private void generateRootSubMenuAction() {
 
@@ -1567,7 +1578,8 @@ public class CombatManager {
     /**
      * Reverts (i.e., goes back) to the selection outcome of the third-to-latest SubMenuMemory instance in 'subMenuLog'
      * (if able).
-     * This method is intended to be used when the 'Back' option is selected in a combat sub-menu.
+     * This method is intended to be used when the 'Back' option is selected in a combat sub-menu beyond the root
+     * sub-menu.
      * It effectively returns to the sub-menu that was displayed before the sub-menu where the 'Back' option
      * was selected.
      * In other words, it "undoes" a sub-menu selection.
@@ -1575,48 +1587,55 @@ public class CombatManager {
      */
     private void revertSubMenuSelection() {
 
-        subMenuLog.remove(subMenuLog.size() - 1);                                                                       // Remove memory of the sub-menu where the 'Back' option was selected.
+        if (getSubMenuMemory(1).getType() != SubMenuType.ROOT) {                                                        // Ensure that the root combat sub-menu is not being reverted from.
 
-        if (subMenuLog.size() > 1) {                                                                                    // If there are at least two more sub-menu memories remaining.
+            subMenuLog.remove(subMenuLog.size() - 1);                                                                   // Remove memory of the sub-menu where the 'Back' option was selected.
 
-            subMenuLog.remove(subMenuLog.size() - 1);                                                                   // Remove memory of the sub-menu that preceded the sub-menu where the 'Back' option was selected; it will be regenerated.
+            if ((subMenuLog.size() > 1) && !getSubMenuMemory(1).isLastOfTurn()) {                                       // If there are at least two more sub-menu memories remaining and the latest left is not from a previous turn.
 
-            if (getSubMenuMemory(1).isLastOfTurn()) {
+                subMenuLog.remove(subMenuLog.size() - 1);                                                               // Remove memory of the sub-menu that preceded the sub-menu where the 'Back' option was selected; it will be regenerated.
 
-                generateRootSubMenuAction();                                                                            // Cannot go back further due to entity turn change, so return to root sub-menu.
+                if (getSubMenuMemory(1).isLastOfTurn()) {
+
+                    generateRootSubMenuAction();                                                                        // Cannot go back further due to entity turn change, so return to root combat sub-menu.
+                } else {
+
+                    switch (getSubMenuMemory(1).getType()) {                                                            // Regenerate the sub-menu that then generated the sub-menu where the 'Back' option was selected IF within same entity turn.
+                        case ROOT:
+                            runRootSubMenuSelection();
+                            break;
+                        case GUARD:
+                            runGuardSubMenuSelection();
+                            break;
+                        case SKILL:
+                            runSkillSubMenuSelection();
+                            break;
+                        case TARGET_SELECT:
+                            runTargetSelectSubMenuSelection();
+                            break;
+                        case PARTY:
+                            runPartySubMenuSelection();
+                            break;
+                        case PLAYER_SIDE_MANAGE:
+                            runPlayerSideManageSubMenuSelection();
+                            break;
+                        case PLAYER_SIDE_SWAP:
+                            runPlayerSideSwapSubMenuSelection();
+                            break;
+                    }
+                }
             } else {
 
-                switch (getSubMenuMemory(1).getType()) {                                                                // Regenerate the sub-menu that then generated the sub-menu where the 'Back' option was selected IF within same entity turn.
-                    case ROOT:
-                        runRootSubMenuSelection();
-                        break;
-                    case GUARD:
-                        runGuardSubMenuSelection();
-                        break;
-                    case SKILL:
-                        runSkillSubMenuSelection();
-                        break;
-                    case TARGET_SELECT:
-                        runTargetSelectSubMenuSelection();
-                        break;
-                    case PARTY:
-                        runPartySubMenuSelection();
-                        break;
-                    case PLAYER_SIDE_MANAGE:
-                        runPlayerSideManageSubMenuSelection();
-                        break;
-                    case PLAYER_SIDE_SWAP:
-                        runPlayerSideSwapSubMenuSelection();
-                        break;
+                if (subMenuLog.size() > 0) {                                                                            // If there is at least one sub-menu memory remaining.
+
+                    subMenuLog.remove(subMenuLog.size() - 1);                                                           // Remove memory of the sub-menu that preceded the sub-menu where the 'Back' option was selected; it will be regenerated.
                 }
+                generateRootSubMenuAction();                                                                            // Regenerate the root combat sub-menu since no previous sub-menu to where the 'Back' option was selected is recorded in memory.
             }
         } else {
 
-            if (subMenuLog.size() > 0) {                                                                                // If there is at least one sub-menu memory remaining.
-
-                subMenuLog.remove(subMenuLog.size() - 1);                                                               // Remove memory of the sub-menu that preceded the sub-menu where the 'Back' option was selected; it will be regenerated.
-            }
-            generateRootSubMenuAction();                                                                                // Regenerate the root sub-menu since no previous sub-menu to where the 'Back' option was selected is recorded in memory.
+            UtilityTool.logWarning("Attempted to revert from the root combat sub-menu.");
+            generateRootSubMenuAction();
         }
     }
 

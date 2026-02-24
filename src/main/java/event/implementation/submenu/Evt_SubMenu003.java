@@ -26,15 +26,10 @@ public class Evt_SubMenu003 extends EventSubMenuBase {
     public void run(int selectedIndex) {
 
         List<Integer> options = new ArrayList<>();
-        Set<Integer> keySet = gp.getEntityM().getParty().keySet();                                                      // Extract keys from party map.
-        Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);                                                // Convert set of keys to array of keys.
-        int selectedEntityId =
-                gp.getEntityM().getParty().get(keyArray[
-                        gp.getUi().getPartyMenuScrollLevel() + (gp.getUi().getPartySlotSelected() - 1)]).getEntityId();
 
         for (EntityBase candidateEntity : gp.getEntityM().getParty().values()) {
 
-            if (candidateEntity.getEntityId() != selectedEntityId) {
+            if (candidateEntity.getEntityId() != gp.getUi().getSelectedPartyMenuEntity()) {
 
                 options.add(candidateEntity.getEntityId());
             }
@@ -42,7 +37,7 @@ public class Evt_SubMenu003 extends EventSubMenuBase {
 
         if (selectedIndex < options.size()) {
 
-            gp.getPartyS().swapEntityInParty(selectedEntityId, options.get(selectedIndex), true);
+            gp.getPartyS().swapEntityInParty(gp.getUi().getSelectedPartyMenuEntity(), options.get(selectedIndex), true);
             gp.getUi().refreshSelectedPartyMenuEntity();
         }
         gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);

@@ -1,15 +1,20 @@
 package event.support;
 
 import core.GamePanel;
+import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
 import entity.enumeration.EntityDirection;
 import entity.enumeration.FadeEffectType;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
+import submenu.SubMenuHandler;
 import utility.LimitedArrayList;
 import utility.LimitedLinkedHashMap;
 import utility.UtilityTool;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This class contains methods to facilitate player party management.
@@ -717,7 +722,7 @@ public class PartySupport {
      *
      * @param entityId ID of affected entity
      */
-    public boolean checkActiveFadeEffect(int entityId) {
+    private boolean checkActiveFadeEffect(int entityId) {
 
         if (gp.getEntityM().getEntityById(entityId).getActiveFadeEffect() != FadeEffectType.NONE) {
 

@@ -54,5 +54,80 @@
             "defaultCol": 16,
             "defaultRow": 6
         }
+    },
+
+    "5": {
+        "type": "character",
+        "class": "Npc_Shadow",
+        "map": 1,
+        "attributes": {
+            "maxLife": 0,
+            "life": 0,
+            "name": "Test One",
+        },
+        "position": {
+            "defaultCol": 5,
+            "defaultRow": 45
+        }
+    },
+
+    "6": {
+        "type": "character",
+        "class": "Npc_Shadow",
+        "map": 1,
+        "attributes": {
+            "maxLife": 0,
+            "life": 0,
+            "name": "Test Two"
+        },
+        "position": {
+            "defaultCol": 6,
+            "defaultRow": 45
+        }
+    },
+
+    "7": {
+        "type": "character",
+        "class": "Npc_Shadow",
+        "map": 1,
+        "attributes": {
+            "maxLife": 0,
+            "life": 0,
+            "name": "Test Three"
+        },
+        "position": {
+            "defaultCol": 7,
+            "defaultRow": 45
+        }
+    },
+
+    "8": {
+        "type": "character",
+        "class": "Npc_Shadow",
+        "map": 1,
+        "attributes": {
+            "maxLife": 0,
+            "life": 0,
+            "name": "Test Four"
+        },
+        "position": {
+            "defaultCol": 8,
+            "defaultRow": 45
+        }
+    },
+
+    "9": {
+        "type": "character",
+        "class": "Npc_Shadow",
+        "map": 1,
+        "attributes": {
+            "maxLife": 0,
+            "life": 0,
+            "name": "Test Five"
+        },
+        "position": {
+            "defaultCol": 9,
+            "defaultRow": 45
+        }
     }
 }
