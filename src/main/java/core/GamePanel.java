@@ -32,6 +32,7 @@ import landmark.LandmarkManager;
 import submenu.SubMenuHandler;
 import tile.TileManager;
 import ui.UserInterface;
+import ui.support.*;
 import utility.*;
 
 import java.util.*;
@@ -102,6 +103,12 @@ public class GamePanel {
     private final CombatLoadSupport combatLoadS = new CombatLoadSupport(this);
     private final PathFinder pathF = new PathFinder(this);
     private final UserInterface ui = new UserInterface(this);
+    private UiDialogueSupport uiDialogueS;
+    private UiSubMenuSupport uiSubMenuS;
+    private UiPrimaryMenuFrameSupport uiPrimaryMenuFrameS;
+    private UiPartyMenuSupport uiPartyMenuS;
+    private UiInventoryMenuSupport uiInventoryMenuS;
+    private UiSettingsMenuSupport uiSettingsMenuS;
 
 
     // GAME STATE
@@ -185,7 +192,7 @@ public class GamePanel {
         // Load resources.
         loadResources();
 
-        // Initialize remaining system classes requiring fully initialized GamePanel instance.
+        // Initialize remaining (non-user interface) system classes requiring fully initialized GamePanel instance.
         camera = new Camera(NATIVE_SCREEN_WIDTH, NATIVE_SCREEN_HEIGHT);
         tileM = new TileManager(this);
         guiIconM = new GuiIconManager(this);
@@ -201,6 +208,14 @@ public class GamePanel {
 
         // Initialize player.
         entityM.initPlayer();
+
+        // Initialize user interface system classes requiring fully initialized GamePanel instance.
+        uiDialogueS = new UiDialogueSupport(this, renderer);
+        uiSubMenuS = new UiSubMenuSupport(this, renderer);
+        uiPrimaryMenuFrameS = new UiPrimaryMenuFrameSupport(this, renderer);
+        uiPartyMenuS = new UiPartyMenuSupport(this);
+        uiInventoryMenuS = new UiInventoryMenuSupport(this);
+        uiSettingsMenuS = new UiSettingsMenuSupport(this, renderer);
 
         // Load map along with associated entities and dialogue.
         mapM.loadMap(1, 0, true);
@@ -245,6 +260,7 @@ public class GamePanel {
         partyS.update(dt);                                                                                              // Party management processes.
         cameraS.update(dt);                                                                                             // Camera tracking/effects.
         soundS.update(dt);                                                                                              // Audio.
+        ui.update(dt);                                                                                                  // User interface.
     }
 
 
@@ -363,7 +379,7 @@ public class GamePanel {
      */
     private void addRenderPipelineUserInterface(double dt) {
 
-        ui.addToRenderPipeline(renderer, dt);
+        ui.addToRenderPipeline(renderer);
     }
 
 
@@ -652,6 +668,30 @@ public class GamePanel {
 
     public UserInterface getUi() {
         return ui;
+    }
+
+    public UiDialogueSupport getUiDialogueS() {
+        return uiDialogueS;
+    }
+
+    public UiSubMenuSupport getUiSubMenuS() {
+        return uiSubMenuS;
+    }
+
+    public UiPrimaryMenuFrameSupport getUiPrimaryMenuFrameS() {
+        return uiPrimaryMenuFrameS;
+    }
+
+    public UiPartyMenuSupport getUiPartyMenuS() {
+        return uiPartyMenuS;
+    }
+
+    public UiInventoryMenuSupport getUiInventoryMenuS() {
+        return uiInventoryMenuS;
+    }
+
+    public UiSettingsMenuSupport getUiSettingsMenuS() {
+        return uiSettingsMenuS;
     }
 
     public PrimaryGameState getPrimaryGameState() {

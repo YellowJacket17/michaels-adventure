@@ -398,10 +398,10 @@ public class SubMenuSupport {
     public void generatePartySwapSubMenuPrompt() {
 
         if ((gp.getPrimaryGameState() == PrimaryGameState.PARTY_MENU)
-                && (gp.getUi().getSelectedPartyMenuEntity() != gp.getEntityM().getPlayer().getEntityId())) {
+                && (gp.getUiPartyMenuS().getSelectedPartyMenuEntity() != gp.getEntityM().getPlayer().getEntityId())) {
 
             List<String> options = new ArrayList<>();
-            EntityBase primaryEntity = gp.getEntityM().getEntityById(gp.getUi().getSelectedPartyMenuEntity());
+            EntityBase primaryEntity = gp.getEntityM().getEntityById(gp.getUiPartyMenuS().getSelectedPartyMenuEntity());
 
             for (EntityBase candidateEntity : gp.getEntityM().getParty().values()) {
 

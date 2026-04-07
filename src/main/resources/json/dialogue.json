@@ -127,11 +127,11 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Mary",
+                "speaker": "Mary",
                 "text": "Wait, wha . . . what is that?"
             },
             "1": {
-                "speakerName": "Mary",
+                "speaker": "Mary",
                 "text": "Does it know I'm here . . . ?"
             }
         }   
@@ -143,7 +143,7 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Mary",
+                "speaker": "Mary",
                 "text": "Yes, it does!"
             }
         }
@@ -155,11 +155,11 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Shadow Figure",
+                "speaker": "Shadow Figure",
                 "text": "hwta eth ekch rea uoy? teg yarde ot hgift ihts emit, I liwl OTN nru aayw giana!"
             },
             "1": {
-                "speakerName": "Mary",
+                "speaker": "Mary",
                 "text": "Ahh, pl . . . please, I didn't do anything!"
             }
 
@@ -172,7 +172,7 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Mary",
+                "speaker": "Mary",
                 "text": "Ummm, what can I do here. . . ?"
             }
 
@@ -185,7 +185,7 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Mary",
+                "speaker": "Mary",
                 "text": "I, um, have that knife Joe gave me."
             }
 
@@ -198,7 +198,7 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Mary",
+                "speaker": "Mary",
                 "text": "I also have those matches that I brought for making a fire."
             }
 
@@ -211,7 +211,7 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speakerName": "Mary",
+                "speaker": "Mary",
                 "text": "Well, here we go."
             }
 

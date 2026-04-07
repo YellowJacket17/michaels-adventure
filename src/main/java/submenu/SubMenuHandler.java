@@ -65,6 +65,16 @@ public class SubMenuHandler {
     private final HashSet<Integer> disabledOptions = new HashSet<>();
 
     /**
+     * Minimum number of options allowed.
+     */
+    private final int minOptionsSize = 1;
+
+    /**
+     * Maximum number of options allowed.
+     */
+    private final int maxOptionsSize = 8;
+
+    /**
      * Color of the 'Back' (or equivalent) option in sub-menus.
      */
     public static final Vector3f BACK_OPTION_COLOR = new Vector3f(255, 46, 102);
@@ -244,7 +254,7 @@ public class SubMenuHandler {
         gp.setPrimaryGameState(PrimaryGameState.SUB_MENU);
         indexSelected = 0;                                                                                              // Ensures the default selected option is set to index zero.
 
-        if ((options.size() >= 1) && (options.size() <= 8)) {
+        if ((options.size() >= minOptionsSize) && (options.size() <= maxOptionsSize)) {
 
             for (String item : options) {
                 this.options.add(item);
@@ -252,11 +262,12 @@ public class SubMenuHandler {
             this.subMenuId = subMenuId;
             gp.getEntityM().getPlayer().setInteractionCountdown(
                     gp.getEntityM().getPlayer().getStagedStandardInteractionCountdown());                               // Player must wait before interacting with the generated sub-menu else (helps avoid accidental selection). .
+            gp.getUiSubMenuS().markDirty();
         } else {
 
             throw new IllegalArgumentException("Attempted to set a sub-menu with a number of options '"
                     + options.size()
-                    + "' outside of bounds 1 - 8 (both inclusive)");
+                    + "' outside of bounds " + minOptionsSize + " - " + maxOptionsSize + " (both inclusive)");
         }
     }
 
@@ -309,6 +320,14 @@ public class SubMenuHandler {
 
     public HashSet<Integer> getDisabledOptions() {
         return disabledOptions;
+    }
+
+    public int getMinOptionsSize() {
+        return minOptionsSize;
+    }
+
+    public int getMaxOptionsSize() {
+        return maxOptionsSize;
     }
 
 

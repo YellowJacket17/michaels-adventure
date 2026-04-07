@@ -88,9 +88,9 @@ public class DialogueReader {
     private String activeDialogueText = "";
 
     /**
-     * Variable to store the name of entity delivering the current piece of dialogue being read.
+     * Variable to store the name of speaker delivering the current piece of dialogue being read.
      */
-    private String activeDialogueEntityName = "";
+    private String activeDialogueSpeaker = "";
 
     /**
      * Maximum number of printed dialogue lines that can be displayed at a time.
@@ -497,7 +497,7 @@ public class DialogueReader {
         printCharByChar = true;
         activePrintLine = 0;
         activeDialogueText = "";
-        activeDialogueEntityName = "";
+        activeDialogueSpeaker = "";
         dialoguePrintTotal = "";
         readingDialogue = false;
         dialoguePaused = false;
@@ -562,13 +562,14 @@ public class DialogueReader {
         this.printCountdown = 0;
         this.activePrintLine = 0;
         this.activeDialogueText = dialogue.getText();
-        this.activeDialogueEntityName = dialogue.getEntityName();
+        this.activeDialogueSpeaker = dialogue.getSpeaker();
         this.dialoguePrintTotal = "";
         this.readingDialogue = true;
         this.dialoguePaused = false;
         for (int key : dialoguePrint.keySet()) {
             dialoguePrint.replace(key, "");
         }
+        gp.getUiDialogueS().markDirty();
     }
 
 
@@ -628,8 +629,8 @@ public class DialogueReader {
         return readingConversation;
     }
 
-    public String getActiveDialogueEntityName() {
-        return activeDialogueEntityName;
+    public String getActiveDialogueSpeaker() {
+        return activeDialogueSpeaker;
     }
 
     public int getMaxNumPrintLines() {

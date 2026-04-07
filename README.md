@@ -91,11 +91,11 @@ Note that map state fields do not necessarily need to be listed as "0", "1", etc
         *"playerInputToEnd": <true/false>,
         "dialogue": {
             "0": {
-                "speakerName": "<name_of_entity_delivering_first_piece_of_dialogue>",
+                "speaker": "<name_of_speaker_delivering_first_piece_of_dialogue>",
                 "text": "<content_of_first_piece_of_dialogue>"
             },
             "1": {
-                "speakerName": "<name_of_entity_delivering_second_piece_of_dialogue>",
+                "speaker": "<name_of_speaker_delivering_second_piece_of_dialogue>",
                 "text": "<content_of_second_piece_of_dialogue>"
             },
             ... up to unlimited ...

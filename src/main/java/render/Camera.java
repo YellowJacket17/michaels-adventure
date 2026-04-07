@@ -195,10 +195,42 @@ public class Camera {
 
 
     /**
-     * Converts screen coordinates to world coordinates.
+     * Converts screen x-coordinate to world x-coordinate.
      * For example, if a UI element is desired to always be placed at a certain point in the viewport (i.e., on the
      * visible screen), then this method will convert that desired position to world coordinates so that it is rendered
      * in the correct place.
+     *
+     * @param screenX normalized screen x-coordinate, where (0, 0) represents the top-left corner of the screen, (1, 1)
+     *                the bottom-right
+     * @return world x-coordinate
+     */
+    public float screenXToWorldX(float screenX) {
+
+        return positionMatrix.x + (screenX * screenWidth);
+    }
+
+
+    /**
+     * Converts screen y-coordinate to world y-coordinate.
+     * For example, if a UI element is desired to always be placed at a certain point in the viewport (i.e., on the
+     * visible screen), then this method will convert that desired position to a world x-coordinate so that it is
+     * rendered in the correct place.
+     *
+     * @param screenY normalized screen y-coordinate, where (0, 0) represents the top-left corner of the screen, (1, 1)
+     *                the bottom-right
+     * @return world y-coordinate
+     */
+    public float screenYToWorldY(float screenY) {
+
+        return positionMatrix.y + (screenY * screenHeight);
+    }
+
+
+    /**
+     * Converts screen coordinates to world coordinates.
+     * For example, if a UI element is desired to always be placed at a certain point in the viewport (i.e., on the
+     * visible screen), then this method will convert that desired position to a world y-coordinate so that it is
+     * rendered in the correct place.
      *
      * @param screenCoords normalized screen coordinates, where (0, 0) represents the top-left corner of the screen,
      *                     (1, 1) the bottom-right
@@ -209,6 +241,53 @@ public class Camera {
         float worldX = positionMatrix.x + (screenCoords.x * screenWidth);
         float worldY = positionMatrix.y + (screenCoords.y * screenHeight);
         return new Vector2f(worldX, worldY);
+    }
+
+
+    /**
+     * Converts screen coordinates to world coordinates.
+     * For example, if a UI element is desired to always be placed at a certain point in the viewport (i.e., on the
+     * visible screen), then this method will convert that desired position to world coordinates so that it is renvered
+     * in the correct place.
+     *
+     * @param screenCoords normalized screen coordinates, where (0, 0) represents the top-left corner of the screen,
+     *                     (1, 1) the bottom-right
+     * @param outputVector vector to which world coordinates will be written
+     */
+    public void screenCoordsToWorldCoords(Vector2f screenCoords, Vector2f outputVector) {
+
+        outputVector.x = positionMatrix.x + (screenCoords.x * screenWidth);
+        outputVector.y = positionMatrix.y + (screenCoords.y * screenHeight);
+    }
+
+
+    /**
+     * Converts world x-coordinate to screen x-coordinate.
+     * For example, if a UI element is desired to always be placed at a certain point in the world (i.e., somewhere on
+     * the loaded map), then this method will convert that desired position to a screen x-coordinate so that it can be
+     * known where said position lays in respect to the viewport.
+     *
+     * @param worldX world x-coordinate
+     * @return screen x-coordinate
+     */
+    public float worldXToScreenX(float worldX) {
+
+        return (worldX - positionMatrix.x) / screenWidth;
+    }
+
+
+    /**
+     * Converts world y-coordinates to screen y-coordinate.
+     * For example, if a UI element is desired to always be placed at a certain point in the world (i.e., somewhere on
+     * the loaded map), then this method will convert that desired position to a screen y-coordinate so that it can be
+     * known where said position lays in respect to the viewport.
+     *
+     * @param worldY world y-coordinate
+     * @return screen y-coordinate
+     */
+    public float worldYToScreenY(float worldY) {
+
+        return (worldY - positionMatrix.y) / screenHeight;
     }
 
 
@@ -231,12 +310,62 @@ public class Camera {
 
 
     /**
+     * Converts world coordinates to screen coordinates.
+     * For example, if a UI element is desired to always be placed at a certain point in the world (i.e., somewhere on
+     * the loaded map), then this method will convert that desired position to screen coordinates so that it can be
+     * known where said position lays in respect to the viewport.
+     *
+     * @param worldCoords world coordinates
+     * @param outputVector vector to which normalized screen coordinates will be written to, where (0, 0) will represent
+     *                     the top-left corner of the screen, (1, 1) the bottom-right
+     * @return normalized screen coordinates, where (0, 0) represents the top-left corner of the screen, (1, 1) the
+     * bottom-right
+     */
+    public void worldCoordsToScreenCoords(Vector2f worldCoords, Vector2f outputVector) {
+
+        outputVector.x = (worldCoords.x - positionMatrix.x) / screenWidth;
+        outputVector.y = (worldCoords.y - positionMatrix.y) / screenHeight;
+    }
+
+
+    /**
+     * Converts screen dimensions to world dimensions.
+     * For example, if a UI element is meant to always span a certain length of the viewport (i.e., on the visible
+     * screen), then this method will convert that desired length to a world length so that it is always rendered at the
+     * correct length.
+     *
+     * @param screenDimensions normalized screen dimensions (width, length), where 0 is no length and 1 is the full
+     *                        screen length
+     * @param outputVector vector to which world dimensions will be written (width, length)
+     */
+    public void screenDimensionsToWorldDimensions(Vector2f screenDimensions, Vector2f outputVector) {
+
+        outputVector.x = screenDimensions.x * screenWidth;
+        outputVector.y = screenDimensions.y * screenHeight;
+    }
+
+
+    /**
+     * Converts world dimensions to screen dimensions.
+     *
+     * @param worldDimensions world screen dimensions (width, length)
+     * @param outputVector vector to which normalized screen dimensions will be written (width, length), where (0) is no
+     *                     length and 1 is the full screen length
+     */
+    public void worldDimensionsToScreenDimensions(Vector2f worldDimensions, Vector2f outputVector) {
+
+        outputVector.x = worldDimensions.x / screenWidth;
+        outputVector.y = worldDimensions.y / screenHeight;
+    }
+
+
+    /**
      * Converts a screen width to world width.
      * For example, if a UI element is meant to always span a certain length of the viewport (i.e., on the visible
      * screen), then this method will convert that desired length to a world length so that it is always rendered at the
      * correct length.
      *
-     * @param width normalized screen width, where 0 is no length and 1 is the full screen width.
+     * @param width normalized screen width, where 0 is no length and 1 is the full screen width
      * @return world width
      */
     public float screenWidthToWorldWidth(float width) {
@@ -251,7 +380,7 @@ public class Camera {
      * screen), then this method will convert that desired length to a world length so that it is always rendered at the
      * correct length.
      *
-     * @param height normalized screen height, where 0 is no length and 1 is the full screen height.
+     * @param height normalized screen height, where 0 is no length and 1 is the full screen height
      * @return world height
      */
     public float screenHeightToWorldHeight(float height) {

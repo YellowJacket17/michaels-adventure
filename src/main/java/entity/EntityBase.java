@@ -614,7 +614,7 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Cancels this entity's current action (i.e., exits its current state of motion or turning and returns to its
+     * Cancels this entity's current action (i.e., exits its current state of motion and returns to its
      * previous tile, if applicable).
      * The rest time until a new default action can execute is reset to zero.
      */

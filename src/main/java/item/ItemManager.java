@@ -1,9 +1,12 @@
 package item;
 
+import asset.Sprite;
 import core.GamePanel;
 import item.implementation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * This class manages all available item types.
@@ -23,7 +26,7 @@ public class ItemManager {
     /**
      * List to store a single dummy instance of each item type that can be referenced for properties.
      */
-    HashMap<Integer, ItemBase> referenceItems = new HashMap<>(2);
+    HashMap<Integer, ItemBase> referenceItems = new HashMap<>(6);
 
 
     // CONSTRUCTOR
@@ -104,5 +107,24 @@ public class ItemManager {
     public boolean checkStackable(int itemId) {
 
         return referenceItems.get(itemId).isStackable();
+    }
+
+
+    /**
+     * Retrieves all item sprites.
+     *
+     * @return item sprite; item ID is the key, item sprite is the value
+     */
+    public HashMap<Integer, Sprite> getAllItemSprites() {
+
+        HashMap<Integer, Sprite> itemSprites = new HashMap<>(6);
+        Set<Integer> keySet = referenceItems.keySet();
+        Integer[] keyArray = keySet.toArray(new Integer[keySet.size()]);
+
+        for (int key : keyArray) {
+
+            itemSprites.put(key, referenceItems.get(key).getSprite());
+        }
+        return itemSprites;
     }
 }

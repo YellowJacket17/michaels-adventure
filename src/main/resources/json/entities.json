@@ -63,7 +63,7 @@
         "attributes": {
             "maxLife": 0,
             "life": 0,
-            "name": "Test One",
+            "name": "Test One"
         },
         "position": {
             "defaultCol": 5,

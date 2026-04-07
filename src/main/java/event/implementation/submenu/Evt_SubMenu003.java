@@ -29,7 +29,7 @@ public class Evt_SubMenu003 extends EventSubMenuBase {
 
         for (EntityBase candidateEntity : gp.getEntityM().getParty().values()) {
 
-            if (candidateEntity.getEntityId() != gp.getUi().getSelectedPartyMenuEntity()) {
+            if (candidateEntity.getEntityId() != gp.getUiPartyMenuS().getSelectedPartyMenuEntity()) {
 
                 options.add(candidateEntity.getEntityId());
             }
@@ -37,8 +37,9 @@ public class Evt_SubMenu003 extends EventSubMenuBase {
 
         if (selectedIndex < options.size()) {
 
-            gp.getPartyS().swapEntityInParty(gp.getUi().getSelectedPartyMenuEntity(), options.get(selectedIndex), true);
-            gp.getUi().refreshSelectedPartyMenuEntity();
+            gp.getPartyS().swapEntityInParty(
+                    gp.getUiPartyMenuS().getSelectedPartyMenuEntity(), options.get(selectedIndex), true);
+            gp.getUiPartyMenuS().setPartyMenuSlotSelected(gp.getUiPartyMenuS().getPartySlotSelected());
         }
         gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
         gp.getEventM().cleanupSubmenu(2);

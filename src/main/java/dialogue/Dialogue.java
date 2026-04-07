@@ -9,7 +9,7 @@ public class Dialogue {
     /**
      * Name of the character delivering this piece of dialogue.
      */
-    private String entityName;
+    private String speaker;
 
     /**
      * Text content of this piece of dialogue (i.e., the dialogue itself).
@@ -25,8 +25,8 @@ public class Dialogue {
 
 
     // GETTERS
-    public String getEntityName() {
-        return entityName;
+    public String getSpeaker() {
+        return speaker;
     }
 
     public String getText() {
@@ -35,8 +35,8 @@ public class Dialogue {
 
 
     // SETTERS
-    public void setEntityName(String entityName) {
-        this.entityName = entityName;
+    public void setSpeaker(String speaker) {
+        this.speaker = speaker;
     }
 
     public void setText(String text) {

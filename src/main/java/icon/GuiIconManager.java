@@ -123,40 +123,40 @@ public class GuiIconManager {
         guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(12));
         icons.put(guiIcon.getIconId(), guiIcon);
 
-        // Character summary icon 1 - Icon ID 3.
+        // Party menu slot icon 1 - Icon ID 3.
         guiIcon = new GuiIcon(3);
         guiIcon.setName("Character summary 1");
         guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(0));
         guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(1));
         icons.put(guiIcon.getIconId(), guiIcon);
 
-        // Character summary icon 2 - Icon ID 4.
+        // Party menu slot icon 2 - Icon ID 4.
         guiIcon = new GuiIcon(4);
         guiIcon.setName("Character summary 2");
         guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(0));
         guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(1));
         icons.put(guiIcon.getIconId(), guiIcon);
 
-        // Character summary icon 3 - Icon ID 5.
+        // Party menu slot icon 3 - Icon ID 5.
         guiIcon = new GuiIcon(5);
         guiIcon.setName("Character summary 3");
         guiIcon.setActive(AssetPool.getSpritesheet("icons").getSprite(0));
         guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(1));
         icons.put(guiIcon.getIconId(), guiIcon);
 
-        // Stackable item menu backdrop - Icon ID 6.
+        // Inventory menu stackable item slot - Icon ID 6.
         guiIcon = new GuiIcon(6);
         guiIcon.setName("Item menu stackable backdrop");
         guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(5));
         icons.put(guiIcon.getIconId(), guiIcon);
 
-        // Non-stackable item menu backdrop - Icon ID 7.
+        // Inventory menu non-stackable item slot - Icon ID 7.
         guiIcon = new GuiIcon(7);
         guiIcon.setName("Item menu non-stackable backdrop");
         guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(6));
         icons.put(guiIcon.getIconId(), guiIcon);
 
-        // Item menu selector - Icon ID 8.
+        // Inventory menu selector - Icon ID 8.
         guiIcon = new GuiIcon(8);
         guiIcon.setName("Item menu selector");
         guiIcon.setInactive(AssetPool.getSpritesheet("icons").getSprite(4));

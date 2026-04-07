@@ -10,7 +10,6 @@ import entity.enumeration.DefaultAction;
 import entity.enumeration.EntityDirection;
 import entity.implementation.character.Npc_Shadow;
 import core.GamePanel;
-import entity.implementation.character.Npc_Test2;
 import entity.implementation.object.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -357,9 +356,9 @@ public class JsonParser {
 
             Dialogue dialogue = new Dialogue();
 
-            String speakerName = (String)dialogueJson.get("speakerName");
+            String speaker = (String)dialogueJson.get("speaker");
             String text = (String)dialogueJson.get("text");
-            dialogue.setEntityName(speakerName);
+            dialogue.setSpeaker(speaker);
             dialogue.setText(text);
 
             conversation.getDialogueList().add(dialogue);                                                               // Add dialogue to next index in list.

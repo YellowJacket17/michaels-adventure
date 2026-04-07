@@ -79,10 +79,9 @@ public class TileManager {
 
             int worldCol = 0;
             int worldRow = 0;
+            int tileNum;
 
             while ((worldCol < GamePanel.MAX_WORLD_COL) && (worldRow < GamePanel.MAX_WORLD_ROW)) {                      // Render each tile from left to right for each row, starting with the top row and working downwards.
-
-                int tileNum = defaultTile;
 
                 try {
 
@@ -90,7 +89,7 @@ public class TileManager {
 
                 } catch (NullPointerException e) {
 
-                    // Nothing here.
+                    tileNum = defaultTile;
                 }
                 int spriteNum = gp.getPassiveAnimationM().getSprite(
                         tiles[tileNum].getPassiveAnimationGroup(), worldCol, worldRow);                                 // Render appropriate tile in passive animation cycle, if applicable.

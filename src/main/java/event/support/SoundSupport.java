@@ -65,6 +65,7 @@ public class SoundSupport {
      * If the effect passed as argument is already playing, it will be stopped and restarted from the beginning.
      *
      * @param resourceName name/title of loaded effect
+     * @throws IllegalArgumentException if a loaded sound not of type "effect" is passed as argument
      */
     public void playEffect(String resourceName) {
 
@@ -93,6 +94,7 @@ public class SoundSupport {
      * If the track passed as argument is already playing, it will be stopped and restarted from the beginning.
      *
      * @param resourceName name/title of loaded track
+     * @throws IllegalArgumentException if a loaded sound not of type "track" is passed as argument
      */
     public void playTrack(String resourceName) {
 

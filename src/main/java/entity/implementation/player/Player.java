@@ -10,6 +10,7 @@ import entity.enumeration.EntityType;
 import core.GamePanel;
 import event.enumeration.EventType;
 import item.ItemBase;
+import ui.enumeration.PartyMenuSlot;
 import ui.enumeration.PrimaryMenuState;
 import org.joml.Vector2f;
 import asset.AssetPool;
@@ -335,6 +336,7 @@ public class Player extends EntityBase {
                 moving = false;                                                                                         // If we've moved a tile's length, the player character exits a state of motion and can again be controlled.
                 worldCounter = 0;                                                                                       // Reset the world unit counter.
                 turnCountdown = stagedMoveCountdown;                                                                    // Provide a 2 frame buffer for the player to change direction and keep momentum upon exiting the current state of motion.
+                directionLast = directionCurrent;
 
                 if ((!colliding) && (!turning)) {
 
@@ -353,7 +355,6 @@ public class Player extends EntityBase {
                 if (turning) {                                                                                          // If the player entity was turning, exit a state of turning.
 
                     turning = false;
-                    directionLast = directionCurrent;
                     walkSpriteNumCurrent = 1;
                 }
 
@@ -464,10 +465,10 @@ public class Player extends EntityBase {
         moves.add(new Mve_Sneakstrike(gp));
 
         // Items.
-//        for (int i = 0; i < 600; i++) {
+//        for (int i = 0; i < 15; i++) {
 //            addItemToInventory(0);
 //        }
-//        for (int i = 0; i < 1; i++) {
+//        for (int i = 0; i < 5; i++) {
 //            addItemToInventory(1);
 //        }
     }
@@ -909,7 +910,7 @@ public class Player extends EntityBase {
     private void handlePartyMenuInputProgressKey() {
 
         if ((gp.getEntityM().getParty().size() > 1)
-                && (gp.getUi().getSelectedPartyMenuEntity() != entityId)                                                // Ensure that player entity is not selected (i.e., `partyMenuScrollLevel` and `partySlotSelected` do not both equal zero).
+                && (gp.getUiPartyMenuS().getSelectedPartyMenuEntity() != entityId)                                      // Ensure that player entity is not selected (i.e., `partyMenuScrollLevel` and `partySlotSelected` do not both equal zero).
                 && gp.getPartyS().isActionComplete()) {                                                                 // Only generate if no entities party management operation is already occurring.
             gp.getSubMenuS().generatePartySwapSubMenuPrompt();
             setInteractionCountdown(stagedStandardInteractionCountdown);
@@ -922,15 +923,16 @@ public class Player extends EntityBase {
      */
     private void handlePartyMenuInputUpKey() {
 
-        if ((gp.getUi().getPartySlotSelected() == 1) && (gp.getUi().getPartyMenuScrollLevel() > 0)) {
+        if ((gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_1)
+                && (gp.getUiPartyMenuS().getPartyMenuScrollLevel() > 0)) {
 
-            gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() - 1);
-        } else if (gp.getUi().getPartySlotSelected() == 0) {
+            gp.getUiPartyMenuS().setPartyMenuScrollLevel(gp.getUiPartyMenuS().getPartyMenuScrollLevel() - 1);
+        } else if (gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_0) {
 
-            gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() - 1);
+            gp.getUiPartyMenuS().setPartyMenuScrollLevel(gp.getUiPartyMenuS().getPartyMenuScrollLevel() - 1);
         } else {
 
-            gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() - 1);
+            gp.getUiPartyMenuS().decrementPartyMenuSlotSelected();
         }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
@@ -941,16 +943,16 @@ public class Player extends EntityBase {
      */
     private void handlePartyMenuInputDownKey() {
 
-        if ((gp.getUi().getPartySlotSelected() == 1)
-                && (gp.getUi().getPartyMenuScrollLevel() < (gp.getEntityM().getParty().size() - 2))) {
+        if ((gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_1)
+                && (gp.getUiPartyMenuS().getPartyMenuScrollLevel() < (gp.getEntityM().getParty().size() - 2))) {
 
-            gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() + 1);
-        } else if (gp.getUi().getPartySlotSelected() == 2) {
+            gp.getUiPartyMenuS().setPartyMenuScrollLevel(gp.getUiPartyMenuS().getPartyMenuScrollLevel() + 1);
+        } else if (gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_2) {
 
-            gp.getUi().setPartyMenuScrollLevel(gp.getUi().getPartyMenuScrollLevel() + 1);
+            gp.getUiPartyMenuS().setPartyMenuScrollLevel(gp.getUiPartyMenuS().getPartyMenuScrollLevel() + 1);
         } else {
 
-            gp.getUi().setPartySlotSelected(gp.getUi().getPartySlotSelected() + 1);
+            gp.getUiPartyMenuS().incrementPartyMenuSlotSelected();
         }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
@@ -961,7 +963,7 @@ public class Player extends EntityBase {
      */
     private void handleInventoryMenuInputUpKey() {
 
-        gp.getUi().setItemRowSelected(gp.getUi().getItemRowSelected() - 1);
+        gp.getUiInventoryMenuS().setItemRowSelected(gp.getUiInventoryMenuS().getItemRowSelected() - 1);
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -971,7 +973,7 @@ public class Player extends EntityBase {
      */
     private void handleInventoryMenuInputDownKey() {
 
-        gp.getUi().setItemColSelected(gp.getUi().getItemColSelected() - 1);
+        gp.getUiInventoryMenuS().setItemColSelected(gp.getUiInventoryMenuS().getItemColSelected() - 1);
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -981,7 +983,7 @@ public class Player extends EntityBase {
      */
     private void handleInventoryMenuInputLeftKey() {
 
-        gp.getUi().setItemRowSelected(gp.getUi().getItemRowSelected() + 1);
+        gp.getUiInventoryMenuS().setItemRowSelected(gp.getUiInventoryMenuS().getItemRowSelected() + 1);
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -991,7 +993,7 @@ public class Player extends EntityBase {
      */
     private void handleInventoryMenuInputRightKey() {
 
-        gp.getUi().setItemColSelected(gp.getUi().getItemColSelected() + 1);
+        gp.getUiInventoryMenuS().setItemColSelected(gp.getUiInventoryMenuS().getItemColSelected() + 1);
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1001,7 +1003,7 @@ public class Player extends EntityBase {
      */
     private void handleSettingsMenuInputUpKey() {
 
-        gp.getUi().setSystemSettingSelected(gp.getUi().getSystemSettingSelected() - 1);
+        gp.getUiSettingsMenuS().setSystemSettingSelected(gp.getUiSettingsMenuS().getSystemSettingSelected() - 1);
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1011,7 +1013,7 @@ public class Player extends EntityBase {
      */
     private void handleSettingsMenuInputDownKey() {
 
-        gp.getUi().setSystemSettingSelected(gp.getUi().getSystemSettingSelected() + 1);
+        gp.getUiSettingsMenuS().setSystemSettingSelected(gp.getUiSettingsMenuS().getSystemSettingSelected() + 1);
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1021,9 +1023,9 @@ public class Player extends EntityBase {
      */
     private void handleSettingsMenuInputLeftKey() {
 
-        if (!((gp.getUi().getSystemSettingSelected() == 3) && fullScreenActioned)) {                                    // Full screen mode; if selected, check to ensure it's not already being affected by input key.
+        if (!((gp.getUiSettingsMenuS().getSystemSettingSelected() == 3) && fullScreenActioned)) {                       // Full screen mode; if selected, check to ensure it's not already being affected by input key.
 
-            gp.getUi().setSystemOptionSelected(gp.getUi().getSystemOptionSelected() - 1);
+            gp.getUiSettingsMenuS().setSystemOptionSelected(gp.getUiSettingsMenuS().getSystemOptionSelected() - 1);
             setInteractionCountdown(stagedStandardInteractionCountdown);
         }
     }
@@ -1034,9 +1036,9 @@ public class Player extends EntityBase {
      */
     private void handleSettingsMenuInputRightKey() {
 
-        if (!((gp.getUi().getSystemSettingSelected() == 3) && fullScreenActioned)) {                                    // Full screen mode; if selected, check to ensure it's not already being affected by input key.
+        if (!((gp.getUiSettingsMenuS().getSystemSettingSelected() == 3) && fullScreenActioned)) {                       // Full screen mode; if selected, check to ensure it's not already being affected by input key.
 
-            gp.getUi().setSystemOptionSelected(gp.getUi().getSystemOptionSelected() + 1);
+            gp.getUiSettingsMenuS().setSystemOptionSelected(gp.getUiSettingsMenuS().getSystemOptionSelected() + 1);
             setInteractionCountdown(stagedStandardInteractionCountdown);
         }
     }
@@ -1079,11 +1081,11 @@ public class Player extends EntityBase {
      */
     private void handleFullScreenInputToggleOnKey() {
 
-        gp.getSystemSetting(3).setActiveOption(1);                                                                  // Enter full screen mode if disabled.
+        gp.getSystemSetting(3).setActiveOption(1);                                                                      // Enter full screen mode if disabled.
 
-        if (gp.getUi().getSystemSettingSelected() == 3) {
+        if (gp.getUiSettingsMenuS().getSystemSettingSelected() == 3) {
 
-            gp.getUi().setSystemOptionSelected(1);
+            gp.getUiSettingsMenuS().setSystemOptionSelected(1);
         }
         fullScreenActioned = true;                                                                                      // Temporarily disable the ability of the player to disable full screen mode by pressing the toggle key.
     }
@@ -1094,11 +1096,11 @@ public class Player extends EntityBase {
      */
     private void handleFullScreenInputToggleOffKey() {
 
-        gp.getSystemSetting(3).setActiveOption(0);                                                                  // Exit full screen mode if enabled.
+        gp.getSystemSetting(3).setActiveOption(0);                                                                      // Exit full screen mode if enabled.
 
-        if (gp.getUi().getSystemSettingSelected() == 3) {
+        if (gp.getUiSettingsMenuS().getSystemSettingSelected() == 3) {
 
-            gp.getUi().setSystemOptionSelected(0);
+            gp.getUiSettingsMenuS().setSystemOptionSelected(0);
         }
         fullScreenActioned = true;                                                                                      // Temporarily disable the ability of the player to enable full screen mode by pressing the toggle key.
     }
