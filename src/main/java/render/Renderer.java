@@ -13,7 +13,6 @@ import render.font.CFont;
 import render.font.FontBatch;
 import render.font.Text;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,6 +20,10 @@ import java.util.HashMap;
  * This class manages the rendering of drawable objects (i.e., sending instructions to the GPU).
  */
 public class Renderer {
+
+    /*
+     * All coordinates and dimensions present in this class are world, not screen.
+     */
 
     // FIELDS
     private final GamePanel gp;
@@ -110,7 +113,7 @@ public class Renderer {
                         }
                     }
                     fontBatch.addString(stagedText.get(i).getText(),
-                            stagedText.get(i).getScreenX(), stagedText.get(i).getScreenY(),
+                            stagedText.get(i).getX(), stagedText.get(i).getY(),
                             stagedText.get(i).getScale(), stagedText.get(i).getColor());
                 }
             }

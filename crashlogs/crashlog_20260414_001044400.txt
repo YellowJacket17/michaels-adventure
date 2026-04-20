@@ -1,0 +1,78 @@
+04/14/2026 00:10:40:119  INFO     Starting application.
+04/14/2026 00:10:41:160  INFO     Loading shader from file: '/shaders/font.glsl'
+04/14/2026 00:10:41:160  INFO     Compiling and linking shader: '/shaders/font.glsl'
+04/14/2026 00:10:41:645  INFO     Loading shader from file: '/shaders/default.glsl'
+04/14/2026 00:10:41:650  INFO     Compiling and linking shader: '/shaders/default.glsl'
+04/14/2026 00:10:41:650  INFO     Loading shader from file: '/shaders/rounded.glsl'
+04/14/2026 00:10:41:650  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
+04/14/2026 00:10:41:650  INFO     Loading texture from file: '/spritesheets/tiles.png'
+04/14/2026 00:10:41:660  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
+04/14/2026 00:10:41:660  INFO     Loading texture from file: '/spritesheets/characters.png'
+04/14/2026 00:10:41:670  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
+04/14/2026 00:10:41:670  INFO     Loading texture from file: '/spritesheets/landmarks.png'
+04/14/2026 00:10:41:670  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
+04/14/2026 00:10:41:670  INFO     Loading texture from file: '/spritesheets/items.png'
+04/14/2026 00:10:41:670  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
+04/14/2026 00:10:41:670  INFO     Loading texture from file: '/spritesheets/icons.png'
+04/14/2026 00:10:41:670  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
+04/14/2026 00:10:41:670  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
+04/14/2026 00:10:41:670  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
+04/14/2026 00:10:41:680  INFO     Loading sound (track) from file: 'sound/tracks/desolate_intro.ogg' + 'sound/tracks/desolate_loop.ogg'
+04/14/2026 00:10:41:850  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
+04/14/2026 00:10:41:950  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
+04/14/2026 00:10:42:072  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
+04/14/2026 00:10:42:185  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
+04/14/2026 00:10:42:315  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
+04/14/2026 00:10:42:500  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
+04/14/2026 00:10:42:685  INFO     Loading sound (effect) from file: 'sound/tracks/kugelblitz.ogg'
+04/14/2026 00:10:42:955  INFO     Loading sound (effect) from file: 'sound/tracks/tabulaRasa.ogg'
+04/14/2026 00:10:43:240  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
+04/14/2026 00:10:43:240  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
+04/14/2026 00:10:43:245  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
+04/14/2026 00:10:43:250  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
+04/14/2026 00:10:43:250  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
+04/14/2026 00:10:43:250  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
+04/14/2026 00:10:43:255  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
+04/14/2026 00:10:43:258  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
+04/14/2026 00:10:43:260  INFO     Loading texture from file: '/illustrations/illustration1.png'
+04/14/2026 00:10:43:520  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
+04/14/2026 00:10:43:520  INFO     Loading texture from file: '/illustrations/illustration2.png'
+04/14/2026 00:10:43:770  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
+04/14/2026 00:10:43:770  INFO     Loading texture from file: '/illustrations/illustration3.png'
+04/14/2026 00:10:44:040  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
+04/14/2026 00:10:44:040  INFO     Loading texture from file: '/illustrations/illustration5.png'
+04/14/2026 00:10:44:322  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
+04/14/2026 00:10:44:352  INFO     Loading map with ID '1' from file: '/json/maps.json'
+04/14/2026 00:10:44:352  INFO     Parsing map with ID '1' from JSON data.
+04/14/2026 00:10:44:360  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
+04/14/2026 00:10:44:360  INFO     Parsing entity with ID '1' from JSON data.
+04/14/2026 00:10:44:360  INFO     Parsing entity with ID '2' from JSON data.
+04/14/2026 00:10:44:365  INFO     Parsing entity with ID '3' from JSON data.
+04/14/2026 00:10:44:365  INFO     Parsing entity with ID '4' from JSON data.
+04/14/2026 00:10:44:365  INFO     Parsing entity with ID '5' from JSON data.
+04/14/2026 00:10:44:365  INFO     Parsing entity with ID '6' from JSON data.
+04/14/2026 00:10:44:365  INFO     Parsing entity with ID '7' from JSON data.
+04/14/2026 00:10:44:365  INFO     Parsing entity with ID '8' from JSON data.
+04/14/2026 00:10:44:365  INFO     Parsing entity with ID '9' from JSON data.
+04/14/2026 00:10:44:365  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
+04/14/2026 00:10:44:370  INFO     Parsing conversation with ID '0' from JSON data.
+04/14/2026 00:10:44:370  INFO     Parsing conversation with ID '1' from JSON data.
+04/14/2026 00:10:44:370  INFO     Parsing conversation with ID '2' from JSON data.
+04/14/2026 00:10:44:370  INFO     Parsing conversation with ID '3' from JSON data.
+04/14/2026 00:10:44:370  INFO     Parsing conversation with ID '4' from JSON data.
+04/14/2026 00:10:44:370  INFO     Parsing conversation with ID '5' from JSON data.
+04/14/2026 00:10:44:370  INFO     Parsing conversation with ID '6' from JSON data.
+04/14/2026 00:10:44:370  INFO     Parsing conversation with ID '7' from JSON data.
+04/14/2026 00:10:44:370  INFO     Parsing conversation with ID '8' from JSON data.
+04/14/2026 00:10:44:370  INFO     Parsing conversation with ID '9' from JSON data.
+04/14/2026 00:10:44:380  INFO     Starting game loop.
+04/14/2026 00:10:44:380  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "render.Renderer.getFont(String)" because "this.renderer" is null
+	at ui.UserInterface.calculateStringWorldLength(UserInterface.java:222)
+	at ui.UserInterface.calculateStringScreenLength(UserInterface.java:238)
+	at dialogue.DialogueReader.progressDialogue(DialogueReader.java:443)
+	at dialogue.DialogueReader.update(DialogueReader.java:158)
+	at core.GamePanel.update(GamePanel.java:254)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)

@@ -4,6 +4,7 @@ import core.GamePanel;
 import landmark.LandmarkBase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -63,9 +64,9 @@ public class Map {
     private final HashMap<Integer, String> tracks = new HashMap<>();
 
 
-    // CONSTRUCTOR
+    // CONSTRUCTORS
     /**
-     * Constructs a Map instance.
+     * Constructs a Map instance and loads applicable tile and landmark files.
      *
      * @param gp GamePanel instance
      * @param mapId unique map ID
@@ -76,6 +77,24 @@ public class Map {
         mapTileNum = gp.getTileM().loadMapTileData(mapId);                                                              // Load tile data from file.
         mapLandmarkNum = gp.getLandmarkM().loadMapLandmarkData(mapId);                                                  // Load landmark data from file.
         mapLandmarks = gp.getLandmarkM().instantiateMapLandmarks(mapId, mapLandmarkNum);                                // Instantiate map landmarks.
+    }
+
+
+    /**
+     * Constructs a Map instance filled with the default tile and no landmarks.
+     * The map ID will be zero.
+     *
+     * @param gp GamePanel instance
+     */
+    public Map(GamePanel gp) {
+
+        this.gp = gp;
+        this.mapId = 0;
+        mapTileNum = new int[GamePanel.MAX_WORLD_COL][GamePanel.MAX_WORLD_ROW];
+        mapLandmarkNum = new int[GamePanel.MAX_WORLD_COL][GamePanel.MAX_WORLD_ROW];
+        for (int[] col : mapTileNum) {Arrays.fill(col, 0);}
+        for (int[] col : mapLandmarkNum) {Arrays.fill(col, 0);}
+        mapLandmarks = new ArrayList<>();
     }
 
 

@@ -1,20 +1,16 @@
 package event.support;
 
 import core.GamePanel;
-import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
 import entity.enumeration.EntityDirection;
 import entity.enumeration.FadeEffectType;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
-import submenu.SubMenuHandler;
+import ui.enumeration.PrimaryMenuState;
 import utility.LimitedArrayList;
 import utility.LimitedLinkedHashMap;
 import utility.UtilityTool;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * This class contains methods to facilitate player party management.
@@ -199,6 +195,11 @@ public class PartySupport {
 
             gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
         }
+
+        if (gp.getUi().getPrimaryMenuState() == PrimaryMenuState.PARTY) {
+
+            gp.getUiPartyMenuS().markDirty();
+        }
     }
 
 
@@ -272,6 +273,11 @@ public class PartySupport {
         for (int nonPartyId : nonPartyFollowers) {                                                                      // Set non-party followers to follow player entity again.
 
             gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
+        }
+
+        if (gp.getUi().getPrimaryMenuState() == PrimaryMenuState.PARTY) {
+
+            gp.getUiPartyMenuS().markDirty();
         }
     }
 
@@ -480,6 +486,11 @@ public class PartySupport {
         for (int nonPartyId : nonPartyFollowers) {                                                                      // Set non-party followers to follow player entity again.
 
             gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
+        }
+
+        if (gp.getUi().getPrimaryMenuState() == PrimaryMenuState.PARTY) {
+
+            gp.getUiPartyMenuS().markDirty();
         }
     }
 

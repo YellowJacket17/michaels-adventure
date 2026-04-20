@@ -440,7 +440,7 @@ public class DialogueReader {
                 nextWord = checkNextWord(i);
 
                 if (!nextWord.equals("")
-                        && gp.getUi().calculateStringScreenLength(
+                        && gp.getUi().calculateStringScreenWidth(
                             (dialoguePrint.get(activePrintLine) + " " + nextWord),
                             gp.getUi().getStandardFontScale(),
                             gp.getUi().getStandardNormalFont())

@@ -1,125 +1,136 @@
 {
     "0": {
         "convName": "OpeningCutscene1",
-        "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "text": "May 9th, 20XX... I think."
+                "text": "This isn't looking good."
             },
             "1": {
-                "text": "I need to write down what's happening here."
+                "text": "I need to write something. I need to feel like I'm talking to someone."
             },
             "2": {
-                "text": "At the very least, it gives me something to do."
+                "text": "I can't tell what time it is. My phone won't turn on, and I haven't found any sunlight coming through this cave."
             },
             "3": {
-                "text": "I've been down here for what feels like half a day, perhaps?"
+                "text": "If I had to guess, maybe I've been down here for about a day."
             },
             "4": {
-                "text": "My phone won't turn on and there's no daylight in site, so there's really no way to check."
+                "text": "If I see Joe again, I really need to tell him what a terrible idea this whole trip was."
             },
             "5": {
-                "text": "......"
+                "text": "He asked us if we all wanted to travel out west with him to see a total solar eclipse. He thought it would be neat to hike up a mountain to see the eclipse from a lookout point."
             },
             "6": {
-                "text": "This is all Joe's fault!"
+                "text": "It was all he talked about for months, so Nick and I finally agreed to take some time off of work to fly out here."
             },
             "7": {
-                "text": "He wanted us all to travel out west to see a total solar eclipse."
+                "text": "The condition was that we'd only do it if we could camp one of the nights, which he (reluctantly) agreed to."
             },
             "8": {
-                "text": "So, we all agreed to fly out with him and hike up some mountain in Oregon to see it."
+                "text": "It feels like it's been a long time since I've gone camping, and going out with our friends is something I've wanted to do for a while. This whole eclipse finally gave me some leverage to convince everyone to do it."
             },
             "9": {
-                "text": "I still can't beleive that Logan forgot his glasses; thank goodness Nick happened to have an extra pair. (I sure wasn't sharing.)"
+                "text": "So, we picked a trail that had a camping site relatively nearby to stop at once the eclipse ended."
             },
             "10": {
-                "text": "Once we got to the top of the trail, we sat down in a small open field and waited."
+                "text": " I was surprised that Howie agreed to come, to be honest.  Although, I think everyone came around on it once they realized they could bring their Switches to play Splatoon or whatever."
             },
             "11": {
-                "text": "As the sky darkened, we looked up and saw the moon beginning to shift over the sun."
+                "text": "I liked the walk up the trail, although it was steep and tough with all of us carrying camping gear. We stopped A LOT. Maybe we shouldn't have carried it all with us during the actual hike, in retrospect . . ."
             },
             "12": {
-                "text": "I saw some birds returning to their nests and shadows growing longer like the sun was setting."
+                "text": "Joe planned it so that we would get to the overlook about an hour before the eclipse started, to make sure we didn't miss the main reason we came all the way out here."
             },
             "13": {
-                "text": "After a moment, I realized that the latter didn't make any sense."
+                "text": "Once we got to the overlook, I was finally able to unclip this stupid lantern that Joe made me carry all the way up the trail."
+            },
+            "14": {
+                "text": "He saw it in a thrift store that we checked out in town a few days ago and \"just had\" to buy it for his tent. He said something about having an \"authentic camping experience,\" as he eloquently put it."
+            },
+            "15": {
+                "text": "Somehow I got stuck with it hooked to my backpack while we were walking, since Joe, Logan and Howie were complaining that their camping gear was too heavy, and Nick was already carrying our tent."
+            },
+            "16": {
+                "text": "I don't think Nick realized how awkward it would be to carry the tent when he volunteered for it. He didn't complain much while we were walking, but seemed a bit resentful when he smashed it to the ground at the overlook."
+            },
+            "17": {
+                "text": "After sitting around for a while, the moon finally started to move over the sun."
+            },
+            "18": {
+                "text": "As it got darker, I noticed birds returning to their nests in the pine trees, which I wasn't expecting to see."
+            },
+            "19": {
+                "text": "I also noticed that the shadows from the treeline on either side of us were growing longer which, after thinking about it for a moment, didn't make much sense since the sun wasn't changing position."
+            },
+            "20": {
+                "text": "It was weird, but the shadows almost looked like they were made of hands, reaching out towards us with withering little fingers. They were very, very dark."
+            },
+            "21": {
+                "text": "It seemed like Nick picked up on it too, because I felt him start punching my shoulder as the shadows moved towards us faster. I think he was starting to freak out like I was."
             }
-        }   
-    }, 
-    
+        }
+    },
+
     "1": {
         "convName": "OpeningCutscene2",
-        "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "text": "The shadows kept growing, quickly reaching around us like they were trying to wrap themselves around our little clearing."
+                "text": "Since it seemed like the right thing to do at the time, I grabbed my backpack (and the lantern for some reason, which Joe had turned on at some point), jumped up with Nick, yelled for everyone to follow us, and began running away."
             },
             "1": {
-                "text": "Besides the fact that they were moving quickly towards us and didn't really match up with the shapes of the trees surrounding us, I rememeber something else unnatural about them."
+                "text": "In retrospect, I don't really know where we was running to since we were surrounded by trees and could only fall back to the trail."
             },
             "2": {
-                "text": "I remember that it... it almost looked like the edges of the shadows had little fingers that they were withering as they stretched out towards us."
+                "text": "After that, I don't really know what happened next; maybe I tripped and hit my head, who knows."
             },
             "3": {
-                "text": "I remember yelling out as the edges touched me since they were noticably colder than the ambient air we'd been sitting in."
-            },
-            "4": {
-                "text": "I think I also heard Howie let out a huge gasp that cut off abruptly as we all started running away, panicking."
-            },
-            "5": {
-                "text": "The next thing I remember is waking up down here in this cave."
+                "text": "I don't know how or where I fell in, but I woke up in this really strange cave all by myself. (Mostly unharmed, I might add.)"
             }
-        }   
+        }
     },
 
     "2": {
         "convName": "OpeningCutscene3",
-        "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "text": "I haven't seen Nick or any of our other friends."
+                "text": "This all feels like a fever dream. At this point, I've resigned to the fact that I probably won't make it out of here."
             },
             "1": {
-                "text": "This place is really weird; supernatural, even."
+                "text": "I'm still alone, and the food I had in my backpack isn't stretching very far."
             },
             "2": {
-                "text": "I keep wondering if any of this is real or if it's just playing out in my head."
+                "text": "I'll probably need to try drinking the water in the pools around me, although I don't really like the green tint to it. It's also emitting a faint glow that's lighting up the cave a little."
             },
             "3": {
-                "text": "Maybe I'm laying in a hospital bed somehere: who knows."
+                "text": "The only other notable things that I really have in my backpack (besides this notebook and my useless phone) are some matches, some spare clothes, and this foldable pocket knife that I bought at that thrift store. (What can I say: it had Kuromi on it, and I thought it'd be nice to have something like that while camping. I know, I'm a sucker.)"
             },
             "4": {
-                "text": "Thank goodness I packed a decent amount of food and water for the trip, although it's still not much."
+                "text": "I'm so scared, and I haven't even remotely found a way out. I haven't heard Nick or anyone else, if they're even down here. I feel so useless."
             },
             "5": {
-                "text": "I know I should set out further to look for everyone or even find an exit, but it's hard to when I don't even know how I got here."
-            },
-            "6": {
-                "text": "I have no special skills to survive, especially on my own."
-            },
-            "7": {
-                "text": "I'm terrified."
-            },
-            "8": {
-                "text": "But, I've got to do this: what other choice do I have?"
+                "text": "It's strange, though: there ARE some bridges in these caverns, which means that other people must walk through here, at least at some point, right?"
             }
         }   
     },
 
     "3": {
         "convName": "OpeningCutscene4",
-        "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "text": "All I can say is... well, here I go."
+                "text": "I'm going to head out again to find a way out."
+            },
+            "1": {
+                "text": "Yes, It's time to get going, Mary."
+            },
+            "2": {
+                "text": "Don't give up. Yet."
             }
         }   
-    }, 
+    },
 
     "4": {
           "convName": "Map001ShadowEncounter1",
@@ -214,7 +225,6 @@
                 "speaker": "Mary",
                 "text": "Well, here we go."
             }
-
         }
     }
 }

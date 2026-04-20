@@ -123,7 +123,6 @@ public class FontBatch {
      * Constructs a FontBatch instance.
      *
      * @param gp GamePanel instance
-     * @param zIndex rendering layer
      *
      */
     public FontBatch(GamePanel gp) {

@@ -1,0 +1,53 @@
+04/14/2026 23:41:25:602  INFO     Starting application.
+04/14/2026 23:41:27:058  INFO     Loading shader from file: '/shaders/font.glsl'
+04/14/2026 23:41:27:058  INFO     Compiling and linking shader: '/shaders/font.glsl'
+04/14/2026 23:41:27:648  INFO     Loading shader from file: '/shaders/default.glsl'
+04/14/2026 23:41:27:648  INFO     Compiling and linking shader: '/shaders/default.glsl'
+04/14/2026 23:41:27:648  INFO     Loading shader from file: '/shaders/rounded.glsl'
+04/14/2026 23:41:27:648  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
+04/14/2026 23:41:27:648  INFO     Loading texture from file: '/spritesheets/tiles.png'
+04/14/2026 23:41:27:658  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
+04/14/2026 23:41:27:658  INFO     Loading texture from file: '/spritesheets/characters.png'
+04/14/2026 23:41:27:678  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
+04/14/2026 23:41:27:678  INFO     Loading texture from file: '/spritesheets/landmarks.png'
+04/14/2026 23:41:27:678  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
+04/14/2026 23:41:27:678  INFO     Loading texture from file: '/spritesheets/items.png'
+04/14/2026 23:41:27:678  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
+04/14/2026 23:41:27:678  INFO     Loading texture from file: '/spritesheets/icons.png'
+04/14/2026 23:41:27:678  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
+04/14/2026 23:41:27:678  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
+04/14/2026 23:41:27:678  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
+04/14/2026 23:41:27:688  INFO     Loading sound (track) from file: 'sound/tracks/desolate_intro.ogg' + 'sound/tracks/desolate_loop.ogg'
+04/14/2026 23:41:27:928  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
+04/14/2026 23:41:28:049  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
+04/14/2026 23:41:28:218  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
+04/14/2026 23:41:28:371  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
+04/14/2026 23:41:28:555  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
+04/14/2026 23:41:28:818  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
+04/14/2026 23:41:29:072  INFO     Loading sound (effect) from file: 'sound/tracks/kugelblitz.ogg'
+04/14/2026 23:41:29:473  INFO     Loading sound (effect) from file: 'sound/tracks/tabulaRasa.ogg'
+04/14/2026 23:41:29:898  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
+04/14/2026 23:41:29:903  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
+04/14/2026 23:41:29:906  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
+04/14/2026 23:41:29:913  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
+04/14/2026 23:41:29:913  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
+04/14/2026 23:41:29:916  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
+04/14/2026 23:41:29:923  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
+04/14/2026 23:41:29:923  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
+04/14/2026 23:41:29:926  INFO     Loading texture from file: '/illustrations/illustration1.png'
+04/14/2026 23:41:30:319  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
+04/14/2026 23:41:30:319  INFO     Loading texture from file: '/illustrations/illustration2.png'
+04/14/2026 23:41:30:648  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
+04/14/2026 23:41:30:648  INFO     Loading texture from file: '/illustrations/illustration3.png'
+04/14/2026 23:41:30:978  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
+04/14/2026 23:41:30:978  INFO     Loading texture from file: '/illustrations/illustration5.png'
+04/14/2026 23:41:31:360  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
+04/14/2026 23:41:31:418  ERROR    An unhandled exception has occurred!
+utility.exceptions.AssetLoadException: Attempted to access an unloaded sound named 'NO_TRACK'
+	at asset.AssetPool.getSound(AssetPool.java:252)
+	at event.support.SoundSupport.swapTrack(SoundSupport.java:200)
+	at map.Map.setMapState(Map.java:131)
+	at map.MapManager.loadDefaultMap(MapManager.java:97)
+	at core.GamePanel.init(GamePanel.java:222)
+	at core.Window.initGame(Window.java:239)
+	at core.App.main(App.java:19)

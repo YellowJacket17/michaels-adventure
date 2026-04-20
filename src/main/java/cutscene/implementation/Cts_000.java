@@ -27,31 +27,43 @@ public class Cts_000 extends CutsceneBase {
 
         switch (scenePhase) {
             case 0:
-                gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
-                gp.getSoundS().playTrack("endOfTheLine");
-                gp.getDialogueR().setStagedPrintCountdown(0.032);
-                gp.getUi().setWindowOpacity(150);
-                gp.getFadeS().displayColor(new Vector3f(255, 255, 255));
-                gp.getIllustrationS().displayIllustration("illustration1");
-                gp.getFadeS().initiateFadeFrom(3);
+                gp.getDialogueR().loadConversation(0);
+                gp.getDialogueR().loadConversation(1);
+                gp.getDialogueR().loadConversation(2);
+                gp.getDialogueR().loadConversation(3);
                 progressCutscene();
+                break;
             case 1:
+                counter += dt;
+                if (counter >= 1) {
+                    gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
+                    gp.getSoundS().playTrack("desolate");
+//                    gp.getDialogueR().setStagedPrintCountdown(0.032);
+                    gp.getUi().setWindowOpacity(150);
+//                    gp.getFadeS().displayColor(new Vector3f(0, 0, 0));
+                    gp.getIllustrationS().displayIllustration("illustration1");
+                    gp.getFadeS().initiateFadeFrom(3);
+                    progressCutscene();
+                    counter = 0;
+                }
+                break;
+            case 2:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
                     counter += dt;
-                    if (counter >= 2) {
+                    if (counter >= 1) {
                         gp.getDialogueR().initiateConversation(0);
                         progressCutscene();
                         counter = 0;
                     }
                 }
                 break;
-            case 2:
+            case 3:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getFadeS().initiateFadeTo(1, new Vector3f(0, 0, 0));
                     progressCutscene();
                 }
                 break;
-            case 3:
+            case 4:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     counter += dt;
                     if (counter >= 0.4) {
@@ -62,7 +74,7 @@ public class Cts_000 extends CutsceneBase {
                     }
                 }
                 break;
-            case 4:
+            case 5:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
                     counter += dt;
                     if (counter >= 0.5) {
@@ -72,13 +84,13 @@ public class Cts_000 extends CutsceneBase {
                     }
                 }
                 break;
-            case 5:
+            case 6:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getFadeS().initiateFadeTo(1, new Vector3f(0, 0, 0));
                     progressCutscene();
                 }
                 break;
-            case 6:
+            case 7:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     counter += dt;
                     if (counter >= 0.4) {
@@ -89,7 +101,7 @@ public class Cts_000 extends CutsceneBase {
                     }
                 }
                 break;
-            case 7:
+            case 8:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
                     counter += dt;
                     if (counter >= 0.5) {
@@ -99,13 +111,13 @@ public class Cts_000 extends CutsceneBase {
                     }
                 }
                 break;
-            case 8:
+            case 9:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getFadeS().initiateFadeTo(1, new Vector3f(0, 0, 0));
                     progressCutscene();
                 }
                 break;
-            case 9:
+            case 10:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     counter += dt;
                     if (counter >= 0.4) {
@@ -116,7 +128,7 @@ public class Cts_000 extends CutsceneBase {
                     }
                 }
                 break;
-            case 10:
+            case 11:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
                     counter += dt;
                     if (counter >= 0.5) {
@@ -126,7 +138,7 @@ public class Cts_000 extends CutsceneBase {
                     }
                 }
                 break;
-            case 11:
+            case 12:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     counter += dt;
                     if (counter >= 2) {
@@ -136,18 +148,22 @@ public class Cts_000 extends CutsceneBase {
                     }
                 }
                 break;
-            case 12:
+            case 13:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
-                    gp.getIllustrationS().removeIllustration();
-                    gp.getFadeS().initiateFadeFrom(3);
-                    gp.getSoundS().swapTrack(gp.getMapM().getLoadedMap()
-                            .getTrack(gp.getMapM().getLoadedMap().getMapState()), true);
-                    progressCutscene();
+                    counter += dt;
+                    if (counter >= 1) {
+                        gp.getIllustrationS().removeIllustration();
+                        gp.getEntityM().getPlayer().setHidden(false);
+                        gp.getMapM().loadMap(1, 0, true);
+                        gp.getFadeS().initiateFadeFrom(2.5);
+                        progressCutscene();
+                        counter = 0;
+                    }
                 }
                 break;
-            case 13:
+            case 14:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
-                    gp.getDialogueR().resetStagedPrintCountdown();
+//                    gp.getDialogueR().resetStagedPrintCountdown();
                     gp.getUi().resetWindowOpacity();
                     gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
                     exitCutscene();

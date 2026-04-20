@@ -2,6 +2,7 @@ package entity.implementation.player;
 
 import combat.implementation.move.*;
 import core.enumeration.PrimaryGameState;
+import event.enumeration.FadeState;
 import event.enumeration.StockStepInteractionType;
 import miscellaneous.KeyListener;
 import entity.EntityBase;
@@ -162,6 +163,9 @@ public class Player extends EntityBase {
                     break;
                 case SUB_MENU:
                     updateSubMenuInput();
+                    break;
+                case TITLE:
+                    updateTitleInput();
                     break;
             }
         }
@@ -701,6 +705,22 @@ public class Player extends EntityBase {
 
 
     /**
+     * Updates the state of the title screen per player input by one frame when in title state.
+     * Checks for player key input if title screen is interacted with.
+     */
+    private void updateTitleInput() {
+
+        if ((interactionCountdown <= 0) && (gp.getFadeS().getState() == FadeState.INACTIVE)) {                          // Ensure title screen cannot be interacted with while fading in/out.
+
+            if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
+
+                handleTitleInputProgressKey();
+            }
+        }
+    }
+
+
+    /**
      * Updates system-level full screen toggle per player input.
      */
     private void updateFullScreenInput() {
@@ -1073,6 +1093,15 @@ public class Player extends EntityBase {
         gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() + 1);                                     // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
         if (gp.getCombatM().isCombatActive()) {gp.getCombatM().refreshSkillSubMenuDialogue();}                          // Refresh skill combat sub-menu message, if applicable.
         setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for title progress key.
+     */
+    private void handleTitleInputProgressKey() {
+
+        gp.getCutsceneM().initiateCutscene(3);
     }
 
 

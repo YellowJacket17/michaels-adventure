@@ -6,6 +6,7 @@ import event.implementation.map.Evt_Map002;
 import event.implementation.map.Evt_Map003;
 import event.implementation.map.Evt_Map004;
 import event.implementation.submenu.Evt_SubMenu003;
+import event.implementation.submenu.Evt_SubMenu004;
 import miscellaneous.CollisionInspector;
 import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
@@ -49,6 +50,7 @@ public class EventManager {
     private final Evt_SubMenu001 evt_subMenu001;
     private final Evt_SubMenu002 evt_subMenu002;
     private final Evt_SubMenu003 evt_subMenu003;
+    private final Evt_SubMenu004 evt_subMenu004;
 
 
     // CONSTRUCTOR
@@ -70,6 +72,7 @@ public class EventManager {
         evt_subMenu001 = new Evt_SubMenu001(gp);
         evt_subMenu002 = new Evt_SubMenu002(gp);
         evt_subMenu003 = new Evt_SubMenu003(gp);
+        evt_subMenu004 = new Evt_SubMenu004(gp);
     }
 
 
@@ -319,6 +322,9 @@ public class EventManager {
                     break;
                 case 3:
                     evt_subMenu003.run(selectedIndex);
+                    break;
+                case 4:
+                    evt_subMenu004.run(selectedIndex);
                     break;
                 default:
                     UtilityTool.logWarning("No selection logic specified for sub-menu with ID '"

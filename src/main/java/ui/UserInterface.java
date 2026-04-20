@@ -3,6 +3,7 @@ package ui;
 import combat.enumeration.BannerColor;
 import combat.enumeration.SubMenuType;
 import core.GamePanel;
+import render.font.Text;
 import ui.enumeration.PartyMenuSlot;
 import ui.enumeration.PrimaryMenuState;
 import core.enumeration.PrimaryGameState;
@@ -15,6 +16,8 @@ import org.joml.Vector4f;
 import render.Renderer;
 import render.enumeration.ZIndex;
 import render.drawable.Transform;
+
+import java.util.ArrayList;
 
 /**
  * This class handles the rendering of all user interface (UI) components.
@@ -70,6 +73,12 @@ public class UserInterface {
     private float windowOpacity = defaultWindowOpacity;
 
     /**
+     * List to stage text to render that is not tied to a user interface element.
+     * The text within this array stores screen coordinates.
+     */
+    private ArrayList<Text> stagedNonUiText = new ArrayList<>();
+
+    /**
      * Variable to track the FPS value displayed in debug mode.
      * This value is updated every one second with the frame rate at that instant, regardless of whether debug mode is
      * active or not.
@@ -87,9 +96,11 @@ public class UserInterface {
      * Constructs a UserInterface instance.
      *
      * @param gp GamePanel instance
+     * @param renderer Renderer instance
      */
-    public UserInterface(GamePanel gp) {
+    public UserInterface(GamePanel gp, Renderer renderer) {
         this.gp = gp;
+        this.renderer = renderer;
     }
 
 
@@ -146,6 +157,11 @@ public class UserInterface {
                 gp.getUiSubMenuS().refresh();
             }
         }
+
+        // TITLE
+        if (gp.getPrimaryGameState() == PrimaryGameState.TITLE) {
+            gp.getUiTitleS().update(dt);
+        }
     }
 
 
@@ -197,6 +213,16 @@ public class UserInterface {
             gp.getUiSubMenuS().addToRenderPipeline(renderer);
         }
 
+        // TITLE
+        if (gp.getPrimaryGameState() == PrimaryGameState.TITLE) {
+            gp.getUiTitleS().addToRenderPipeline(renderer);
+        }
+
+        // STAGED NON-UI TEXT
+        if (stagedNonUiText.size() > 0) {
+            addStagedNonUiTextToRenderPipeline();
+        }
+
         // DEBUG
         if (gp.isDebugActive()) {
             addDebugToRenderPipeline();
@@ -205,14 +231,38 @@ public class UserInterface {
 
 
     /**
-     * Calculates the world length of a string of text.
+     * Stages text to be added to the render pipeline.
+     * Note that this method in itself does not add text to the render pipeline.
+     * Text will be added to the render pipeline with user interface elements the next time they are added.
+     * This method is intended to stage non-user interface text since it is not appropriate to directly add said text
+     * directly the render pipeline during any update logic.
+     * In other words, this method is intended to be used by logic external to the user interface (e.g., cutscenes).
+     * This method should NOT be used for adding user interface elements to the render pipeline (e.g., dialogue
+     * elements, combat elements, menu elements, etc.).
+     *
+     * @param text text contents
+     * @param screenX x-coordinate of text (leftmost, normalized from 0 to 1, both inclusive)
+     * @param screenY y-coordinate of text (topmost, normalized from 0 to 1, both inclusive)
+     * @param scale scale factor compared to native font size
+     * @param color color in hexadecimal format
+     * @param font font name
+     */
+    public void stageNonUiText(String text, float screenX, float screenY,
+                          float scale, Vector3f color, String font, ZIndex zIndex) {
+
+        stagedNonUiText.add(new Text(text, screenX, screenY, scale, color, font, zIndex));
+    }
+
+
+    /**
+     * Calculates the world width of a string of text.
      * Text is assumed to be rendered horizontally (screen width).
      *
-     * @param text text whose world length is to be calculated
+     * @param text text whose world width is to be calculated
      * @param scale scale factor at which to render text compared to native font size
      * @param font name of font to use
      */
-    public float calculateStringWorldLength(String text, float scale, String font) {
+    public float calculateStringWorldWidth(String text, float scale, String font) {
 
         float textWorldWidth = 0;
 
@@ -226,16 +276,36 @@ public class UserInterface {
 
 
     /**
-     * Calculates the normalized (screen) length of a string of text.
+     * Calculates the normalized (screen) width of a string of text.
      * Text is assumed to be rendered horizontally (screen width).
      *
-     * @param text text whose screen length is to be calculated
+     * @param text text whose screen width is to be calculated
      * @param scale scale factor at which to render text compared to native font size
      * @param font name of font to use
      */
-    public float calculateStringScreenLength(String text, float scale, String font) {
+    public float calculateStringScreenWidth(String text, float scale, String font) {
 
-        return gp.getCamera().worldWidthToScreenWidth(calculateStringWorldLength(text, scale, font));
+        return gp.getCamera().worldWidthToScreenWidth(calculateStringWorldWidth(text, scale, font));
+    }
+
+
+    /**
+     * Calculates the normalized (screen) coordinates to center a string of text on the display.
+     *
+     * @param text text to be centered
+     * @param scale scale factor at which to render text compared to native font size
+     * @param font name of font to use
+     * @param outputVector vector to which centered normalized (screen) coordinates will be written
+     */
+    public void calculateStringCenteredScreenCoords(String text, float scale, String font, Vector2f outputVector) {
+
+        float textScreenWidth = calculateStringScreenWidth(text, scale, font);
+        outputVector.x = (1 - textScreenWidth) / 2;
+
+        float textCharWorldHeight = renderer.getFont(gp.getUi().getStandardBoldFont())
+                .getCharacter('A').getHeight() * gp.getUi().getStandardFontScale();                                     // It doesn't matter which character is used, since all characters in a font have the same height.
+        float textCharScreenHeight = gp.getCamera().worldHeightToScreenHeight(textCharWorldHeight);
+        outputVector.y = (1 - textCharScreenHeight) / 2;
     }
 
 
@@ -388,7 +458,7 @@ public class UserInterface {
      * @param zIndex layer on which to render; strings will always be rendered after other drawables on the same layer,
      *               regardless of the order in which they were added to the render pipeline
      */
-    private void addStringToRenderPipeline(String text, float screenX, float screenY, float scale,
+    public void addStringToRenderPipeline(String text, float screenX, float screenY, float scale,
                                            Vector3f color, String font, ZIndex zIndex) {
 
         renderer.addString(text, gp.getCamera().screenXToWorldX(screenX), gp.getCamera().screenYToWorldY(screenY),
@@ -492,7 +562,7 @@ public class UserInterface {
                         lineCandidate = lineFinal + " " + words[wordsIndex];
                     }
 
-                    if (calculateStringScreenLength(lineCandidate, scale, font) > maxLineScreenLength) {
+                    if (calculateStringScreenWidth(lineCandidate, scale, font) > maxLineScreenLength) {
 
                         limitExceeded = true;                                                                           // Character length of the line has been exceeded.
 
@@ -521,6 +591,24 @@ public class UserInterface {
                 screenY += lineScreenSpacing;                                                                           // Spacing between lines of text.
             }
         }
+    }
+
+
+    /**
+     * Adds staged non-user interface text to the render pipeline.
+     * After adding, the staged text is reset (i.e., cleared).
+     */
+    private void addStagedNonUiTextToRenderPipeline() {
+
+        for (Text text : stagedNonUiText) {
+
+            renderer.addString(
+                    text.getText(),
+                    gp.getCamera().screenXToWorldX(text.getX()),
+                    gp.getCamera().screenYToWorldY(text.getY()),
+                    text.getScale(), text.getColor(), text.getFont(), text.getzIndex());
+        }
+        stagedNonUiText.clear();
     }
 
 

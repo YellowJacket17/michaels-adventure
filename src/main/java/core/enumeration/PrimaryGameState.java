@@ -9,5 +9,7 @@ public enum PrimaryGameState {
     PARTY_MENU,
     INVENTORY_MENU,
     SETTINGS_MENU,
-    SUB_MENU
+    SUB_MENU,
+    TITLE,
+    UNKNOWN
 }

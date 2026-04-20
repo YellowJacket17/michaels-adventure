@@ -117,10 +117,10 @@ public class UiDialogueSupport {
 
         // Dialogue text.
         dialogueTextScreenCoords.y = dialogueWindowScreenTransform.position.y + dialogueTextScreenVerticalSpacing;
-        gp.getCamera().screenCoordsToWorldCoords(dialogueTextScreenCoords, tempWorldTransform.position);
 
         for (int key = 0; key < gp.getDialogueR().getMaxNumPrintLines(); key++) {
 
+            gp.getCamera().screenCoordsToWorldCoords(dialogueTextScreenCoords, tempWorldTransform.position);
             renderer.addString(
                     gp.getDialogueR().getDialoguePrint(key),
                     tempWorldTransform.position.x,

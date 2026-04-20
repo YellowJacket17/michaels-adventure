@@ -102,13 +102,14 @@ public class GamePanel {
     private final CombatAnimationSupport combatAnimationS = new CombatAnimationSupport(this);
     private final CombatLoadSupport combatLoadS = new CombatLoadSupport(this);
     private final PathFinder pathF = new PathFinder(this);
-    private final UserInterface ui = new UserInterface(this);
+    private UserInterface ui;
     private UiDialogueSupport uiDialogueS;
     private UiSubMenuSupport uiSubMenuS;
     private UiPrimaryMenuFrameSupport uiPrimaryMenuFrameS;
     private UiPartyMenuSupport uiPartyMenuS;
     private UiInventoryMenuSupport uiInventoryMenuS;
     private UiSettingsMenuSupport uiSettingsMenuS;
+    private UiTitleSupport uiTitleS;
 
 
     // GAME STATE
@@ -116,7 +117,7 @@ public class GamePanel {
      * Variable to store which primary state the game is currently in.
      * The primary game state drives how player inputs are registered.
      */
-    private PrimaryGameState primaryGameState;
+    private PrimaryGameState primaryGameState = PrimaryGameState.UNKNOWN;
 
     /**
      * Boolean indicating whether player inputs are registered (true) or not (false).
@@ -208,33 +209,26 @@ public class GamePanel {
 
         // Initialize player.
         entityM.initPlayer();
+        entityM.getPlayer().setHidden(true);
 
         // Initialize user interface system classes requiring fully initialized GamePanel instance.
+        ui = new UserInterface(this, renderer);
         uiDialogueS = new UiDialogueSupport(this, renderer);
         uiSubMenuS = new UiSubMenuSupport(this, renderer);
         uiPrimaryMenuFrameS = new UiPrimaryMenuFrameSupport(this, renderer);
         uiPartyMenuS = new UiPartyMenuSupport(this);
         uiInventoryMenuS = new UiInventoryMenuSupport(this);
         uiSettingsMenuS = new UiSettingsMenuSupport(this, renderer);
+        uiTitleS = new UiTitleSupport(this, renderer);
 
-        // Load map along with associated entities and dialogue.
-        mapM.loadMap(1, 0, true);
+        // Load default (empty) map.
+        mapM.loadDefaultMap();
 
         // Set camera to track player entity.
         cameraS.setTrackedEntity(entityM.getPlayer().getEntityId());
 
-        // Initiate opening cutscene.
-//        cutsceneM.initiateCutscene(0);
-        fadeS.displayColor(new Vector3f(255, 255, 255));
-        fadeS.initiateFadeFrom(0.5);
-//        partyS.addEntityToParty(5, false);
-//        partyS.addEntityToParty(6, false);
-//        partyS.addEntityToParty(7, false);
-//        partyS.addEntityToParty(8, false);
-//        partyS.addEntityToParty(9, false);
-
-        // Set primary game state to player control.
-        primaryGameState = PrimaryGameState.EXPLORE;
+        // Initiate loading sequence.
+        cutsceneM.initiateCutscene(2);
     }
 
 
@@ -488,13 +482,15 @@ public class GamePanel {
      */
     private void loadSounds() {
 
-        AssetPool.addSound("endOfTheLine", "sound/tracks/endOfTheLine_intro.ogg", "sound/tracks/endOfTheLine_loop.ogg");
+        AssetPool.addSound("outOfTheBlue", "sound/tracks/outOfTheBlue_intro.ogg", "sound/tracks/outOfTheBlue_loop.ogg");
+        AssetPool.addSound("desolate", "sound/tracks/desolate_intro.ogg", "sound/tracks/desolate_loop.ogg");
         AssetPool.addSound("dissipate", "sound/tracks/dissipate_intro.ogg", "sound/tracks/dissipate_loop.ogg");
         AssetPool.addSound("carvingCanyons", "sound/tracks/carvingCanyons_intro.ogg", "sound/tracks/carvingCanyons_loop.ogg");
         AssetPool.addSound("sunkenSecrets", "sound/tracks/sunkenSecrets_intro.ogg", "sound/tracks/sunkenSecrets_loop.ogg");
         AssetPool.addSound("runningLate", "sound/tracks/runningLate_intro.ogg", "sound/tracks/runningLate_loop.ogg");
         AssetPool.addSound("riftInTime", "sound/tracks/riftInTime_intro.ogg", "sound/tracks/riftInTime_loop.ogg");
         AssetPool.addSound("yesteryear", "sound/tracks/yesteryear_intro.ogg", "sound/tracks/yesteryear_loop.ogg");
+        AssetPool.addSound("tabulaRasa", "sound/tracks/tabulaRasa.ogg");
         AssetPool.addSound("pickpocket", "sound/effects/pickpocket.ogg");
         AssetPool.addSound("butterflyBlade", "sound/effects/butterflyBlade.ogg");
         AssetPool.addSound("burningDagger", "sound/effects/burningDagger.ogg");
@@ -511,7 +507,9 @@ public class GamePanel {
      */
     private void loadIllustrations() {
 
-        String filePath = "/illustrations/illustration1.png";
+        String filePath = "/illustrations/illustration0.png";
+        AssetPool.addIllustration("illustration0", new Illustration(AssetPool.getTexture(filePath)));
+        filePath = "/illustrations/illustration1.png";
         AssetPool.addIllustration("illustration1", new Illustration(AssetPool.getTexture(filePath)));
         filePath = "/illustrations/illustration2.png";
         AssetPool.addIllustration("illustration2", new Illustration(AssetPool.getTexture(filePath)));
@@ -692,6 +690,10 @@ public class GamePanel {
 
     public UiSettingsMenuSupport getUiSettingsMenuS() {
         return uiSettingsMenuS;
+    }
+
+    public UiTitleSupport getUiTitleS() {
+        return uiTitleS;
     }
 
     public PrimaryGameState getPrimaryGameState() {

@@ -1,0 +1,11 @@
+04/19/2026 15:48:08:288  INFO     Starting application.
+04/19/2026 15:48:09:549  INFO     Loading shader from file: '/shaders/font.glsl'
+04/19/2026 15:48:09:549  INFO     Compiling and linking shader: '/shaders/font.glsl'
+04/19/2026 15:48:10:099  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "ui.UserInterface.getStandardBoldFont()" because the return value of "core.GamePanel.getUi()" is null
+	at cutscene.implementation.Cts_002.init(Cts_002.java:33)
+	at cutscene.implementation.Cts_002.<init>(Cts_002.java:26)
+	at cutscene.CutsceneManager.<init>(CutsceneManager.java:51)
+	at core.GamePanel.<init>(GamePanel.java:89)
+	at core.Window.initGame(Window.java:238)
+	at core.App.main(App.java:19)

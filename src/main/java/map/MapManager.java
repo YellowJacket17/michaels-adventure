@@ -1,5 +1,6 @@
 package map;
 
+import asset.Sound;
 import core.GamePanel;
 import utility.JsonParser;
 import utility.UtilityTool;
@@ -37,7 +38,7 @@ public class MapManager {
     }
 
 
-    // METHOD
+    // METHODS
     /**
      * Loads a new map into memory and sets it as the current map to render.
      * The following will be purged before loading the new map: prior loaded map, prior NPCs in 'npc' (hash)map, prior
@@ -81,6 +82,20 @@ public class MapManager {
 
         // Load dialogue associated with new map.
         JsonParser.loadConversationsJson(gp, mapId);
+    }
+
+
+    public void loadDefaultMap() {
+
+        // Save state of outgoing map.
+        if (loadedMap != null) {
+            savedMapStates.put(loadedMap.getMapId(), loadedMap.getMapState());
+        }
+
+        // Set default map.
+        loadedMap = new Map(gp);
+        loadedMap.setTrack(0, Sound.NO_TRACK);
+        loadedMap.setMapState(0, true);
     }
 
 

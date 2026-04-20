@@ -1,9 +1,7 @@
 package cutscene;
 
 import core.GamePanel;
-import cutscene.implementation.Cts_000;
-import cutscene.implementation.Cts_002;
-import cutscene.implementation.Cts_001;
+import cutscene.implementation.*;
 import utility.UtilityTool;
 
 /**
@@ -35,6 +33,8 @@ public class CutsceneManager {
     private final Cts_000 cts_000;
     private final Cts_001 cts_001;
     private final Cts_002 cts_002;
+    private final Cts_003 cts_003;
+    private final Cts_004 cts_004;
 
 
     // CONSTRUCTOR
@@ -49,6 +49,8 @@ public class CutsceneManager {
         cts_000 = new Cts_000(gp);
         cts_001 = new Cts_001(gp);
         cts_002 = new Cts_002(gp);
+        cts_003 = new Cts_003(gp);
+        cts_004 = new Cts_004(gp);
     }
 
 
@@ -77,6 +79,16 @@ public class CutsceneManager {
                 case 2:
                     if (cts_002.isTriggerable()) {
                         cts_002.run(dt);
+                    }
+                    break;
+                case 3:
+                    if (cts_003.isTriggerable()) {
+                        cts_003.run(dt);
+                    }
+                    break;
+                case 4:
+                    if (cts_004.isTriggerable()) {
+                        cts_004.run(dt);
                     }
                     break;
             }

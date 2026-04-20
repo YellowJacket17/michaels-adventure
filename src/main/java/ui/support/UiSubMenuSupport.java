@@ -85,7 +85,7 @@ public class UiSubMenuSupport {
 
         for (int i = 0; i < gp.getSubMenuH().getOptions().size(); i++) {
 
-            textWorldWidth = gp.getUi().calculateStringWorldLength(
+            textWorldWidth = gp.getUi().calculateStringWorldWidth(
                     gp.getSubMenuH().getOptions().get(i),
                     gp.getUi().getStandardFontScale(),
                     gp.getUi().getStandardNormalFont());

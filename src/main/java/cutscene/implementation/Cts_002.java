@@ -1,21 +1,23 @@
 package cutscene.implementation;
 
-import core.GamePanel;
+import core.enumeration.PrimaryGameState;
 import cutscene.CutsceneBase;
+import core.GamePanel;
 import event.enumeration.FadeState;
-import miscellaneous.KeyListener;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
-
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER;
+import render.enumeration.ZIndex;
+import render.font.Text;
 
 /**
- * This class defines logic for a test cutscene.
+ * This class defines logic for initial loading sequence of game.
  */
 public class Cts_002 extends CutsceneBase {
 
-    // FIELD
+    // FIELDS
     private double counter = 0;
+
+    private Text engineLogoText;
 
 
     // CONSTRUCTOR
@@ -24,50 +26,92 @@ public class Cts_002 extends CutsceneBase {
     }
 
 
-    // METHOD
+    // METHODS
     @Override
     public void run(double dt) {
 
         switch (scenePhase) {
             case 0:
-                gp.setLockPlayerControl(true);
-                gp.getFadeS().initiateFlash(0.15, 0.15, 0.02, new Vector3f(0, 0, 0));
+                buildEngineLogoText();
+                gp.getFadeS().displayColor(new Vector3f(255, 255, 255));
+                gp.getFadeS().initiateFadeFrom(1.5);
+                stageEngineLogoText();
                 progressCutscene();
+                break;
             case 1:
-                if (gp.getFadeS().getState() == FadeState.ACTIVE) {
-                    gp.getIllustrationS().displayIllustration("illustration3");
-                    progressCutscene();
+                stageEngineLogoText();
+                if (gp.getFadeS().getState() == FadeState.INACTIVE) {
+                    counter += dt;
+                    if (counter >= 2.5) {
+                        gp.getFadeS().initiateFadeTo(1.5, new Vector3f(0, 0, 0));
+                        progressCutscene();
+                        counter = 0;
+                    }
                 }
                 break;
             case 2:
-                counter += dt;
-                if (counter >= 0.3) {
+                stageEngineLogoText();
+                if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     progressCutscene();
-                    counter = 0;
                 }
                 break;
             case 3:
-                if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)
-                        || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
-                    gp.getFadeS().initiateFlash(0.15, 0.15, 0.02, new Vector3f(0, 0, 0));
-                    progressCutscene();
-                }
-                break;
-            case 4:
-                if (gp.getFadeS().getState() == FadeState.ACTIVE) {
-                    gp.getIllustrationS().removeIllustration();
-                    progressCutscene();
-                }
-                break;
-            case 5:
-                if (!gp.getFadeS().isFlashActive()) {
-                    gp.setLockPlayerControl(false);
-                    gp.getEntityM().getPlayer().setInteractionCountdown(
-                            gp.getEntityM().getPlayer().getStagedStandardInteractionCountdown());
+                counter += dt;
+                if (counter >= 1) {
+                    gp.setPrimaryGameState(PrimaryGameState.TITLE);
+                    gp.getIllustrationS().displayIllustration("illustration0");
+                    gp.getFadeS().initiateFadeFrom(1.5);
+                    gp.getSoundS().playTrack("outOfTheBlue");
                     exitCutscene();
                     resetCutscene();
+                    counter = 0;
                 }
                 break;
         }
+    }
+
+
+    /**
+     * Builds engine logo text.
+     */
+    private void buildEngineLogoText() {
+
+        String engineLogoTextContent = "Yellow Jacket Engine";
+        float engineLogoTextScale = 0.30f;
+        String engineLogoTextFont = gp.getUi().getStandardBoldFont();
+        Vector2f engineLogoTextScreenCoords = new Vector2f();
+        gp.getUi().calculateStringCenteredScreenCoords(
+                engineLogoTextContent,
+                engineLogoTextScale,
+                engineLogoTextFont,
+                engineLogoTextScreenCoords
+        );
+        Vector3f engineLogoTextColor = new Vector3f(255, 236, 100);
+        engineLogoText = new Text(
+                engineLogoTextContent,
+                engineLogoTextScreenCoords.x,
+                engineLogoTextScreenCoords.y,
+                engineLogoTextScale,
+                engineLogoTextColor,
+                engineLogoTextFont,
+                ZIndex.SECOND_LAYER
+        );
+    }
+
+
+    /**
+     * Stages engine logo text to be added to the render pipeline.
+     */
+    private void stageEngineLogoText() {
+
+        gp.getUi().stageNonUiText(
+                engineLogoText.getText(),
+                engineLogoText.getX(),
+                engineLogoText.getY(),
+                engineLogoText.getScale(),
+                engineLogoText.getColor(),
+                engineLogoText.getFont(),
+                engineLogoText.getzIndex()
+        );
     }
 }

@@ -70,9 +70,9 @@ Any lines/fields denoted with an asterisk "*" at the beginning are optional and 
 }
 ```
 
-Map IDs MUST start at "0" in the JSON file, working down as 0, 1, 2, etc.
-Map IDs are loaded into the game as the order in which they appear in the JSON file.
-For example, even if the map ID at the top of the JSON file read "3", it would still be loaded into the game as map with ID "0".
+Map IDs should start at "1" in the JSON file, working down as 1, 2, 3, etc.
+Note that map ID "0" is reserved for the default map, which is not present in the JSON file.
+This is why map IDs should start at "1" in the JSON file, not "0".
 
 Tracks must be specified for a map.
 It is recommended to at minimum specify a track for a default map state "0".
@@ -107,7 +107,8 @@ Note that map state fields do not necessarily need to be listed as "0", "1", etc
 
 Conversation IDs MUST start at "0" in the JSON file, working down as 0, 1, 2, etc.
 Conversation IDs are loaded into the game as the order in which they appear in the JSON file.
-For example, even if the conversation ID at the top of the JSON file read "3", it would still be loaded into the game as conversation with ID "0".
+For example, if there were three conversations in the JSON file, but none had the conversation ID "3", then a `NullPointerException` would be thrown upon loading.
+Loading always starts at conversation ID "0" and increments until it reaches the number of conversations present in the JSON file.
 
 The "map" field indicates which map a conversation should automatically be loaded into.
 In other words, when said map is loaded, the conversation will also be loaded and placed appropriately.
@@ -168,7 +169,8 @@ Dialogue IDs MUST start at "0" in the JSON file, working down as 0, 1, 2, etc.
 
 Entity IDs MUST start at "1" in the JSON file, working down as 1, 2, 3, etc.
 Entity IDs are loaded into the game as the order in which they appear in the JSON file.
-For example, even if the entity ID at the top of the JSON file read "3", it would still be loaded into the game as entity with ID "1".
+For example, if there were three entities in the JSON file, but none had the entity ID "1", then a `NullPointerException` would be thrown upon loading.
+Loading always starts at entity ID "1" and increments until it reaches the number of entities present in the JSON file.
 Note that entity ID "0" is reserved for the player entity, which is not present in the JSON file.
 This is why entity IDs start at "1" in the JSON file, not "0".
 

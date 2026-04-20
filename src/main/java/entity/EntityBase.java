@@ -139,6 +139,7 @@ public abstract class EntityBase extends Drawable {
      */
     protected EntityDirection directionCurrent;
 
+    // TODO : Evaluate whether this field is actually needed.
     /**
      * Last direction this entity was facing.
      * Most of the time, this will equal the current direction.

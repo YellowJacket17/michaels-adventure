@@ -8,6 +8,10 @@ import render.enumeration.ZIndex;
  */
 public class Text {
 
+    /*
+     * This class may store either world or screen coordinates, dependent upon the desired use.
+     */
+
     // FIELDS
     /**
      * Text contents.
@@ -72,11 +76,11 @@ public class Text {
         return text;
     }
 
-    public float getScreenX() {
+    public float getX() {
         return screenX;
     }
 
-    public float getScreenY() {
+    public float getY() {
         return screenY;
     }
 

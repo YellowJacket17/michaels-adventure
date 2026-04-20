@@ -1,0 +1,52 @@
+04/14/2026 00:16:19:106  INFO     Starting application.
+04/14/2026 00:16:19:952  INFO     Loading shader from file: '/shaders/font.glsl'
+04/14/2026 00:16:19:952  INFO     Compiling and linking shader: '/shaders/font.glsl'
+04/14/2026 00:16:20:392  INFO     Loading shader from file: '/shaders/default.glsl'
+04/14/2026 00:16:20:392  INFO     Compiling and linking shader: '/shaders/default.glsl'
+04/14/2026 00:16:20:392  INFO     Loading shader from file: '/shaders/rounded.glsl'
+04/14/2026 00:16:20:392  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
+04/14/2026 00:16:20:402  INFO     Loading texture from file: '/spritesheets/tiles.png'
+04/14/2026 00:16:20:408  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
+04/14/2026 00:16:20:408  INFO     Loading texture from file: '/spritesheets/characters.png'
+04/14/2026 00:16:20:412  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
+04/14/2026 00:16:20:412  INFO     Loading texture from file: '/spritesheets/landmarks.png'
+04/14/2026 00:16:20:422  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
+04/14/2026 00:16:20:422  INFO     Loading texture from file: '/spritesheets/items.png'
+04/14/2026 00:16:20:422  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
+04/14/2026 00:16:20:422  INFO     Loading texture from file: '/spritesheets/icons.png'
+04/14/2026 00:16:20:422  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
+04/14/2026 00:16:20:422  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
+04/14/2026 00:16:20:422  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
+04/14/2026 00:16:20:422  INFO     Loading sound (track) from file: 'sound/tracks/desolate_intro.ogg' + 'sound/tracks/desolate_loop.ogg'
+04/14/2026 00:16:20:597  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
+04/14/2026 00:16:20:693  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
+04/14/2026 00:16:20:816  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
+04/14/2026 00:16:20:929  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
+04/14/2026 00:16:21:055  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
+04/14/2026 00:16:21:247  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
+04/14/2026 00:16:21:427  INFO     Loading sound (effect) from file: 'sound/tracks/kugelblitz.ogg'
+04/14/2026 00:16:21:695  INFO     Loading sound (effect) from file: 'sound/tracks/tabulaRasa.ogg'
+04/14/2026 00:16:22:042  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
+04/14/2026 00:16:22:044  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
+04/14/2026 00:16:22:044  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
+04/14/2026 00:16:22:044  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
+04/14/2026 00:16:22:052  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
+04/14/2026 00:16:22:052  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
+04/14/2026 00:16:22:052  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
+04/14/2026 00:16:22:052  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
+04/14/2026 00:16:22:062  INFO     Loading texture from file: '/illustrations/illustration1.png'
+04/14/2026 00:16:22:341  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
+04/14/2026 00:16:22:341  INFO     Loading texture from file: '/illustrations/illustration2.png'
+04/14/2026 00:16:22:577  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
+04/14/2026 00:16:22:582  INFO     Loading texture from file: '/illustrations/illustration3.png'
+04/14/2026 00:16:22:862  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
+04/14/2026 00:16:22:862  INFO     Loading texture from file: '/illustrations/illustration5.png'
+04/14/2026 00:16:23:142  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
+04/14/2026 00:16:23:179  INFO     Starting game loop.
+04/14/2026 00:16:23:187  ERROR    An unhandled exception has occurred!
+java.lang.NullPointerException: Cannot invoke "map.Map.getMapLandmarks()" because the return value of "map.MapManager.getLoadedMap()" is null
+	at landmark.LandmarkManager.update(LandmarkManager.java:57)
+	at core.GamePanel.update(GamePanel.java:258)
+	at core.Window.generateFrame(Window.java:364)
+	at core.Window.run(Window.java:304)
+	at core.App.main(App.java:21)
