@@ -1,0 +1,19 @@
+05/02/2026 21:38:21:364  INFO     Starting application.
+05/02/2026 21:38:22:738  INFO     Loading shader from file: '/shaders/font.glsl'
+05/02/2026 21:38:22:738  INFO     Compiling and linking shader: '/shaders/font.glsl'
+05/02/2026 21:38:23:308  INFO     Loading shader from file: '/shaders/default.glsl'
+05/02/2026 21:38:23:318  INFO     Compiling and linking shader: '/shaders/default.glsl'
+05/02/2026 21:38:23:318  INFO     Loading shader from file: '/shaders/rounded.glsl'
+05/02/2026 21:38:23:318  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
+05/02/2026 21:38:23:318  INFO     Loading texture from file: '/spritesheets/tiles.png'
+05/02/2026 21:38:23:318  ERROR    An unhandled exception has occurred!
+utility.exceptions.AssetLoadException: Failed to load resource from resources '/spritesheets/tiles.png'
+	at utility.UtilityTool.ioResourceToByteBuffer(UtilityTool.java:323)
+	at asset.Texture.load(Texture.java:121)
+	at asset.Texture.<init>(Texture.java:52)
+	at asset.AssetPool.getTexture(AssetPool.java:78)
+	at core.GamePanel.loadTileSpritesheet(GamePanel.java:414)
+	at core.GamePanel.loadResources(GamePanel.java:386)
+	at core.GamePanel.init(GamePanel.java:194)
+	at core.Window.initGame(Window.java:239)
+	at core.App.main(App.java:19)

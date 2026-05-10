@@ -12,6 +12,7 @@ import cutscene.CutsceneManager;
 import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
 import entity.EntityManager;
+import entity.enumeration.EntityDirection;
 import event.support.*;
 import item.ItemManager;
 import map.MapManager;
@@ -229,6 +230,34 @@ public class GamePanel {
 
         // Initiate loading sequence.
         cutsceneM.initiateCutscene(2);
+
+        // TEST
+//        mapM.loadMap(1, 0, true);
+//        entityM.getPlayer().setHidden(false);
+//        fadeS.displayColor(new Vector3f(255, 255, 255));
+//        fadeS.initiateFadeFrom(0.5);
+//        setPrimaryGameState(PrimaryGameState.EXPLORE);
+
+//        entityM.getPlayer().setCol(47);
+//        entityM.getPlayer().setRow(14);
+//        entityM.getPlayer().setDirectionCurrent(EntityDirection.UP);
+//
+//        for (int i = 0; i < 1; i++) {
+//            entityM.getPlayer().addItemToInventory(0);
+//        }
+//        for (int i = 0; i < 1; i++) {
+//            entityM.getPlayer().addItemToInventory(1);
+//        }
+//        for (int i = 0; i < 1; i++) {
+//            entityM.getPlayer().addItemToInventory(2);
+//        }
+
+//        entityM.loadEntity(5);
+//        entityM.getEntityById(5).setCol(11); //8
+//        entityM.getEntityById(5).setRow(42); //42
+////        entityM.getEntityById(5).startFollowingPath(11, 44);
+//        partyS.addEntityToParty(5, false);
+//        entityM.getEntityById(5).setHidden(false);
     }
 
 

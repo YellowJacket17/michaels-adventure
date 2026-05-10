@@ -89,8 +89,7 @@ public class CollisionInspector {
      * @param entity primary entity being checked for any collisions
      * @param ignoreFollowers whether to ignore collision of entities following/leading the primary entity (true) or not
      *                        (false)
-     * @return ID of the target entity that the primary entity will collide with; will return
-     * CollisionInspector.NO_COLLISION if no collision was calculated
+     * @return whether a collision was calculated (true) or not (false)
      */
     public boolean calculateCollisionAll(int targetCol, int targetRow, EntityBase entity, boolean ignoreFollowers) {
 
@@ -274,7 +273,7 @@ public class CollisionInspector {
 
         if (((tileNum == 132) || (tileNum == 133) || (tileNum == 134) || (tileNum == 135))                              // Check ledge hop (downward).
                 && (incomingDirection == EntityDirection.DOWN)
-                && (calculateCollisionAll(targetCol, targetRow + 1, entity, ignoreFollowers))) {                        // Ensure tile being hopped onto is not solid.
+                && (!calculateCollisionAll(targetCol, targetRow + 1, entity, ignoreFollowers))) {                        // Ensure tile being hopped onto is not solid.
 
             return true;
         }

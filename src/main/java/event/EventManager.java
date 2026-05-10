@@ -303,8 +303,9 @@ public class EventManager {
      *
      * @param subMenuId ID of sub-menu being handled
      * @param selectedIndex index of selected sub-menu option
+     * @return whether post-selection logic was run (true) or not due to a disabled sub-menu option (false)
      */
-    public void handlePostSubMenu(int subMenuId, int selectedIndex) {
+    public boolean handlePostSubMenu(int subMenuId, int selectedIndex) {
 
         if (!gp.getSubMenuH().getDisabledOptions().contains(selectedIndex)) {
 
@@ -332,6 +333,10 @@ public class EventManager {
                             + "'.");
                     cleanupSubmenu(3);
             }
+            return true;
+        } else {
+
+            return false;
         }
     }
 

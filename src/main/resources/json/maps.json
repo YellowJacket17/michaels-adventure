@@ -1,25 +1,33 @@
 {
   "1": {
     "tracks": {
-      "0": "dissipate"
+      "0": "dissipate",
+      "1": "dissipate",
+      "2": "dissipate"
       }
     },
 
   "2": {
     "tracks": {
-      "0": "carvingCanyons"
+      "0": "carvingCanyons",
+      "1": "carvingCanyons",
+      "2": "carvingCanyons"
     }
   },
 
   "3": {
     "tracks": {
-      "0": "sunkenSecrets"
+      "0": "sunkenSecrets",
+      "1": "sunkenSecrets",
+      "2": "sunkenSecrets"
     }
   },
 
   "4": {
     "tracks": {
-      "0": "NO_TRACK"
+      "0": "NO_TRACK",
+      "1": "NO_TRACK",
+      "2": "NO_TRACK"
     }
   }
 }

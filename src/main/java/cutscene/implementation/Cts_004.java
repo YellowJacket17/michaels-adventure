@@ -6,7 +6,7 @@ import cutscene.CutsceneBase;
 import entity.enumeration.EntityDirection;
 
 /**
- * This class defines logic for a pre-combat cutscene (first area, fight against Joe).
+ * This class defines logic for a pre-combat cutscene (first area, fight against Peculiar Shadow).
  */
 public class Cts_004 extends CutsceneBase {
 
@@ -38,14 +38,14 @@ public class Cts_004 extends CutsceneBase {
                 break;
             case 2:
                 if (!gp.getEntityM().getPlayer().isMoving()) {
-                    gp.getCameraS().setCameraScroll(1520, 256, 3.0f);
+                    gp.getCameraS().setCameraScroll(1520, 256, 2.5f);
                     progressCutscene();
                 }
                 break;
             case 3:
                 if (!gp.getCameraS().isCameraScrolling()) {
                     gp.getCameraS().setOverrideEntityTracking(false);
-                    gp.getCameraS().setTrackedEntity(1);
+                    gp.getCameraS().setTrackedEntity(4);
                     gp.getDialogueR().initiateConversation(4);
                     progressCutscene();
                 }
@@ -53,8 +53,8 @@ public class Cts_004 extends CutsceneBase {
             case 4:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     counter += dt;
-                    if (counter >= 1.0) {
-                        gp.getEntityM().getEntityById(1).setDirectionCurrent(EntityDirection.LEFT);
+                    if (counter >= 0.75) {
+                        gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.LEFT);
                         progressCutscene();
                         counter = 0;
                     }
@@ -62,16 +62,16 @@ public class Cts_004 extends CutsceneBase {
                 break;
             case 5:
                 counter += dt;
-                if (counter >= 1.0) {
-                    gp.getEntityM().getEntityById(1).setDirectionCurrent(EntityDirection.DOWN);
+                if (counter >= 0.75) {
+                    gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.DOWN);
                     progressCutscene();
                     counter = 0;
                 }
                 break;
             case 6:
                 counter += dt;
-                if (counter >= 1.0) {
-                    gp.getEntityM().getEntityById(1).startFollowingPath(47, 12);
+                if (counter >= 0.75) {
+                    gp.getEntityM().getEntityById(4).startFollowingPath(47, 12);
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
                     gp.setLockPlayerControl(true);
                     gp.getDialogueR().initiateConversation(5);
@@ -80,7 +80,7 @@ public class Cts_004 extends CutsceneBase {
                 }
                 break;
             case 7:
-                if (!gp.getEntityM().getEntityById(1).isOnPath()) {
+                if (!gp.getEntityM().getEntityById(4).isOnPath()) {
                     gp.setLockPlayerControl(false);
                     progressCutscene();
                 }
@@ -94,7 +94,7 @@ public class Cts_004 extends CutsceneBase {
             case 9:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
-                    gp.getEntityM().getEntityById(1).autoStep(EntityDirection.DOWN, false);
+                    gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
                     progressCutscene();
                 }
                 break;
@@ -107,12 +107,12 @@ public class Cts_004 extends CutsceneBase {
             case 11:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
-                    gp.getEntityM().getEntityById(1).autoStep(EntityDirection.DOWN, false);
+                    gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
                     progressCutscene();
                 }
                 break;
             case 12:
-                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(1).isMoving()) {
+                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(4).isMoving()) {
                     gp.getDialogueR().initiateConversation(8);
                     progressCutscene();
                 }
@@ -120,7 +120,7 @@ public class Cts_004 extends CutsceneBase {
             case 13:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
-                    gp.getEntityM().getEntityById(1).autoStep(EntityDirection.DOWN, false);
+                    gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
                     progressCutscene();
                 }
                 break;
@@ -132,7 +132,8 @@ public class Cts_004 extends CutsceneBase {
                 break;
             case 15:
                 if (gp.getDialogueR().getActiveConv() == null) {
-                    gp.getEntityM().getPlayer().autoStep(EntityDirection.UP, false);
+                    gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
+                    gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
                     progressCutscene();
                 }
                 break;
@@ -144,12 +145,34 @@ public class Cts_004 extends CutsceneBase {
                 break;
             case 17:
                 if (gp.getDialogueR().getActiveConv() == null) {
+                    gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
+                    gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
+                    progressCutscene();
+                }
+                break;
+            case 18:
+                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(1).isMoving()) {
+                    gp.getDialogueR().initiateConversation(11);
+                    progressCutscene();
+                }
+                break;
+            case 19:
+                if (gp.getDialogueR().getActiveConv() == null) {
+                    gp.getEntityM().getPlayer().autoStep(EntityDirection.UP, false);
+                    progressCutscene();
+                }
+                break;
+            case 20:
+                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(1).isMoving()) {
+                    gp.getDialogueR().initiateConversation(12);
+                    progressCutscene();
+                }
+                break;
+            case 21:
+                if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getCameraS().setTrackedEntity(gp.getEntityM().getPlayer().getEntityId());
                     gp.getCameraS().setOverrideEntityTracking(true);                                                    // Prevent camera from immediately snapping to player entity.
-                    gp.getCombatM().initiateCombat(0, 43, 9, "runningLate", 1);
-                    // TODO : Make sure this cutscene cannot be triggered again.
-                    //  If the player loses the fight, a different, quicker cutscene should be triggered.
-                    //  If the player wins the fight, no cutscene should be triggered.
+                    gp.getCombatM().initiateCombat(1, 43, 9, "runningLate", 4);
                     exitCutscene();
                     resetCutscene();
                 }

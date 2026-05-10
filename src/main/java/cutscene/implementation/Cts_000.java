@@ -150,18 +150,24 @@ public class Cts_000 extends CutsceneBase {
                 break;
             case 13:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
-                    counter += dt;
-                    if (counter >= 1) {
-                        gp.getIllustrationS().removeIllustration();
-                        gp.getEntityM().getPlayer().setHidden(false);
-                        gp.getMapM().loadMap(1, 0, true);
-                        gp.getFadeS().initiateFadeFrom(2.5);
-                        progressCutscene();
-                        counter = 0;
-                    }
+                    gp.getMapM().loadMap(1, 0, false);
+                    gp.getSoundS().stopTrack(true);
+                    progressCutscene();
                 }
                 break;
             case 14:
+                counter += dt;
+                if (counter >= 1) {
+                    gp.getIllustrationS().removeIllustration();
+                    gp.getSoundS().playTrack(
+                            gp.getMapM().getLoadedMap().getTrack(gp.getMapM().getLoadedMap().getMapState()));           // Start playing track here to ensure it doesn't start playing too early.
+                    gp.getEntityM().getPlayer().setHidden(false);
+                    gp.getFadeS().initiateFadeFrom(2.5);
+                    progressCutscene();
+                    counter = 0;
+                }
+                break;
+            case 15:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
 //                    gp.getDialogueR().resetStagedPrintCountdown();
                     gp.getUi().resetWindowOpacity();

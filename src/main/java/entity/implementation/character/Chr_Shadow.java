@@ -8,10 +8,10 @@ import asset.AssetPool;
 /**
  * This class defines a character entity (Test1).
  */
-public class Npc_Shadow extends EntityBase {
+public class Chr_Shadow extends EntityBase {
 
     // CONSTRUCTOR
-    public Npc_Shadow(GamePanel gp, int entityId) {
+    public Chr_Shadow(GamePanel gp, int entityId) {
         super(gp, entityId, EntityType.CHARACTER);
     }
 

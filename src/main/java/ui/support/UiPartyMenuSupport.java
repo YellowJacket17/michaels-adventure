@@ -48,6 +48,14 @@ public class UiPartyMenuSupport {
 
     private Vector4f scrollIconActiveColor;
 
+    private Vector4f verticalDividerColor;
+
+    private Vector3f attributeLabelTextColor;
+
+    private Vector3f attributeValueTextColor;
+
+    private Vector4f moveDividerColor;
+
     private float slotIconScreenCenterY;
 
     private Vector2f slotIconScreenDimensions;
@@ -85,6 +93,54 @@ public class UiPartyMenuSupport {
     private ArrayList<Transform> scrollIconActiveTransforms;
 
     private ArrayList<Transform> scrollIconInactiveTransforms;
+
+    private Transform leftVerticalDividerScreenTransform;
+
+    private Transform rightVerticalDividerScreenTransform;
+
+    private Vector2f selectedEntityNameTextScreenCoords;
+
+    private Vector2f attributeLifeLabelScreenCoords;
+
+    private Vector2f attributeSkillLabelScreenCoords;
+
+    private Vector2f attributeAttackLabelScreenCoords;
+
+    private Vector2f attributeDefenseLabelScreenCoords;
+
+    private Vector2f attributeMagicLabelScreenCoords;
+
+    private Vector2f attributeAgilityLabelScreenCoords;
+
+    private String attributeLifeLabelText;
+
+    private String attributeSkillLabelText;
+
+    private String attributeAttackLabelText;
+
+    private String attributeDefenseLabelText;
+
+    private String attributeMagicLabelText;
+
+    private String attributeAgilityLabelText;
+
+    private Vector2f attributeLifeValueScreenCoords;
+
+    private Vector2f attributeSkillValueScreenCoords;
+
+    private Vector2f attributeAttackValueScreenCoords;
+
+    private Vector2f attributeDefenseValueScreenCoords;
+
+    private Vector2f attributeMagicValueScreenCoords;
+
+    private Vector2f attributeAgilityValueScreenCoords;
+
+    private Transform centerMoveDividerScreenTransform;
+
+    private Transform topMoveDividerScreenTransform;
+
+    private Transform bottomMoveDividerScreenTransform;
 
 
     // CONSTRUCTOR
@@ -279,6 +335,186 @@ public class UiPartyMenuSupport {
                         ZIndex.SECOND_LAYER);
             }
         }
+
+        // Left vertical divider.
+        gp.getCamera().screenCoordsToWorldCoords(
+                leftVerticalDividerScreenTransform.position, tempWorldTransform.position);
+        gp.getCamera().screenDimensionsToWorldDimensions(
+                leftVerticalDividerScreenTransform.scale, tempWorldTransform.scale);
+        renderer.addRectangle(verticalDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
+
+        // Right vertical divider.
+        gp.getCamera().screenCoordsToWorldCoords(
+                rightVerticalDividerScreenTransform.position, tempWorldTransform.position);
+        gp.getCamera().screenDimensionsToWorldDimensions(
+                rightVerticalDividerScreenTransform.scale, tempWorldTransform.scale);
+        renderer.addRectangle(verticalDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
+
+        // Selected party member name.
+        gp.getCamera().screenCoordsToWorldCoords(
+                selectedEntityNameTextScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getName(),
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeValueTextColor,
+                gp.getUi().getStandardBoldFont(),
+                ZIndex.SECOND_LAYER);
+
+        // Selected party member attributes.
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeLifeLabelScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                attributeLifeLabelText,
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeLabelTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeSkillLabelScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                attributeSkillLabelText,
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeLabelTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeAttackLabelScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                attributeAttackLabelText,
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeLabelTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeDefenseLabelScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                attributeDefenseLabelText,
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeLabelTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeMagicLabelScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                attributeMagicLabelText,
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeLabelTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeAgilityLabelScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                attributeAgilityLabelText,
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeLabelTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeLifeValueScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getLife()
+                        + "/" + gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getMaxLife(),
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeValueTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeSkillValueScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getSkill()
+                        + "/" + gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getMaxSkill(),
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeValueTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeAttackValueScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseAttack()),
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeValueTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeDefenseValueScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseDefense()),
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeValueTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeMagicValueScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseMagic()),
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeValueTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeAgilityValueScreenCoords, tempWorldTransform.position);
+        renderer.addString(
+                Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseAgility()),
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeValueTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        // Move description dividers.
+        gp.getCamera().screenCoordsToWorldCoords(
+                centerMoveDividerScreenTransform.position, tempWorldTransform.position);
+        gp.getCamera().screenDimensionsToWorldDimensions(
+                centerMoveDividerScreenTransform.scale, tempWorldTransform.scale);
+        renderer.addRectangle(moveDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                topMoveDividerScreenTransform.position, tempWorldTransform.position);
+        gp.getCamera().screenDimensionsToWorldDimensions(
+                topMoveDividerScreenTransform.scale, tempWorldTransform.scale);
+        renderer.addRectangle(moveDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                bottomMoveDividerScreenTransform.position, tempWorldTransform.position);
+        gp.getCamera().screenDimensionsToWorldDimensions(
+                bottomMoveDividerScreenTransform.scale, tempWorldTransform.scale);
+        renderer.addRectangle(moveDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
     }
 
 
@@ -437,6 +673,10 @@ public class UiPartyMenuSupport {
         textColor = new Vector3f(255, 255, 255);
         scrollIconInactiveColor = new Vector4f(174, 231, 255, 255);
         scrollIconActiveColor = new Vector4f(100, 193, 255, 255);
+        verticalDividerColor = new Vector4f(147, 182, 220, 255);
+        attributeLabelTextColor = new Vector3f(121, 149, 255);
+        attributeValueTextColor = new Vector3f(255, 255, 255);
+        moveDividerColor = new Vector4f(147, 182, 220, 255);
 
         // Text sizing.
         slotIconContentsFontScale = 0.12f;
@@ -493,6 +733,178 @@ public class UiPartyMenuSupport {
         float scrollIconScreenActiveWidth = gp.getCamera().worldWidthToScreenWidth(scrollIconWorldActiveWidthHeight);
         float scrollIconScreenActiveHeight = gp.getCamera().worldHeightToScreenHeight(scrollIconWorldActiveWidthHeight);
         scrollIconScreenActiveDimensions = new Vector2f(scrollIconScreenActiveWidth, scrollIconScreenActiveHeight);
+
+        // Vertical divider coordinates and dimensions (both, setup).
+        float headerDividerScreenPrimaryWindowLeftAdjustment = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenX()
+                - gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenX();
+        float headerDividerWorldPrimaryWindowLeftAdjustment =
+                gp.getCamera().screenWidthToWorldWidth(headerDividerScreenPrimaryWindowLeftAdjustment);
+        float verticalDividerScreenHeaderDividerBottomAdjustment =
+                gp.getCamera().worldHeightToScreenHeight(headerDividerWorldPrimaryWindowLeftAdjustment) / 2;
+        float verticalDividerScreenHeight =
+                (gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenY()
+                        + gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenHeight()) -
+                (gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenY()
+                        + gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenHeight()) -
+                (verticalDividerScreenHeaderDividerBottomAdjustment * 2);
+        float verticalDividerWorldWidth = 0.96f;
+        float verticalDividerScreenWidth = gp.getCamera().worldWidthToScreenWidth(verticalDividerWorldWidth);
+        float verticalDividerScreenY = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenY()
+                + gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenHeight()
+                + verticalDividerScreenHeaderDividerBottomAdjustment;
+        Vector2f verticalDividerScreenDimensions = new Vector2f(verticalDividerScreenWidth, verticalDividerScreenHeight);
+
+        // Left vertical divider coordinates.
+        float leftVerticalDividerWorldSlotIconRightAdjustment = 11.5f;
+        float leftVerticalDividerScreenSlotIconRightAdjustment =
+                gp.getCamera().worldWidthToScreenWidth(leftVerticalDividerWorldSlotIconRightAdjustment);
+        float leftVerticalDividerScreenX = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenX()
+                + slotIconScreenWidth + leftVerticalDividerScreenSlotIconRightAdjustment;
+        Vector2f leftVerticalDividerScreenCoords = new Vector2f(leftVerticalDividerScreenX, verticalDividerScreenY);
+        leftVerticalDividerScreenTransform =
+                new Transform(leftVerticalDividerScreenCoords, verticalDividerScreenDimensions);
+
+        // Right vertical divider coordinates.
+        float rightVerticalDividerScreenX = leftVerticalDividerScreenX +
+                (gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenWidth() / 3) - (verticalDividerScreenWidth / 2);
+        Vector2f rightVerticalDividerScreenCoords = new Vector2f(rightVerticalDividerScreenX, verticalDividerScreenY);
+        rightVerticalDividerScreenTransform =
+                new Transform(rightVerticalDividerScreenCoords, verticalDividerScreenDimensions);
+
+        // Selected party member name coordinates.
+        float selectedEntityNameTextWorldLeftVerticalDividerLeftAdjustment = 10.0f;
+        float selectedEntityNameTextScreenLeftVerticalDividerLeftAdjustment =
+                gp.getCamera().worldWidthToScreenWidth(selectedEntityNameTextWorldLeftVerticalDividerLeftAdjustment);
+        float selectedEntityNameTextScreenX = leftVerticalDividerScreenX + verticalDividerScreenWidth
+                + selectedEntityNameTextScreenLeftVerticalDividerLeftAdjustment;
+        float selectedEntityNameTextScreenY = verticalDividerScreenY;
+        selectedEntityNameTextScreenCoords = new Vector2f(selectedEntityNameTextScreenX, selectedEntityNameTextScreenY);
+
+        // Selected party member attributes coordinates.
+        float attributeWorldLeftVerticalDividerLeftAdjustment = 10.0f;
+        float attributeScreenLeftVerticalDividerLeftAdjustment =
+                gp.getCamera().worldWidthToScreenWidth(attributeWorldLeftVerticalDividerLeftAdjustment);
+        float attributeLabelScreenX = leftVerticalDividerScreenX + verticalDividerScreenWidth
+                + attributeScreenLeftVerticalDividerLeftAdjustment;
+        float attributeWorldVerticalSpacing = 38.9f;
+        float attributeScreenVerticalSpacing =
+                gp.getCamera().worldHeightToScreenHeight(attributeWorldVerticalSpacing);
+        float topAttributeScreenY = selectedEntityNameTextScreenY + attributeScreenVerticalSpacing;
+
+        attributeLifeLabelText = "Health Points: ";
+        attributeSkillLabelText = "Skill Points: ";
+        attributeAttackLabelText = "Attack: ";
+        attributeDefenseLabelText = "Defense: ";
+        attributeMagicLabelText = "Magic: ";
+        attributeAgilityLabelText = "Agility: ";
+
+        attributeLifeLabelScreenCoords = new Vector2f(attributeLabelScreenX, topAttributeScreenY);
+        attributeSkillLabelScreenCoords = new Vector2f(
+                attributeLabelScreenX,
+                topAttributeScreenY + attributeScreenVerticalSpacing
+        );
+        attributeAttackLabelScreenCoords = new Vector2f(
+                attributeLabelScreenX,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 2)
+        );
+        attributeDefenseLabelScreenCoords = new Vector2f(
+                attributeLabelScreenX,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 3)
+        );
+        attributeMagicLabelScreenCoords = new Vector2f(
+                attributeLabelScreenX,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 4)
+        );
+        attributeAgilityLabelScreenCoords = new Vector2f(
+                attributeLabelScreenX,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 5)
+        );
+
+        float attributeLifeLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
+                attributeLifeLabelText,
+                gp.getUi().getStandardFontScale(),
+                gp.getUi().getStandardNormalFont()
+        );
+        float attributeSkillLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
+                attributeSkillLabelText,
+                gp.getUi().getStandardFontScale(),
+                gp.getUi().getStandardNormalFont()
+        );
+        float attributeAttackLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
+                attributeAttackLabelText,
+                gp.getUi().getStandardFontScale(),
+                gp.getUi().getStandardNormalFont()
+        );
+        float attributeDefenseLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
+                attributeDefenseLabelText,
+                gp.getUi().getStandardFontScale(),
+                gp.getUi().getStandardNormalFont()
+        );
+        float attributeMagicLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
+                attributeMagicLabelText,
+                gp.getUi().getStandardFontScale(),
+                gp.getUi().getStandardNormalFont()
+        );
+        float attributeAgilityLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
+                attributeAgilityLabelText,
+                gp.getUi().getStandardFontScale(),
+                gp.getUi().getStandardNormalFont()
+        );
+
+        attributeLifeValueScreenCoords = new Vector2f(
+                attributeLabelScreenX + attributeLifeLabelScreenWidth,
+                topAttributeScreenY
+        );
+        attributeSkillValueScreenCoords = new Vector2f(
+                attributeLabelScreenX + attributeSkillLabelScreenWidth,
+                topAttributeScreenY + attributeScreenVerticalSpacing
+        );
+        attributeAttackValueScreenCoords = new Vector2f(
+                attributeLabelScreenX + attributeAttackLabelScreenWidth,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 2)
+        );
+        attributeDefenseValueScreenCoords = new Vector2f(
+                attributeLabelScreenX + attributeDefenseLabelScreenWidth,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 3)
+        );
+        attributeMagicValueScreenCoords = new Vector2f(
+                attributeLabelScreenX + attributeMagicLabelScreenWidth,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 4)
+        );
+        attributeAgilityValueScreenCoords = new Vector2f(
+                attributeLabelScreenX + attributeAgilityLabelScreenWidth,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 5)
+        );
+
+        // Move description divider coordinates and dimensions.
+        float moveDividerWorldRightVerticalDividerRightAdjustment = 10.0f;
+        float moveDividerScreenRightVerticalDividerRightAdjustment =
+                gp.getCamera().worldWidthToScreenWidth(moveDividerWorldRightVerticalDividerRightAdjustment);
+        float moveDividerScreenWidth = (gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenX()
+                + gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenWidth()) - rightVerticalDividerScreenX
+                + moveDividerScreenRightVerticalDividerRightAdjustment;
+        float moveDividerWorldHeight = 0.96f;
+        float moveDividerScreenHeight = gp.getCamera().worldHeightToScreenHeight(moveDividerWorldHeight);
+        Vector2f moveDividerScreenDimensions = new Vector2f(moveDividerScreenWidth, moveDividerScreenHeight);
+
+        float moveDividerScreenX = rightVerticalDividerScreenX
+                + verticalDividerScreenWidth + moveDividerScreenRightVerticalDividerRightAdjustment;
+
+        float centerMoveDividerScreenY = verticalDividerScreenY
+                + (verticalDividerScreenHeight / 2) - (moveDividerScreenHeight / 2);
+        Vector2f centerMoveDividerScreenCoords = new Vector2f(moveDividerScreenX, centerMoveDividerScreenY);
+        centerMoveDividerScreenTransform = new Transform(centerMoveDividerScreenCoords, moveDividerScreenDimensions);
+
+        float topMoveDividerScreenY = centerMoveDividerScreenY - (verticalDividerScreenHeight / 4);
+        Vector2f topMoveDividerScreenCoords = new Vector2f(moveDividerScreenX, topMoveDividerScreenY);
+        topMoveDividerScreenTransform = new Transform(topMoveDividerScreenCoords, moveDividerScreenDimensions);
+
+        float bottomMoveDividerScreenY = centerMoveDividerScreenY + (verticalDividerScreenHeight / 4);
+        Vector2f bottomMoveDividerScreenCoords = new Vector2f(moveDividerScreenX, bottomMoveDividerScreenY);
+        bottomMoveDividerScreenTransform = new Transform(bottomMoveDividerScreenCoords, moveDividerScreenDimensions);
+
+        // Selected party member move description coordinates.
+        // . . .
     }
 
 

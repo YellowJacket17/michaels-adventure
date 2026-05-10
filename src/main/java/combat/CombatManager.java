@@ -2135,7 +2135,6 @@ public class CombatManager {
             storedEntityCols.put(target.getEntityId(), target.getCol());
             storedEntityRows.put(target.getEntityId(), target.getRow());
             storedEntityDirections.put(target.getEntityId(), target.getDirectionCurrent());
-            System.out.println(storedEntityDirections.get(target.getEntityId()));
             storedEntityHidden.put(target.getEntityId(), target.isHidden());
         }
     }

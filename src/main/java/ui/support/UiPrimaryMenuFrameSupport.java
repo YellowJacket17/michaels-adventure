@@ -216,8 +216,8 @@ public class UiPrimaryMenuFrameSupport {
         float headerDividerScreenWidth =
                 1 - (2 * primaryWindowScreenLeftRightAdjustment)
                         - (2 * headerDividerScreenPrimaryWindowLeftRightAdjustment);
-        float headerDividerWorldHeight = 1.7f;
-        float headerDividerScreenHeight = gp.getCamera().worldWidthToScreenWidth(headerDividerWorldHeight);
+        float headerDividerWorldHeight = 0.96f;
+        float headerDividerScreenHeight = gp.getCamera().worldHeightToScreenHeight(headerDividerWorldHeight);
         float iconWorldHeight = gp.getGuiIconM().getIconById(0).getNativeSpriteHeight();                                // It doesn't matter which of the menu icons is used here, since all are same height.
         float iconScreenHeight = gp.getCamera().worldHeightToScreenHeight(iconWorldHeight);
         float headerDividerScreenX =

@@ -1,20 +1,51 @@
 {
     "1": {
+        "type": "object",
+        "class": "Obj_Novel",
+        "map": 1,
+        "position": {
+            "defaultCol": 1,
+            "defaultRow": 4
+        }
+    },
+    
+    "2": {
+        "type": "object",
+        "class": "Obj_Doll",
+        "map": 1,
+        "position": {
+            "defaultCol": 29,
+            "defaultRow": 43
+        }
+    },
+
+    "3": {
+        "type": "object",
+        "class": "Obj_Watch",
+        "map": 1,
+        "position": {
+            "defaultCol": 16,
+            "defaultRow": 6
+        }
+    },
+
+    "4": {
         "type": "character",
-        "class": "Npc_Shadow",
+        "class": "Chr_Shadow",
         "collision": true,
         "defaultAction": "static",
         "defaultDirection": "up",
         "map": 1,
+        "mapStates": [0, 1],
         "attributes": {
-            "name": "Shadow",
+            "name": "Peculiar Shadow",
             "speed": 120,
             "maxLife": 270,
             "life": 270,
             "maxSkill": 60,
             "skill": 60,
             "baseAttack": 60,
-            "baseDefense": 90,
+            "baseDefense": 1,
             "baseMagic": 60,
             "baseAgility": 80
         },
@@ -26,108 +57,30 @@
         }
     },
 
-    "2": {
-        "type": "object",
-        "class": "Obj_Novel",
-        "map": 1,
-        "position": {
-            "defaultCol": 1,
-            "defaultRow": 4
-        }
-    },
-    
-    "3": {
-        "type": "object",
-        "class": "Obj_Doll",
-        "map": 1,
-        "position": {
-            "defaultCol": 29,
-            "defaultRow": 43
-        }
-    },
-
-    "4": {
-        "type": "object",
-        "class": "Obj_Watch",
-        "map": 1,
-        "position": {
-            "defaultCol": 16,
-            "defaultRow": 6
-        }
-    },
-
     "5": {
         "type": "character",
-        "class": "Npc_Shadow",
-        "map": 1,
+        "class": "Chr_Joe",
+        "collision": true,
+        "hidden": true,
+        "defaultAction": "static",
+        "defaultDirection": "left",
         "attributes": {
-            "maxLife": 0,
-            "life": 0,
-            "name": "Test One"
+            "name": "Joe",
+            "speed": 120,
+            "maxLife": 270,
+            "life": 270,
+            "maxSkill": 60,
+            "skill": 60,
+            "baseAttack": 60,
+            "baseDefense": 90,
+            "baseMagic": 60,
+            "baseAgility": 80
         },
         "position": {
-            "defaultCol": 5,
-            "defaultRow": 45
-        }
-    },
-
-    "6": {
-        "type": "character",
-        "class": "Npc_Shadow",
-        "map": 1,
-        "attributes": {
-            "maxLife": 0,
-            "life": 0,
-            "name": "Test Two"
+            "defaultCol": 45,
+            "defaultRow": 9
         },
-        "position": {
-            "defaultCol": 6,
-            "defaultRow": 45
-        }
-    },
-
-    "7": {
-        "type": "character",
-        "class": "Npc_Shadow",
-        "map": 1,
-        "attributes": {
-            "maxLife": 0,
-            "life": 0,
-            "name": "Test Three"
-        },
-        "position": {
-            "defaultCol": 7,
-            "defaultRow": 45
-        }
-    },
-
-    "8": {
-        "type": "character",
-        "class": "Npc_Shadow",
-        "map": 1,
-        "attributes": {
-            "maxLife": 0,
-            "life": 0,
-            "name": "Test Four"
-        },
-        "position": {
-            "defaultCol": 8,
-            "defaultRow": 45
-        }
-    },
-
-    "9": {
-        "type": "character",
-        "class": "Npc_Shadow",
-        "map": 1,
-        "attributes": {
-            "maxLife": 0,
-            "life": 0,
-            "name": "Test Five"
-        },
-        "position": {
-            "defaultCol": 9,
-            "defaultRow": 45
+        "moves": {
         }
     }
 }

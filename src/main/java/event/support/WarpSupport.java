@@ -146,31 +146,35 @@ public class WarpSupport {
     /**
      * Warps the player to a new location.
      * The warp is dressed with a fade-to-black transition.
-     * The track specified by the map being warped to will not automatically play.
-     * Any additional entities in the `npc` and `obj` (hash)maps will be purged if warping to a new map.
+     * The track specified by the map being warped to will automatically play.
+     * The last saved map state of the map being warped to will be loaded; if no map state is saved, then a map state of
+     * zero will be defaulted to.
+     * Any additional entities in the 'npc' and 'obj' (hash)maps will be purged if warping to a new map.
      * To retain these additional entities, they should first be transferred to the `standby` (hash)map.
      *
      * @param dt time since last frame (seconds)
      * @param mapId ID of the map that the player entity will be warped to
-     * @param mapState state of the map that the player entity will be warped to
      * @param col column that the player entity will be warped to
      * @param row row that the player entity will be warped to
      * @param type type of warp transition
      * @param loadDirection direction that the player entity will be facing once the transition completes
-     * @param trackName name/title of track to be swapped in during transition ('Sound.NO_TRACK' to swap to no track
-     *                  playing, 'Sound.RETAIN_TRACK' to retain current track playing)
      */
-    public void initiateWarp(double dt, int mapId, int mapState, int col, int row, WarpTransitionType type,
-                             EntityDirection loadDirection, String trackName) {
+    public void initiateWarp(double dt, int mapId, int col, int row, WarpTransitionType type,
+                             EntityDirection loadDirection) {
 
         gp.getTransitionS().initiateTransition(TransitionType.WARP);
         activeWarpTransitionType = type;                                                                                // Set the warp current transition type being used.
         stagedMapId = mapId;                                                                                            // Store the requested map.
-        stagedMapState = mapState;                                                                                      // Store the requested map state.
         stagedCol = col;                                                                                                // Store the requested player position (x).
         stagedRow = row;                                                                                                // Store the requested player position (y).
-        stagedTrackName = trackName;                                                                                    // Set the track to swap in during transition.
-        overrideMapTrack = true;                                                                                        // Set to ensure that, when `gp.loadMap()` is called, the loaded map's track is not automatically swapped in.
+
+        if (gp.getMapM().checkSavedMapState(mapId)) {
+
+            stagedMapState = gp.getMapM().getSavedMapState(mapId);                                                      // Store the last saved map state.
+        } else {
+
+            stagedMapState = 0;                                                                                         // Store the default map state.
+        }
 
         switch (type) {
             case BASIC:
@@ -188,7 +192,7 @@ public class WarpSupport {
      * Warps the player to a new location.
      * The warp is dressed with a fade-to-black transition.
      * The track specified by the map being warped to will automatically play.
-     * Any additional entities in the `npc` and `obj` (hash)maps will be purged if warping to a new map.
+     * Any additional entities in the 'npc' and 'obj' (hash)maps will be purged if warping to a new map.
      * To retain these additional entities, they should first be transferred to the `standby` (hash)map.
      *
      * @param dt time since last frame (seconds)

@@ -304,7 +304,7 @@ public class UiSettingsMenuSupport {
         settingLabelTextInactiveColor = new Vector3f(255, 255, 255);
         settingLabelTextActiveColor = new Vector3f(244, 154, 45);
         settingValueTextColor = new Vector3f(255, 255, 255);
-        footerDividerColor = new Vector4f(255, 255, 255, 255);
+        footerDividerColor = new Vector4f(147, 182, 220, 255);
         settingDescriptionTextColor = new Vector3f(255, 255, 255);
 
         // Text sizing.

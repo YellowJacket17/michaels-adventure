@@ -1,6 +1,7 @@
 package cutscene;
 
 import core.GamePanel;
+import org.joml.Vector3f;
 import utility.UtilityTool;
 
 /**

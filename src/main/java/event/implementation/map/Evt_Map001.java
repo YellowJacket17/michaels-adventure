@@ -23,7 +23,7 @@ public class Evt_Map001 extends EventMapBase {
     public boolean objInteraction(double dt, EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
-            case 2:
+            case 1:
                 if (type == EventType.CLICK) {
                     if (gp.getEventM().pickupItem(0)) {
                         gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
@@ -31,7 +31,7 @@ public class Evt_Map001 extends EventMapBase {
                     return true;
                 }
                 break;
-            case 3:
+            case 2:
                 if (type == EventType.CLICK) {
                     if (gp.getEventM().pickupItem(1)) {
                         gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
@@ -39,7 +39,7 @@ public class Evt_Map001 extends EventMapBase {
                     return true;
                 }
                 break;
-            case 4:
+            case 3:
                 if (type == EventType.CLICK) {
                     if (gp.getEventM().pickupItem(2)) {
                         gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
@@ -73,21 +73,25 @@ public class Evt_Map001 extends EventMapBase {
     @Override
     public boolean tileInteraction(double dt, EventType type, int col, int row, EntityDirection direction) {
 
-        // Shadow encounter cutscene.
+        // Shadow encounter.
         if ((col == 47) && (row == 13) && (direction == EntityDirection.UP)) {
-//            gp.getCutsceneM().initiateCutscene(4);
-            gp.getCombatM().initiateCombat(0, 43, 9, "runningLate", 1);
-            return true;
+            if (gp.getMapM().getLoadedMap().getMapState() == 0) {
+                gp.getCutsceneM().initiateCutscene(4);
+                return true;
+            } else if (gp.getMapM().getLoadedMap().getMapState() == 1) {
+                gp.getCombatM().initiateCombat(1, 43, 9, "runningLate", 4);
+                return true;
+            }
         }
 
         // Map 2 warp.
         if ((col == 50) && ((row == 8)) && (direction == EntityDirection.RIGHT)) {
-            gp.getWarpS().initiateWarp(dt, 2, 0, 57, 5, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
+            gp.getWarpS().initiateWarp(dt, 2, 57, 5, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
             gp.getSoundS().playEffect("obtain");
             return true;
         }
         if ((col == 50) && ((row == 9)) && (direction == EntityDirection.RIGHT)) {
-            gp.getWarpS().initiateWarp(dt, 2, 0, 57, 6, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
+            gp.getWarpS().initiateWarp(dt, 2, 57, 6, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
             gp.getSoundS().playEffect("obtain");
             return true;
         }

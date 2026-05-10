@@ -32,7 +32,7 @@ public class Cts_003 extends CutsceneBase {
 
         switch (scenePhase) {
             case 0:
-                gp.getFadeS().initiateFadeTo(1.5, new Vector3f(0, 0, 0));
+                gp.getFadeS().initiateFadeTo(1, new Vector3f(0, 0, 0));
                 progressCutscene();
                 break;
             case 1:

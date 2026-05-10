@@ -65,7 +65,7 @@ public class UserInterface {
     /**
      * Default opacity for rendered user interface window elements (dialogue window, sub-menu window, etc.).
      */
-    private final float defaultWindowOpacity = 220;
+    private final float defaultWindowOpacity = 230; //220
 
     /**
      * Opacity for rendered user interface window elements (dialogue window, sub-menu window, etc.).
@@ -901,35 +901,49 @@ public class UserInterface {
 
         // Player column.
         screenY += spacingScreenY;
-        String col = "Player Col: " + gp.getEntityM().getPlayer().getCol();
-        addStringShadowToRenderPipeline(col, screenX, screenY, standardFontScale,
+        String playerCol = "Player Col: " + gp.getEntityM().getPlayer().getCol();
+        addStringShadowToRenderPipeline(playerCol, screenX, screenY, standardFontScale,
                 color, standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Player row.
         screenY += spacingScreenY;
-        String row = "Player Row: " + gp.getEntityM().getPlayer().getRow();
-        addStringShadowToRenderPipeline(row, screenX, screenY, standardFontScale,
+        String playerRow = "Player Row: " + gp.getEntityM().getPlayer().getRow();
+        addStringShadowToRenderPipeline(playerRow, screenX, screenY, standardFontScale,
                 color, standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Camera center (x).
         screenY += spacingScreenY;
-        String centerX = "Camera Center X: "
+        String cameraCenterX = "Camera Center X: "
                 + (gp.getCamera().getPositionMatrix().x + ((float)gp.getCamera().getScreenWidth() / 2));
-        addStringShadowToRenderPipeline(centerX, screenX, screenY, standardFontScale,
+        addStringShadowToRenderPipeline(cameraCenterX, screenX, screenY, standardFontScale,
                 color, standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Camera center (y).
         screenY += spacingScreenY;
-        String centerY = "Camera Center Y: "
+        String cameraCenterY = "Camera Center Y: "
                 + (gp.getCamera().getPositionMatrix().y + ((float)gp.getCamera().getScreenHeight() / 2));
-        addStringShadowToRenderPipeline(centerY, screenX, screenY, standardFontScale,
+        addStringShadowToRenderPipeline(cameraCenterY, screenX, screenY, standardFontScale,
+                color, standardNormalFont, ZIndex.FIRST_LAYER);
+
+        // Loaded map ID.
+        screenY += spacingScreenY;
+        String loadedMapId = "Loaded Map ID: "
+                + (gp.getMapM().getLoadedMap().getMapId());
+        addStringShadowToRenderPipeline(loadedMapId, screenX, screenY, standardFontScale,
+                color, standardNormalFont, ZIndex.FIRST_LAYER);
+
+        // Loaded map state.
+        screenY += spacingScreenY;
+        String loadedMapState = "Loaded Map State: "
+                + (gp.getMapM().getLoadedMap().getMapState());
+        addStringShadowToRenderPipeline(loadedMapState, screenX, screenY, standardFontScale,
                 color, standardNormalFont, ZIndex.FIRST_LAYER);
 
         // Primary game state.
         screenY += spacingScreenY;
-        String state = "Primary Game State: "
+        String primaryGameState = "Primary Game State: "
                 + (gp.getPrimaryGameState().toString());
-        addStringShadowToRenderPipeline(state, screenX, screenY, standardFontScale,
+        addStringShadowToRenderPipeline(primaryGameState, screenX, screenY, standardFontScale,
                 color, standardNormalFont, ZIndex.FIRST_LAYER);
     }
 

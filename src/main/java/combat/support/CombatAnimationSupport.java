@@ -71,7 +71,7 @@ public class CombatAnimationSupport {
      * Number of life points that an entity will gain/lose per second while a standard move animation is playing.
      * Increasing this value will increase the speed of the animation.
      */
-    private final double smaHealthBarSpeed = 20.0;
+    private final double smaHealthBarSpeed = 40.0;
 
     /**
      * Time to delay the start of the actual standard move animation from when the 'initiateStandardMoveAnimation()'

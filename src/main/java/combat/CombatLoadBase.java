@@ -37,12 +37,16 @@ public abstract class CombatLoadBase {
 
     /**
      * Executes any custom loading while the screen is faded to black when exiting combat.
+     *
+     * @param combatLost whether combat was lost by the player (true) or not (false)
      */
-    public abstract void handleExitCombatTransitionLoading();
+    public abstract void handleExitCombatTransitionLoading(boolean combatLost);
 
 
     /**
      * Executes any custom logic after the screen has faded from black when exiting combat.
+     *
+     * @param combatLost whether combat was lost by the player (true) or not (false)
      */
-    public abstract void concludeExitCombatTransition();
+    public abstract void concludeExitCombatTransition(boolean combatLost);
 }

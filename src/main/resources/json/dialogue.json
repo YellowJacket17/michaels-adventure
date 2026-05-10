@@ -4,19 +4,19 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "text": "This isn't looking good."
+                "text": "I wish I were anywhere else. I wish I were SOMEONE else."
             },
             "1": {
-                "text": "I need to write something. I need to feel like I'm talking to someone."
+                "text": "I'm glad I ended up packing my notebook: it turns out it's the only thing left for me to talk to."
             },
             "2": {
-                "text": "I can't tell what time it is. My phone won't turn on, and I haven't found any sunlight coming through this cave."
+                "text": "I can't tell what time it is. My phone won't turn on, and I haven't seen any sunlight coming through this cave."
             },
             "3": {
                 "text": "If I had to guess, maybe I've been down here for about a day."
             },
             "4": {
-                "text": "If I see Joe again, I really need to tell him what a terrible idea this whole trip was."
+                "text": "If I ever see Joe again, I really need to tell him what an awful idea this whole trip was."
             },
             "5": {
                 "text": "He asked us if we all wanted to travel out west with him to see a total solar eclipse. He thought it would be neat to hike up a mountain to see the eclipse from a lookout point."
@@ -28,7 +28,7 @@
                 "text": "The condition was that we'd only do it if we could camp one of the nights, which he (reluctantly) agreed to."
             },
             "8": {
-                "text": "It feels like it's been a long time since I've gone camping, and going out with our friends is something I've wanted to do for a while. This whole eclipse finally gave me some leverage to convince everyone to do it."
+                "text": "It feels like it's been a long time since I've gone camping, and going out with our friends is something I've wanted to do for a while. This whole eclipse thing finally gave me some leverage to convince everyone to do it."
             },
             "9": {
                 "text": "So, we picked a trail that had a camping site relatively nearby to stop at once the eclipse ended."
@@ -46,25 +46,25 @@
                 "text": "Once we got to the overlook, I was finally able to unclip this stupid lantern that Joe made me carry all the way up the trail."
             },
             "14": {
-                "text": "He saw it in a thrift store that we checked out in town a few days ago and \"just had\" to buy it for his tent. He said something about having an \"authentic camping experience,\" as he eloquently put it."
+                "text": "He saw it at a thrift store in town the other day and \"just had\" to buy it for his tent. He said something about having an \"authentic camping experience.\""
             },
             "15": {
-                "text": "Somehow I got stuck with it hooked to my backpack while we were walking, since Joe, Logan and Howie were complaining that their camping gear was too heavy, and Nick was already carrying our tent."
+                "text": "Somehow I got stuck with it hooked to my backpack while we were walking since Joe, Logan and Howie were complaining that their camping gear was too heavy. Nick was already carrying our tent, so he couldn't take it either."
             },
             "16": {
-                "text": "I don't think Nick realized how awkward it would be to carry the tent when he volunteered for it. He didn't complain much while we were walking, but seemed a bit resentful when he smashed it to the ground at the overlook."
+                "text": "I don't think Nick realized how awkward it would be to carry the tent when he volunteered for it. He didn't complain much while walking, but seemed a bit resentful while smashing it to the ground at the overlook."
             },
             "17": {
                 "text": "After sitting around for a while, the moon finally started to move over the sun."
             },
             "18": {
-                "text": "As it got darker, I noticed birds returning to their nests in the pine trees, which I wasn't expecting to see."
+                "text": "As it got darker, I noticed birds returning to their nests in the pine trees, which I hadn't considered before."
             },
             "19": {
-                "text": "I also noticed that the shadows from the treeline on either side of us were growing longer which, after thinking about it for a moment, didn't make much sense since the sun wasn't changing position."
+                "text": "I also noticed that the shadows from the tree line on either side of us were growing longer which, after thinking about it for a moment, didn't make much sense since the sun wasn't changing position."
             },
             "20": {
-                "text": "It was weird, but the shadows almost looked like they were made of hands, reaching out towards us with withering little fingers. They were very, very dark."
+                "text": "I feel weird writing this, but the shadows almost looked like they were made of hands, reaching out towards us with writhing little fingers. They were very, very dark."
             },
             "21": {
                 "text": "It seemed like Nick picked up on it too, because I felt him start punching my shoulder as the shadows moved towards us faster. I think he was starting to freak out like I was."
@@ -77,16 +77,16 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "text": "Since it seemed like the right thing to do at the time, I grabbed my backpack (and the lantern for some reason, which Joe had turned on at some point), jumped up with Nick, yelled for everyone to follow us, and began running away."
+                "text": "Since it seemed like the right thing to do at the time, I grabbed my backpack (and the lantern for some reason, which Joe had probably turned on at some point), jumped up with Nick, yelled for everyone to follow us, and began running away."
             },
             "1": {
                 "text": "In retrospect, I don't really know where we was running to since we were surrounded by trees and could only fall back to the trail."
             },
             "2": {
-                "text": "After that, I don't really know what happened next; maybe I tripped and hit my head, who knows."
+                "text": "After that, I don't really know what happened next. Maybe I tripped and hit my head, who knows."
             },
             "3": {
-                "text": "I don't know how or where I fell in, but I woke up in this really strange cave all by myself. (Mostly unharmed, I might add.)"
+                "text": "I don't know how or where I fell in, but I woke up in this really strange cave all by myself. (Miraculously unharmed, if you'd believe it.)"
             }
         }
     },
@@ -102,7 +102,7 @@
                 "text": "I'm still alone, and the food I had in my backpack isn't stretching very far."
             },
             "2": {
-                "text": "I'll probably need to try drinking the water in the pools around me, although I don't really like the green tint to it. It's also emitting a faint glow that's lighting up the cave a little."
+                "text": "I'll probably need to try drinking the water in the pools around me, although I don't really like the green tint to it. It's also emitting a glow that's faintly illuminating the cavern."
             },
             "3": {
                 "text": "The only other notable things that I really have in my backpack (besides this notebook and my useless phone) are some matches, some spare clothes, and this foldable pocket knife that I bought at that thrift store. (What can I say: it had Kuromi on it, and I thought it'd be nice to have something like that while camping. I know, I'm a sucker.)"
@@ -111,7 +111,7 @@
                 "text": "I'm so scared, and I haven't even remotely found a way out. I haven't heard Nick or anyone else, if they're even down here. I feel so useless."
             },
             "5": {
-                "text": "It's strange, though: there ARE some bridges in these caverns, which means that other people must walk through here, at least at some point, right?"
+                "text": "It's strange, though: there ARE some bridges in these caverns, which means that other people must pass through here, right?"
             }
         }   
     },
@@ -124,7 +124,7 @@
                 "text": "I'm going to head out again to find a way out."
             },
             "1": {
-                "text": "Yes, It's time to get going, Mary."
+                "text": "Yes, it's time to get going, Mary."
             },
             "2": {
                 "text": "Don't give up. Yet."
@@ -133,97 +133,284 @@
     },
 
     "4": {
-          "convName": "Map001ShadowEncounter1",
+          "convName": "Area1_PreShadowEncounter1",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "Wait, wha . . . what is that?"
-            },
-            "1": {
-                "speaker": "Mary",
-                "text": "Does it know I'm here . . . ?"
+                "text": "Wait, is that a person?"
             }
         }   
     },
 
     "5": {
-        "convName": "Map001ShadowEncounter2",
+        "convName": "Area1_PreShadowEncounter2",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "Yes, it does!"
+                "text": "Ah, no, wha . . . what are you?!?"
             }
         }
     },
 
     "6": {
-        "convName": "Map001ShadowEncounter2",
+        "convName": "Area1_PreShadowEncounter3",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speaker": "Shadow Figure",
-                "text": "hwta eth ekch rea uoy? teg yarde ot hgift ihts emit, I liwl OTN nru aayw giana!"
-            },
-            "1": {
-                "speaker": "Mary",
-                "text": "Ahh, pl . . . please, I didn't do anything!"
+                "speaker": "Peculiar Shadow",
+                "text": "Hneaonr neo fo shteo sodsahw! I tw'on unr aayw ihst meit, emco teg oesm!"
             }
-
         }
     },
 
     "7": {
-        "convName": "Map001ShadowEncounter2",
+        "convName": "Area1_PreShadowEncounter4",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "Ummm, what can I do here. . . ?"
+                "text": "Ungh, I feel dizzy, it's getting closer."
             }
 
         }
     },
 
      "8": {
-        "convName": "Map001ShadowEncounter3",
+        "convName": "Area1_PreShadowEncounter5",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "I, um, have that knife Joe gave me."
+                "text": "Don't panic, Mary, you probably weren't going to make it out of here anyways."
             }
 
         }
     },
 
     "9": {
-        "convName": "Map001ShadowEncounter4",
+        "convName": "Area1_PreShadowEncounter6",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "I also have those matches that I brought for making a fire."
+                "text": "Umm . . . maybe . . . if it's going to get me no matter what . . ."
             }
 
         }
     },
 
     "10": {
-        "convName": "Map001ShadowEncounter5",
+        "convName": "Area1_PreShadowEncounter7",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "Well, here we go."
+                "text": "Hah . . ."
+            }
+        }
+    },
+
+    "11": {
+        "convName": "Area1_PreShadowEncounter8",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "I can't believe I'm about to do this."
+            }
+        }
+    },
+
+    "12": {
+        "convName": "Area1_PreShadowEncounter9",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "GET AWAY FROM ME!"
+            }
+        }
+    },
+
+    "13": {
+        "convName": "Area1_PostShadowEncounter1",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Wait . . . JOE?!?"
+            },
+            "1": {
+                "speaker": "Joe",
+                "text": "Hngh, Mary . . . ? That was you? Ungh, I think you almost killed me . . . yeah, that hurts."
+            }
+        }
+    },
+
+    "14": {
+        "convName": "Area1_PostShadowEncounter1",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Joe, I'm so sorry, I couldn't tell it was you! It looked like you were standing in a really dark shadow, even when I held up your lantern! You were making incomprehensible and really . . . unnatural sounds."
+            },
+            "1": {
+                "speaker": "Joe",
+                "text": "I couldn't tell it was you, either. I guess you looked and sounded the same way. I could see your silhouette, but I couldn't focus on anything until you beat me up. Honestly, you looked kind of like a monster, especially with the glowing yellow eyes."
+            },
+            "2": {
+                "speaker": "Mary",
+                "text": " I can see you now, though. I guess that explains why it looked like you were attacking me, because you WERE attacking me."
+            },
+            "3": {
+                "speaker": "Joe",
+                "text": "Heh, yeah, sorry about that. Like I said, though, I couldn't tell it was you. I COULD see the lantern shining, though, and thought that maybe some freak creature had gotten one of you and took it . . . I guess it made me pretty emotional."
+            },
+            "4": {
+                "speaker": "Mary",
+                "text": "How do you have a sword and shield, by the way? You definitely didn't have that before."
+            },
+            "5": {
+                "speaker": "Joe",
+                "text": "I dunno, they were near me when I woke up down here. And, this is going to sound completely crazy, but I feel . . . I feel like I have . . . special skills, kinda like . . . magic. Like, watch this."
+            }
+        }
+    },
+
+    "15": {
+        "convName": "Area1_PostShadowEncounter2",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Wait, my cuts . . . they're gone!"
+            },
+            "1": {
+                "speaker": "Joe",
+                "text": "Right?!? I have no idea what the heck that's all about, or how it's even possible. Have you been able to do anything special like that?"
+            },
+            "2": {
+                "speaker": "Mary",
+                "text": "Umm, no, not really."
+            },
+            "3": {
+                "speaker": "Joe",
+                "text": "Oh? I coulda sworn I saw fire around your knife, though."
+            },
+            "4": {
+                "speaker": "Mary",
+                "text": "Oh, I was just using the matches I had in my backpack. I didn't really know what I was doing, nothing special there."
+            },
+            "5": {
+                "speaker": "Joe",
+                "text": "Pretty resourceful. I bet no one else would have thought of that."
+            },
+            "6": {
+                "speaker": "Mary",
+                "text": "Speaking of other people, are you alone too?"
+            },
+            "7": {
+                "speaker": "Joe",
+                "text": "Yeah, I am. I was about to say I haven't seen anyone else around, but I saw another shadowy creature walking around a while ago. Maybe that was one of them after all."
+            },
+            "8": {
+                "speaker": "Mary",
+                "text": "Do remember where it was?"
+            }
+        }
+    },
+
+    "16": {
+        "convName": "Area1_PostShadowEncounter3",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "It was over that way, but like I said, it was a while ago."
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "We should go take a look. I haven't found a way out of here, unless you've seen something. Do you even know how we got down here?"
+            }
+        }
+    },
+
+    "17": {
+        "convName": "Area1_PostShadowEncounter4",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "Sounds like you don't know much more than I do. I've mostly been walking around to find anyone or any way out. You've probably already tried, but do you have your phone on you?"
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "Yeah, but it won't turn on. I'm guessing yours won't either?"
+            },
+            "2": {
+                "speaker": "Joe",
+                "text": "Exactly. Well, let's get going then and try to get out. I've been rationing out my food, but it's not like I packed for this. I'm not starving yet, but let's try not to get to that point."
+            }
+        }
+    },
+
+    "18": {
+        "convName": "Area1_PostShadowEncounter5",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "Hey, why do you think you could only see me once I couldn't fight anymore?"
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "I'm not sure."
+            },
+            "2": {
+                "speaker": "Joe",
+                "text": "And what happened to us while we were watching the eclipse, that was . . . real, wasn't it?"
+            },
+            "3": {
+                "speaker": "Mary",
+                "text": ". . . I don't know, Joe. There's a lot that's not making any sense. Right now, I'm just starting to accept everything for what it is."
+            },
+            "4": {
+                "speaker": "Joe",
+                "text": "Mmm, okay. Maybe someone else will have a better idea, if we even find them before getting out."
+            },
+            "5": {
+                "speaker": "Mary",
+                "text": "I . . . don't even want to think about not finding them."
+            }
+        }
+    },
+
+    "19": {
+        "convName": "Area1_PostShadowEncounter6",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Let's get going."
             }
         }
     }

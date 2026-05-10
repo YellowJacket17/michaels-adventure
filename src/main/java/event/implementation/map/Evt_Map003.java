@@ -53,17 +53,17 @@ public class Evt_Map003 extends EventMapBase {
 
         // Map 2 warp.
         if ((col == 13) && ((row == 51)) && (direction == EntityDirection.LEFT)) {
-            gp.getWarpS().initiateWarp(dt, 2, 0, 57, 49, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
+            gp.getWarpS().initiateWarp(dt, 2, 57, 49, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
             gp.getSoundS().playEffect("obtain");
             return true;
         }
         if ((col == 13) && ((row == 52)) && (direction == EntityDirection.LEFT)) {
-            gp.getWarpS().initiateWarp(dt, 2, 0, 57, 50, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
+            gp.getWarpS().initiateWarp(dt, 2, 57, 50, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
             gp.getSoundS().playEffect("obtain");
             return true;
         }
         if ((col == 13) && ((row == 53)) && (direction == EntityDirection.LEFT)) {
-            gp.getWarpS().initiateWarp(dt, 2, 0, 57, 51, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
+            gp.getWarpS().initiateWarp(dt, 2, 57, 51, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
             gp.getSoundS().playEffect("obtain");
             return true;
         }
@@ -71,13 +71,13 @@ public class Evt_Map003 extends EventMapBase {
         // Map 4 warp.
         if ((col == 21) && ((row == 10)) && (direction == EntityDirection.UP)) {
             Ldm_TallGrass1.setInstantiationColor(TallGrassColor.YELLOW);
-            gp.getWarpS().initiateWarp(dt, 4, 0, 6, 57, WarpTransitionType.STEP_PORTAL, EntityDirection.UP);
+            gp.getWarpS().initiateWarp(dt, 4, 6, 57, WarpTransitionType.STEP_PORTAL, EntityDirection.UP);
             gp.getSoundS().playEffect("obtain");
             return true;
         }
         if ((col == 22) && ((row == 10)) && (direction == EntityDirection.UP)) {
             Ldm_TallGrass1.setInstantiationColor(TallGrassColor.YELLOW);
-            gp.getWarpS().initiateWarp(dt, 4, 0, 7, 57, WarpTransitionType.STEP_PORTAL, EntityDirection.UP);
+            gp.getWarpS().initiateWarp(dt, 4, 7, 57, WarpTransitionType.STEP_PORTAL, EntityDirection.UP);
             gp.getSoundS().playEffect("obtain");
             return true;
         }

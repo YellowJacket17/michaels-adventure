@@ -8,7 +8,8 @@ import dialogue.Dialogue;
 import entity.EntityBase;
 import entity.enumeration.DefaultAction;
 import entity.enumeration.EntityDirection;
-import entity.implementation.character.Npc_Shadow;
+import entity.implementation.character.Chr_Joe;
+import entity.implementation.character.Chr_Shadow;
 import core.GamePanel;
 import entity.implementation.object.*;
 import org.json.simple.JSONArray;
@@ -388,8 +389,11 @@ public class JsonParser {
         switch (entityClass) {
 
             // Add additional entity subclasses here.
-            case "Npc_Shadow":
-                entity = new Npc_Shadow(gp, entityId);
+            case "Chr_Shadow":
+                entity = new Chr_Shadow(gp, entityId);
+                break;
+            case "Chr_Joe":
+                entity = new Chr_Joe(gp, entityId);
                 break;
             case "Obj_Novel":
                 entity = new Obj_Novel(gp, entityId);
@@ -409,6 +413,10 @@ public class JsonParser {
             case "Obj_Journal":
                 entity = new Obj_Journal(gp, entityId);
                 break;
+            default:
+                UtilityTool.logWarning("Attempted to load an unregistered entity class '"
+                        + entityClass
+                        + "' from JSON data.");
         }
 
         // Collision.

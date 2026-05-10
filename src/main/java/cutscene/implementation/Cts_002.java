@@ -34,7 +34,7 @@ public class Cts_002 extends CutsceneBase {
             case 0:
                 buildEngineLogoText();
                 gp.getFadeS().displayColor(new Vector3f(255, 255, 255));
-                gp.getFadeS().initiateFadeFrom(1.5);
+                gp.getFadeS().initiateFadeFrom(1);
                 stageEngineLogoText();
                 progressCutscene();
                 break;
@@ -42,8 +42,8 @@ public class Cts_002 extends CutsceneBase {
                 stageEngineLogoText();
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
                     counter += dt;
-                    if (counter >= 2.5) {
-                        gp.getFadeS().initiateFadeTo(1.5, new Vector3f(0, 0, 0));
+                    if (counter >= 2) {
+                        gp.getFadeS().initiateFadeTo(1, new Vector3f(0, 0, 0));
                         progressCutscene();
                         counter = 0;
                     }

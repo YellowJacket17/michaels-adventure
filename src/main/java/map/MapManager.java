@@ -85,6 +85,9 @@ public class MapManager {
     }
 
 
+    /**
+     * Loads the default map into memory.
+     */
     public void loadDefaultMap() {
 
         // Save state of outgoing map.
@@ -96,6 +99,24 @@ public class MapManager {
         loadedMap = new Map(gp);
         loadedMap.setTrack(0, Sound.NO_TRACK);
         loadedMap.setMapState(0, true);
+    }
+
+
+    /**
+     * Checks whether a map has a saved map state.
+     *
+     * @param mapId ID of map to check
+     * @return whether a saved map state exists (true) or not (false)
+     */
+    public boolean checkSavedMapState(int mapId) {
+
+        if (savedMapStates.get(mapId) == null) {
+
+            return false;
+        } else {
+
+            return true;
+        }
     }
 
 

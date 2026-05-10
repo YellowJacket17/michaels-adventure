@@ -105,7 +105,7 @@ public class Player extends EntityBase {
      * List representing the player's inventory, in which items are stored.
      * The maximum allowed capacity of this list represents the maximum allowed size of the player's inventory.
      */
-    private final LimitedArrayList<ItemBase> inventory = new LimitedArrayList<>(20);
+    private final LimitedArrayList<ItemBase> inventory = new LimitedArrayList<>(25);
 
 
     // CONSTRUCTOR
@@ -1069,8 +1069,10 @@ public class Player extends EntityBase {
      */
     private void handleSubMenuInputProgressKey() {
 
-        gp.getEventM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected());
-        setInteractionCountdown(stagedStandardInteractionCountdown);
+        if (gp.getEventM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected())) {
+
+            setInteractionCountdown(stagedStandardInteractionCountdown);
+        }
     }
 
 

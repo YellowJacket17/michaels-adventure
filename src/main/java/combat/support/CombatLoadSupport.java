@@ -1,5 +1,6 @@
 package combat.support;
 
+import combat.implementation.load.Cbl_Scenario001;
 import core.GamePanel;
 
 /**
@@ -10,7 +11,6 @@ public class CombatLoadSupport {
     /*
      * Note that any logic executed here will only be done so after all standard logic in the relevant loading phase has
      * been executed.
-     * An
      */
 
     // BASIC FIELD
@@ -18,7 +18,7 @@ public class CombatLoadSupport {
 
 
     // COMBAT LOAD FIELDS
-    // None here... yet. Cbl_Scenario001
+    private final Cbl_Scenario001 cbl_scenario001;
 
 
     // CONSTRUCTOR
@@ -29,6 +29,8 @@ public class CombatLoadSupport {
      */
     public CombatLoadSupport(GamePanel gp) {
         this.gp = gp;
+
+        cbl_scenario001 = new Cbl_Scenario001(gp);
     }
 
 
@@ -45,6 +47,9 @@ public class CombatLoadSupport {
             case 0:
                 // Reserved value - do nothing.
                 break;
+            case 1:
+                cbl_scenario001.handleEnterCombatTransitionLoading();
+                break;
         }
     }
 
@@ -60,6 +65,9 @@ public class CombatLoadSupport {
         switch (combatId) {
             case 0:
                 // Reserved value - do nothing.
+                break;
+            case 1:
+                cbl_scenario001.concludeEnterCombatTransition();
                 break;
         }
     }
@@ -78,6 +86,9 @@ public class CombatLoadSupport {
             case 0:
                 // Reserved value - do nothing.
                 break;
+            case 1:
+                cbl_scenario001.handleExitCombatTransitionLoading(combatLost);
+                break;
         }
     }
 
@@ -94,6 +105,9 @@ public class CombatLoadSupport {
         switch (combatId) {
             case 0:
                 // Reserved value - do nothing.
+                break;
+            case 1:
+                cbl_scenario001.concludeExitCombatTransition(combatLost);
                 break;
         }
     }

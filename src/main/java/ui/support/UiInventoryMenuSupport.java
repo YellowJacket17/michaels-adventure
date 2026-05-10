@@ -4,7 +4,9 @@ import asset.Sprite;
 import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import render.Renderer;
+import render.drawable.Transform;
 import render.enumeration.ZIndex;
 import utility.LimitedArrayList;
 import utility.LimitedLinkedHashMap;
@@ -30,9 +32,9 @@ public class UiInventoryMenuSupport {
     // FIELDS
     private final GamePanel gp;
 
-    private int maxNumItemSlotsCol;
+    private int maxNumItemSlotCols;
 
-    private int maxNumItemSlotsRow;
+    private int maxNumItemSlotRows;
 
     private int itemColSelected;
 
@@ -40,15 +42,19 @@ public class UiInventoryMenuSupport {
 
     private int inventoryIndexSelected;
 
+    private Vector4f verticalDividerColor;
+
     private Vector3f itemNameTextColor;
 
 //    private Vector3f itemQuantityTextColor;
 
     private Vector3f itemDescriptionTextColor;
 
+    private Vector3f emptyTextColor;
+
     private float itemSlotQuantityFontScale;
 
-    private Vector2f tempWorldCoords;
+    private Transform tempWorldTransform;
 
     private Vector2f tempScreenCoords;
 
@@ -76,6 +82,12 @@ public class UiInventoryMenuSupport {
 
     private Vector2f itemDescriptionTextScreenCoords;
 
+    private Transform verticalDividerScreenTransform;
+
+    private Vector2f emptyTextScreenCoords;
+
+    private String emptyText;
+
 
     // CONSTRUCTOR
     /**
@@ -98,107 +110,127 @@ public class UiInventoryMenuSupport {
      */
     public void addToRenderPipeline(Renderer renderer) {
 
-        // Slot icons and content.
-        int row = 0;
-        int col = 0;
-        int itemIndex = 0;
-        int numItems = gp.getEntityM().getPlayer().getInventory().size();
+        if (gp.getEntityM().getPlayer().getInventory().size() == 0) {
 
-        while ((row < maxNumItemSlotsRow) && (itemIndex < numItems)) {
-
-            while ((col < maxNumItemSlotsCol) && (itemIndex < numItems)) {
-
-                if (gp.getEntityM().getPlayer().getInventory().get(itemIndex).isStackable()) {
-
-                    // Item slot.
-                    gp.getGuiIconM().addToRenderPipeline(
-                            renderer,
-                            6,
-                            itemSlotScreenCoords.get(itemIndex).x,
-                            itemSlotScreenCoords.get(itemIndex).y
-                    );
-
-                    // Item icon.
-                    tempScreenCoords.x = itemSlotScreenCoords.get(itemIndex).x + itemIconScreenItemSlotOffset.get(
-                            gp.getEntityM().getPlayer().getInventory().get(itemIndex).getItemId()).x;
-                    tempScreenCoords.y = itemSlotScreenCoords.get(itemIndex).y + itemIconScreenItemSlotOffset.get(
-                            gp.getEntityM().getPlayer().getInventory().get(itemIndex).getItemId()).y;
-                    gp.getEntityM().getPlayer().getInventory().get(itemIndex).addToRenderPipeline(
-                            renderer,
-                            tempScreenCoords.x,
-                            tempScreenCoords.y
-                    );
-
-                    // Item slot quantity.
-                    tempItemSlotQuantity =
-                            Integer.toString(gp.getEntityM().getPlayer().getInventory().get(itemIndex).getAmount());
-                    gp.getUi().addStringShadowToRenderPipeline(
-                            tempItemSlotQuantity,
-                            itemSlotQuantityScreenCoords.get(itemIndex).x,
-                            itemSlotQuantityScreenCoords.get(itemIndex).y,
-                            itemSlotQuantityFontScale,
-                            new Vector3f(255, 255, 255),
-                            gp.getUi().getStandardBoldFont(),
-                            ZIndex.SECOND_LAYER
-                    );
-                } else {
-
-                    // Item slot.
-                    gp.getGuiIconM().addToRenderPipeline(
-                            renderer,
-                            7,
-                            itemSlotScreenCoords.get(itemIndex).x,
-                            itemSlotScreenCoords.get(itemIndex).y
-                    );
-
-                    // Item icon.
-                    tempScreenCoords.x = itemSlotScreenCoords.get(itemIndex).x + itemIconScreenItemSlotOffset.get(
-                            gp.getEntityM().getPlayer().getInventory().get(itemIndex).getItemId()).x;
-                    tempScreenCoords.y = itemSlotScreenCoords.get(itemIndex).y + itemIconScreenItemSlotOffset.get(
-                            gp.getEntityM().getPlayer().getInventory().get(itemIndex).getItemId()).y;
-                    gp.getEntityM().getPlayer().getInventory().get(itemIndex).addToRenderPipeline(
-                            renderer,
-                            tempScreenCoords.x,
-                            tempScreenCoords.y
-                    );
-                }
-
-                // Selector.
-                if ((itemColSelected == col) && (itemRowSelected == row)) {
-
-                    tempScreenCoords.x = itemSlotScreenCoords.get(itemIndex).x
-                            - ((selectorScreenDimensions.x - itemSlotScreenDimensions.x) / 2);
-                    tempScreenCoords.y = itemSlotScreenCoords.get(itemIndex).y
-                            - ((selectorScreenDimensions.y - itemSlotScreenDimensions.y) / 2);
-                    gp.getGuiIconM().addToRenderPipeline(
-                            renderer,
-                            8,
-                            tempScreenCoords.x,
-                            tempScreenCoords.y
-                    );
-                }
-                itemIndex++;
-                col++;
-            }
-            col = 0;
-            row++;
-        }
-
-        // Selected item content.
-        if (inventoryIndexSelected < gp.getEntityM().getPlayer().getInventory().size()) {
-
-            // Selected item name.
-            gp.getCamera().screenCoordsToWorldCoords(itemNameTextScreenCoords, tempWorldCoords);
+            gp.getCamera().screenCoordsToWorldCoords(emptyTextScreenCoords, tempWorldTransform.position);
             renderer.addString(
-                    gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getName(),
-                    tempWorldCoords.x,
-                    tempWorldCoords.y,
+                    emptyText,
+                    tempWorldTransform.position.x,
+                    tempWorldTransform.position.y,
                     gp.getUi().getStandardFontScale(),
-                    itemNameTextColor,
-                    gp.getUi().getStandardBoldFont(),
+                    emptyTextColor,
+                    gp.getUi().getStandardNormalFont(),
                     ZIndex.SECOND_LAYER);
+        } else {
 
-            // Selected item quantity.
+            // Vertical divider.
+            gp.getCamera().screenCoordsToWorldCoords(
+                    verticalDividerScreenTransform.position, tempWorldTransform.position);
+            gp.getCamera().screenDimensionsToWorldDimensions(
+                    verticalDividerScreenTransform.scale, tempWorldTransform.scale);
+            renderer.addRectangle(verticalDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
+
+            // Slot icons and content.
+            int row = 0;
+            int col = 0;
+            int itemIndex = 0;
+            int numItems = gp.getEntityM().getPlayer().getInventory().size();
+
+            while ((row < maxNumItemSlotRows) && (itemIndex < numItems)) {
+
+                while ((col < maxNumItemSlotCols) && (itemIndex < numItems)) {
+
+                    if (gp.getEntityM().getPlayer().getInventory().get(itemIndex).isStackable()) {
+
+                        // Item slot.
+                        gp.getGuiIconM().addToRenderPipeline(
+                                renderer,
+                                6,
+                                itemSlotScreenCoords.get(itemIndex).x,
+                                itemSlotScreenCoords.get(itemIndex).y
+                        );
+
+                        // Item icon.
+                        tempScreenCoords.x = itemSlotScreenCoords.get(itemIndex).x + itemIconScreenItemSlotOffset.get(
+                                gp.getEntityM().getPlayer().getInventory().get(itemIndex).getItemId()).x;
+                        tempScreenCoords.y = itemSlotScreenCoords.get(itemIndex).y + itemIconScreenItemSlotOffset.get(
+                                gp.getEntityM().getPlayer().getInventory().get(itemIndex).getItemId()).y;
+                        gp.getEntityM().getPlayer().getInventory().get(itemIndex).addToRenderPipeline(
+                                renderer,
+                                tempScreenCoords.x,
+                                tempScreenCoords.y
+                        );
+
+                        // Item slot quantity.
+                        tempItemSlotQuantity =
+                                Integer.toString(gp.getEntityM().getPlayer().getInventory().get(itemIndex).getAmount());
+                        gp.getUi().addStringShadowToRenderPipeline(
+                                tempItemSlotQuantity,
+                                itemSlotQuantityScreenCoords.get(itemIndex).x,
+                                itemSlotQuantityScreenCoords.get(itemIndex).y,
+                                itemSlotQuantityFontScale,
+                                new Vector3f(255, 255, 255),
+                                gp.getUi().getStandardBoldFont(),
+                                ZIndex.SECOND_LAYER
+                        );
+                    } else {
+
+                        // Item slot.
+                        gp.getGuiIconM().addToRenderPipeline(
+                                renderer,
+                                7,
+                                itemSlotScreenCoords.get(itemIndex).x,
+                                itemSlotScreenCoords.get(itemIndex).y
+                        );
+
+                        // Item icon.
+                        tempScreenCoords.x = itemSlotScreenCoords.get(itemIndex).x + itemIconScreenItemSlotOffset.get(
+                                gp.getEntityM().getPlayer().getInventory().get(itemIndex).getItemId()).x;
+                        tempScreenCoords.y = itemSlotScreenCoords.get(itemIndex).y + itemIconScreenItemSlotOffset.get(
+                                gp.getEntityM().getPlayer().getInventory().get(itemIndex).getItemId()).y;
+                        gp.getEntityM().getPlayer().getInventory().get(itemIndex).addToRenderPipeline(
+                                renderer,
+                                tempScreenCoords.x,
+                                tempScreenCoords.y
+                        );
+                    }
+
+                    // Selector.
+                    if ((itemColSelected == col) && (itemRowSelected == row)) {
+
+                        tempScreenCoords.x = itemSlotScreenCoords.get(itemIndex).x
+                                - ((selectorScreenDimensions.x - itemSlotScreenDimensions.x) / 2);
+                        tempScreenCoords.y = itemSlotScreenCoords.get(itemIndex).y
+                                - ((selectorScreenDimensions.y - itemSlotScreenDimensions.y) / 2);
+                        gp.getGuiIconM().addToRenderPipeline(
+                                renderer,
+                                8,
+                                tempScreenCoords.x,
+                                tempScreenCoords.y
+                        );
+                    }
+                    itemIndex++;
+                    col++;
+                }
+                col = 0;
+                row++;
+            }
+
+            // Selected item content.
+            if (inventoryIndexSelected < gp.getEntityM().getPlayer().getInventory().size()) {
+
+                // Selected item name.
+                gp.getCamera().screenCoordsToWorldCoords(itemNameTextScreenCoords, tempWorldTransform.position);
+                renderer.addString(
+                        gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getName(),
+                        tempWorldTransform.position.x,
+                        tempWorldTransform.position.y,
+                        gp.getUi().getStandardFontScale(),
+                        itemNameTextColor,
+                        gp.getUi().getStandardBoldFont(),
+                        ZIndex.SECOND_LAYER);
+
+                // Selected item quantity.
 //            gp.getCamera().screenCoordsToWorldCoords(itemQuantityTextScreenCoords, tempWorldCoords);
 //            renderer.addString(
 //                    "Quantity: " + gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getAmount(),
@@ -209,19 +241,20 @@ public class UiInventoryMenuSupport {
 //                    gp.getUi().getStandardBoldFont(),
 //                    ZIndex.SECOND_LAYER);
 
-            // Selected item description.
-            gp.getUi().addStringBlockToRenderPipeline(
-                    gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getDescription(),
-                    itemDescriptionTextScreenCoords.x,
-                    itemDescriptionTextScreenCoords.y,
-                    itemDescriptionTextLineScreenMaxWidth,
-                    itemDescriptionTextLineScreenVerticalSpacing,
-                    gp.getUi().getStandardFontScale(),
-                    itemDescriptionTextColor,
-                    gp.getUi().getStandardNormalFont(),
-                    ZIndex.SECOND_LAYER,
-                    true
-            );
+                // Selected item description.
+                gp.getUi().addStringBlockToRenderPipeline(
+                        gp.getEntityM().getPlayer().getInventory().get(inventoryIndexSelected).getDescription(),
+                        itemDescriptionTextScreenCoords.x,
+                        itemDescriptionTextScreenCoords.y,
+                        itemDescriptionTextLineScreenMaxWidth,
+                        itemDescriptionTextLineScreenVerticalSpacing,
+                        gp.getUi().getStandardFontScale(),
+                        itemDescriptionTextColor,
+                        gp.getUi().getStandardNormalFont(),
+                        ZIndex.SECOND_LAYER,
+                        true
+                );
+            }
         }
     }
 
@@ -236,15 +269,15 @@ public class UiInventoryMenuSupport {
      */
     public void setItemColSelected(int itemColSelected) {
 
-        if ((itemColSelected >= 0) && (itemColSelected < maxNumItemSlotsCol)) {
+        if ((itemColSelected >= 0) && (itemColSelected < maxNumItemSlotCols)) {
 
             int numItems = gp.getEntityM().getPlayer().getInventory().size();
-            int inventoryIndexCandidate = (maxNumItemSlotsRow * itemRowSelected) + (itemColSelected);
+            int inventoryIndexCandidate = (maxNumItemSlotRows * itemRowSelected) + (itemColSelected);
 
             if ((inventoryIndexCandidate < numItems) || (itemColSelected == 0)) {
 
                 this.itemColSelected = itemColSelected;
-                inventoryIndexSelected = (maxNumItemSlotsRow * itemRowSelected) + (itemColSelected);
+                inventoryIndexSelected = (maxNumItemSlotRows * itemRowSelected) + (itemColSelected);
             }
         }
     }
@@ -260,15 +293,15 @@ public class UiInventoryMenuSupport {
      */
     public void setItemRowSelected(int itemRowSelected) {
 
-        if ((itemRowSelected >= 0) && (itemRowSelected < maxNumItemSlotsRow)) {
+        if ((itemRowSelected >= 0) && (itemRowSelected < maxNumItemSlotRows)) {
 
             int numItems = gp.getEntityM().getPlayer().getInventory().size();
-            int inventoryIndexCandidate = (maxNumItemSlotsRow * itemRowSelected) + (itemColSelected);
+            int inventoryIndexCandidate = (maxNumItemSlotRows * itemRowSelected) + (itemColSelected);
 
             if ((inventoryIndexCandidate < numItems) || (itemRowSelected == 0)) {
 
                 this.itemRowSelected = itemRowSelected;
-                inventoryIndexSelected = (maxNumItemSlotsRow * itemRowSelected) + (itemColSelected);
+                inventoryIndexSelected = (maxNumItemSlotRows * itemRowSelected) + (itemColSelected);
             }
         }
     }
@@ -282,24 +315,55 @@ public class UiInventoryMenuSupport {
     private void init() {
 
         // Selection management.
-        maxNumItemSlotsRow = 5;
-        maxNumItemSlotsCol = 5;
+        maxNumItemSlotRows = 5;                                                                                         // Maximum number of rows of item slot (i.e., not the number of items slots in a row).
+        maxNumItemSlotCols = 5;                                                                                         // Maximum number of columns of item slot (i.e., not the number of items slots in a column).
 
         itemColSelected = 0;
         itemRowSelected = 0;
         inventoryIndexSelected = 0;
 
         // Colors.
+        verticalDividerColor = new Vector4f(147, 182, 220, 255);
         itemNameTextColor = new Vector3f(121, 149, 255);
 //        itemQuantityTextColor = new Vector3f(244, 154, 45);
         itemDescriptionTextColor = new Vector3f(255, 255, 255);
+        emptyTextColor = new Vector3f(160, 160, 160);
 
         // Text sizing.
         itemSlotQuantityFontScale = 0.12f;
 
         // Temporary coordinates.
-        tempWorldCoords = new Vector2f(0.0f, 0.0f);                                                                     // Values are placeholders (will change while rendering).
+        Vector2f tempWorldCoords = new Vector2f(0.0f, 0.0f);                                                            // Values are placeholders (will change while rendering).
+        Vector2f tempWorldDimensions = new Vector2f(0.0f, 0.0f);                                                        // Values are placeholders (will change while rendering).
+        tempWorldTransform = new Transform(tempWorldCoords, tempWorldDimensions);
         tempScreenCoords = new Vector2f(0.0f, 0.0f);                                                                    // Values are placeholders (will change while rendering).
+
+        // General setup.
+        float headerDividerScreenPrimaryWindowLeftAdjustment = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenX()
+                - gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenX();
+        float headerDividerWorldPrimaryWindowLeftAdjustment =
+                gp.getCamera().screenWidthToWorldWidth(headerDividerScreenPrimaryWindowLeftAdjustment);
+
+        // Vertical divider coordinates and dimensions.
+        float verticalDividerScreenHeaderDividerBottomAdjustment =
+                gp.getCamera().worldHeightToScreenHeight(headerDividerWorldPrimaryWindowLeftAdjustment) / 2;
+        float verticalDividerScreenHeight =
+                (gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenY()
+                        + gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenHeight()) -
+                (gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenY()
+                        + gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenHeight()) -
+                (verticalDividerScreenHeaderDividerBottomAdjustment * 2);
+        float verticalDividerWorldWidth = 0.96f;
+        float verticalDividerScreenWidth = gp.getCamera().worldWidthToScreenWidth(verticalDividerWorldWidth);
+        float verticalDividerScreenX = gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenX()
+                + ((gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenWidth() / 34) * 16)
+                - (verticalDividerScreenWidth / 2);
+        float verticalDividerScreenY = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenY()
+                + gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenHeight()
+                + verticalDividerScreenHeaderDividerBottomAdjustment;
+        Vector2f verticalDividerScreenCoords = new Vector2f(verticalDividerScreenX, verticalDividerScreenY);
+        Vector2f verticalDividerScreenDimensions = new Vector2f(verticalDividerScreenWidth, verticalDividerScreenHeight);
+        verticalDividerScreenTransform = new Transform(verticalDividerScreenCoords, verticalDividerScreenDimensions);
 
         // Item slot dimensions.
         float itemSlotWorldWidth = gp.getGuiIconM().getIconById(6).getNativeSpriteWidth();
@@ -309,25 +373,21 @@ public class UiInventoryMenuSupport {
         itemSlotScreenDimensions = new Vector2f(itemSlotScreenWidth, itemSlotScreenHeight);
 
         // Item slot coordinates (setup).
-        float itemSlotWorldHorizontalSpacing = 23.0f;
-        float itemSlotScreenHorizontalSpacing = gp.getCamera().worldWidthToScreenWidth(itemSlotWorldHorizontalSpacing);
-        float itemSlotWorldVerticalSpacing = 21.6f;
-        float itemSlotScreenVerticalSpacing = gp.getCamera().worldHeightToScreenHeight(itemSlotWorldVerticalSpacing);
-
-        float itemSlotScreenPrimaryWindowLeftAdjustment = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenX()
-                - gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenX();
-        float itemSlotWorldPrimaryWindowLeftAdjustment =
-                gp.getCamera().screenWidthToWorldWidth(itemSlotScreenPrimaryWindowLeftAdjustment);
-        float headerDividerScreenHeight = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenHeight();
-        float itemSlotScreenHeaderDividerBottomAdjustment =
-                gp.getCamera().worldHeightToScreenHeight(itemSlotWorldPrimaryWindowLeftAdjustment) / 2;
+//        float itemSlotScreenHeaderDividerBottomAdjustment =
+//                gp.getCamera().worldHeightToScreenHeight(headerDividerWorldPrimaryWindowLeftAdjustment) / 2;
         float topLeftItemSlotScreenX =
-                gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenX() + itemSlotScreenPrimaryWindowLeftAdjustment;
-        float topLeftItemSlotScreenY = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenY()
-                + headerDividerScreenHeight + itemSlotScreenHeaderDividerBottomAdjustment;
+                gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenX() + headerDividerScreenPrimaryWindowLeftAdjustment;
+        float topLeftItemSlotScreenY = verticalDividerScreenY;
         topLeftItemSlotScreenCoords = new Vector2f(topLeftItemSlotScreenX, topLeftItemSlotScreenY);
 
-        itemSlotScreenCoords = new LimitedArrayList<>(maxNumItemSlotsRow * maxNumItemSlotsCol);
+        float itemSlotScreenTotalRowWidth = verticalDividerScreenX
+                - headerDividerScreenPrimaryWindowLeftAdjustment
+                - gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenX();
+        float itemSlotScreenHorizontalSpacing =
+                (itemSlotScreenTotalRowWidth - (maxNumItemSlotCols * itemSlotScreenWidth)) / (maxNumItemSlotCols + 1);
+        float itemSlotWorldVerticalSpacing = gp.getCamera().screenWidthToWorldWidth(itemSlotScreenHorizontalSpacing);
+        float itemSlotScreenVerticalSpacing = gp.getCamera().worldHeightToScreenHeight(itemSlotWorldVerticalSpacing);
+        itemSlotScreenCoords = new LimitedArrayList<>(maxNumItemSlotRows * maxNumItemSlotCols);
 
         // Item slot quantity coordinates (setup).
         float itemSlotQuantityWorldSlotOffsetX = itemSlotWorldWidth * 0.9f;
@@ -336,8 +396,7 @@ public class UiInventoryMenuSupport {
                 gp.getCamera().worldWidthToScreenWidth(itemSlotQuantityWorldSlotOffsetX);
         float itemSlotQuantityScreenSlotOffsetY =
                 gp.getCamera().worldHeightToScreenHeight(itemSlotQuantityWorldSlotOffsetY);
-
-        itemSlotQuantityScreenCoords = new LimitedArrayList<>(maxNumItemSlotsRow * maxNumItemSlotsCol);
+        itemSlotQuantityScreenCoords = new LimitedArrayList<>(maxNumItemSlotRows * maxNumItemSlotCols);
 
         // Item slot and item slot quantity coordinates (assign).
         float itemSlotScreenX;
@@ -348,12 +407,12 @@ public class UiInventoryMenuSupport {
         int row = 0;
         int col = 0;
 
-        while (row < maxNumItemSlotsRow) {
+        while (row < maxNumItemSlotRows) {
 
             itemSlotScreenY = topLeftItemSlotScreenCoords.y
                     + ((itemSlotScreenDimensions.y + itemSlotScreenVerticalSpacing) * row);
 
-            while (col < maxNumItemSlotsCol) {
+            while (col < maxNumItemSlotCols) {
 
                 itemSlotScreenX = topLeftItemSlotScreenCoords.x
                         + ((itemSlotScreenDimensions.x + itemSlotScreenHorizontalSpacing) * col);
@@ -409,13 +468,10 @@ public class UiInventoryMenuSupport {
         float itemTextSectionScreenVerticalSpacing =
                 gp.getCamera().worldHeightToScreenHeight(itemTextSectionWorldVerticalSpacing);
 
-        // Selected item name.
-        float itemNameTextScreenX = topLeftItemSlotScreenCoords.x
-                + (itemSlotScreenDimensions.x * maxNumItemSlotsCol)
-                + (itemSlotScreenHorizontalSpacing * (maxNumItemSlotsCol - 1))
-                + itemSlotScreenPrimaryWindowLeftAdjustment;
-        float itemNameTextScreenY = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenY()
-                + headerDividerScreenHeight + itemSlotScreenHeaderDividerBottomAdjustment;
+        // Selected item name coordinates.
+        float itemNameTextScreenX =
+                verticalDividerScreenX + verticalDividerScreenWidth + (itemSlotScreenHorizontalSpacing * 2);
+        float itemNameTextScreenY = verticalDividerScreenY;
         itemNameTextScreenCoords = new Vector2f(itemNameTextScreenX, itemNameTextScreenY);
 
         // Selected item quantity.
@@ -423,27 +479,42 @@ public class UiInventoryMenuSupport {
 //        float itemQuantityTextScreenY = itemNameTextScreenY + itemTextSectionScreenVerticalSpacing;
 //        itemQuantityTextScreenCoords = new Vector2f(itemQuantityTextScreenX, itemQuantityTextScreenY);
 
-        // Selected item description.
+        // Selected item description coordinates.
         float itemDescriptionTextLineWorldVerticalSpacing = 28.0f;
         itemDescriptionTextLineScreenVerticalSpacing =
                 gp.getCamera().worldHeightToScreenHeight(itemDescriptionTextLineWorldVerticalSpacing);
 
-        itemDescriptionTextLineScreenMaxWidth = 1 - itemNameTextScreenX - itemSlotScreenPrimaryWindowLeftAdjustment
+        itemDescriptionTextLineScreenMaxWidth = 1 - itemNameTextScreenX - headerDividerScreenPrimaryWindowLeftAdjustment
                 - ((1 - gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenWidth()) / 2);
 
         float itemDescriptionTextScreenX = itemNameTextScreenX;
         float itemDescriptionTextScreenY = itemNameTextScreenY + itemTextSectionScreenVerticalSpacing;
         itemDescriptionTextScreenCoords = new Vector2f(itemDescriptionTextScreenX, itemDescriptionTextScreenY);
+
+        // Empty text coordinates and content.
+        emptyText = "(Empty)";
+        float emptyTextScreenWidth = gp.getUi().calculateStringScreenWidth(
+                emptyText,
+                gp.getUi().getStandardFontScale(),
+                gp.getUi().getStandardNormalFont()
+        );
+        float emptyTextScreenX = gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenX()
+                + (gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenWidth() / 2) - (emptyTextScreenWidth / 2);
+        float emptyTextScreenHeaderDividerBottomAdjustment = verticalDividerScreenHeaderDividerBottomAdjustment;
+        float emptyTextScreenY = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenY()
+                + gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenHeight()
+                + emptyTextScreenHeaderDividerBottomAdjustment;
+        emptyTextScreenCoords = new Vector2f(emptyTextScreenX, emptyTextScreenY);
     }
 
 
     // GETTERS
-    public int getMaxNumItemSlotsCol() {
-        return maxNumItemSlotsCol;
+    public int getMaxNumItemSlotCols() {
+        return maxNumItemSlotCols;
     }
 
-    public int getMaxNumItemSlotsRow() {
-        return maxNumItemSlotsRow;
+    public int getMaxNumItemSlotRows() {
+        return maxNumItemSlotRows;
     }
 
     public int getItemColSelected() {
