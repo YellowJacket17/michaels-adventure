@@ -314,7 +314,7 @@ public class UiSettingsMenuSupport {
                 gp.getCamera().worldHeightToScreenHeight(standardNormalCharWorldHeight);
 
         // Setting label and value coordinates.
-        float settingWorldVerticalSpacing = 35.4f;
+        float settingWorldVerticalSpacing = standardNormalCharWorldHeight * 2.25f;
         settingScreenVerticalSpacing = gp.getCamera().worldHeightToScreenHeight(settingWorldVerticalSpacing);
 
         float settingLabelScreenPrimaryWindowLeftAdjustment = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenX()
@@ -342,6 +342,7 @@ public class UiSettingsMenuSupport {
         float scrollArrowScreenHeight = gp.getCamera().worldHeightToScreenHeight(scrollArrowWorldHeight);
         scrollArrowScreenDimensions = new Vector2f(scrollArrowScreenWidth, scrollArrowScreenHeight);
 
+        // Scroll arrow coordinates.
         rightScrollArrowScreenCoords = new Vector2f(0.0f);
         leftScrollArrowScreenCoords = new Vector2f(0.0f);
 
@@ -356,7 +357,7 @@ public class UiSettingsMenuSupport {
         footerDividerScreenTransform = new Transform(footerDividerScreenCoords, footerDividerScreenDimensions);
 
         // Selected setting description coordinates and dimensions.
-        float settingDescriptionTextLineWorldVerticalSpacing = 28.0f;
+        float settingDescriptionTextLineWorldVerticalSpacing = standardNormalCharWorldHeight * 1.75f;
         settingDescriptionTextLineScreenVerticalSpacing =
                 gp.getCamera().worldHeightToScreenHeight(settingDescriptionTextLineWorldVerticalSpacing);
 

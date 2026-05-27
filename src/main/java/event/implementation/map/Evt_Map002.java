@@ -54,12 +54,12 @@ public class Evt_Map002 extends EventMapBase {
         // Map 1 warp.
         if ((col == 58) && ((row == 5)) && (direction == EntityDirection.RIGHT)) {
             gp.getWarpS().initiateWarp(dt, 1, 49, 8, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("footsteps");
             return true;
         }
         if ((col == 58) && ((row == 6)) && (direction == EntityDirection.RIGHT)) {
             gp.getWarpS().initiateWarp(dt, 1, 49, 9, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("footsteps");
             return true;
         }
 

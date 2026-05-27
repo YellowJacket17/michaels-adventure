@@ -866,6 +866,11 @@ public class EventManager {
                     && (gp.getMapM().getLoadedMap().getMapLandmarkNum()[targetCol][targetRow] == 6)) {
 
                 gp.getLandmarkM().initiateConditionalAnimation(targetCol, targetRow);
+
+                if ((gp.getCamera().isInCameraView(entity)) && (!gp.getSoundS().isSoundPlaying("grassRustle"))) {
+
+                    gp.getSoundS().playEffect("grassRustle");
+                }
                 return true;
             }
         } catch (ArrayIndexOutOfBoundsException e) {}
@@ -895,6 +900,11 @@ public class EventManager {
                     && (!gp.getCollisionI().calculateCollisionAll(targetCol, targetRow + 1, entity, true))) {           // Ensure tile being hopped onto is not solid.
 
                 entity.initiateHop();
+
+                if ((gp.getCamera().isInCameraView(entity)) && (!gp.getSoundS().isSoundPlaying("hop"))) {
+
+                    gp.getSoundS().playEffect("hop");
+                }
                 return true;
             }
 

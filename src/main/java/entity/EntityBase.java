@@ -790,30 +790,55 @@ public abstract class EntityBase extends Drawable {
      * Stages this entity to render in a combat faint sprite.
      * Note that this only stages the sprite number to be retrieved when rendering and does not set the actual sprite.
      * This will only be rendered if this entity is playing a combat faint animation.
+     *
+     * @return whether a sprite change occurred (true) or not (false)
      */
-    public void stageCombatFaintSprite() {
+    public boolean stageCombatFaintSprite() {
 
         double oneFifthAnimationCounterMax = animationCounterCombatFaintMax / 5;
+        boolean changedSprite = false;
 
         if (animationCounter < oneFifthAnimationCounterMax) {
 
-            combatFaintSpriteNumCurrent = 1;
+            if (combatFaintSpriteNumCurrent != 1) {
+
+                combatFaintSpriteNumCurrent = 1;
+                changedSprite = true;
+            }
         } else if (animationCounter < (oneFifthAnimationCounterMax * 2)) {
 
-            combatFaintSpriteNumCurrent = 2;
+            if (combatFaintSpriteNumCurrent != 2) {
+
+                combatFaintSpriteNumCurrent = 2;
+                changedSprite = true;
+            }
         } else if (animationCounter < (oneFifthAnimationCounterMax * 3)) {
 
-            combatFaintSpriteNumCurrent = 3;
+            if (combatFaintSpriteNumCurrent != 3) {
+
+                combatFaintSpriteNumCurrent = 3;
+                changedSprite = true;
+            }
         } else if (animationCounter < (oneFifthAnimationCounterMax * 4)) {
 
-            combatFaintSpriteNumCurrent = 4;
+            if (combatFaintSpriteNumCurrent != 4) {
+
+                combatFaintSpriteNumCurrent = 4;
+                changedSprite = true;
+            }
         } else if (animationCounter < (oneFifthAnimationCounterMax * 5)) {
 
-            combatFaintSpriteNumCurrent = 5;
-        } else {
+            if (combatFaintSpriteNumCurrent != 5) {
+
+                combatFaintSpriteNumCurrent = 5;
+                changedSprite = true;
+            }
+        } else if (combatFaintSpriteNumCurrent != 6) {
 
             combatFaintSpriteNumCurrent = 6;
+            changedSprite = true;
         }
+        return changedSprite;
     }
 
 
@@ -898,7 +923,6 @@ public abstract class EntityBase extends Drawable {
      */
     public void initiateHop() {
 
-        gp.getSoundS().playEffect("hop");
         cancelAction();
         hopping = true;
         moving = true;
@@ -1679,7 +1703,11 @@ public abstract class EntityBase extends Drawable {
     protected void updateCombatFaintAnimation(double dt) {
 
         animationCounter += dt;
-        stageCombatFaintSprite();
+
+        if ((stageCombatFaintSprite()) && (combatFaintSpriteNumCurrent == 5)) {
+
+            gp.getSoundS().playEffect("thud");
+        }
 
         if (animationCounter >= animationCounterCombatFaintMax) {
 

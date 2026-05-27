@@ -963,7 +963,8 @@ public class UserInterface {
             case PARTY:
                 gp.getGuiIconM().getIconById(0).setSelected(false);                                                     // Deselect the party menu icon.
                 gp.getUiPartyMenuS().setPartyMenuSlotSelected(PartyMenuSlot.SLOT_0);                                    // Set the selected party member stat icon back to its default.
-                gp.getUiPartyMenuS().setPartyMenuScrollLevel(0);                                                        // Set the list of party members back to its default scroll level.
+                gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(0);                                                    // Set the list of party members back to its default scroll level.
+                gp.getUiPartyMenuS().setPartyMenuMoveScrollLevel(0);                                                    // Set the selected party member move list back to its default scroll level.
                 gp.getEntityIconM().purgeAllEntityIcons();
                 break;
 
@@ -989,7 +990,8 @@ public class UserInterface {
                 gp.getEntityIconM().getEntityIconById(gp.getEntityM().getPlayer().getEntityId()).setSelected(true);     // Set the player icon as being selected (will animate the player icon).
                 gp.getGuiIconM().getIconById(3).setSelected(true);                                                      // Set the background icon for the player as being selected (will darken the background).
                 gp.getUiPartyMenuS().setPartyMenuSlotSelected(PartyMenuSlot.SLOT_0);                                    // Set the player entity's party member stat icon as being selected in the UI.
-                gp.getUiPartyMenuS().setPartyMenuScrollLevel(0);                                                        // Set the list of party members back to the top.
+                gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(0);                                                    // Set the list of party members back to the top.
+                gp.getUiPartyMenuS().setPartyMenuMoveScrollLevel(0);                                                    // Set the selected party member move list back to its default scroll level.
                 gp.getUiPartyMenuS().markDirty();
                 break;
 

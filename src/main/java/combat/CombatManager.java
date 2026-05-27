@@ -2522,7 +2522,7 @@ public class CombatManager {
         }
         return "Power: " + (move.getCategory() == MoveCategory.SUPPORT ? "--" : move.getPower()) + " [" + categoryAbbreviation + "]\n"
                 + "Accuracy: " + (move.getCategory() == MoveCategory.SUPPORT ? "--" :move.getAccuracy()) + "\n"
-                + "Skill: " + move.getSkillPoints() + "/" + entity.getSkill();
+                + "SP: " + move.getSkillPoints() + "/" + entity.getSkill();
     }
 
 

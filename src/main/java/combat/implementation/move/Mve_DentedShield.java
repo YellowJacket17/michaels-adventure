@@ -27,7 +27,7 @@ public class Mve_DentedShield extends MoveBase {
     private static final int mveAccuracy = 95;
     private static final int mveSkillPoints = 6;
     private static final Vector3f mveEffectColor = new Vector3f(255, 255, 255);
-    private static final String mveSoundEffect = "sneakstrike";
+    private static final String mveSoundEffect = "basicAttack";
 
 
     // CONSTRUCTOR
@@ -61,7 +61,8 @@ public class Mve_DentedShield extends MoveBase {
         if (affectedAllyEntityIds.size() > 0) {
 
             gp.getCombatM().addQueuedActionBack(
-                    new Act_CustomEffect(gp, affectedAllyEntityIds, MoveBase.ATTRIBUTE_INCREASE_COLOR, "heal", true));
+                    new Act_CustomEffect(gp, affectedAllyEntityIds,
+                            MoveBase.ATTRIBUTE_INCREASE_COLOR, "attributeIncrease", true));
             String message = buildEffectMessage(affectedAllyEntityIds);
             gp.getCombatM().addQueuedActionBack(
                     new Act_ReadMessage(gp, message, true, true));

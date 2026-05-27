@@ -25,7 +25,7 @@ public class Mve_AnnoyingImpulse extends MoveBase {
     private static final int mveAccuracy = 95;
     private static final int mveSkillPoints = 6;
     private static final Vector3f mveEffectColor = new Vector3f(255, 255, 255);
-    private static final String mveSoundEffect = "sneakstrike";
+    private static final String mveSoundEffect = "basicAttack";
 
 
     // CONSTRUCTOR
@@ -55,7 +55,8 @@ public class Mve_AnnoyingImpulse extends MoveBase {
             gp.getCombatM().addQueuedActionBack(
                     new Act_CustomEffect(gp, targetEntityIds, new Vector3f(255, 255, 255), "hop", true));
             gp.getCombatM().addQueuedActionBack(
-                    new Act_CustomEffect(gp, targetEntityIds, MoveBase.ATTRIBUTE_INCREASE_COLOR, "heal", true));
+                    new Act_CustomEffect(gp, targetEntityIds,
+                            MoveBase.ATTRIBUTE_INCREASE_COLOR, "attributeIncrease", true));
             String message = buildEffectMessageDefenseIncrease(sourceEntityId);
             gp.getCombatM().addQueuedActionBack(
                     new Act_ReadMessage(gp, message, true, true));

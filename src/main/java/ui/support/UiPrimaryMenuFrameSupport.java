@@ -168,7 +168,7 @@ public class UiPrimaryMenuFrameSupport {
         // Colors.
         windowColor = new Vector4f(20, 20, 20, 255);
         headerDividerColor = new Vector4f(255, 255, 255, 255);
-        headerTextColor = new Vector3f(121, 149, 255);
+        headerTextColor = new Vector3f(255, 255, 255);
 
         // Text sizing.
         headerFontScale = 0.17f;

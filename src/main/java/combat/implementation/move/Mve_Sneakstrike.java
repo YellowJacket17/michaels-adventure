@@ -21,7 +21,7 @@ public class Mve_Sneakstrike extends MoveBase {
     private static final int mveAccuracy = 85;
     private static final int mveSkillPoints = 2;
     private static final Vector3f mveEffectColor = new Vector3f(211, 186, 235);
-    private static final String mveSoundEffect = "sneakstrike";
+    private static final String mveSoundEffect = "basicAttack";
 
 
     // CONSTRUCTOR

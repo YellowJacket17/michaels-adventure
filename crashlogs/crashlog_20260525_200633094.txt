@@ -1,0 +1,52 @@
+05/25/2026 20:06:29:955  INFO     Starting application.
+05/25/2026 20:06:31:026  INFO     Loading shader from file: '/shaders/font.glsl'
+05/25/2026 20:06:31:026  INFO     Compiling and linking shader: '/shaders/font.glsl'
+05/25/2026 20:06:31:446  INFO     Loading shader from file: '/shaders/default.glsl'
+05/25/2026 20:06:31:446  INFO     Compiling and linking shader: '/shaders/default.glsl'
+05/25/2026 20:06:31:446  INFO     Loading shader from file: '/shaders/rounded.glsl'
+05/25/2026 20:06:31:446  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
+05/25/2026 20:06:31:446  INFO     Loading texture from file: '/spritesheets/tiles.png'
+05/25/2026 20:06:31:456  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
+05/25/2026 20:06:31:456  INFO     Loading texture from file: '/spritesheets/characters.png'
+05/25/2026 20:06:31:466  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
+05/25/2026 20:06:31:466  INFO     Loading texture from file: '/spritesheets/landmarks.png'
+05/25/2026 20:06:31:466  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
+05/25/2026 20:06:31:466  INFO     Loading texture from file: '/spritesheets/items.png'
+05/25/2026 20:06:31:466  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
+05/25/2026 20:06:31:466  INFO     Loading texture from file: '/spritesheets/icons.png'
+05/25/2026 20:06:31:466  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
+05/25/2026 20:06:31:466  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
+05/25/2026 20:06:31:476  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
+05/25/2026 20:06:31:476  INFO     Loading sound (track) from file: 'sound/tracks/outOfTheBlue_intro.ogg' + 'sound/tracks/outOfTheBlue_loop.ogg'
+05/25/2026 20:06:31:762  INFO     Loading sound (track) from file: 'sound/tracks/desolate_intro.ogg' + 'sound/tracks/desolate_loop.ogg'
+05/25/2026 20:06:31:932  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
+05/25/2026 20:06:32:024  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
+05/25/2026 20:06:32:147  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
+05/25/2026 20:06:32:261  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
+05/25/2026 20:06:32:396  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
+05/25/2026 20:06:32:591  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
+05/25/2026 20:06:32:781  INFO     Loading sound (effect) from file: 'sound/tracks/tabulaRasa.ogg'
+05/25/2026 20:06:33:061  INFO     Loading sound (effect) from file: 'sound/effects/attributeIncrease.ogg'
+05/25/2026 20:06:33:066  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
+05/25/2026 20:06:33:071  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
+05/25/2026 20:06:33:074  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
+05/25/2026 20:06:33:076  INFO     Loading sound (effect) from file: 'sound/effects/thud.ogg'
+05/25/2026 20:06:33:077  INFO     Loading sound (effect) from file: 'sound/effects/footsteps.ogg'
+05/25/2026 20:06:33:077  INFO     Loading sound (effect) from file: 'sound/effects/grassRustle.ogg'
+05/25/2026 20:06:33:084  INFO     Loading sound (effect) from file: 'sound/effects/basicAttack.ogg'
+05/25/2026 20:06:33:084  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
+05/25/2026 20:06:33:086  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
+05/25/2026 20:06:33:091  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
+05/25/2026 20:06:33:091  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
+05/25/2026 20:06:33:094  INFO     Loading sound (effect) from file: 'sound/effects/revive.ogg'
+05/25/2026 20:06:33:094  ERROR    An unhandled exception has occurred!
+utility.exceptions.AssetLoadException: Failed to load sound from root 'sound/effects/revive.ogg'
+	at asset.Sound.loadBuffer(Sound.java:248)
+	at asset.Sound.load(Sound.java:216)
+	at asset.Sound.<init>(Sound.java:97)
+	at asset.AssetPool.addSound(AssetPool.java:230)
+	at core.GamePanel.loadSounds(GamePanel.java:538)
+	at core.GamePanel.loadResources(GamePanel.java:421)
+	at core.GamePanel.init(GamePanel.java:195)
+	at core.Window.initGame(Window.java:239)
+	at core.App.main(App.java:19)

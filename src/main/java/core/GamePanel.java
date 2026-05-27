@@ -217,8 +217,8 @@ public class GamePanel {
         uiDialogueS = new UiDialogueSupport(this, renderer);
         uiSubMenuS = new UiSubMenuSupport(this, renderer);
         uiPrimaryMenuFrameS = new UiPrimaryMenuFrameSupport(this, renderer);
-        uiPartyMenuS = new UiPartyMenuSupport(this);
-        uiInventoryMenuS = new UiInventoryMenuSupport(this);
+        uiPartyMenuS = new UiPartyMenuSupport(this, renderer);
+        uiInventoryMenuS = new UiInventoryMenuSupport(this, renderer);
         uiSettingsMenuS = new UiSettingsMenuSupport(this, renderer);
         uiTitleS = new UiTitleSupport(this, renderer);
 
@@ -229,18 +229,18 @@ public class GamePanel {
         cameraS.setTrackedEntity(entityM.getPlayer().getEntityId());
 
         // Initiate loading sequence.
-        cutsceneM.initiateCutscene(2);
+//        cutsceneM.initiateCutscene(2);
 
         // TEST
-//        mapM.loadMap(1, 0, true);
-//        entityM.getPlayer().setHidden(false);
-//        fadeS.displayColor(new Vector3f(255, 255, 255));
-//        fadeS.initiateFadeFrom(0.5);
-//        setPrimaryGameState(PrimaryGameState.EXPLORE);
+        mapM.loadMap(1, 0, true);
+        entityM.getPlayer().setHidden(false);
+        fadeS.displayColor(new Vector3f(255, 255, 255));
+        fadeS.initiateFadeFrom(0.5);
+        setPrimaryGameState(PrimaryGameState.EXPLORE);
 
-//        entityM.getPlayer().setCol(47);
-//        entityM.getPlayer().setRow(14);
-//        entityM.getPlayer().setDirectionCurrent(EntityDirection.UP);
+        entityM.getPlayer().setCol(47);
+        entityM.getPlayer().setRow(14);
+        entityM.getPlayer().setDirectionCurrent(EntityDirection.UP);
 //
 //        for (int i = 0; i < 1; i++) {
 //            entityM.getPlayer().addItemToInventory(0);
@@ -255,7 +255,7 @@ public class GamePanel {
 //        entityM.loadEntity(5);
 //        entityM.getEntityById(5).setCol(11); //8
 //        entityM.getEntityById(5).setRow(42); //42
-////        entityM.getEntityById(5).startFollowingPath(11, 44);
+//        entityM.getEntityById(5).startFollowingPath(11, 44);
 //        partyS.addEntityToParty(5, false);
 //        entityM.getEntityById(5).setHidden(false);
     }
@@ -520,14 +520,22 @@ public class GamePanel {
         AssetPool.addSound("riftInTime", "sound/tracks/riftInTime_intro.ogg", "sound/tracks/riftInTime_loop.ogg");
         AssetPool.addSound("yesteryear", "sound/tracks/yesteryear_intro.ogg", "sound/tracks/yesteryear_loop.ogg");
         AssetPool.addSound("tabulaRasa", "sound/tracks/tabulaRasa.ogg");
-        AssetPool.addSound("pickpocket", "sound/effects/pickpocket.ogg");
-        AssetPool.addSound("butterflyBlade", "sound/effects/butterflyBlade.ogg");
-        AssetPool.addSound("burningDagger", "sound/effects/burningDagger.ogg");
-        AssetPool.addSound("sneakstrike", "sound/effects/sneakstrike.ogg");
-        AssetPool.addSound("heal", "sound/effects/heal.ogg");
+
+        AssetPool.addSound("attributeIncrease", "sound/effects/attributeIncrease.ogg");
         AssetPool.addSound("attributeDecrease", "sound/effects/attributeDecrease.ogg");
-        AssetPool.addSound("hop", "sound/effects/hop.ogg");
+
         AssetPool.addSound("obtain", "sound/effects/obtain.ogg");
+        AssetPool.addSound("hop", "sound/effects/hop.ogg");
+        AssetPool.addSound("thud", "sound/effects/thud.ogg");
+        AssetPool.addSound("footsteps", "sound/effects/footsteps.ogg");
+        AssetPool.addSound("grassRustle", "sound/effects/grassRustle.ogg");
+
+        AssetPool.addSound("basicAttack", "sound/effects/basicAttack.ogg");
+        AssetPool.addSound("pickpocket", "sound/effects/pickpocket.ogg");
+        AssetPool.addSound("burningDagger", "sound/effects/burningDagger.ogg");
+        AssetPool.addSound("butterflyBlade", "sound/effects/butterflyBlade.ogg");
+        AssetPool.addSound("heal", "sound/effects/heal.ogg");
+        AssetPool.addSound("revive", "sound/effects/revive.ogg");
     }
 
 

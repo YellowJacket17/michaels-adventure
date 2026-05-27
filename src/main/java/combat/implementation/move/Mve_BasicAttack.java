@@ -22,7 +22,7 @@ public class Mve_BasicAttack extends MoveBase {
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 0;
     private static final Vector3f mveEffectColor = new Vector3f(228, 166, 255);
-    private static final String mveSoundEffect = "sneakstrike";
+    private static final String mveSoundEffect = "basicAttack";
 
 
     // CONSTRUCTOR

@@ -605,9 +605,15 @@ public class Player extends EntityBase {
             }else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
 
                 handlePartyMenuInputUpKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
+
+                handlePartyMenuInputLeftKey();
             } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
 
                 handlePartyMenuInputDownKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
+
+                handlePartyMenuInputRightKey();
             }
         }
     }
@@ -944,16 +950,26 @@ public class Player extends EntityBase {
     private void handlePartyMenuInputUpKey() {
 
         if ((gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_1)
-                && (gp.getUiPartyMenuS().getPartyMenuScrollLevel() > 0)) {
+                && (gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() > 0)) {
 
-            gp.getUiPartyMenuS().setPartyMenuScrollLevel(gp.getUiPartyMenuS().getPartyMenuScrollLevel() - 1);
+            gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() - 1);
         } else if (gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_0) {
 
-            gp.getUiPartyMenuS().setPartyMenuScrollLevel(gp.getUiPartyMenuS().getPartyMenuScrollLevel() - 1);
+            gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() - 1);
         } else {
 
             gp.getUiPartyMenuS().decrementPartyMenuSlotSelected();
         }
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for party menu left key.
+     */
+    private void handlePartyMenuInputLeftKey() {
+
+        gp.getUiPartyMenuS().setPartyMenuMoveScrollLevel(gp.getUiPartyMenuS().getPartyMenuMoveScrollLevel() - 1);
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -964,16 +980,26 @@ public class Player extends EntityBase {
     private void handlePartyMenuInputDownKey() {
 
         if ((gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_1)
-                && (gp.getUiPartyMenuS().getPartyMenuScrollLevel() < (gp.getEntityM().getParty().size() - 2))) {
+                && (gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() < (gp.getEntityM().getParty().size() - 2))) {
 
-            gp.getUiPartyMenuS().setPartyMenuScrollLevel(gp.getUiPartyMenuS().getPartyMenuScrollLevel() + 1);
+            gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() + 1);
         } else if (gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_2) {
 
-            gp.getUiPartyMenuS().setPartyMenuScrollLevel(gp.getUiPartyMenuS().getPartyMenuScrollLevel() + 1);
+            gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() + 1);
         } else {
 
             gp.getUiPartyMenuS().incrementPartyMenuSlotSelected();
         }
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for party menu right key.
+     */
+    private void handlePartyMenuInputRightKey() {
+
+        gp.getUiPartyMenuS().setPartyMenuMoveScrollLevel(gp.getUiPartyMenuS().getPartyMenuMoveScrollLevel() + 1);
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 

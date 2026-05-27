@@ -76,7 +76,8 @@ public class Evt_Map001 extends EventMapBase {
         // Shadow encounter.
         if ((col == 47) && (row == 13) && (direction == EntityDirection.UP)) {
             if (gp.getMapM().getLoadedMap().getMapState() == 0) {
-                gp.getCutsceneM().initiateCutscene(4);
+//                gp.getCutsceneM().initiateCutscene(4);
+                gp.getCombatM().initiateCombat(1, 43, 9, "runningLate", 4);
                 return true;
             } else if (gp.getMapM().getLoadedMap().getMapState() == 1) {
                 gp.getCombatM().initiateCombat(1, 43, 9, "runningLate", 4);
@@ -87,12 +88,12 @@ public class Evt_Map001 extends EventMapBase {
         // Map 2 warp.
         if ((col == 50) && ((row == 8)) && (direction == EntityDirection.RIGHT)) {
             gp.getWarpS().initiateWarp(dt, 2, 57, 5, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("footsteps");
             return true;
         }
         if ((col == 50) && ((row == 9)) && (direction == EntityDirection.RIGHT)) {
             gp.getWarpS().initiateWarp(dt, 2, 57, 6, WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("footsteps");
             return true;
         }
         return false;

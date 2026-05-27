@@ -94,10 +94,11 @@ public class UiInventoryMenuSupport {
      * Constructs a UiInventoryMenuSupport instance.
      *
      * @param gp GamePanel instance
+     * @param renderer Renderer instance
      */
-    public UiInventoryMenuSupport(GamePanel gp) {
+    public UiInventoryMenuSupport(GamePanel gp, Renderer renderer) {
         this.gp = gp;
-        init();
+        init(renderer);
     }
 
 
@@ -311,8 +312,10 @@ public class UiInventoryMenuSupport {
      * Initializes inventory menu user interface components that will not change while the game is running.
      * These user interface components are the "core" aspects of the inventory menu layout, such as the positioning of
      * the slot icons.
+     *
+     * @param renderer Renderer instance
      */
-    private void init() {
+    private void init(Renderer renderer) {
 
         // Selection management.
         maxNumItemSlotRows = 5;                                                                                         // Maximum number of rows of item slot (i.e., not the number of items slots in a row).
@@ -324,13 +327,15 @@ public class UiInventoryMenuSupport {
 
         // Colors.
         verticalDividerColor = new Vector4f(147, 182, 220, 255);
-        itemNameTextColor = new Vector3f(121, 149, 255);
+        itemNameTextColor = new Vector3f(121, 255, 218);
 //        itemQuantityTextColor = new Vector3f(244, 154, 45);
         itemDescriptionTextColor = new Vector3f(255, 255, 255);
         emptyTextColor = new Vector3f(160, 160, 160);
 
         // Text sizing.
         itemSlotQuantityFontScale = 0.12f;
+        float standardNormalCharWorldHeight = renderer.getFont(gp.getUi().getStandardNormalFont())
+                .getCharacter('A').getHeight() * gp.getUi().getStandardFontScale();                                     // It doesn't matter which character is used, since all characters in a font have the same height.
 
         // Temporary coordinates.
         Vector2f tempWorldCoords = new Vector2f(0.0f, 0.0f);                                                            // Values are placeholders (will change while rendering).
@@ -464,9 +469,9 @@ public class UiInventoryMenuSupport {
         selectorScreenDimensions = new Vector2f(selectorScreenWidth, selectorScreenHeight);
 
         // Selected item content (setup).
-        float itemTextSectionWorldVerticalSpacing = 38.9f;
-        float itemTextSectionScreenVerticalSpacing =
-                gp.getCamera().worldHeightToScreenHeight(itemTextSectionWorldVerticalSpacing);
+        float itemDataWorldVerticalSpacing = standardNormalCharWorldHeight * 2.25f;
+        float itemDataScreenVerticalSpacing =
+                gp.getCamera().worldHeightToScreenHeight(itemDataWorldVerticalSpacing);
 
         // Selected item name coordinates.
         float itemNameTextScreenX =
@@ -480,7 +485,7 @@ public class UiInventoryMenuSupport {
 //        itemQuantityTextScreenCoords = new Vector2f(itemQuantityTextScreenX, itemQuantityTextScreenY);
 
         // Selected item description coordinates.
-        float itemDescriptionTextLineWorldVerticalSpacing = 28.0f;
+        float itemDescriptionTextLineWorldVerticalSpacing = standardNormalCharWorldHeight * 1.75f;
         itemDescriptionTextLineScreenVerticalSpacing =
                 gp.getCamera().worldHeightToScreenHeight(itemDescriptionTextLineWorldVerticalSpacing);
 
@@ -488,7 +493,7 @@ public class UiInventoryMenuSupport {
                 - ((1 - gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenWidth()) / 2);
 
         float itemDescriptionTextScreenX = itemNameTextScreenX;
-        float itemDescriptionTextScreenY = itemNameTextScreenY + itemTextSectionScreenVerticalSpacing;
+        float itemDescriptionTextScreenY = itemNameTextScreenY + itemDataScreenVerticalSpacing;
         itemDescriptionTextScreenCoords = new Vector2f(itemDescriptionTextScreenX, itemDescriptionTextScreenY);
 
         // Empty text coordinates and content.

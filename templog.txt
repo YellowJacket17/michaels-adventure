@@ -1,265 +1,104 @@
-05/09/2026 01:14:43:769  INFO     Starting application.
-05/09/2026 01:14:44:783  INFO     Loading shader from file: '/shaders/font.glsl'
-05/09/2026 01:14:44:783  INFO     Compiling and linking shader: '/shaders/font.glsl'
-05/09/2026 01:14:45:249  INFO     Loading shader from file: '/shaders/default.glsl'
-05/09/2026 01:14:45:249  INFO     Compiling and linking shader: '/shaders/default.glsl'
-05/09/2026 01:14:45:251  INFO     Loading shader from file: '/shaders/rounded.glsl'
-05/09/2026 01:14:45:261  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
-05/09/2026 01:14:45:264  INFO     Loading texture from file: '/spritesheets/tiles.png'
-05/09/2026 01:14:45:264  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
-05/09/2026 01:14:45:264  INFO     Loading texture from file: '/spritesheets/characters.png'
-05/09/2026 01:14:45:273  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
-05/09/2026 01:14:45:273  INFO     Loading texture from file: '/spritesheets/landmarks.png'
-05/09/2026 01:14:45:284  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
-05/09/2026 01:14:45:284  INFO     Loading texture from file: '/spritesheets/items.png'
-05/09/2026 01:14:45:284  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
-05/09/2026 01:14:45:284  INFO     Loading texture from file: '/spritesheets/icons.png'
-05/09/2026 01:14:45:284  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
-05/09/2026 01:14:45:284  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
-05/09/2026 01:14:45:284  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
-05/09/2026 01:14:45:284  INFO     Loading sound (track) from file: 'sound/tracks/outOfTheBlue_intro.ogg' + 'sound/tracks/outOfTheBlue_loop.ogg'
-05/09/2026 01:14:45:584  INFO     Loading sound (track) from file: 'sound/tracks/desolate_intro.ogg' + 'sound/tracks/desolate_loop.ogg'
-05/09/2026 01:14:45:764  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
-05/09/2026 01:14:45:854  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
-05/09/2026 01:14:45:984  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
-05/09/2026 01:14:46:241  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
-05/09/2026 01:14:46:514  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
-05/09/2026 01:14:46:767  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
-05/09/2026 01:14:46:971  INFO     Loading sound (effect) from file: 'sound/tracks/tabulaRasa.ogg'
-05/09/2026 01:14:47:395  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
-05/09/2026 01:14:47:404  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
-05/09/2026 01:14:47:405  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
-05/09/2026 01:14:47:405  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
-05/09/2026 01:14:47:405  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
-05/09/2026 01:14:47:413  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
-05/09/2026 01:14:47:415  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
-05/09/2026 01:14:47:415  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
-05/09/2026 01:14:47:415  INFO     Loading texture from file: '/illustrations/illustration0.png'
-05/09/2026 01:14:47:650  INFO     Loading illustration from texture: '/illustrations/illustration0.png'
-05/09/2026 01:14:47:652  INFO     Loading texture from file: '/illustrations/illustration1.png'
-05/09/2026 01:14:47:878  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
-05/09/2026 01:14:47:878  INFO     Loading texture from file: '/illustrations/illustration2.png'
-05/09/2026 01:14:48:054  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
-05/09/2026 01:14:48:054  INFO     Loading texture from file: '/illustrations/illustration3.png'
-05/09/2026 01:14:48:354  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
-05/09/2026 01:14:48:354  INFO     Loading texture from file: '/illustrations/illustration5.png'
-05/09/2026 01:14:48:624  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
-05/09/2026 01:14:48:653  INFO     Entering cutscene state with cutscene number '2'.
-05/09/2026 01:14:48:659  INFO     Starting game loop.
-05/09/2026 01:14:48:664  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:14:48:664  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:14:48:667  INFO     Progressing cutscene to phase '0'.
-05/09/2026 01:14:49:714  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:14:51:715  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:14:51:715  INFO     Progressing cutscene to phase '1'.
-05/09/2026 01:14:52:714  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:14:52:714  INFO     Progressing cutscene to phase '2'.
-05/09/2026 01:14:53:714  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:14:53:714  INFO     Exiting cutscene state.
-05/09/2026 01:14:55:226  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:14:57:344  INFO     Entering cutscene state with cutscene number '3'.
-05/09/2026 01:14:57:344  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:14:57:350  INFO     Progressing cutscene to phase '0'.
-05/09/2026 01:14:58:344  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:14:58:349  INFO     Progressing cutscene to phase '1'.
-05/09/2026 01:14:58:863  INFO     Exiting cutscene state.
-05/09/2026 01:15:00:044  INFO     Entering cutscene state with cutscene number '1'.
-05/09/2026 01:15:00:052  INFO     Loading map with ID '1' from file: '/json/maps.json'
-05/09/2026 01:15:00:054  INFO     Parsing map with ID '1' from JSON data.
-05/09/2026 01:15:00:069  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
-05/09/2026 01:15:00:073  INFO     Parsing entity with ID '1' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing entity with ID '2' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing entity with ID '3' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing entity with ID '4' from JSON data.
-05/09/2026 01:15:00:073  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
-05/09/2026 01:15:00:073  INFO     Parsing conversation with ID '4' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing conversation with ID '5' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing conversation with ID '6' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing conversation with ID '7' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing conversation with ID '8' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing conversation with ID '9' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing conversation with ID '10' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing conversation with ID '11' from JSON data.
-05/09/2026 01:15:00:073  INFO     Parsing conversation with ID '12' from JSON data.
-05/09/2026 01:15:00:083  INFO     Parsing conversation with ID '13' from JSON data.
-05/09/2026 01:15:00:083  INFO     Parsing conversation with ID '14' from JSON data.
-05/09/2026 01:15:00:083  INFO     Parsing conversation with ID '15' from JSON data.
-05/09/2026 01:15:00:083  INFO     Parsing conversation with ID '16' from JSON data.
-05/09/2026 01:15:00:083  INFO     Parsing conversation with ID '17' from JSON data.
-05/09/2026 01:15:00:083  INFO     Parsing conversation with ID '18' from JSON data.
-05/09/2026 01:15:00:083  INFO     Parsing conversation with ID '19' from JSON data.
-05/09/2026 01:15:00:083  INFO     Progressing cutscene to phase '0'.
-05/09/2026 01:15:01:064  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:15:01:064  INFO     Progressing cutscene to phase '1'.
-05/09/2026 01:15:03:579  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:15:03:579  INFO     Exiting cutscene state.
-05/09/2026 01:15:27:494  INFO     Entering cutscene state with cutscene number '4'.
-05/09/2026 01:15:27:494  INFO     Progressing cutscene to phase '0'.
-05/09/2026 01:15:28:006  INFO     Progressing cutscene to phase '1'.
-05/09/2026 01:15:28:027  INFO     Progressing cutscene to phase '2'.
-05/09/2026 01:15:30:561  INFO     Progressing cutscene to phase '3'.
-05/09/2026 01:15:31:793  INFO     Progressing cutscene to phase '4'.
-05/09/2026 01:15:32:544  INFO     Progressing cutscene to phase '5'.
-05/09/2026 01:15:33:294  INFO     Locking player control.
-05/09/2026 01:15:33:294  INFO     Progressing cutscene to phase '6'.
-05/09/2026 01:15:34:373  INFO     Unlocking player control.
-05/09/2026 01:15:34:373  INFO     Progressing cutscene to phase '7'.
-05/09/2026 01:15:34:394  INFO     Progressing cutscene to phase '8'.
-05/09/2026 01:15:35:674  INFO     Progressing cutscene to phase '9'.
-05/09/2026 01:15:35:944  INFO     Progressing cutscene to phase '10'.
-05/09/2026 01:15:36:707  INFO     Progressing cutscene to phase '11'.
-05/09/2026 01:15:36:975  INFO     Progressing cutscene to phase '12'.
-05/09/2026 01:15:38:394  INFO     Progressing cutscene to phase '13'.
-05/09/2026 01:15:38:659  INFO     Progressing cutscene to phase '14'.
-05/09/2026 01:15:39:843  INFO     Progressing cutscene to phase '15'.
-05/09/2026 01:15:40:109  INFO     Progressing cutscene to phase '16'.
-05/09/2026 01:15:40:373  INFO     Progressing cutscene to phase '17'.
-05/09/2026 01:15:40:643  INFO     Progressing cutscene to phase '18'.
-05/09/2026 01:15:41:358  INFO     Progressing cutscene to phase '19'.
-05/09/2026 01:15:41:625  INFO     Progressing cutscene to phase '20'.
-05/09/2026 01:15:42:024  INFO     Entering combat state with combat ID '1'.
-05/09/2026 01:15:42:024  INFO     Entering transition state of type 'ENTER_COMBAT'.
-05/09/2026 01:15:42:024  INFO     Locking player control.
-05/09/2026 01:15:42:029  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:15:42:029  INFO     Exiting cutscene state.
-05/09/2026 01:15:42:541  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:15:42:809  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:15:43:309  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:15:43:309  INFO     Running combat action: Act_ReadMessage
-05/09/2026 01:15:43:309  INFO     Exiting transition state of type 'ENTER_COMBAT'.
-05/09/2026 01:15:43:309  INFO     Unlocking player control.
-05/09/2026 01:16:12:824  INFO     Running combat action: Act_ToggleCombatUi
-05/09/2026 01:16:12:824  INFO     Running combat action: Act_ReadMessage
-05/09/2026 01:16:13:103  INFO     Running combat action: Act_GenerateSubMenu
-05/09/2026 01:16:23:804  INFO     Running combat action: Act_ReadMessage
-05/09/2026 01:16:23:804  INFO     Running combat action: Act_GenerateSubMenu
-05/09/2026 01:16:25:423  INFO     Running combat action: Act_ReadMessage
-05/09/2026 01:16:25:424  INFO     Running combat action: Act_GenerateSubMenu
-05/09/2026 01:16:25:868  INFO     Running combat action: Act_ReadMessage
-05/09/2026 01:16:26:284  INFO     Running combat action: Act_UseMove
-05/09/2026 01:16:26:288  INFO     Running combat move 'Butterfly Blade' with ID '2'.
-05/09/2026 01:16:33:836  INFO     Running combat action: Act_CustomEffect
-05/09/2026 01:16:35:404  INFO     Running combat action: Act_ReadMessage
-05/09/2026 01:16:36:870  INFO     Staging entity 'Peculiar Shadow' with ID '4' to faint in combat.
-05/09/2026 01:16:36:872  INFO     Running combat action: Act_FaintEntity
-05/09/2026 01:16:37:568  INFO     Running combat action: Act_ReadMessage
-05/09/2026 01:16:39:554  INFO     Running combat action: Act_ReadMessage
-05/09/2026 01:16:40:784  INFO     Running combat action: Act_ToggleCombatUi
-05/09/2026 01:16:40:784  INFO     Running combat action: Act_ExitCombat
-05/09/2026 01:16:40:784  INFO     Entering transition state of type 'EXIT_COMBAT'.
-05/09/2026 01:16:40:784  INFO     Locking player control.
-05/09/2026 01:16:40:784  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:16:41:283  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:16:41:283  INFO     Loading entity with ID '5' from file: '/json/entities.json'
-05/09/2026 01:16:41:289  INFO     Parsing entity with ID '5' from JSON data.
-05/09/2026 01:16:41:536  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:16:42:034  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:16:42:034  INFO     Exiting combat state.
-05/09/2026 01:16:42:034  INFO     Entering cutscene state with cutscene number '5'.
-05/09/2026 01:16:42:034  INFO     Exiting transition state of type 'EXIT_COMBAT'.
-05/09/2026 01:16:42:034  INFO     Unlocking player control.
-05/09/2026 01:16:42:034  INFO     Progressing cutscene to phase '0'.
-05/09/2026 01:16:42:551  INFO     Progressing cutscene to phase '1'.
-05/09/2026 01:16:42:569  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:16:42:569  INFO     Progressing cutscene to phase '2'.
-05/09/2026 01:16:42:786  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:16:42:786  INFO     Progressing cutscene to phase '3'.
-05/09/2026 01:16:42:984  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:16:43:184  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:16:43:184  INFO     Progressing cutscene to phase '4'.
-05/09/2026 01:16:43:699  INFO     Progressing cutscene to phase '5'.
-05/09/2026 01:16:43:968  INFO     Progressing cutscene to phase '6'.
-05/09/2026 01:16:47:664  INFO     Progressing cutscene to phase '7'.
-05/09/2026 01:16:47:934  INFO     Progressing cutscene to phase '8'.
-05/09/2026 01:17:08:749  INFO     Progressing cutscene to phase '9'.
-05/09/2026 01:17:08:764  INFO     Progressing cutscene to phase '10'.
-05/09/2026 01:17:08:781  INFO     Progressing cutscene to phase '11'.
-05/09/2026 01:17:09:282  INFO     Progressing cutscene to phase '12'.
-05/09/2026 01:17:09:298  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:17:09:298  INFO     Progressing cutscene to phase '13'.
-05/09/2026 01:17:09:513  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:17:09:714  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:17:09:913  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:17:09:913  INFO     Progressing cutscene to phase '14'.
-05/09/2026 01:17:10:430  INFO     Progressing cutscene to phase '15'.
-05/09/2026 01:17:10:695  INFO     Progressing cutscene to phase '16'.
-05/09/2026 01:17:11:214  INFO     Progressing cutscene to phase '17'.
-05/09/2026 01:17:12:214  INFO     Progressing cutscene to phase '18'.
-05/09/2026 01:17:13:213  INFO     Progressing cutscene to phase '19'.
-05/09/2026 01:17:28:380  INFO     Progressing cutscene to phase '20'.
-05/09/2026 01:17:31:645  INFO     Progressing cutscene to phase '21'.
-05/09/2026 01:17:39:513  INFO     Progressing cutscene to phase '22'.
-05/09/2026 01:17:41:028  INFO     Progressing cutscene to phase '23'.
-05/09/2026 01:17:41:544  INFO     Progressing cutscene to phase '24'.
-05/09/2026 01:17:50:396  INFO     Progressing cutscene to phase '25'.
-05/09/2026 01:17:51:211  INFO     Progressing cutscene to phase '26'.
-05/09/2026 01:17:52:226  INFO     Progressing cutscene to phase '27'.
-05/09/2026 01:17:53:144  INFO     Exiting cutscene state.
-05/09/2026 01:20:50:951  INFO     Entering transition state of type 'WARP'.
-05/09/2026 01:20:50:951  INFO     Locking player control.
-05/09/2026 01:20:50:953  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:20:51:440  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:20:51:440  INFO     Loading map with ID '2' from file: '/json/maps.json'
-05/09/2026 01:20:51:440  INFO     Parsing map with ID '2' from JSON data.
-05/09/2026 01:20:51:453  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
-05/09/2026 01:20:51:453  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
-05/09/2026 01:20:51:706  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:20:52:207  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:20:52:207  INFO     Exiting transition state of type 'WARP'.
-05/09/2026 01:20:52:208  INFO     Unlocking player control.
-05/09/2026 01:20:58:103  INFO     Entering transition state of type 'WARP'.
-05/09/2026 01:20:58:103  INFO     Locking player control.
-05/09/2026 01:20:58:103  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:20:58:603  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:20:58:855  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:20:59:353  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:20:59:353  INFO     Exiting transition state of type 'WARP'.
-05/09/2026 01:20:59:353  INFO     Unlocking player control.
-05/09/2026 01:21:04:172  INFO     Entering transition state of type 'WARP'.
-05/09/2026 01:21:04:173  INFO     Locking player control.
-05/09/2026 01:21:04:173  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:21:04:671  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:21:04:915  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:21:05:421  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:21:05:423  INFO     Exiting transition state of type 'WARP'.
-05/09/2026 01:21:05:423  INFO     Unlocking player control.
-05/09/2026 01:21:11:988  INFO     Entering transition state of type 'WARP'.
-05/09/2026 01:21:11:988  INFO     Locking player control.
-05/09/2026 01:21:11:990  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:21:12:488  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:21:12:738  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:21:13:237  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:21:13:237  INFO     Exiting transition state of type 'WARP'.
-05/09/2026 01:21:13:239  INFO     Unlocking player control.
-05/09/2026 01:21:18:869  INFO     Entering transition state of type 'WARP'.
-05/09/2026 01:21:18:869  INFO     Locking player control.
-05/09/2026 01:21:18:869  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:21:19:368  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:21:19:620  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:21:20:118  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:21:20:118  INFO     Exiting transition state of type 'WARP'.
-05/09/2026 01:21:20:118  INFO     Unlocking player control.
-05/09/2026 01:21:41:230  INFO     Entering transition state of type 'WARP'.
-05/09/2026 01:21:41:230  INFO     Locking player control.
-05/09/2026 01:21:41:230  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:21:41:713  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:21:41:713  INFO     Loading map with ID '3' from file: '/json/maps.json'
-05/09/2026 01:21:41:720  INFO     Parsing map with ID '3' from JSON data.
-05/09/2026 01:21:41:733  INFO     Loading entities for map with ID '3' in state '0' from file: '/json/entities.json'
-05/09/2026 01:21:41:733  INFO     Loading conversations for map with ID '3' from file: '/json/dialogue.json'
-05/09/2026 01:21:41:984  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:21:42:483  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:21:42:483  INFO     Exiting transition state of type 'WARP'.
-05/09/2026 01:21:42:483  INFO     Unlocking player control.
-05/09/2026 01:22:38:928  INFO     Entering transition state of type 'WARP'.
-05/09/2026 01:22:38:928  INFO     Locking player control.
-05/09/2026 01:22:38:930  INFO     Setting fade state to 'FADE_TO'.
-05/09/2026 01:22:39:428  INFO     Setting fade state to 'ACTIVE'.
-05/09/2026 01:22:39:428  INFO     Loading map with ID '4' from file: '/json/maps.json'
-05/09/2026 01:22:39:428  INFO     Parsing map with ID '4' from JSON data.
-05/09/2026 01:22:39:443  INFO     Loading entities for map with ID '4' in state '0' from file: '/json/entities.json'
-05/09/2026 01:22:39:443  INFO     Loading conversations for map with ID '4' from file: '/json/dialogue.json'
-05/09/2026 01:22:39:674  INFO     Setting fade state to 'FADE_FROM'.
-05/09/2026 01:22:40:179  INFO     Setting fade state to 'INACTIVE'.
-05/09/2026 01:22:40:179  INFO     Exiting transition state of type 'WARP'.
-05/09/2026 01:22:40:181  INFO     Unlocking player control.
+05/25/2026 20:50:28:560  INFO     Starting application.
+05/25/2026 20:50:29:413  INFO     Loading shader from file: '/shaders/font.glsl'
+05/25/2026 20:50:29:414  INFO     Compiling and linking shader: '/shaders/font.glsl'
+05/25/2026 20:50:29:747  INFO     Loading shader from file: '/shaders/default.glsl'
+05/25/2026 20:50:29:748  INFO     Compiling and linking shader: '/shaders/default.glsl'
+05/25/2026 20:50:29:749  INFO     Loading shader from file: '/shaders/rounded.glsl'
+05/25/2026 20:50:29:750  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
+05/25/2026 20:50:29:752  INFO     Loading texture from file: '/spritesheets/tiles.png'
+05/25/2026 20:50:29:756  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
+05/25/2026 20:50:29:757  INFO     Loading texture from file: '/spritesheets/characters.png'
+05/25/2026 20:50:29:766  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
+05/25/2026 20:50:29:767  INFO     Loading texture from file: '/spritesheets/landmarks.png'
+05/25/2026 20:50:29:771  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
+05/25/2026 20:50:29:771  INFO     Loading texture from file: '/spritesheets/items.png'
+05/25/2026 20:50:29:771  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
+05/25/2026 20:50:29:772  INFO     Loading texture from file: '/spritesheets/icons.png'
+05/25/2026 20:50:29:773  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
+05/25/2026 20:50:29:773  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
+05/25/2026 20:50:29:773  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
+05/25/2026 20:50:29:774  INFO     Loading sound (track) from file: 'sound/tracks/outOfTheBlue_intro.ogg' + 'sound/tracks/outOfTheBlue_loop.ogg'
+05/25/2026 20:50:30:079  INFO     Loading sound (track) from file: 'sound/tracks/desolate_intro.ogg' + 'sound/tracks/desolate_loop.ogg'
+05/25/2026 20:50:30:258  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
+05/25/2026 20:50:30:356  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
+05/25/2026 20:50:30:478  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
+05/25/2026 20:50:30:592  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
+05/25/2026 20:50:30:719  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
+05/25/2026 20:50:30:903  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
+05/25/2026 20:50:31:092  INFO     Loading sound (effect) from file: 'sound/tracks/tabulaRasa.ogg'
+05/25/2026 20:50:31:385  INFO     Loading sound (effect) from file: 'sound/effects/attributeIncrease.ogg'
+05/25/2026 20:50:31:390  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
+05/25/2026 20:50:31:395  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
+05/25/2026 20:50:31:397  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
+05/25/2026 20:50:31:398  INFO     Loading sound (effect) from file: 'sound/effects/thud.ogg'
+05/25/2026 20:50:31:400  INFO     Loading sound (effect) from file: 'sound/effects/footsteps.ogg'
+05/25/2026 20:50:31:402  INFO     Loading sound (effect) from file: 'sound/effects/grassRustle.ogg'
+05/25/2026 20:50:31:403  INFO     Loading sound (effect) from file: 'sound/effects/basicAttack.ogg'
+05/25/2026 20:50:31:405  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
+05/25/2026 20:50:31:406  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
+05/25/2026 20:50:31:412  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
+05/25/2026 20:50:31:413  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
+05/25/2026 20:50:31:414  INFO     Loading sound (effect) from file: 'sound/effects/revive.ogg'
+05/25/2026 20:50:31:422  INFO     Loading texture from file: '/illustrations/illustration0.png'
+05/25/2026 20:50:31:667  INFO     Loading illustration from texture: '/illustrations/illustration0.png'
+05/25/2026 20:50:31:667  INFO     Loading texture from file: '/illustrations/illustration1.png'
+05/25/2026 20:50:31:918  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
+05/25/2026 20:50:31:918  INFO     Loading texture from file: '/illustrations/illustration2.png'
+05/25/2026 20:50:32:142  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
+05/25/2026 20:50:32:142  INFO     Loading texture from file: '/illustrations/illustration3.png'
+05/25/2026 20:50:32:389  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
+05/25/2026 20:50:32:389  INFO     Loading texture from file: '/illustrations/illustration5.png'
+05/25/2026 20:50:32:646  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
+05/25/2026 20:50:32:675  INFO     Loading map with ID '1' from file: '/json/maps.json'
+05/25/2026 20:50:32:678  INFO     Parsing map with ID '1' from JSON data.
+05/25/2026 20:50:32:685  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
+05/25/2026 20:50:32:686  INFO     Parsing entity with ID '1' from JSON data.
+05/25/2026 20:50:32:687  INFO     Parsing entity with ID '2' from JSON data.
+05/25/2026 20:50:32:687  INFO     Parsing entity with ID '3' from JSON data.
+05/25/2026 20:50:32:687  INFO     Parsing entity with ID '4' from JSON data.
+05/25/2026 20:50:32:688  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
+05/25/2026 20:50:32:689  INFO     Parsing conversation with ID '4' from JSON data.
+05/25/2026 20:50:32:689  INFO     Parsing conversation with ID '5' from JSON data.
+05/25/2026 20:50:32:690  INFO     Parsing conversation with ID '6' from JSON data.
+05/25/2026 20:50:32:690  INFO     Parsing conversation with ID '7' from JSON data.
+05/25/2026 20:50:32:690  INFO     Parsing conversation with ID '8' from JSON data.
+05/25/2026 20:50:32:691  INFO     Parsing conversation with ID '9' from JSON data.
+05/25/2026 20:50:32:691  INFO     Parsing conversation with ID '10' from JSON data.
+05/25/2026 20:50:32:692  INFO     Parsing conversation with ID '11' from JSON data.
+05/25/2026 20:50:32:692  INFO     Parsing conversation with ID '12' from JSON data.
+05/25/2026 20:50:32:693  INFO     Parsing conversation with ID '13' from JSON data.
+05/25/2026 20:50:32:693  INFO     Parsing conversation with ID '14' from JSON data.
+05/25/2026 20:50:32:693  INFO     Parsing conversation with ID '15' from JSON data.
+05/25/2026 20:50:32:693  INFO     Parsing conversation with ID '16' from JSON data.
+05/25/2026 20:50:32:693  INFO     Parsing conversation with ID '17' from JSON data.
+05/25/2026 20:50:32:694  INFO     Parsing conversation with ID '18' from JSON data.
+05/25/2026 20:50:32:694  INFO     Parsing conversation with ID '19' from JSON data.
+05/25/2026 20:50:32:695  INFO     Setting fade state to 'ACTIVE'.
+05/25/2026 20:50:32:696  INFO     Setting fade state to 'FADE_FROM'.
+05/25/2026 20:50:32:704  INFO     Starting game loop.
+05/25/2026 20:50:33:229  INFO     Setting fade state to 'INACTIVE'.
+05/25/2026 20:50:36:529  INFO     Entering transition state of type 'WARP'.
+05/25/2026 20:50:36:529  INFO     Locking player control.
+05/25/2026 20:50:36:530  INFO     Setting fade state to 'FADE_TO'.
+05/25/2026 20:50:37:029  INFO     Setting fade state to 'ACTIVE'.
+05/25/2026 20:50:37:030  INFO     Loading map with ID '2' from file: '/json/maps.json'
+05/25/2026 20:50:37:030  INFO     Parsing map with ID '2' from JSON data.
+05/25/2026 20:50:37:034  INFO     Loading entities for map with ID '2' in state '0' from file: '/json/entities.json'
+05/25/2026 20:50:37:034  INFO     Loading conversations for map with ID '2' from file: '/json/dialogue.json'
+05/25/2026 20:50:37:280  INFO     Setting fade state to 'FADE_FROM'.
+05/25/2026 20:50:37:779  INFO     Setting fade state to 'INACTIVE'.
+05/25/2026 20:50:37:779  INFO     Exiting transition state of type 'WARP'.
+05/25/2026 20:50:37:779  INFO     Unlocking player control.
+05/25/2026 20:50:38:114  WARNING  Unrecognized key with code '-1' was detected.
+05/25/2026 20:50:50:845  INFO     Entering transition state of type 'WARP'.
+05/25/2026 20:50:50:845  INFO     Locking player control.
+05/25/2026 20:50:50:846  INFO     Setting fade state to 'FADE_TO'.
+05/25/2026 20:50:51:344  INFO     Setting fade state to 'ACTIVE'.
+05/25/2026 20:50:51:345  INFO     Loading map with ID '3' from file: '/json/maps.json'
+05/25/2026 20:50:51:346  INFO     Parsing map with ID '3' from JSON data.
+05/25/2026 20:50:51:348  INFO     Loading entities for map with ID '3' in state '0' from file: '/json/entities.json'
+05/25/2026 20:50:51:349  INFO     Loading conversations for map with ID '3' from file: '/json/dialogue.json'
+05/25/2026 20:50:51:595  INFO     Setting fade state to 'FADE_FROM'.
+05/25/2026 20:50:52:094  INFO     Setting fade state to 'INACTIVE'.
+05/25/2026 20:50:52:094  INFO     Exiting transition state of type 'WARP'.
+05/25/2026 20:50:52:095  INFO     Unlocking player control.
