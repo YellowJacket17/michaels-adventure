@@ -881,8 +881,8 @@ public class UiPartyMenuSupport {
 
         // Colors.
         textColor = new Vector3f(255, 255, 255);
-        scrollIconInactiveColor = new Vector4f(174, 231, 255, 255);
-        scrollIconActiveColor = new Vector4f(100, 193, 255, 255);
+        scrollIconInactiveColor = new Vector4f(226, 226, 226, 255); // 174, 231, 255, 255
+        scrollIconActiveColor = new Vector4f(244, 154, 45, 255); // 100, 193, 255, 255
         verticalDividerColor = new Vector4f(147, 182, 220, 255);
         attributeHeaderTextColor = new Vector3f(121, 255, 218);
         attributeLabelTextColor = new Vector3f(121, 149, 255);

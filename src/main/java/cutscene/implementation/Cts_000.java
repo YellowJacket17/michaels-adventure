@@ -26,20 +26,21 @@ public class Cts_000 extends CutsceneBase {
     public void run(double dt) {
 
         switch (scenePhase) {
+
             case 0:
                 gp.getDialogueR().loadConversation(0);
                 gp.getDialogueR().loadConversation(1);
                 gp.getDialogueR().loadConversation(2);
-                gp.getDialogueR().loadConversation(3);
                 progressCutscene();
                 break;
+
             case 1:
                 counter += dt;
-                if (counter >= 1) {
+                if (counter >= 1.5) {
                     gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
                     gp.getSoundS().playTrack("desolate");
 //                    gp.getDialogueR().setStagedPrintCountdown(0.032);
-                    gp.getUi().setWindowOpacity(150);
+                    gp.getUi().setWindowOpacity(160);
 //                    gp.getFadeS().displayColor(new Vector3f(0, 0, 0));
                     gp.getIllustrationS().displayIllustration("illustration1");
                     gp.getFadeS().initiateFadeFrom(3);
@@ -47,22 +48,26 @@ public class Cts_000 extends CutsceneBase {
                     counter = 0;
                 }
                 break;
+
             case 2:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
                     counter += dt;
                     if (counter >= 1) {
                         gp.getDialogueR().initiateConversation(0);
+                        gp.getSoundS().playEffect("pencilScribble");
                         progressCutscene();
                         counter = 0;
                     }
                 }
                 break;
+
             case 3:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getFadeS().initiateFadeTo(1, new Vector3f(0, 0, 0));
                     progressCutscene();
                 }
                 break;
+
             case 4:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     counter += dt;
@@ -74,50 +79,27 @@ public class Cts_000 extends CutsceneBase {
                     }
                 }
                 break;
+
             case 5:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
                     counter += dt;
                     if (counter >= 0.5) {
                         gp.getDialogueR().initiateConversation(1);
+                        gp.getSoundS().playEffect("pencilScribble");
                         progressCutscene();
                         counter = 0;
                     }
                 }
                 break;
+
             case 6:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getFadeS().initiateFadeTo(1, new Vector3f(0, 0, 0));
                     progressCutscene();
                 }
                 break;
+
             case 7:
-                if (gp.getFadeS().getState() == FadeState.ACTIVE) {
-                    counter += dt;
-                    if (counter >= 0.4) {
-                        gp.getIllustrationS().displayIllustration("illustration1");
-                        gp.getFadeS().initiateFadeFrom(1);
-                        progressCutscene();
-                        counter = 0;
-                    }
-                }
-                break;
-            case 8:
-                if (gp.getFadeS().getState() == FadeState.INACTIVE) {
-                    counter += dt;
-                    if (counter >= 0.5) {
-                        gp.getDialogueR().initiateConversation(2);
-                        progressCutscene();
-                        counter = 0;
-                    }
-                }
-                break;
-            case 9:
-                if (gp.getDialogueR().getActiveConv() == null) {
-                    gp.getFadeS().initiateFadeTo(1, new Vector3f(0, 0, 0));
-                    progressCutscene();
-                }
-                break;
-            case 10:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     counter += dt;
                     if (counter >= 0.4) {
@@ -128,17 +110,20 @@ public class Cts_000 extends CutsceneBase {
                     }
                 }
                 break;
-            case 11:
+
+            case 8:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
                     counter += dt;
                     if (counter >= 0.5) {
-                        gp.getDialogueR().initiateConversation(3);
+                        gp.getDialogueR().initiateConversation(2);
+                        gp.getSoundS().playEffect("pencilScribble");
                         progressCutscene();
                         counter = 0;
                     }
                 }
                 break;
-            case 12:
+
+            case 9:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     counter += dt;
                     if (counter >= 2) {
@@ -148,14 +133,16 @@ public class Cts_000 extends CutsceneBase {
                     }
                 }
                 break;
-            case 13:
+
+            case 10:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     gp.getMapM().loadMap(1, 0, false);
                     gp.getSoundS().stopTrack(true);
                     progressCutscene();
                 }
                 break;
-            case 14:
+
+            case 11:
                 counter += dt;
                 if (counter >= 1) {
                     gp.getIllustrationS().removeIllustration();
@@ -167,7 +154,8 @@ public class Cts_000 extends CutsceneBase {
                     counter = 0;
                 }
                 break;
-            case 15:
+
+            case 12:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
 //                    gp.getDialogueR().resetStagedPrintCountdown();
                     gp.getUi().resetWindowOpacity();

@@ -43,6 +43,8 @@ public class ItemManager {
         referenceItems.put(3, retrieveNewInstance(3));
         referenceItems.put(4, retrieveNewInstance(4));
         referenceItems.put(5, retrieveNewInstance(5));
+        referenceItems.put(6, retrieveNewInstance(6));
+        referenceItems.put(7, retrieveNewInstance(7));
     }
 
 
@@ -68,6 +70,10 @@ public class ItemManager {
                 return new Itm_Ring(gp);
             case 5:
                 return new Itm_Journal(gp);
+            case 6:
+                return new Itm_Lantern(gp);
+            case 7:
+                return new Itm_Knife(gp);
             default:
                 return null;
         }

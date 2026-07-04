@@ -26,13 +26,15 @@ public class Cts_001 extends CutsceneBase {
     public void run(double dt) {
 
         switch (scenePhase) {
+
             case 0:
                 gp.getMapM().loadMap(1, 0, false);
                 progressCutscene();
                 break;
+
             case 1:
                 counter += dt;
-                if (counter >= 1) {
+                if (counter >= 1.0) {
                     gp.getSoundS().playTrack(
                             gp.getMapM().getLoadedMap().getTrack(gp.getMapM().getLoadedMap().getMapState()));           // Start playing track here to ensure it doesn't start playing too early.
                     gp.getEntityM().getPlayer().setHidden(false);
@@ -42,6 +44,7 @@ public class Cts_001 extends CutsceneBase {
                     counter = 0;
                 }
                 break;
+
             case 2:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
                     gp.setPrimaryGameState(PrimaryGameState.EXPLORE);

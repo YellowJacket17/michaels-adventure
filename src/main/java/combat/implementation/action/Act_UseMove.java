@@ -264,9 +264,9 @@ public class Act_UseMove extends ActionBase {
     private boolean rollCritical() {
 
         Random random = new Random();
-        int i = random.nextInt(101);                                                                                    // Generate random number from 0 (inclusive) to 100 (inclusive, since 101 is exclusive).
+        int i = random.nextInt(100);                                                                                    // Generate random number from 0 (inclusive) to 100 (exclusive).
 
-        if ((i <= 4) || ((i <= 30) && move.isHighCriticalHit())) {
+        if ((i < 5) || ((i < 30) && move.isHighCriticalHit())) {
 
             return true;
         } else {

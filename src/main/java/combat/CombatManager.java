@@ -916,7 +916,7 @@ public class CombatManager {
 
 
     /**
-     * Retrieves all ally entities.
+     * Retrieves all ally entities (excluding self).
      * This method works for both player-side and non-player-side entities.
      *
      * @param sourceEntityId ID of entity using move
@@ -2845,6 +2845,10 @@ public class CombatManager {
 
     public void setLatestSubMenuSelectedOption(int selectedOption) {
         getSubMenuMemory(1).setSelectedOption(selectedOption);
+    }
+
+    public void addSkipTurnEntity(int entityId, int numSkipTurns) {
+        turnSkipEntities.put(entityId, numSkipTurns);
     }
 
     public void setTargetLockEntityId(int targetLockEntityId) {

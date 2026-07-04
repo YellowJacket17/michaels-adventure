@@ -7,7 +7,6 @@ import combat.implementation.action.Act_CustomEffect;
 import combat.implementation.action.Act_ReadMessage;
 import core.GamePanel;
 import entity.EntityBase;
-import entity.enumeration.EntityStatus;
 import org.joml.Vector3f;
 import utility.UtilityTool;
 
@@ -15,23 +14,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This class defines a move (Dented Shield).
+ * This class defines a move (Forestalling Charge).
  */
-public class Mve_DentedShield extends MoveBase {
+public class Mve_ForestallingCharge extends MoveBase {
 
     // FIELDS
     private static final int mveId = 6;
-    private static final String mveName = "Dented Shield";
-    private static final String mveDescription = "Courageously charges the target with a damaged shield. Raises allies' defense.";
-    private static final int mvePower = 60;
+    private static final String mveName = "Forestalling Charge";
+    private static final String mveDescription = "Courageously charges the target, surprising them. Raises all allies' defense.";
+    private static final int mvePower = 40;
     private static final int mveAccuracy = 95;
-    private static final int mveSkillPoints = 6;
-    private static final Vector3f mveEffectColor = new Vector3f(255, 255, 255);
-    private static final String mveSoundEffect = "basicAttack";
+    private static final int mveSkillPoints = 3;
+    private static final Vector3f mveEffectColor = new Vector3f(228, 215, 192);
+    private static final String mveSoundEffect = "forestallingCharge";
 
 
     // CONSTRUCTOR
-    public Mve_DentedShield(GamePanel gp) {
+    public Mve_ForestallingCharge(GamePanel gp) {
         super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT, false);
         name = mveName;
         description = mveDescription;

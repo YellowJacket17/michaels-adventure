@@ -55,13 +55,13 @@ public class Evt_Map004 extends EventMapBase {
         if ((col == 6) && ((row == 58)) && (direction == EntityDirection.DOWN)) {
             Ldm_TallGrass1.setInstantiationColor(TallGrassColor.GREEN);
             gp.getWarpS().initiateWarp(dt, 3, 21, 11, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("footsteps");
             return true;
         }
         if ((col == 7) && ((row == 58)) && (direction == EntityDirection.DOWN)) {
             Ldm_TallGrass1.setInstantiationColor(TallGrassColor.GREEN);
             gp.getWarpS().initiateWarp(dt, 3, 22, 11, WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("footsteps");
             return true;
         }
         return false;

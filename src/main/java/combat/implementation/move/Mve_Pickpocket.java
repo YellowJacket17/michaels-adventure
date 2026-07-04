@@ -21,11 +21,11 @@ public class Mve_Pickpocket extends MoveBase {
     // FIELDS
     private static final int mveId = 1;
     private static final String mveName = "Pickpocket";
-    private static final String mveDescription = "The user deceives the opponent, both attacking and stealing five skill points.";
+    private static final String mveDescription = "Deceives the opponent, both attacking and stealing five skill points.";
     private static final int mvePower = 45;
-    private static final int mveAccuracy = 85;
+    private static final int mveAccuracy = 90;
     private static final int mveSkillPoints = 2;
-    private static final Vector3f mveEffectColor = new Vector3f(88, 92, 141);
+    private static final Vector3f mveEffectColor = new Vector3f(166, 188, 255);
     private static final String mveSoundEffect = "pickpocket";
 
 
@@ -48,7 +48,7 @@ public class Mve_Pickpocket extends MoveBase {
 
         int skillStolenPerEntity = 5;
         EntityBase targetEntity;
-        int numEntitiesSkillStolen = 0;
+        int totalSkillStolen = 0;
         HashMap<Integer, Integer> entitiesFinalSkill = new HashMap<>();
         ArrayList<Integer> targetEntityIds = UtilityTool.extractKeySetAsArrayList(targetEntityDeltaLife);
 
@@ -58,25 +58,35 @@ public class Mve_Pickpocket extends MoveBase {
 
             if (targetEntity.getSkill() >= skillStolenPerEntity) {
 
-                numEntitiesSkillStolen++;
-                entitiesFinalSkill.put(
-                        targetEntityId,
-                        gp.getEntityM().getEntityById(sourceEntityId).getSkill() - skillStolenPerEntity);
+                totalSkillStolen += skillStolenPerEntity;
+                gp.getEntityM().getEntityById(targetEntityId).setSkill(targetEntity.getSkill() - skillStolenPerEntity); // Subtract skill immediately since no custom effect animation is desired for targeted entity.
+
+//                entitiesFinalSkill.put(
+//                        targetEntityId,
+//                        gp.getEntityM().getEntityById(targetEntityId).getSkill() - skillStolenPerEntity);
+            } else {
+
+                totalSkillStolen += targetEntity.getSkill();
+
+                gp.getEntityM().getEntityById(targetEntityId).setSkill(0);                                              // Subtract skill immediately since no custom effect animation is desired for targeted entity.
+
+//                entitiesFinalSkill.put(
+//                        targetEntityId,
+//                        gp.getEntityM().getEntityById(targetEntityId).getSkill() - targetEntity.getSkill());
             }
         }
 
-        if (numEntitiesSkillStolen > 0) {
+        if (totalSkillStolen > 0) {
 
             entitiesFinalSkill.put(
                     sourceEntityId,
-                    gp.getEntityM().getEntityById(sourceEntityId).getSkill()
-                            + (skillStolenPerEntity * numEntitiesSkillStolen));
+                    gp.getEntityM().getEntityById(sourceEntityId).getSkill() + totalSkillStolen);
             gp.getCombatM().addQueuedActionBack(
                     new Act_CustomEffect(gp, entitiesFinalSkill,
-                            MoveBase.SKILL_RECOVERY_COLOR, "attributeIncrease", true));
+                            MoveBase.SKILL_RECOVERY_COLOR, "heal", true));
             String message = gp.getEntityM().getEntityById(sourceEntityId).getName()
                     + " stole "
-                    + skillStolenPerEntity * numEntitiesSkillStolen
+                    + totalSkillStolen
                     + " skill points!";
             gp.getCombatM().addQueuedActionBack(
                     new Act_ReadMessage(gp, message, true, true));

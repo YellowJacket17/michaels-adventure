@@ -7,7 +7,6 @@ import combat.implementation.action.Act_CustomEffect;
 import combat.implementation.action.Act_ReadMessage;
 import core.GamePanel;
 import entity.EntityBase;
-import entity.enumeration.EntityStatus;
 import org.joml.Vector3f;
 import utility.UtilityTool;
 
@@ -15,23 +14,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This class defines a move (Sliding Slash).
+ * This class defines a move (Empowering Strike).
  */
-public class Mve_SlidingSlash extends MoveBase {
+public class Mve_EmpoweringStrike extends MoveBase {
 
     // FIELDS
     private static final int mveId = 7;
-    private static final String mveName = "Sliding Slash";
-    private static final String mveDescription = "Runs at the target and slides at their feet while slashing with a sword. Raises allies' attack.";
-    private static final int mvePower = 60;
+    private static final String mveName = "Empowering Strike";
+    private static final String mveDescription = "Runs at the target and strikes while cheering on the team. Raises all allies' attack.";
+    private static final int mvePower = 50;
     private static final int mveAccuracy = 95;
-    private static final int mveSkillPoints = 6;
-    private static final Vector3f mveEffectColor = new Vector3f(255, 255, 255);
-    private static final String mveSoundEffect = "basicAttack";
+    private static final int mveSkillPoints = 3;
+    private static final Vector3f mveEffectColor = new Vector3f(228, 215, 192);
+    private static final String mveSoundEffect = "empoweringStrike";
 
 
     // CONSTRUCTOR
-    public Mve_SlidingSlash(GamePanel gp) {
+    public Mve_EmpoweringStrike(GamePanel gp) {
         super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT, false);
         name = mveName;
         description = mveDescription;

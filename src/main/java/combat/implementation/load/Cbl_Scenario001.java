@@ -36,6 +36,10 @@ public class Cbl_Scenario001 extends CombatLoadBase {
             gp.getEntityM().getEntityById(4).setRow(9);
             gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.LEFT);
 
+            gp.getEntityM().getEntityById(5).setCol(45);
+            gp.getEntityM().getEntityById(5).setRow(9);
+            gp.getEntityM().getEntityById(5).setDirectionCurrent(EntityDirection.LEFT);
+
             JsonParser.loadEntityJson(gp, 5);                                                                           // Load Joe for the post-combat cutscene.
             gp.getMapM().getLoadedMap().setMapState(2, false);                                                          // Set map to its post-combat (win) state.
             gp.getPartyS().hideAllPartyMembers(false);                                                                  // Just in case there are party members for whatever reason.
@@ -50,8 +54,12 @@ public class Cbl_Scenario001 extends CombatLoadBase {
 
             gp.getEntityM().getEntityById(4).setCol(47);
             gp.getEntityM().getEntityById(4).setRow(8);
-            gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.DOWN);
+            gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.UP);
             gp.getEntityM().getEntityById(4).resetPrimaryAttributes();                                                  // Restore primary attributes for re-fight.
+
+            gp.getEntityM().getEntityById(5).setCol(47);
+            gp.getEntityM().getEntityById(5).setRow(6);
+            gp.getEntityM().getEntityById(5).setDirectionCurrent(EntityDirection.DOWN);
 
             gp.getMapM().getLoadedMap().setMapState(1, false);                                                          // Set map to its post-combat (lose) state.
         }

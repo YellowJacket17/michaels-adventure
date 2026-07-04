@@ -453,14 +453,14 @@ public class Player extends EntityBase {
         setSpeed(120);
 
         // Combat attributes.
-        setMaxLife(300);
-        setLife(300);
+        setMaxLife(350);
+        setLife(350);
         setMaxSkill(50);
         setSkill(50);
         setBaseAttack(75);
-        setBaseDefense(85);
+        setBaseDefense(80);
         setBaseMagic(20);
-        setBaseAgility(120);
+        setBaseAgility(80);
 
         // Combat moves.
         moves.add(new Mve_Pickpocket(gp));
@@ -469,12 +469,12 @@ public class Player extends EntityBase {
         moves.add(new Mve_Sneakstrike(gp));
 
         // Items.
-//        for (int i = 0; i < 15; i++) {
-//            addItemToInventory(0);
-//        }
-//        for (int i = 0; i < 5; i++) {
-//            addItemToInventory(1);
-//        }
+        for (int i = 0; i < 1; i++) {
+            addItemToInventory(6);
+        }
+        for (int i = 0; i < 1; i++) {
+            addItemToInventory(7);
+        }
     }
 
 
@@ -860,14 +860,29 @@ public class Player extends EntityBase {
                     gp.getDialogueR().convertToPlaceholderMessage();                                                    // Convert to placeholder message to ensure that `progressCombat()` can only be triggered by player input from this message once.
                     setInteractionCountdown(stagedStandardInteractionCountdown);                                        // Player must wait before interacting with another combat action, for example (prevents instantly progressing next action that appears).
                     gp.getCombatM().progressCombat();                                                                   // Check what logic to run next in combat (i.e., progress combat loop).
+
+                    if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                        gp.getSoundS().playEffect("progress");
+                    }
                 } else {
 
                     setInteractionCountdown(stagedStandardInteractionCountdown);
                     gp.getEventM().handlePostConversation(gp.getDialogueR().getActiveConv().getConvId());               // Check if any events will be triggered once the conversation has finished.
+
+                    if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                        gp.getSoundS().playEffect("progress");
+                    }
                 }
-            } else {
+            } else if (gp.getDialogueR().getActiveConv().getConvId() != -5) {                                           // Ensure that the conversation is not a placeholder message.
 
                 gp.getDialogueR().progressConversation();                                                               // Read the next piece of dialogue in the staged conversation.
+
+                if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                    gp.getSoundS().playEffect("progress");
+                }
             }
         }
     }
@@ -882,6 +897,11 @@ public class Player extends EntityBase {
         gp.getUi().setPrimaryMenuState(PrimaryMenuState.PARTY);
         setInteractionCountdown(stagedStandardInteractionCountdown);
         primaryMenuActioned = true;                                                                                     // Disable the ability of the player to close the menu (party, inventory, settings) by pressing the toggle key.
+
+        if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+            gp.getSoundS().playEffect("primaryMenuOpen");
+        }
     }
 
 
@@ -894,6 +914,11 @@ public class Player extends EntityBase {
         gp.getUi().setPrimaryMenuState(PrimaryMenuState.INACTIVE);
         setInteractionCountdown(stagedStandardInteractionCountdown);
         primaryMenuActioned = true;                                                                                     // Disable the ability of the player to open the menu (party, inventory, settings) by pressing the toggle key.
+
+//        if (gp.getSystemSetting(5).getActiveOption() == 1) {
+//
+//            gp.getSoundS().playEffect("progress");
+//        }
     }
 
 
@@ -1097,6 +1122,10 @@ public class Player extends EntityBase {
 
         if (gp.getEventM().handlePostSubMenu(gp.getSubMenuH().getSubMenuId(), gp.getSubMenuH().getIndexSelected())) {
 
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("progress");
+            }
             setInteractionCountdown(stagedStandardInteractionCountdown);
         }
     }

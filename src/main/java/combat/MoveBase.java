@@ -107,7 +107,7 @@ public abstract class MoveBase {
     /**
      * Color of effects for skill recovery in combat.
      */
-    public static final Vector3f SKILL_RECOVERY_COLOR = new Vector3f(166, 172, 255);
+    public static final Vector3f SKILL_RECOVERY_COLOR = new Vector3f(188, 166, 255);
 
 
     // CONSTRUCTOR

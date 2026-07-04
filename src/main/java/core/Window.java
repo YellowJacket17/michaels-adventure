@@ -242,6 +242,8 @@ public class Window {
         gp.getSystemSetting(2).setActiveOption(gameSpeedTethered ? 1 : 0);
         gp.getSystemSetting(3).setActiveOption(fullScreenEnabled ? 1 : 0);
         fullScreenEnabled = fullScreenEnabled ? false : true;
+        gp.getSystemSetting(4).setActiveOption(0);
+        gp.getSystemSetting(5).setActiveOption(1);
         System.gc();                                                                                                    // Now is a good time for garbage collection by the JVM.
     }
 

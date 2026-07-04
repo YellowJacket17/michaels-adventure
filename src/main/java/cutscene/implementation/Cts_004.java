@@ -4,6 +4,8 @@ import core.GamePanel;
 import core.enumeration.PrimaryGameState;
 import cutscene.CutsceneBase;
 import entity.enumeration.EntityDirection;
+import event.enumeration.FadeState;
+import org.joml.Vector3f;
 
 /**
  * This class defines logic for a pre-combat cutscene (first area, fight against Peculiar Shadow).
@@ -25,10 +27,12 @@ public class Cts_004 extends CutsceneBase {
     public void run(double dt) {
 
         switch (scenePhase) {
+
             case 0:
                 gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
                 progressCutscene();
                 break;
+
             case 1:
                 counter += dt;
                 if (counter >= 0.5) {
@@ -36,139 +40,193 @@ public class Cts_004 extends CutsceneBase {
                     counter = 0;
                 }
                 break;
+
             case 2:
                 if (!gp.getEntityM().getPlayer().isMoving()) {
-                    gp.getCameraS().setCameraScroll(1520, 256, 2.5f);
+                    gp.getDialogueR().initiateConversation(3);
                     progressCutscene();
                 }
                 break;
+
             case 3:
-                if (!gp.getCameraS().isCameraScrolling()) {
-                    gp.getCameraS().setOverrideEntityTracking(false);
-                    gp.getCameraS().setTrackedEntity(4);
-                    gp.getDialogueR().initiateConversation(4);
+                if (gp.getDialogueR().getActiveConv() == null) {
+                    gp.getCameraS().setCameraScroll(1520, 224, 2.6f);
                     progressCutscene();
                 }
                 break;
+
             case 4:
-                if (gp.getDialogueR().getActiveConv() == null) {
-                    counter += dt;
-                    if (counter >= 0.75) {
-                        gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.LEFT);
-                        progressCutscene();
-                        counter = 0;
-                    }
+                if (!gp.getCameraS().isCameraScrolling()) {
+                    progressCutscene();
                 }
                 break;
+
             case 5:
                 counter += dt;
-                if (counter >= 0.75) {
+                if (counter>= 0.5) {
+                    gp.getEntityM().getEntityById(4).autoStep(EntityDirection.UP, false);
+                    progressCutscene();
+                    counter = 0;
+                }
+                break;
+
+            case 6:
+                if (!gp.getEntityM().getEntityById(4).isMoving()) {
+                    gp.getFadeS().initiateFlash(0.2, 0.2, 0.1, new Vector3f(0, 0, 0));
+                    gp.getSoundS().playEffect("vanish");
+                    progressCutscene();
+                }
+                break;
+
+            case 7:
+                if (gp.getFadeS().getState() == FadeState.ACTIVE) {
+                    gp.getEntityM().getEntityById(5).setHidden(true);
+                    progressCutscene();
+                }
+                break;
+
+            case 8:
+                if (gp.getFadeS().getState() == FadeState.INACTIVE) {
+                    progressCutscene();
+                }
+                break;
+
+            case 9:
+                counter += dt;
+                if (counter >= 0.8) {
+                    gp.getCameraS().setOverrideEntityTracking(false);
+                    gp.getCameraS().setTrackedEntity(4);
+                    gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.LEFT);
+                    progressCutscene();
+                    counter = 0;
+                }
+                break;
+
+            case 10:
+                counter += dt;
+                if (counter >= 0.8) {
                     gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.DOWN);
                     progressCutscene();
                     counter = 0;
                 }
                 break;
-            case 6:
+
+            case 11:
                 counter += dt;
-                if (counter >= 0.75) {
+                if (counter >= 0.8) {
                     gp.getEntityM().getEntityById(4).startFollowingPath(47, 12);
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
                     gp.setLockPlayerControl(true);
-                    gp.getDialogueR().initiateConversation(5);
+                    gp.getDialogueR().initiateConversation(4);
                     progressCutscene();
                     counter = 0;
                 }
                 break;
-            case 7:
+
+            case 12:
                 if (!gp.getEntityM().getEntityById(4).isOnPath()) {
                     gp.setLockPlayerControl(false);
                     progressCutscene();
                 }
                 break;
-            case 8:
+
+            case 13:
                 if (gp.getDialogueR().getActiveConv() == null) {
+                    gp.getDialogueR().initiateConversation(5);
+                    progressCutscene();
+                }
+                break;
+
+            case 14:
+                if (gp.getDialogueR().getActiveConv() == null) {
+                    gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
+                    gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
+                    progressCutscene();
+                }
+                break;
+
+            case 15:
+                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(4).isMoving()) {
                     gp.getDialogueR().initiateConversation(6);
                     progressCutscene();
                 }
                 break;
-            case 9:
+
+            case 16:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
                     gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
                     progressCutscene();
                 }
                 break;
-            case 10:
-                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(1).isMoving()) {
+
+            case 17:
+                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(4).isMoving()) {
                     gp.getDialogueR().initiateConversation(7);
                     progressCutscene();
                 }
                 break;
-            case 11:
+
+            case 18:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
                     gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
                     progressCutscene();
                 }
                 break;
-            case 12:
+
+            case 19:
                 if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(4).isMoving()) {
                     gp.getDialogueR().initiateConversation(8);
                     progressCutscene();
                 }
                 break;
-            case 13:
+
+            case 20:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
                     gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
                     progressCutscene();
                 }
                 break;
-            case 14:
-                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(1).isMoving()) {
+
+            case 21:
+                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(4).isMoving()) {
                     gp.getDialogueR().initiateConversation(9);
                     progressCutscene();
                 }
                 break;
-            case 15:
+
+            case 22:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
                     gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
                     progressCutscene();
                 }
                 break;
-            case 16:
-                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(1).isMoving()) {
+
+            case 23:
+                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(4).isMoving()) {
                     gp.getDialogueR().initiateConversation(10);
                     progressCutscene();
                 }
                 break;
-            case 17:
-                if (gp.getDialogueR().getActiveConv() == null) {
-                    gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
-                    gp.getEntityM().getEntityById(4).autoStep(EntityDirection.DOWN, false);
-                    progressCutscene();
-                }
-                break;
-            case 18:
-                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(1).isMoving()) {
-                    gp.getDialogueR().initiateConversation(11);
-                    progressCutscene();
-                }
-                break;
-            case 19:
+
+            case 24:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.UP, false);
                     progressCutscene();
                 }
                 break;
-            case 20:
-                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(1).isMoving()) {
-                    gp.getDialogueR().initiateConversation(12);
+
+            case 25:
+                if (!gp.getEntityM().getPlayer().isMoving() && !gp.getEntityM().getEntityById(4).isMoving()) {
+                    gp.getDialogueR().initiateConversation(11);
                     progressCutscene();
                 }
                 break;
-            case 21:
+
+            case 26:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getCameraS().setTrackedEntity(gp.getEntityM().getPlayer().getEntityId());
                     gp.getCameraS().setOverrideEntityTracking(true);                                                    // Prevent camera from immediately snapping to player entity.

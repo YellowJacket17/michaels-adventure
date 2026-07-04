@@ -40,20 +40,24 @@
         "attributes": {
             "name": "Peculiar Shadow",
             "speed": 120,
-            "maxLife": 270,
-            "life": 270,
+            "maxLife": 315,
+            "life": 315,
             "maxSkill": 60,
             "skill": 60,
             "baseAttack": 60,
-            "baseDefense": 1,
+            "baseDefense": 75,
             "baseMagic": 60,
-            "baseAgility": 80
+            "baseAgility": 60
         },
         "position": {
             "defaultCol": 47,
             "defaultRow": 8
         },
         "moves": {
+            "1": 7,
+            "2": 6,
+            "3": 9,
+            "4": 10
         }
     },
 
@@ -61,26 +65,31 @@
         "type": "character",
         "class": "Chr_Joe",
         "collision": true,
-        "hidden": true,
         "defaultAction": "static",
-        "defaultDirection": "left",
+        "map": 1,
+        "mapStates": [0, 1],
+        "defaultDirection": "down",
         "attributes": {
             "name": "Joe",
             "speed": 120,
-            "maxLife": 270,
-            "life": 270,
+            "maxLife": 315,
+            "life": 315,
             "maxSkill": 60,
             "skill": 60,
             "baseAttack": 60,
-            "baseDefense": 90,
+            "baseDefense": 75,
             "baseMagic": 60,
-            "baseAgility": 80
+            "baseAgility": 60
         },
         "position": {
-            "defaultCol": 45,
-            "defaultRow": 9
+            "defaultCol": 47,
+            "defaultRow": 6
         },
         "moves": {
+            "1": 7,
+            "2": 6,
+            "3": 9,
+            "4": 10
         }
     }
 }

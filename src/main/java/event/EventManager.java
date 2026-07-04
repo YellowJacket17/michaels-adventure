@@ -867,10 +867,10 @@ public class EventManager {
 
                 gp.getLandmarkM().initiateConditionalAnimation(targetCol, targetRow);
 
-                if ((gp.getCamera().isInCameraView(entity)) && (!gp.getSoundS().isSoundPlaying("grassRustle"))) {
-
-                    gp.getSoundS().playEffect("grassRustle");
-                }
+//                if ((gp.getCamera().isInCameraView(entity)) && (!gp.getSoundS().isSoundPlaying("grassRustle"))) {
+//
+//                    gp.getSoundS().playEffect("grassRustle");
+//                }
                 return true;
             }
         } catch (ArrayIndexOutOfBoundsException e) {}

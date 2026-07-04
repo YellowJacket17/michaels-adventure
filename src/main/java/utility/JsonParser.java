@@ -765,13 +765,19 @@ public class JsonParser {
                 move = new Mve_AnnoyingImpulse(gp);
                 break;
             case 6:
-                move = new Mve_DentedShield(gp);
+                move = new Mve_ForestallingCharge(gp);
                 break;
             case 7:
-                move = new Mve_SlidingSlash(gp);
+                move = new Mve_EmpoweringStrike(gp);
                 break;
             case 8:
                 move = new Mve_WaveSlash(gp);
+                break;
+            case 9:
+                move = new Mve_HealingSparks(gp);
+                break;
+            case 10:
+                move = new Mve_Revitalize(gp);
                 break;
         }
         return move;

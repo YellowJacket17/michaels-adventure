@@ -31,10 +31,12 @@ public class Cts_003 extends CutsceneBase {
     public void run(double dt) {
 
         switch (scenePhase) {
+
             case 0:
                 gp.getFadeS().initiateFadeTo(1, new Vector3f(0, 0, 0));
                 progressCutscene();
                 break;
+
             case 1:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     gp.getIllustrationS().removeIllustration();
@@ -42,12 +44,13 @@ public class Cts_003 extends CutsceneBase {
                     progressCutscene();
                 }
                 break;
+
             case 2:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     counter += dt;
                     if (counter >= 0.5) {
                         List<String> options = List.of("Yes", "No");                                                    // Immutable list.
-                        String prompt = "Would you like to view the opening cutscene?";
+                        String prompt = "Would you like to view the opening story sequence?";
                         gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 4, true);
                         exitCutscene();
                         resetCutscene();

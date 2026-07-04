@@ -21,10 +21,10 @@ public class Mve_BurningDagger extends MoveBase {
     // FIELDS
     private static final int mveId = 3;
     private static final String mveName = "Burning Dagger";
-    private static final String mveDescription = "Slashes at the target with a burning knife. Also lowers attack.";
-    private static final int mvePower = 70;
+    private static final String mveDescription = "Slashes at the target with a burning knife. Lowers the target's attack.";
+    private static final int mvePower = 80;
     private static final int mveAccuracy = 90;
-    private static final int mveSkillPoints = 4;
+    private static final int mveSkillPoints = 5;
     private static final Vector3f mveEffectColor = new Vector3f(255, 190, 166);
     private static final String mveSoundEffect = "burningDagger";
 

@@ -175,19 +175,19 @@ public class Evt_Map002 extends EventMapBase {
         if ((col == 58) && ((row == 49)) && (direction == EntityDirection.RIGHT)) {
             Ldm_TallGrass1.setInstantiationColor(TallGrassColor.GREEN);
             gp.getWarpS().initiateWarp(dt, 3, 14, 51, WarpTransitionType.STEP_PORTAL, EntityDirection.RIGHT);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("footsteps");
             return true;
         }
         if ((col == 58) && ((row == 50)) && (direction == EntityDirection.RIGHT)) {
             Ldm_TallGrass1.setInstantiationColor(TallGrassColor.GREEN);
             gp.getWarpS().initiateWarp(dt, 3, 14, 52, WarpTransitionType.STEP_PORTAL, EntityDirection.RIGHT);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("footsteps");
             return true;
         }
         if ((col == 58) && ((row == 51)) && (direction == EntityDirection.RIGHT)) {
             Ldm_TallGrass1.setInstantiationColor(TallGrassColor.GREEN);
             gp.getWarpS().initiateWarp(dt, 3, 14, 53, WarpTransitionType.STEP_PORTAL, EntityDirection.RIGHT);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("footsteps");
             return true;
         }
         return false;

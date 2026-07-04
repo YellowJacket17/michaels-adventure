@@ -229,18 +229,18 @@ public class GamePanel {
         cameraS.setTrackedEntity(entityM.getPlayer().getEntityId());
 
         // Initiate loading sequence.
-//        cutsceneM.initiateCutscene(2);
+        cutsceneM.initiateCutscene(2);
 
         // TEST
-        mapM.loadMap(1, 0, true);
-        entityM.getPlayer().setHidden(false);
-        fadeS.displayColor(new Vector3f(255, 255, 255));
-        fadeS.initiateFadeFrom(0.5);
-        setPrimaryGameState(PrimaryGameState.EXPLORE);
-
-        entityM.getPlayer().setCol(47);
-        entityM.getPlayer().setRow(14);
-        entityM.getPlayer().setDirectionCurrent(EntityDirection.UP);
+//        mapM.loadMap(1, 0, true);
+//        entityM.getPlayer().setHidden(false);
+//        fadeS.displayColor(new Vector3f(255, 255, 255));
+//        fadeS.initiateFadeFrom(0.5);
+//        setPrimaryGameState(PrimaryGameState.EXPLORE);
+//
+//        entityM.getPlayer().setCol(47);
+//        entityM.getPlayer().setRow(14);
+//        entityM.getPlayer().setDirectionCurrent(EntityDirection.UP);
 //
 //        for (int i = 0; i < 1; i++) {
 //            entityM.getPlayer().addItemToInventory(0);
@@ -478,7 +478,7 @@ public class GamePanel {
     private void loadItemSpritesheet() {
 
         String filePath = "/spritesheets/items.png";
-        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 6, 32, 32, 1));
+        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 7, 32, 32, 1));
     }
 
 
@@ -523,19 +523,29 @@ public class GamePanel {
 
         AssetPool.addSound("attributeIncrease", "sound/effects/attributeIncrease.ogg");
         AssetPool.addSound("attributeDecrease", "sound/effects/attributeDecrease.ogg");
+        AssetPool.addSound("heal", "sound/effects/heal.ogg");
 
+        AssetPool.addSound("progress", "sound/effects/progress.ogg");
+        AssetPool.addSound("pencilScribble", "sound/effects/pencilScribble.ogg");
+        AssetPool.addSound("primaryMenuOpen", "sound/effects/primaryMenuOpen.ogg");
         AssetPool.addSound("obtain", "sound/effects/obtain.ogg");
         AssetPool.addSound("hop", "sound/effects/hop.ogg");
         AssetPool.addSound("thud", "sound/effects/thud.ogg");
         AssetPool.addSound("footsteps", "sound/effects/footsteps.ogg");
         AssetPool.addSound("grassRustle", "sound/effects/grassRustle.ogg");
+        AssetPool.addSound("vanish", "sound/effects/vanish.ogg");
 
         AssetPool.addSound("basicAttack", "sound/effects/basicAttack.ogg");
+
         AssetPool.addSound("pickpocket", "sound/effects/pickpocket.ogg");
         AssetPool.addSound("burningDagger", "sound/effects/burningDagger.ogg");
         AssetPool.addSound("butterflyBlade", "sound/effects/butterflyBlade.ogg");
-        AssetPool.addSound("heal", "sound/effects/heal.ogg");
-        AssetPool.addSound("revive", "sound/effects/revive.ogg");
+        AssetPool.addSound("sneakstrike", "sound/effects/sneakstrike.ogg");
+
+        AssetPool.addSound("revitalize", "sound/effects/revitalize.ogg");
+        AssetPool.addSound("healingSparks", "sound/effects/healingSparks.ogg");
+        AssetPool.addSound("empoweringStrike", "sound/effects/empoweringStrike.ogg");
+        AssetPool.addSound("forestallingCharge", "sound/effects/forestallingCharge.ogg");
     }
 
 
@@ -563,7 +573,7 @@ public class GamePanel {
      */
     private void initSystemSettings() {
 
-        Setting vSyncSetting = new Setting("VSync", "Syncs frame rate with monitor refresh rate to prevent screen tearing.");
+        Setting vSyncSetting = new Setting("VSync", "Syncs the frame rate with the monitor refresh rate to prevent screen tearing.");
         vSyncSetting.addOption("Disabled");
         vSyncSetting.addOption("Enabled");
         systemSettings.add(vSyncSetting);
@@ -571,7 +581,7 @@ public class GamePanel {
         Setting FrameRateLimitSetting = new Setting("Frame Rate Limit", "Sets the target frame rate that the game will run at.");
         systemSettings.add(FrameRateLimitSetting);
 
-        Setting tetherGameSpeedSetting = new Setting("Tether Game Speed", "Tethers game speed to the frame rate limit.");
+        Setting tetherGameSpeedSetting = new Setting("Tether Game Speed", "Tethers the game speed to the frame rate limit.");
         tetherGameSpeedSetting.addOption("Disabled");
         tetherGameSpeedSetting.addOption("Enabled");
         systemSettings.add(tetherGameSpeedSetting);
@@ -585,6 +595,11 @@ public class GamePanel {
         eEqualsEnterSetting.addOption("Disabled");
         eEqualsEnterSetting.addOption("Enabled");
         systemSettings.add(eEqualsEnterSetting);
+
+        Setting userInterfaceSoundSetting = new Setting("User Interface Sound", "Plays sound effects when interacting with the user interface (e.g., progress dialogue, select menu option).");
+        userInterfaceSoundSetting.addOption("Disabled");
+        userInterfaceSoundSetting.addOption("Enabled");
+        systemSettings.add(userInterfaceSoundSetting);
     }
 
 
