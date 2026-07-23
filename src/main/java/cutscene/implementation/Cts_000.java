@@ -52,7 +52,7 @@ public class Cts_000 extends CutsceneBase {
             case 2:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
                     counter += dt;
-                    if (counter >= 1) {
+                    if (counter >= 0.5) {
                         gp.getDialogueR().initiateConversation(0);
                         gp.getSoundS().playEffect("pencilScribble");
                         progressCutscene();
@@ -136,33 +136,15 @@ public class Cts_000 extends CutsceneBase {
 
             case 10:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
-                    gp.getMapM().loadMap(1, 0, false);
-                    gp.getSoundS().stopTrack(true);
-                    progressCutscene();
-                }
-                break;
-
-            case 11:
-                counter += dt;
-                if (counter >= 1) {
-                    gp.getIllustrationS().removeIllustration();
-                    gp.getSoundS().playTrack(
-                            gp.getMapM().getLoadedMap().getTrack(gp.getMapM().getLoadedMap().getMapState()));           // Start playing track here to ensure it doesn't start playing too early.
-                    gp.getEntityM().getPlayer().setHidden(false);
-                    gp.getFadeS().initiateFadeFrom(2.5);
-                    progressCutscene();
-                    counter = 0;
-                }
-                break;
-
-            case 12:
-                if (gp.getFadeS().getState() == FadeState.INACTIVE) {
 //                    gp.getDialogueR().resetStagedPrintCountdown();
                     gp.getUi().resetWindowOpacity();
-                    gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
+                    gp.getIllustrationS().removeIllustration();
+                    gp.getSoundS().stopTrack(true);
                     exitCutscene();
                     resetCutscene();
+                    gp.getCutsceneM().initiateCutscene(1);                                                              // Fade up to gameplay.
                 }
+                break;
         }
     }
 }

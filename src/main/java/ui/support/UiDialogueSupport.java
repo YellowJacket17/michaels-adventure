@@ -59,11 +59,10 @@ public class UiDialogueSupport {
      * Constructs a UiDialogueSupport instance.
      *
      * @param gp GamePanel instance
-     * @param renderer Renderer instance
      */
-    public UiDialogueSupport(GamePanel gp, Renderer renderer) {
+    public UiDialogueSupport(GamePanel gp) {
         this.gp = gp;
-        init(renderer);
+        init();
     }
 
 
@@ -72,10 +71,8 @@ public class UiDialogueSupport {
      * Refreshes dialogue user interface components that may change while the game is running.
      * In this case, a refresh must be done if the piece of dialogue being read is changed or if the window opacity is
      * changed.
-     *
-     * @param renderer Renderer instance
      */
-    public void refresh(Renderer renderer) {
+    public void refresh() {
 
         // Dialogue window.
         if (gp.getDialogueR().getActiveDialogueSpeaker() != null
@@ -87,7 +84,7 @@ public class UiDialogueSupport {
             for (int i = 0; i < speakerName.length(); i++) {
 
                 char speakerChar = speakerName.charAt(i);
-                speakerNameWorldWidth += renderer.getFont(gp.getUi().getStandardNormalFont())
+                speakerNameWorldWidth += gp.getRenderer().getFont(gp.getUi().getStandardNormalFont())
                         .getCharacter(speakerChar).getWidth() * gp.getUi().getStandardFontScale();
             }
             float speakerNameScreenWidth = gp.getCamera().worldWidthToScreenWidth(speakerNameWorldWidth);
@@ -105,15 +102,13 @@ public class UiDialogueSupport {
 
     /**
      * Adds dialogue user interface components to the render pipeline.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         // Dialogue window.
         gp.getCamera().screenCoordsToWorldCoords(dialogueWindowScreenTransform.position, tempWorldTransform.position);
         gp.getCamera().screenDimensionsToWorldDimensions(dialogueWindowScreenTransform.scale, tempWorldTransform.scale);
-        renderer.addRectangle(windowColor, tempWorldTransform, ZIndex.FIRST_LAYER);
+        gp.getRenderer().addRectangle(windowColor, tempWorldTransform, ZIndex.FIRST_LAYER);
 
         // Dialogue text.
         dialogueTextScreenCoords.y = dialogueWindowScreenTransform.position.y + dialogueTextScreenVerticalSpacing;
@@ -121,7 +116,7 @@ public class UiDialogueSupport {
         for (int key = 0; key < gp.getDialogueR().getMaxNumPrintLines(); key++) {
 
             gp.getCamera().screenCoordsToWorldCoords(dialogueTextScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     gp.getDialogueR().getDialoguePrint(key),
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
@@ -141,10 +136,10 @@ public class UiDialogueSupport {
                     speakerWindowScreenTransform.position, tempWorldTransform.position);
             gp.getCamera().screenDimensionsToWorldDimensions(
                     speakerWindowScreenTransform.scale, tempWorldTransform.scale);
-            renderer.addRectangle(windowColor, tempWorldTransform, ZIndex.FIRST_LAYER);
+            gp.getRenderer().addRectangle(windowColor, tempWorldTransform, ZIndex.FIRST_LAYER);
 
             gp.getCamera().screenCoordsToWorldCoords(speakerTextScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     gp.getDialogueR().getActiveDialogueSpeaker(),
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
@@ -163,7 +158,7 @@ public class UiDialogueSupport {
                     && (gp.getDialogueR().isAlwaysShowArrow())
                     && (gp.getEntityM().getPlayer().getInteractionCountdown() <= 0))) {
 
-            gp.getDialogueA().addToRenderPipeline(renderer, dialogueArrowScreenCoords.x, dialogueArrowScreenCoords.y);
+            gp.getDialogueA().addToRenderPipeline(dialogueArrowScreenCoords.x, dialogueArrowScreenCoords.y);
         }
     }
 
@@ -182,10 +177,8 @@ public class UiDialogueSupport {
 
     /**
      * Initializes dialogue user interface components that will not change while the game is running.
-     *
-     * @param renderer Renderer instance
      */
-    private void init(Renderer renderer) {
+    private void init() {
 
         // Temporary world coordinates and dimensions.
         Vector2f tempWorldCoords = new Vector2f(0.0f, 0.0f);
@@ -195,10 +188,10 @@ public class UiDialogueSupport {
         // Colors.
         windowColor = new Vector4f(20, 20, 20, 255);
         dialogueTextColor = new Vector3f(255, 255, 255);
-        speakerTextColor = new Vector3f(121, 149, 255);
+        speakerTextColor = new Vector3f(121, 185, 255);
 
         // Text sizing.
-        float standardNormalCharWorldHeight = renderer.getFont(gp.getUi().getStandardNormalFont())
+        float standardNormalCharWorldHeight = gp.getRenderer().getFont(gp.getUi().getStandardNormalFont())
                 .getCharacter('A').getHeight() * gp.getUi().getStandardFontScale();                                     // It doesn't matter which character is used, since all characters in a font have the same height.
         standardNormalCharScreenHeight =
                 gp.getCamera().worldHeightToScreenHeight(standardNormalCharWorldHeight);

@@ -159,10 +159,8 @@ public abstract class LandmarkBase extends Drawable {
 
     /**
      * Adds this landmark to the render pipeline.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         if (gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
@@ -186,7 +184,7 @@ public abstract class LandmarkBase extends Drawable {
 
                 if (gp.getCamera().isInCameraView(this)) {
 
-                    renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+                    gp.getRenderer().addDrawable(this, ZIndex.THIRD_LAYER);
                 }
 
             } catch (IndexOutOfBoundsException | NullPointerException e) {

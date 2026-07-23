@@ -204,7 +204,7 @@ public class DialogueReader {
         gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -1);                                                                                      // Instantiate a temporary conversation with an ID of -1 to indicate that this is a message.
         printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
-        alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
+        alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (true) or not (false).
     }
 
 
@@ -254,7 +254,7 @@ public class DialogueReader {
         gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
         stageMessage(message, -3);                                                                                      // Instantiate a temporary conversation with an ID of -3 to indicate that this is an interactive combat message.
         printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
-        alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
+        alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (true) or not (false).
     }
 
 
@@ -289,7 +289,7 @@ public class DialogueReader {
         stageMessage(message, -4);                                                                                      // Instantiate a temporary conversation with an ID of -4 to indicate that this is a noninteractive combat message.
         activeConv.setPlayerInputToEnd(false);                                                                          // This is so logic following the dialogue once it has finished being read is run immediately without player input.
         printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
-        alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
+        alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (true) or not (false).
     }
 
 
@@ -327,7 +327,26 @@ public class DialogueReader {
         stageMessage(message, -5);                                                                                      // Instantiate a temporary conversation with an ID of -5 to indicate that this is a placeholder message.
         activeConv.setPlayerInputToEnd(false);                                                                          // This is so logic following the dialogue once it has finished being read is run immediately without player input.
         printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
-        alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (ture) or not (false).
+        alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (true) or not (false).
+    }
+
+
+    /**
+     * Stages and initiates a single message to be read to the dialogue screen.
+     * After the message is progressed, the item tutorial will be displayed.
+     * The temporary conversation this message is placed in is given an ID of -6.
+     * The primary game state is set to dialogue.
+     *
+     * @param message text to be read
+     * @param charByChar whether visible text will be printed character by character (true) or all at once (false)
+     * @param showArrow whether the dialogue arrow should be drawn on screen (true) or not (false), regardless of pause
+     */
+    public void initiateItemTutorialMessage(String message, boolean charByChar, boolean showArrow) {
+
+        gp.setPrimaryGameState(PrimaryGameState.DIALOGUE);
+        stageMessage(message, -6);                                                                                      // Instantiate a temporary conversation with an ID of -1 to indicate that this is a message.
+        printCharByChar = charByChar;                                                                                   // Set whether the visible text will be printed character by character (true) or all a once (false).
+        alwaysShowArrow = showArrow;                                                                                    // Set whether the dialogue arrow should be shown each time user input is required (true) or not (false).
     }
 
 

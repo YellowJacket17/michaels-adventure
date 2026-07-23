@@ -55,12 +55,11 @@ public class GuiIconManager {
     /**
      * Adds a GUI icon to the render pipeline.
      *
-     * @param renderer Renderer instance
      * @param iconId ID of the icon to be rendered
      * @param screenX screen x-coordinate of the icon (leftmost, normalized from 0 to 1, both inclusive)
      * @param screenY screen y-coordinate of the icon (topmost, normalized from 0 to 1, both inclusive)
      */
-    public void addToRenderPipeline(Renderer renderer, int iconId, float screenX, float screenY) {
+    public void addToRenderPipeline(int iconId, float screenX, float screenY) {
 
         GuiIcon guiIcon = icons.get(iconId);
 
@@ -71,7 +70,7 @@ public class GuiIconManager {
                 guiIcon.transform.position.y = worldCoords.y;
                 guiIcon.transform.scale.x = guiIcon.getNativeSpriteWidth();
                 guiIcon.transform.scale.y = guiIcon.getNativeSpriteHeight();
-                renderer.addDrawable(guiIcon, ZIndex.SECOND_LAYER);
+                gp.getRenderer().addDrawable(guiIcon, ZIndex.SECOND_LAYER);
         } else if (!renderErrors.contains(iconId)) {
 
             UtilityTool.logError("Failed to add GUI icon with ID '"

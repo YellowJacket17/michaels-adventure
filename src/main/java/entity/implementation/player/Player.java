@@ -167,6 +167,9 @@ public class Player extends EntityBase {
                 case TITLE:
                     updateTitleInput();
                     break;
+                case TUTORIAL:
+                    updateTutorialInput();
+                    break;
             }
         }
     }
@@ -693,7 +696,7 @@ public class Player extends EntityBase {
      */
     private void updateSubMenuInput() {
 
-        if (interactionCountdown <= 0) {
+        if ((interactionCountdown <= 0) && (gp.getSubMenuH().getSubMenuId() != -1)) {
 
             if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
 
@@ -721,6 +724,23 @@ public class Player extends EntityBase {
             if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
 
                 handleTitleInputProgressKey();
+            }
+        }
+    }
+
+
+    /**
+     * Updates the state of the tutorial screen per player input by one frame when in tutorial state.
+     * Checks for player key input if tutorial screen is interacted with.
+     */
+    private void updateTutorialInput() {
+
+        if ((interactionCountdown <= 0) && (gp.getTutorialH().getTutorialId() != -1)) {
+
+            if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)
+                    || ((gp.getSystemSetting(4).getActiveOption() == 1) && KeyListener.isKeyPressed(GLFW_KEY_E))) {
+
+                handleTutorialInputProgressKey();
             }
         }
     }
@@ -857,9 +877,19 @@ public class Player extends EntityBase {
 
                 if (gp.getDialogueR().getActiveConv().getConvId() == -3) {                                              // Check if the conversation was an interactive combat message that has finished;
 
-                    gp.getDialogueR().convertToPlaceholderMessage();                                                    // Convert to placeholder message to ensure that `progressCombat()` can only be triggered by player input from this message once.
                     setInteractionCountdown(stagedStandardInteractionCountdown);                                        // Player must wait before interacting with another combat action, for example (prevents instantly progressing next action that appears).
+                    gp.getDialogueR().convertToPlaceholderMessage();                                                    // Convert to placeholder message to ensure that `progressCombat()` can only be triggered by player input from this message once.
                     gp.getCombatM().progressCombat();                                                                   // Check what logic to run next in combat (i.e., progress combat loop).
+
+                    if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                        gp.getSoundS().playEffect("progress");
+                    }
+                } else if (gp.getDialogueR().getActiveConv().getConvId() == -6) {                                       // Check if the conversation was a pre-item tutorial message that has finished.
+
+                    setInteractionCountdown(stagedStandardInteractionCountdown);                                        // Player must wait before interacting with the tutorial that will be displayed.
+                    gp.getEventM().cleanupConversation(2);
+                    gp.getItemS().generateTutorial();                                                                   // Generate and display item tutorial.
 
                     if (gp.getSystemSetting(5).getActiveOption() == 1) {
 
@@ -877,6 +907,7 @@ public class Player extends EntityBase {
                 }
             } else if (gp.getDialogueR().getActiveConv().getConvId() != -5) {                                           // Ensure that the conversation is not a placeholder message.
 
+                setInteractionCountdown(stagedStandardInteractionCountdown);
                 gp.getDialogueR().progressConversation();                                                               // Read the next piece of dialogue in the staged conversation.
 
                 if (gp.getSystemSetting(5).getActiveOption() == 1) {
@@ -964,6 +995,11 @@ public class Player extends EntityBase {
                 && (gp.getUiPartyMenuS().getSelectedPartyMenuEntity() != entityId)                                      // Ensure that player entity is not selected (i.e., `partyMenuScrollLevel` and `partySlotSelected` do not both equal zero).
                 && gp.getPartyS().isActionComplete()) {                                                                 // Only generate if no entities party management operation is already occurring.
             gp.getSubMenuS().generatePartySwapSubMenuPrompt();
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("progress");
+            }
             setInteractionCountdown(stagedStandardInteractionCountdown);
         }
     }
@@ -1159,6 +1195,27 @@ public class Player extends EntityBase {
     private void handleTitleInputProgressKey() {
 
         gp.getCutsceneM().initiateCutscene(3);
+
+//        if (gp.getSystemSetting(5).getActiveOption() == 1) {
+//
+//            gp.getSoundS().playEffect("progress");
+//        }
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for tutorial progress key.
+     */
+    private void handleTutorialInputProgressKey() {
+
+        gp.getEventM().handlePostTutorial(gp.getTutorialH().getTutorialId());
+
+        if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+            gp.getSoundS().playEffect("progress");
+        }
+        setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
 

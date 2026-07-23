@@ -303,9 +303,9 @@ public class Window {
 
                 // Generate frame.
                 if (gameSpeedTethered) {
-                    generateFrame(dtTarget, dtActual);
+                    generateFrame(dtTarget);
                 } else {
-                    generateFrame(dtActual, dtActual);
+                    generateFrame(dtActual);
                 }
             } else {
 
@@ -320,9 +320,9 @@ public class Window {
 
                     // Generate frame.
                     if (gameSpeedTethered) {
-                        generateFrame(dtTarget, dtActual);
+                        generateFrame(dtTarget);
                     } else {
-                        generateFrame(dtActual, dtActual);
+                        generateFrame(dtActual);
                     }
 
                     // Iterate frame time.
@@ -354,9 +354,8 @@ public class Window {
      * Prepares, polls, updates, and renders a new frame.
      *
      * @param dtUpdate frame pace to pass to update logic
-     * @param dtRender frame pace to pass to render logic
      */
-    private void generateFrame(double dtUpdate, double dtRender) {
+    private void generateFrame(double dtUpdate) {
 
         // Prepare the frame.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);                                                             // Tell OpenGL how to clear the framebuffer.
@@ -364,7 +363,7 @@ public class Window {
         // Poll, update, and render.
         glfwPollEvents();                                                                                               // Poll user input (keyboard, gamepad, etc.).
         gp.update(dtUpdate);                                                                                            // Update all game logic by one frame.
-        gp.render(dtRender);                                                                                            // Render the updated frame.
+        gp.render();                                                                                                    // Render the updated frame.
 
         // Empty buffers.
         glfwSwapBuffers(glfwWindow);

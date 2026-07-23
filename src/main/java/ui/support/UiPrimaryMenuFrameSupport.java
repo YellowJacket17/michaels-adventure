@@ -63,11 +63,10 @@ public class UiPrimaryMenuFrameSupport {
      * Constructs a UiPrimaryMenuFrameSupport instance.
      *
      * @param gp GamePanel instance
-     * @param renderer Renderer instance
      */
-    public UiPrimaryMenuFrameSupport(GamePanel gp, Renderer renderer) {
+    public UiPrimaryMenuFrameSupport(GamePanel gp) {
         this.gp = gp;
-        init(renderer);
+        init();
     }
 
 
@@ -103,15 +102,13 @@ public class UiPrimaryMenuFrameSupport {
 
     /**
      * Adds primary window frame user interface components to the render pipeline.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         // Primary window.
         gp.getCamera().screenCoordsToWorldCoords(primaryWindowScreenTransform.position, tempWorldTransform.position);
         gp.getCamera().screenDimensionsToWorldDimensions(primaryWindowScreenTransform.scale, tempWorldTransform.scale);
-        renderer.addRoundRectangle(
+        gp.getRenderer().addRoundRectangle(
                 windowColor,
                 tempWorldTransform,
                 ZIndex.SECOND_LAYER,
@@ -119,18 +116,18 @@ public class UiPrimaryMenuFrameSupport {
         );
 
         // State icons (party, inventory, settings).
-        gp.getGuiIconM().addToRenderPipeline(renderer, 0, partyIconScreenCoords.x, partyIconScreenCoords.y);
-        gp.getGuiIconM().addToRenderPipeline(renderer, 1, inventoryIconScreenCoords.x, inventoryIconScreenCoords.y);
-        gp.getGuiIconM().addToRenderPipeline(renderer, 2, settingsIconScreenCoords.x, settingsIconScreenCoords.y);
+        gp.getGuiIconM().addToRenderPipeline(0, partyIconScreenCoords.x, partyIconScreenCoords.y);
+        gp.getGuiIconM().addToRenderPipeline(1, inventoryIconScreenCoords.x, inventoryIconScreenCoords.y);
+        gp.getGuiIconM().addToRenderPipeline(2, settingsIconScreenCoords.x, settingsIconScreenCoords.y);
 
         // Header divider.
         gp.getCamera().screenCoordsToWorldCoords(headerDividerScreenTransform.position, tempWorldTransform.position);
         gp.getCamera().screenDimensionsToWorldDimensions(headerDividerScreenTransform.scale, tempWorldTransform.scale);
-        renderer.addRectangle(headerDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
+        gp.getRenderer().addRectangle(headerDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
 
         // Header text.
         gp.getCamera().screenCoordsToWorldCoords(headerTextScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 headerText,
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -155,10 +152,8 @@ public class UiPrimaryMenuFrameSupport {
 
     /**
      * Initializes primary menu frame user interface components that will not change while the game is running.
-     *
-     * @param renderer Renderer instance
      */
-    private void init(Renderer renderer) {
+    private void init() {
 
         // Temporary world coordinates and dimensions.
         Vector2f tempWorldCoords = new Vector2f(0.0f, 0.0f);
@@ -172,8 +167,8 @@ public class UiPrimaryMenuFrameSupport {
 
         // Text sizing.
         headerFontScale = 0.17f;
-        float headerCharWorldHeight =
-                renderer.getFont(gp.getUi().getStandardBoldFont()).getCharacter('A').getHeight() * headerFontScale;     // It doesn't matter which character is used, since all characters in a font have the same height.
+        float headerCharWorldHeight = gp.getRenderer().getFont(gp.getUi()
+                .getStandardBoldFont()).getCharacter('A').getHeight() * headerFontScale;                                // It doesn't matter which character is used, since all characters in a font have the same height.
         headerCharScreenHeight =
                 gp.getCamera().worldHeightToScreenHeight(headerCharWorldHeight);
 
@@ -229,14 +224,14 @@ public class UiPrimaryMenuFrameSupport {
         headerDividerScreenTransform = new Transform(headerDividerScreenCoords, headerDividerScreenDimensions);
 
         // Header text coordinates and content.
-        float headerWorldPrimaryWindowLeftAdjustment = 50.0f;
-        float headerScreenPrimaryWindowLeftAdjustment =
-                gp.getCamera().worldWidthToScreenWidth(headerWorldPrimaryWindowLeftAdjustment);
-        float headerScreenPrimaryWindowTopAdjustment =
+        float headerTextWorldPrimaryWindowLeftAdjustment = 50.0f;
+        float headerTextScreenPrimaryWindowLeftAdjustment =
+                gp.getCamera().worldWidthToScreenWidth(headerTextWorldPrimaryWindowLeftAdjustment);
+        float headerTextScreenPrimaryWindowTopAdjustment =
                 (headerDividerScreenY - primaryWindowScreenTopBottomAdjustment - headerCharScreenHeight) / 2;
-        float headerScreenX = primaryWindowScreenLeftRightAdjustment + headerScreenPrimaryWindowLeftAdjustment;
-        float headerScreenY = primaryWindowScreenTopBottomAdjustment + headerScreenPrimaryWindowTopAdjustment;
-        headerTextScreenCoords = new Vector2f(headerScreenX, headerScreenY);
+        float headerTextScreenX = primaryWindowScreenLeftRightAdjustment + headerTextScreenPrimaryWindowLeftAdjustment;
+        float headerTextScreenY = primaryWindowScreenTopBottomAdjustment + headerTextScreenPrimaryWindowTopAdjustment;
+        headerTextScreenCoords = new Vector2f(headerTextScreenX, headerTextScreenY);
         headerText = "???";
     }
 

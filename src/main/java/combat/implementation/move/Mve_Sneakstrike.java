@@ -79,7 +79,7 @@ public class Mve_Sneakstrike extends MoveBase {
         Random random = new Random();
         int i = random.nextInt(100);                                                                                    // Generate random number from 0 (inclusive) to 100 (exclusive).
 
-        if (i < 15) {
+        if (i < 20) {
 
             return true;
         } else {
@@ -103,7 +103,7 @@ public class Mve_Sneakstrike extends MoveBase {
 
             targetEntityNames.add(gp.getEntityM().getEntityById(entityId).getName());
         }
-        String message = UtilityTool.buildEntityListMessage(targetEntityNames, true);
+        String message = UtilityTool.buildEntityListMessage(targetEntityNames, false);
         message += " flinched and will be unable to move on their next turn!";
         return message;
     }

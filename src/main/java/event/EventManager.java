@@ -7,6 +7,7 @@ import event.implementation.map.Evt_Map003;
 import event.implementation.map.Evt_Map004;
 import event.implementation.submenu.Evt_SubMenu003;
 import event.implementation.submenu.Evt_SubMenu004;
+import event.implementation.tutorial.*;
 import miscellaneous.CollisionInspector;
 import core.enumeration.PrimaryGameState;
 import entity.EntityBase;
@@ -53,6 +54,17 @@ public class EventManager {
     private final Evt_SubMenu004 evt_subMenu004;
 
 
+    // TUTORIAL EVENT FIELDS
+    private final Evt_Tutorial001 evt_tutorial001;
+    private final Evt_Tutorial002 evt_tutorial002;
+    private final Evt_Tutorial003 evt_tutorial003;
+    private final Evt_Tutorial004 evt_tutorial004;
+    private final Evt_Tutorial005 evt_tutorial005;
+    private final Evt_Tutorial006 evt_tutorial006;
+    private final Evt_Tutorial007 evt_tutorial007;
+    private final Evt_Tutorial008 evt_tutorial008;
+
+
     // CONSTRUCTOR
     /**
      * Constructs an EventManager instance
@@ -73,6 +85,15 @@ public class EventManager {
         evt_subMenu002 = new Evt_SubMenu002(gp);
         evt_subMenu003 = new Evt_SubMenu003(gp);
         evt_subMenu004 = new Evt_SubMenu004(gp);
+
+        evt_tutorial001 = new Evt_Tutorial001(gp);
+        evt_tutorial002 = new Evt_Tutorial002(gp);
+        evt_tutorial003 = new Evt_Tutorial003(gp);
+        evt_tutorial004 = new Evt_Tutorial004(gp);
+        evt_tutorial005 = new Evt_Tutorial005(gp);
+        evt_tutorial006 = new Evt_Tutorial006(gp);
+        evt_tutorial007 = new Evt_Tutorial007(gp);
+        evt_tutorial008 = new Evt_Tutorial008(gp);
     }
 
 
@@ -342,6 +363,53 @@ public class EventManager {
 
 
     /**
+     * Handles what post-tutorial logic should be run based on the displayed tutorial.
+     * If a valid tutorial ID is not passed, then nothing will happen.
+     *
+     * @param tutorialId ID of tutorial being handled
+     */
+    public void handlePostTutorial(int tutorialId) {
+
+        switch (tutorialId) {
+            case 0:
+                UtilityTool.logWarning("Tutorial with default ID '"
+                        + tutorialId
+                        + "' detected; no post-tutorial logic will execute.");
+                cleanupTutorial(2);
+            case 1:
+                evt_tutorial001.run();
+                break;
+            case 2:
+                evt_tutorial002.run();
+                break;
+            case 3:
+                evt_tutorial003.run();
+                break;
+            case 4:
+                evt_tutorial004.run();
+                break;
+            case 5:
+                evt_tutorial005.run();
+                break;
+            case 6:
+                evt_tutorial006.run();
+                break;
+            case 7:
+                evt_tutorial007.run();
+                break;
+            case 8:
+                evt_tutorial008.run();
+                break;
+            default:
+                UtilityTool.logWarning("No post-tutorial logic specified for tutorial with ID '"
+                        + tutorialId
+                        + "'.");
+                cleanupTutorial(2);
+        }
+    }
+
+
+    /**
      * Sets the player entity and a target entity to a conversing state.
      * If either the player or target entity is already in a conversing state, it will remain as such.
      *
@@ -433,7 +501,7 @@ public class EventManager {
      * Cleans up after a sub-menu option has been selected and the sub-menu is to be closed.
      * The type of cleanup done depends on the inputted mode.
      * If a mode does not automatically set the primary game state itself, the primary game state must be manually set
-     * after this function call (directly or via another function call) avoid complications in game logic.
+     * after this function call (directly or via another function call) to avoid complications in game logic.
      *
      * @param mode type of cleanup to perform: (1) reset fields in SubMenuHandler, reset fields in DialogueReader if
      *             applicable, and set the primary game state to explore; (2) reset fields in SubMenuHandler and reset
@@ -461,6 +529,35 @@ public class EventManager {
                 break;
             default:
                 throw new IllegalArgumentException("Attempted to cleanup a sub-menu using an illegal mode '"
+                        + mode
+                        + "'");
+        }
+    }
+
+
+    /**
+     * Cleans up once a tutorial series is to be closed.
+     * The type of cleanup done depends on the inputted mode.
+     * If a mode does not automatically set the primary game state itself, the primary game state must be manually set
+     * after this function call (directly or via another function call) to avoid complications in game logic.
+     *
+     * @param mode type of cleanup to perform: (1) reset fields in TutorialHandler and set the primary game state to
+     *             explore; (2) reset fields in TutorialHandler
+     * @throws IllegalArgumentException if an illegal mode is passed as argument
+     */
+    public void cleanupTutorial(int mode) {
+
+        gp.getTutorialH().reset();                                                                                      // Reset the TutorialHandler's fields back to their default values.
+
+        switch (mode) {
+            case 1:
+                gp.setPrimaryGameState(PrimaryGameState.EXPLORE);                                                       // No further logic will run.
+                break;
+            case 2:
+                // Nothing here.
+                break;
+            default:
+                throw new IllegalArgumentException("Attempted to cleanup a tutorial using an illegal mode '"
                         + mode
                         + "'");
         }
@@ -703,31 +800,6 @@ public class EventManager {
             }
         }
         return allRemoved;
-    }
-
-
-    /**
-     * Initiates the player to pick up an item and add it to the player's inventory.
-     * The primary game state is set to dialogue.
-     *
-     * @param itemId ID of item to be added to the player's inventory
-     * @return whether the item was added to the player's inventory (true) or not (false)
-     */
-    public boolean pickupItem(int itemId) {
-
-        String text = "";
-        boolean added = gp.getEntityM().getPlayer().addItemToInventory(itemId);
-
-        if (added) {
-
-            gp.getSoundS().playEffect("obtain");
-            text = gp.getEntityM().getPlayer().getName() + " got a " + gp.getItemM().checkName(itemId) + "!";
-        } else {
-
-            text = gp.getEntityM().getPlayer().getName() + " cannot carry anymore!";
-        }
-        displayMessage(text, true);
-        return added;
     }
 
 

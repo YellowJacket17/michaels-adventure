@@ -1,5 +1,6 @@
 package particle;
 
+import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -15,6 +16,8 @@ import java.util.UUID;
 public class ParticleEffect {
 
     // FIELDS
+    private final GamePanel gp;
+
     /**
      * Universally unique identifier (UUID) of this particle effect.
      */
@@ -68,11 +71,13 @@ public class ParticleEffect {
     /**
      * Constructs a ParticleEffect instance.
      *
+     * @param gp GamePanel instance
      * @param initialWorldPosition initial world position of center of each particle
      * @param color color of each particle (r, g, b)
      * @param size world size of each particle
      */
-    public ParticleEffect(Vector2f initialWorldPosition, Vector3f color, float size) {
+    public ParticleEffect(GamePanel gp, Vector2f initialWorldPosition, Vector3f color, float size) {
+        this.gp = gp;
         this.initialWorldPosition = new Vector2f(initialWorldPosition.x, initialWorldPosition.y);
         this.color = new Vector4f(color.x, color.y, color.z, 255);
         this.transform = new Transform(new Vector2f(), new Vector2f(size, size));
@@ -114,10 +119,8 @@ public class ParticleEffect {
 
     /**
      * Adds this particle effect to the render pipeline.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         if (elapsedTime < maximumTime) {
 
@@ -125,7 +128,7 @@ public class ParticleEffect {
 
                 transform.position.x = worldPositions[i].x - (transform.scale.x / 2);                                   // Adjust since world position represents center of particle (i.e., rectangle).
                 transform.position.y = worldPositions[i].y - (transform.scale.y / 2);                                   // ^^^
-                renderer.addRectangle(color, transform, ZIndex.THIRD_LAYER);
+                gp.getRenderer().addRectangle(color, transform, ZIndex.THIRD_LAYER);
             }
         }
     }

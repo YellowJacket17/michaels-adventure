@@ -78,11 +78,10 @@ public class UiSettingsMenuSupport {
      * Constructs a UiSettingsMenuSupport instance.
      *
      * @param gp GamePanel instance
-     * @param renderer Renderer instance
      */
-    public UiSettingsMenuSupport(GamePanel gp, Renderer renderer) {
+    public UiSettingsMenuSupport(GamePanel gp) {
         this.gp = gp;
-        init(renderer);
+        init();
     }
 
 
@@ -145,10 +144,8 @@ public class UiSettingsMenuSupport {
     /**
      * Adds settings menu user interface components to the render pipeline.
      * Note that the contents of the user interface components will automatically reflect their latest states.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         // Setting labels and values.
         for (int i = 0; i < gp.getSystemSettingsSize(); i++) {
@@ -158,13 +155,13 @@ public class UiSettingsMenuSupport {
             if (i == systemSettingSelected) {
 
                 // Setting label.
-                renderer.addString(
+                gp.getRenderer().addString(
                         gp.getSystemSetting(i).getLabel(),
                         tempWorldTransform.position.x,
                         tempWorldTransform.position.y,
                         gp.getUi().getStandardFontScale(),
                         settingLabelTextActiveColor,
-                        gp.getUi().getStandardBoldFont(),
+                        gp.getUi().getStandardNormalFont(),
                         ZIndex.SECOND_LAYER
                 );
 
@@ -174,13 +171,11 @@ public class UiSettingsMenuSupport {
                                 + ((standardNormalCharScreenHeight - scrollArrowScreenDimensions.y) / 2);
                 leftScrollArrowScreenCoords.y = rightScrollArrowScreenCoords.y;
                 gp.getGuiIconM().addToRenderPipeline(
-                        renderer,
                         9,
                         leftScrollArrowScreenCoords.x,
                         leftScrollArrowScreenCoords.y
                 );
                 gp.getGuiIconM().addToRenderPipeline(
-                        renderer,
                         10,
                         rightScrollArrowScreenCoords.x,
                         rightScrollArrowScreenCoords.y
@@ -188,7 +183,7 @@ public class UiSettingsMenuSupport {
             } else {
 
                 // Setting label.
-                renderer.addString(
+                gp.getRenderer().addString(
                         gp.getSystemSetting(i).getLabel(),
                         tempWorldTransform.position.x,
                         tempWorldTransform.position.y,
@@ -201,7 +196,7 @@ public class UiSettingsMenuSupport {
 
             // Setting value.
             gp.getCamera().screenCoordsToWorldCoords(settingValueScreenCoords.get(i), tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     gp.getSystemSetting(i).getOption(gp.getSystemSetting(i).getActiveOption()),
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
@@ -215,7 +210,7 @@ public class UiSettingsMenuSupport {
         // Footer divider.
         gp.getCamera().screenCoordsToWorldCoords(footerDividerScreenTransform.position, tempWorldTransform.position);
         gp.getCamera().screenDimensionsToWorldDimensions(footerDividerScreenTransform.scale, tempWorldTransform.scale);
-        renderer.addRectangle(
+        gp.getRenderer().addRectangle(
                 footerDividerColor,
                 tempWorldTransform,
                 ZIndex.SECOND_LAYER
@@ -287,10 +282,8 @@ public class UiSettingsMenuSupport {
      * Initializes settings menu user interface components that will not change while the game is running.
      * These user interface components are the "core" aspects of the settings menu layout, such as the positioning of
      * topmost setting listed.
-     *
-     * @param renderer Renderer instance
      */
-    private void init(Renderer renderer) {
+    private void init() {
 
         // Selection management.
         systemSettingSelected = 0;
@@ -308,15 +301,12 @@ public class UiSettingsMenuSupport {
         settingDescriptionTextColor = new Vector3f(255, 255, 255);
 
         // Text sizing.
-        float standardNormalCharWorldHeight = renderer.getFont(gp.getUi().getStandardNormalFont())
+        float standardNormalCharWorldHeight = gp.getRenderer().getFont(gp.getUi().getStandardNormalFont())
                 .getCharacter('A').getHeight() * gp.getUi().getStandardFontScale();                                     // It doesn't matter which character is used, since all characters in a font have the same height.
         standardNormalCharScreenHeight =
                 gp.getCamera().worldHeightToScreenHeight(standardNormalCharWorldHeight);
 
         // Setting label and value coordinates.
-        float settingWorldVerticalSpacing = standardNormalCharWorldHeight * 2.25f;
-        settingScreenVerticalSpacing = gp.getCamera().worldHeightToScreenHeight(settingWorldVerticalSpacing);
-
         float settingLabelScreenPrimaryWindowLeftAdjustment = gp.getUiPrimaryMenuFrameS().getHeaderDividerScreenX()
                 - gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenX();
         float settingLabelWorldPrimaryWindowLeftAdjustment =
@@ -324,6 +314,7 @@ public class UiSettingsMenuSupport {
 
         settingLabelScreenHeaderDividerBottomAdjustment =
                 gp.getCamera().worldHeightToScreenHeight(settingLabelWorldPrimaryWindowLeftAdjustment) / 2;
+        settingScreenVerticalSpacing = standardNormalCharScreenHeight * 2.25f;
 
         float topSettingLabelScreenX =
                 gp.getUiPrimaryMenuFrameS().getPrimaryWindowScreenX() + settingLabelScreenPrimaryWindowLeftAdjustment;

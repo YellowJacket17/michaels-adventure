@@ -7,51 +7,45 @@
                 "text": "I wish I were anywhere else. I wish I were SOMEONE else."
             },
             "1": {
-                "text": "That was my second time setting out, and I didn't find a single ray of sunlight."
+                "text": "That was my second time setting out and I didn't find a single ray of sunlight. (Or moonlight, for that matter.)"
             },
             "2": {
-                "text": "I know I must have tumbled through some sort of tunnel to get here, but I can't find it anywhere."
+                "text": "I must have tumbled through some sort of tunnel to get here, but it's not showing up anywhere."
             },
             "3": {
-                "text": "I'm having a hard time keeping track of where I've searched already, or even of how long I've been stuck down here."
+                "text": "Even a glint of sunshine would give me an idea of how long I've been down here for."
             },
             "4": {
-                "text": "My phone still won't turn on, and the ceiling's just a craggy mess that I can't make out most the time."
+                "text": "My phone still won't turn on, and the ceiling's just a craggy mess that I can't make out most of the time."
             },
             "5": {
-                "text": "My stomach's growling, and the food in my backpack hasn't stretched very far."
+                "text": "On top of that, the food in my backpack really hasn't stretched far."
             },
             "6": {
-                "text": "A burger would be about the best thing in the world right now."
+                "text": "If I ever see Joe again, I'm going to tell him what an awful idea this trip was."
             },
             "7": {
-                "text": "With a double patty."
+                "text": "I know that solar eclipses are rare, particularly total ones, but it wasn't worth this crisis."
             },
             "8": {
-                "text": "Some sizzling bacon."
+                "text": "When Nick and I agreed to this, I really liked the idea of traveling out west and camping with our friends for a few nights."
             },
             "9": {
-                "text": "Thick slices of melting cheddar."
+                "text": "Now I don't know if I'll see any of them again."
             },
             "10": {
-                "text": "A fried egg with a runny yolk."
+                "text": "I think I'll need to try drinking the water around here soon, although that faint glow (among other things) concerns me."
             },
             "11": {
-                "text": "Yeah, that's it."
+                "text": "I can add that to the list of things I've been having trouble explaining lately."
             },
             "12": {
-                "text": "I think I'll need to try drinking the water around me soon, although the faint, green glow (among other things) has me worried."
-            },
-            "13": {
-                "text": "Maybe it's some type of bioluminescent algae, although there seems to be a going on here that I can't really explain."
-            },
-            "14": {
                 "text": "Even if I can't drink from them, the pools ARE illuminating the cavern a surprising amount."
             },
-            "15": {
+            "13": {
                 "text": "Though, I'm afraid to wander too close to the long, jagged shadows they're casting."
             },
-            "16": {
+            "14": {
                 "text": "Not after what happened earlier."
             }
         }
@@ -68,22 +62,22 @@
                 "text": "They felt so cold as they closed in on our feet."
             },
             "2": {
-                "text": "In retrospect, I don't really know where we were trying to run to. A blind panic, I guess."
+                "text": "In retrospect, I really don't know where we were trying to run to."
             },
             "3": {
-                "text": "We were surrounded by trees, and the trail would've only taken us deeper into the woods."
+                "text": "We were surrounded by trees, and the trail would have only taken us deeper into the woods."
             },
             "4": {
                 "text": "It doesn't matter."
             },
             "5": {
-                "text": "I don't think I'm ever going to find my way out."
+                "text": "I'm completely useless on my own."
             },
             "6": {
-                "text": "I don't think I'm going to see my friends again."
+                "text": "I don't think I'm ever going to find my way out."
             },
             "7": {
-                "text": "Even if any of them ended up down here, all I've heard are dull echoes in the distance."
+                "text": "Even if anyone else ended up down here, all I've heard are dull echoes in the distance."
             }
         }   
     },
@@ -93,10 +87,10 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "text": "I'm going to head out again to find a way out."
+                "text": "Even after all of that, I think I should get back up and head out again."
             },
             "1": {
-                "text": "There's no point in sitting around to \"rest up\" and delay the inevitable."
+                "text": "Why sit here and \"rest up\" to delay the inevitable?"
             },
             "2": {
                 "text": "Yes, it's time to get going, Mary."
@@ -163,7 +157,7 @@
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "I probably wasn't going to make it out of here anyways."
+                "text": "Probably wasn't going to make it out of here anyways."
             }
 
         }
@@ -261,15 +255,15 @@
             },
             "2": {
                 "speaker": "Mary",
-                "text": "What? What do you mean you don't know?"
+                "text": "What?!? What do you mean you don't know?"
             },
             "3": {
                 "speaker": "Joe",
-                "text": "Well, suddenly, this bizarre THING came up from right behind me."
+                "text": "Well, ah, last thing I remember is this bizarre THING coming up from right behind me."
             },
             "4": {
                 "speaker": "Joe",
-                "text": "It was really dark, so I couldn't really tell what it was."
+                "text": "It was really dark, so I couldn't make out what it was."
             },
             "5": {
                 "speaker": "Joe",
@@ -277,53 +271,57 @@
             },
             "6": {
                 "speaker": "Mary",
-                "text": "That sounds like the same thing I just fought off."
+                "text": "Hmm, that sounds like the thing I just fought off."
             },
             "7": {
                 "speaker": "Mary",
-                "text": "I thought I saw two people at first, but when it turned around, it was the only thing there."
+                "text": "It seemed like there were two people at first, but when it approached me, it was the only person I could see."
             },
             "8": {
-                "speaker": "Joe",
-                "text": "This is too strange."
+                "speaker": "Mary",
+                "text": "Well, I guess if you would call it a person."
             },
             "9": {
                 "speaker": "Joe",
-                "text": "I'm having a hard time understanding anything that's been going on here."
+                "text": "This is too strange."
             },
             "10": {
                 "speaker": "Joe",
-                "text": "You go rid of it, though?"
+                "text": "I'm having a hard time understanding anything that's been going on here."
             },
             "11": {
-                "speaker": "Mary",
-                "text": "Yeah, looks like it."
+                "speaker": "Joe",
+                "text": "You got rid of it, though?"
             },
             "12": {
                 "speaker": "Mary",
-                "text": "I can't believe it, but . . . I used my knife on it."
+                "text": "It seems like it."
             },
             "13": {
+                "speaker": "Mary",
+                "text": "I can't believe it, but . . . I used my knife on it."
+            },
+            "14": {
                 "speaker": "Joe",
                 "text": "You mean that pocket knife I got you at the thrift store the other day?"
             },
-            "14": {
+            "15": {
                 "speaker": "Mary",
                 "text": "Yeah, along with that stupid lantern that YOU wanted to have but then made ME carry."
             },
-            "15": {
+            "16": {
                 "speaker": "Joe",
                 "text": "Heh, yeah, sorry again about that."
             },
-            "16": {
+            "17": {
                 "speaker": "Joe",
                 "text": "I didn't realize I wouldn't have the space to carry it."
             },
-            "17": {
+            "18": {
                 "speaker": "Joe",
                 "text": "I thought it would make our camping trip more authentic."
             },
-            "18": {
+            "19": {
                 "speaker": "Mary",
                 "text": "Whatever . . ."
             }
@@ -377,15 +375,15 @@
             },
             "5": {
                 "speaker": "Mary",
-                "text": "We could speculate, by honestly, I don't really care right now or want to waste time."
+                "text": "We could speculate, but honestly, I don't really want to waste time."
             },
             "6": {
                 "speaker": "Joe",
-                "text": "Agree. It sounds like you don't know much more than I do."
+                "text": "Agree. It sounds like you don't know much more than I do, anyways."
             },
             "7": {
                 "speaker": "Joe",
-                "text": "I've mostly been walking around trying to find anyone or a way out."
+                "text": "All I've been doing is walking around to find anyone or a way out."
             },
             "8": {
                 "speaker": "Joe",
@@ -405,7 +403,7 @@
             },
             "11": {
                 "speaker": "Joe",
-                "text": "I've been rationing my food, but it's not like I packed for this."
+                "text": "I've been rationing food, but it's not like I packed for this."
             }
         }
     },
@@ -425,11 +423,11 @@
             },
             "2": {
                 "speaker": "Mary",
-                "text": "There's a lot that's not making any sense."
+                "text": "None of this seems logical."
             },
             "3": {
                 "speaker": "Mary",
-                "text": "Right now, I'm just accepting everything for what it is."
+                "text": "For now, I think we should just accept what's happening and move forward."
             },
             "4": {
                 "speaker": "Joe",

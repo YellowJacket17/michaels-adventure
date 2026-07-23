@@ -4,7 +4,6 @@ import asset.Sprite;
 import core.GamePanel;
 import item.implementation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -26,7 +25,7 @@ public class ItemManager {
     /**
      * List to store a single dummy instance of each item type that can be referenced for properties.
      */
-    HashMap<Integer, ItemBase> referenceItems = new HashMap<>(6);
+    private HashMap<Integer, ItemBase> referenceItems = new HashMap<>(6);
 
 
     // CONSTRUCTOR

@@ -3,6 +3,7 @@ package ui;
 import combat.enumeration.BannerColor;
 import combat.enumeration.SubMenuType;
 import core.GamePanel;
+import render.drawable.Drawable;
 import render.font.Text;
 import ui.enumeration.PartyMenuSlot;
 import ui.enumeration.PrimaryMenuState;
@@ -30,10 +31,12 @@ public class UserInterface {
 
     // TODO : Research String.intern() for possible efficiency gains.
 
+    // TODO : A lot of classes self-calculate 'standardNormalCharWorldHeight' and 'standardNormalCharScreenHeight'.
+
+    // TODO : Perhaps move the staged non-UI text and drawables to a dedicated 'engineLogoManager' class or something.
+
     // FIELDS
     private final GamePanel gp;
-
-    private Renderer renderer;
 
     /**
      * Variable to store which primary menu state that the game is in.
@@ -65,7 +68,7 @@ public class UserInterface {
     /**
      * Default opacity for rendered user interface window elements (dialogue window, sub-menu window, etc.).
      */
-    private final float defaultWindowOpacity = 230; //220
+    private final float defaultWindowOpacity = 235; //220
 
     /**
      * Opacity for rendered user interface window elements (dialogue window, sub-menu window, etc.).
@@ -75,8 +78,15 @@ public class UserInterface {
     /**
      * List to stage text to render that is not tied to a user interface element.
      * The text within this array stores screen coordinates.
+     * Staged text is cleared after adding to render pipeline.
      */
     private ArrayList<Text> stagedNonUiText = new ArrayList<>();
+
+    /**
+     * List to stage drawables to render that are not tied to a user interface element.
+     * Staged drawables are cleared after adding to render pipeline.
+     */
+    private ArrayList<Drawable> stagedNonUiDrawables = new ArrayList<>();
 
     /**
      * Variable to track the FPS value displayed in debug mode.
@@ -96,11 +106,9 @@ public class UserInterface {
      * Constructs a UserInterface instance.
      *
      * @param gp GamePanel instance
-     * @param renderer Renderer instance
      */
-    public UserInterface(GamePanel gp, Renderer renderer) {
+    public UserInterface(GamePanel gp) {
         this.gp = gp;
-        this.renderer = renderer;
     }
 
 
@@ -147,7 +155,7 @@ public class UserInterface {
         // DIALOGUE
         if (gp.getUiDialogueS().isDirty()) {
             if (gp.getUiDialogueS().isDirty()) {
-                gp.getUiDialogueS().refresh(renderer);
+                gp.getUiDialogueS().refresh();
             }
         }
 
@@ -162,20 +170,19 @@ public class UserInterface {
         if (gp.getPrimaryGameState() == PrimaryGameState.TITLE) {
             gp.getUiTitleS().update(dt);
         }
+
+        // TUTORIAL
+        if (gp.getPrimaryGameState() == PrimaryGameState.TUTORIAL) {
+            gp.getUiTutorialS().refresh();
+        }
     }
 
 
     /**
      * Adds all UI elements to the render pipeline.
      * This includes user interface support classes.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
-
-        if (this.renderer != renderer) {
-            this.renderer = renderer;                                                                                   // Makes it easier to access current renderer across entire class.
-        }
+    public void addToRenderPipeline() {
 
         // FADE
         if ((gp.getFadeS().getState() != FadeState.INACTIVE) || (gp.getFadeS().isFlashActive())) {
@@ -185,16 +192,16 @@ public class UserInterface {
         // PRIMARY MENU
         switch (primaryMenuState) {
             case PARTY:
-                gp.getUiPrimaryMenuFrameS().addToRenderPipeline(renderer);
-                gp.getUiPartyMenuS().addToRenderPipeline(renderer);
+                gp.getUiPrimaryMenuFrameS().addToRenderPipeline();
+                gp.getUiPartyMenuS().addToRenderPipeline();
                 break;
             case INVENTORY:
-                gp.getUiPrimaryMenuFrameS().addToRenderPipeline(renderer);
-                gp.getUiInventoryMenuS().addToRenderPipeline(renderer);
+                gp.getUiPrimaryMenuFrameS().addToRenderPipeline();
+                gp.getUiInventoryMenuS().addToRenderPipeline();
                 break;
             case SETTINGS:
-                gp.getUiPrimaryMenuFrameS().addToRenderPipeline(renderer);
-                gp.getUiSettingsMenuS().addToRenderPipeline(renderer);
+                gp.getUiPrimaryMenuFrameS().addToRenderPipeline();
+                gp.getUiSettingsMenuS().addToRenderPipeline();
                 break;
         }
 
@@ -205,17 +212,27 @@ public class UserInterface {
 
         // DIALOGUE
         if (gp.getDialogueR().getActiveConv() != null) {
-            gp.getUiDialogueS().addToRenderPipeline(renderer);
+            gp.getUiDialogueS().addToRenderPipeline();
         }
 
         // SUB-MENU
         if (gp.getSubMenuH().getSubMenuId() != -1) {
-            gp.getUiSubMenuS().addToRenderPipeline(renderer);
+            gp.getUiSubMenuS().addToRenderPipeline();
         }
 
         // TITLE
         if (gp.getPrimaryGameState() == PrimaryGameState.TITLE) {
-            gp.getUiTitleS().addToRenderPipeline(renderer);
+            gp.getUiTitleS().addToRenderPipeline();
+        }
+
+        // TUTORIAL
+        if (gp.getPrimaryGameState() == PrimaryGameState.TUTORIAL) {
+            gp.getUiTutorialS().addToRenderPipeline();
+        }
+
+        // STAGED NON-UI DRAWABLES
+        if (stagedNonUiDrawables.size() > 0) {
+            addStagedNonUiDrawablesToRenderPipeline();
         }
 
         // STAGED NON-UI TEXT
@@ -227,6 +244,25 @@ public class UserInterface {
         if (gp.isDebugActive()) {
             addDebugToRenderPipeline();
         }
+    }
+
+
+    /**
+     * Stages drawables to be added to the render pipeline.
+     * Note that this method in itself does not add drawables to the render pipeline.
+     * Drawables will be added to the render pipeline with user interface elements the next time they are added.
+     * This method is intended to stage non-user interface drawables since it is not appropriate to directly add said
+     * drawables directly the render pipeline during any update logic.
+     * In other words, this method is intended to be used by logic external to the user interface (e.g., cutscenes).
+     * This method should NOT be used for adding user interface elements to the render pipeline (e.g., dialogue
+     * elements, combat elements, menu elements, etc.).
+     *
+     * @param drawable drawable
+     */
+    public void stageNonUiDrawable(Drawable drawable) {
+
+        // TODO : Figure out how to stage the rendering layer as well.
+        stagedNonUiDrawables.add(drawable);
     }
 
 
@@ -261,6 +297,7 @@ public class UserInterface {
      * @param text text whose world width is to be calculated
      * @param scale scale factor at which to render text compared to native font size
      * @param font name of font to use
+     * @returns calculated word width
      */
     public float calculateStringWorldWidth(String text, float scale, String font) {
 
@@ -269,7 +306,7 @@ public class UserInterface {
         for (int i = 0; i < text.length(); i++) {
 
             char character = text.charAt(i);
-            textWorldWidth += renderer.getFont(font).getCharacter(character).getWidth() * scale;
+            textWorldWidth += gp.getRenderer().getFont(font).getCharacter(character).getWidth() * scale;
         }
         return textWorldWidth;
     }
@@ -282,6 +319,7 @@ public class UserInterface {
      * @param text text whose screen width is to be calculated
      * @param scale scale factor at which to render text compared to native font size
      * @param font name of font to use
+     * @returns calculated screen width
      */
     public float calculateStringScreenWidth(String text, float scale, String font) {
 
@@ -296,16 +334,47 @@ public class UserInterface {
      * @param scale scale factor at which to render text compared to native font size
      * @param font name of font to use
      * @param outputVector vector to which centered normalized (screen) coordinates will be written
+     * @returns centered screen coordinates
      */
     public void calculateStringCenteredScreenCoords(String text, float scale, String font, Vector2f outputVector) {
 
         float textScreenWidth = calculateStringScreenWidth(text, scale, font);
         outputVector.x = (1 - textScreenWidth) / 2;
 
-        float textCharWorldHeight = renderer.getFont(gp.getUi().getStandardBoldFont())
-                .getCharacter('A').getHeight() * gp.getUi().getStandardFontScale();                                     // It doesn't matter which character is used, since all characters in a font have the same height.
+        float textCharWorldHeight = gp.getRenderer().getFont(font).getCharacter('A').getHeight() * scale;               // It doesn't matter which character is used, since all characters in a font have the same height.
         float textCharScreenHeight = gp.getCamera().worldHeightToScreenHeight(textCharWorldHeight);
         outputVector.y = (1 - textCharScreenHeight) / 2;
+    }
+
+
+    /**
+     * Calculates the normalized (screen) coordinates to horizontally center a string of text on the display.
+     *
+     * @param text text to be horizontally centered
+     * @param scale scale factor at which to render text compared to native font size
+     * @param font name of font to use
+     * @returns centered screen X-coordinate
+     */
+    public float calculateStringCenteredScreenX(String text, float scale, String font) {
+
+        float textScreenWidth = calculateStringScreenWidth(text, scale, font);
+        return (1 - textScreenWidth) / 2;
+    }
+
+
+    /**
+     * Calculates the normalized (screen) coordinates to vertically center a string of text on the display.
+     *
+     * @param text text to be vertically centered
+     * @param scale scale factor at which to render text compared to native font size
+     * @param font name of font to use
+     * @returns centered screen Y-coordinate
+     */
+    public float calculateStringCenteredScreenY(String text, float scale, String font) {
+
+        float textCharWorldHeight = gp.getRenderer().getFont(font).getCharacter('A').getHeight() * scale;               // It doesn't matter which character is used, since all characters in a font have the same height.
+        float textCharScreenHeight = gp.getCamera().worldHeightToScreenHeight(textCharWorldHeight);
+        return (1 - textCharScreenHeight) / 2;
     }
 
 
@@ -355,7 +424,7 @@ public class UserInterface {
         Vector4f colorInteriorSecondary = new Vector4f(53, 64, 68, 255);
 
         // Add exterior and interior (primary and secondary) to render pipeline.
-        renderer.addRectangle(                                                                                          // Render life bar top/bottom border (exterior).
+        gp.getRenderer().addRectangle(                                                                                  // Render life bar top/bottom border (exterior).
                 colorExterior,
                 new Transform(
                         worldCoordsExterior,
@@ -363,7 +432,7 @@ public class UserInterface {
                 ),
                 ZIndex.SECOND_LAYER
         );
-        renderer.addRectangle(                                                                                          // Render life bar fill (interior).
+        gp.getRenderer().addRectangle(                                                                                  // Render life bar fill (interior).
                 colorInteriorSecondary,
                 new Transform(
                         worldCoordsInterior,
@@ -371,7 +440,7 @@ public class UserInterface {
                 ),
                 ZIndex.SECOND_LAYER
         );
-        renderer.addRectangle(                                                                                          // Render life bar fill (interior).
+        gp.getRenderer().addRectangle(                                                                                  // Render life bar fill (interior).
                 colorInteriorPrimary,
                 new Transform(
                         worldCoordsInterior,
@@ -419,7 +488,7 @@ public class UserInterface {
         Vector4f colorInteriorSecondary = new Vector4f(53, 64, 68, 255);
 
         // Add exterior and interior (primary and secondary) to render pipeline.
-        renderer.addRectangle(                                                                                          // Render life bar top/bottom border (exterior).
+        gp.getRenderer().addRectangle(                                                                                  // Render life bar top/bottom border (exterior).
                 colorExterior,
                 new Transform(
                         worldCoordsExterior,
@@ -427,7 +496,7 @@ public class UserInterface {
                 ),
                 ZIndex.SECOND_LAYER
         );
-        renderer.addRectangle(                                                                                          // Render life bar fill (interior).
+        gp.getRenderer().addRectangle(                                                                                  // Render life bar fill (interior).
                 colorInteriorSecondary,
                 new Transform(
                         worldCoordsInterior,
@@ -435,7 +504,7 @@ public class UserInterface {
                 ),
                 ZIndex.SECOND_LAYER
         );
-        renderer.addRectangle(                                                                                          // Render life bar fill (interior).
+        gp.getRenderer().addRectangle(                                                                                  // Render life bar fill (interior).
                 colorInteriorPrimary,
                 new Transform(
                         worldCoordsInterior,
@@ -461,7 +530,7 @@ public class UserInterface {
     public void addStringToRenderPipeline(String text, float screenX, float screenY, float scale,
                                            Vector3f color, String font, ZIndex zIndex) {
 
-        renderer.addString(text, gp.getCamera().screenXToWorldX(screenX), gp.getCamera().screenYToWorldY(screenY),
+        gp.getRenderer().addString(text, gp.getCamera().screenXToWorldX(screenX), gp.getCamera().screenYToWorldY(screenY),
                 scale, color, font, zIndex
         );
     }
@@ -595,6 +664,20 @@ public class UserInterface {
 
 
     /**
+     * Adds staged non-user interface drawables to the render pipeline.
+     * After adding, the staged drawables are reset (i.e., cleared).
+     */
+    private void addStagedNonUiDrawablesToRenderPipeline() {
+
+        for (Drawable drawable : stagedNonUiDrawables) {
+
+            gp.getRenderer().addDrawable(drawable, ZIndex.SECOND_LAYER);
+        }
+        stagedNonUiDrawables.clear();
+    }
+
+
+    /**
      * Adds staged non-user interface text to the render pipeline.
      * After adding, the staged text is reset (i.e., cleared).
      */
@@ -602,7 +685,7 @@ public class UserInterface {
 
         for (Text text : stagedNonUiText) {
 
-            renderer.addString(
+            gp.getRenderer().addString(
                     text.getText(),
                     gp.getCamera().screenXToWorldX(text.getX()),
                     gp.getCamera().screenYToWorldY(text.getY()),
@@ -626,7 +709,7 @@ public class UserInterface {
         switch (gp.getFadeS().getState()) {
             case FADE_TO:                                                                                               // Fade screen to color.
                 alpha = (float)(gp.getFadeS().getFadeCounter() / gp.getFadeS().getFadeCounterFadeToMax()) * 255;
-                renderer.addRectangle(
+                gp.getRenderer().addRectangle(
                         new Vector4f(
                                 gp.getFadeS().getColor().x,
                                 gp.getFadeS().getColor().y,
@@ -636,7 +719,7 @@ public class UserInterface {
                         ZIndex.FIRST_LAYER);
                 break;
             case ACTIVE:                                                                                                // Wait on colored screen.
-                renderer.addRectangle(
+                gp.getRenderer().addRectangle(
                         new Vector4f(
                                 gp.getFadeS().getColor().x,
                                 gp.getFadeS().getColor().y,
@@ -648,7 +731,7 @@ public class UserInterface {
             case FADE_FROM:                                                                                             // Fade from color.
                 alpha = 255 - ((float)(gp.getFadeS().getFadeCounter()
                         / gp.getFadeS().getFadeCounterFadeFromMax()) * 255);
-                renderer.addRectangle(
+                gp.getRenderer().addRectangle(
                         new Vector4f(
                                 gp.getFadeS().getColor().x,
                                 gp.getFadeS().getColor().y,
@@ -769,12 +852,12 @@ public class UserInterface {
 
         if (includeSkill) {
 
-            gp.getLifeSkillBannerBackground().addToRenderPipeline(
-                    renderer, bannerScreenCoords.x, bannerScreenCoords.y, bannerColor);
+            gp.getLifeSkillBannerBackground()
+                    .addToRenderPipeline(bannerScreenCoords.x, bannerScreenCoords.y, bannerColor);
         }else {
 
-            gp.getLifeBannerBackground().addToRenderPipeline(
-                    renderer, bannerScreenCoords.x, bannerScreenCoords.y, bannerColor);
+            gp.getLifeBannerBackground()
+                    .addToRenderPipeline(bannerScreenCoords.x, bannerScreenCoords.y, bannerColor);
         }
         addLifeBarToRenderPipeline(
                 entity.getLife(),
@@ -811,7 +894,7 @@ public class UserInterface {
 
             Vector2f shieldWorldCoords = new Vector2f(bannerWorldX + 46.0f, bannerWorldY);
             Vector2f shieldScreenCoords = gp.getCamera().worldCoordsToScreenCoords(shieldWorldCoords);
-            gp.getGuardingShield().addToRenderPipeline(renderer, shieldScreenCoords.x, shieldScreenCoords.y);
+            gp.getGuardingShield().addToRenderPipeline(shieldScreenCoords.x, shieldScreenCoords.y);
         }
     }
 
@@ -828,7 +911,7 @@ public class UserInterface {
             float windowScreenTopBottomPadding = gp.getCamera().worldHeightToScreenHeight(8.6f);                        // Normalized (screen) padding on top and bottom of description window between window and text.
             float textScreenSpacing = gp.getCamera().worldHeightToScreenHeight(9.5f);                                   // Normalized (screen) vertical spacing between line of description text (does NOT include character height).
             float textCharacterWorldHeight =
-                    renderer.getFont(standardNormalFont).getCharacter('A').getHeight() * standardFontScale;             // It doesn't matter which character is used, since all characters in a font have the same height.
+                    gp.getRenderer().getFont(standardNormalFont).getCharacter('A').getHeight() * standardFontScale;     // It doesn't matter which character is used, since all characters in a font have the same height.
             float textCharacterScreenHeight =
                     gp.getCamera().worldHeightToScreenHeight(textCharacterWorldHeight);                                 // Normalized (screen) character height.
             float windowWorldWidth = 179.0f;                                                                            // World (absolute) total width of the description window.
@@ -845,7 +928,7 @@ public class UserInterface {
 
             // Render description window.
             Vector2f windowWorldCoords = gp.getCamera().screenCoordsToWorldCoords(windowScreenCoords);
-            renderer.addRectangle(
+            gp.getRenderer().addRectangle(
                     new Vector4f(20, 20, 20, windowOpacity),
                     new Transform(windowWorldCoords, new Vector2f(windowWorldWidth, windowWorldHeight)),
                     ZIndex.FIRST_LAYER);

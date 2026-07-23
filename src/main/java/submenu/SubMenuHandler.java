@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * This class handles the sub-menu overlay that appears for the player to select an option.
+ * This class handles the sub-menu (i.e., context menu) overlay that appears for the player to select an option.
  */
 public class SubMenuHandler {
 
@@ -261,7 +261,7 @@ public class SubMenuHandler {
             }
             this.subMenuId = subMenuId;
             gp.getEntityM().getPlayer().setInteractionCountdown(
-                    gp.getEntityM().getPlayer().getStagedStandardInteractionCountdown());                               // Player must wait before interacting with the generated sub-menu else (helps avoid accidental selection). .
+                    gp.getEntityM().getPlayer().getStagedStandardInteractionCountdown());                               // Player must wait before interacting with the generated sub-menu (helps avoid accidental selection).
             gp.getUiSubMenuS().markDirty();
         } else {
 

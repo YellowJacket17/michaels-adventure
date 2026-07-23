@@ -64,11 +64,10 @@ public class UiSubMenuSupport {
      * Constructs a UiSubMenuSupport instance.
      *
      * @param gp GamePanel instance
-     * @param renderer Renderer instance
      */
-    public UiSubMenuSupport(GamePanel gp, Renderer renderer) {
+    public UiSubMenuSupport(GamePanel gp) {
         this.gp = gp;
-        init(renderer);
+        init();
     }
 
 
@@ -165,15 +164,13 @@ public class UiSubMenuSupport {
 
     /**
      * Adds sub-menu user interface components to the render pipeline.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         // Sub-menu window.
         gp.getCamera().screenCoordsToWorldCoords(subMenuWindowScreenTransform.position, tempWorldTransform.position);
         gp.getCamera().screenDimensionsToWorldDimensions(subMenuWindowScreenTransform.scale, tempWorldTransform.scale);
-        renderer.addRectangle(windowColor, tempWorldTransform, ZIndex.FIRST_LAYER);
+        gp.getRenderer().addRectangle(windowColor, tempWorldTransform, ZIndex.FIRST_LAYER);
 
         // Option text.
         optionTextScreenCoords.y = subMenuWindowScreenTransform.position.y + subMenuWindowScreenTopBottomPadding;
@@ -181,7 +178,7 @@ public class UiSubMenuSupport {
         for (int i = 0; i < gp.getSubMenuH().getOptions().size(); i++) {
 
             gp.getCamera().screenCoordsToWorldCoords(optionTextScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     optionText.get(i),
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
@@ -197,8 +194,7 @@ public class UiSubMenuSupport {
                 selectionArrowScreenCoords.y = optionTextScreenCoords.y
                         + (standardNormalCharScreenHeightHalf)
                         - (selectionArrowScreenHeightHalf);
-                gp.getSelectionA().addToRenderPipeline(
-                        renderer, selectionArrowScreenCoords.x, selectionArrowScreenCoords.y);
+                gp.getSelectionA().addToRenderPipeline(selectionArrowScreenCoords.x, selectionArrowScreenCoords.y);
             }
             optionTextScreenCoords.y += standardNormalCharScreenHeight + optionTextScreenVerticalSpacing;
         }
@@ -218,10 +214,8 @@ public class UiSubMenuSupport {
 
     /**
      * Initializes sub-menu user interface components that will not change while the game is running.
-     *
-     * @param renderer Renderer instance
      */
-    private void init(Renderer renderer) {
+    private void init() {
 
         // Temporary world coordinates and dimensions.
         Vector2f tempWorldCoords = new Vector2f(0.0f, 0.0f);
@@ -234,7 +228,7 @@ public class UiSubMenuSupport {
         defaultTextColor = new Vector3f(255, 255, 255);
 
         // Text sizing.
-        float standardNormalCharWorldHeight = renderer.getFont(gp.getUi().getStandardNormalFont())
+        float standardNormalCharWorldHeight = gp.getRenderer().getFont(gp.getUi().getStandardNormalFont())
                 .getCharacter('A').getHeight() * gp.getUi().getStandardFontScale();                                     // It doesn't matter which character is used, since all characters in a font have the same height.
         standardNormalCharScreenHeight =
                 gp.getCamera().worldHeightToScreenHeight(standardNormalCharWorldHeight);

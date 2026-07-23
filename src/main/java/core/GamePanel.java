@@ -12,7 +12,7 @@ import cutscene.CutsceneManager;
 import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
 import entity.EntityManager;
-import entity.enumeration.EntityDirection;
+import miscellaneous.TutorialHandler;
 import event.support.*;
 import item.ItemManager;
 import map.MapManager;
@@ -77,6 +77,7 @@ public class GamePanel {
     private Camera camera;
     private final Renderer renderer = new Renderer(this);
     private final SubMenuHandler subMenuH = new SubMenuHandler(this);
+    private final TutorialHandler tutorialH = new TutorialHandler(this);
     private final CollisionInspector collisionI = new CollisionInspector(this);
     private final DialogueReader dialogueR = new DialogueReader(this);
     private TileManager tileM;
@@ -89,7 +90,7 @@ public class GamePanel {
     private final EnvironmentManager environmentM = new EnvironmentManager(this);
     private final CutsceneManager cutsceneM = new CutsceneManager(this);
     private final PassiveAnimationManager passiveAnimationM = new PassiveAnimationManager();
-    private final ParticleEffectManager particleEffectM = new ParticleEffectManager();
+    private final ParticleEffectManager particleEffectM = new ParticleEffectManager(this);
     private final CombatManager combatM = new CombatManager(this);
     private final EventManager eventM = new EventManager(this);
     private final CameraSupport cameraS = new CameraSupport(this);
@@ -98,6 +99,7 @@ public class GamePanel {
     private final PartySupport partyS = new PartySupport(this);
     private final SoundSupport soundS = new SoundSupport(this);
     private final FadeSupport fadeS = new FadeSupport(this);
+    private final ItemSupport itemS = new ItemSupport(this);
     private final TransitionSupport transitionS = new TransitionSupport(this);
     private final IllustrationSupport illustrationS = new IllustrationSupport(this);
     private final CombatAnimationSupport combatAnimationS = new CombatAnimationSupport(this);
@@ -111,6 +113,7 @@ public class GamePanel {
     private UiInventoryMenuSupport uiInventoryMenuS;
     private UiSettingsMenuSupport uiSettingsMenuS;
     private UiTitleSupport uiTitleS;
+    private UiTutorialSupport uiTutorialS;
 
 
     // GAME STATE
@@ -213,14 +216,15 @@ public class GamePanel {
         entityM.getPlayer().setHidden(true);
 
         // Initialize user interface system classes requiring fully initialized GamePanel instance.
-        ui = new UserInterface(this, renderer);
-        uiDialogueS = new UiDialogueSupport(this, renderer);
-        uiSubMenuS = new UiSubMenuSupport(this, renderer);
-        uiPrimaryMenuFrameS = new UiPrimaryMenuFrameSupport(this, renderer);
-        uiPartyMenuS = new UiPartyMenuSupport(this, renderer);
-        uiInventoryMenuS = new UiInventoryMenuSupport(this, renderer);
-        uiSettingsMenuS = new UiSettingsMenuSupport(this, renderer);
-        uiTitleS = new UiTitleSupport(this, renderer);
+        ui = new UserInterface(this);
+        uiDialogueS = new UiDialogueSupport(this);
+        uiSubMenuS = new UiSubMenuSupport(this);
+        uiPrimaryMenuFrameS = new UiPrimaryMenuFrameSupport(this);
+        uiPartyMenuS = new UiPartyMenuSupport(this);
+        uiInventoryMenuS = new UiInventoryMenuSupport(this);
+        uiSettingsMenuS = new UiSettingsMenuSupport(this);
+        uiTitleS = new UiTitleSupport(this);
+        uiTutorialS = new UiTutorialSupport(this);
 
         // Load default (empty) map.
         mapM.loadDefaultMap();
@@ -263,6 +267,7 @@ public class GamePanel {
 
     /**
      * Progresses the state of the entire game by one frame.
+     * All update logic should occur here.
      *
      * @param dt time since last frame (seconds)
      */
@@ -289,10 +294,10 @@ public class GamePanel {
 
     /**
      * Sends necessary items to the render pipeline and renders them.
-     *
-     * @param dt time since last frame (seconds)
+     * All render pipeline logic should occur here.
+     * No update logic should occur here.
      */
-    public void render(double dt) {
+    public void render() {
 
         // NOTE: Drawables are purposefully added to the render pipeline in the following order to control layering.
 
@@ -300,7 +305,7 @@ public class GamePanel {
         addRenderPipelineEntitiesLandmarks();
         addRenderPipelineParticleEffects();
         addRenderPipelineIllustrations();
-        addRenderPipelineUserInterface(dt);
+        addRenderPipelineUserInterface();
         renderer.render();                                                                                              // Flush the render pipeline to draw the frame.
         entityList.clear();                                                                                             // Reset/cleanup the list of all entities by emptying it.
     }
@@ -311,7 +316,7 @@ public class GamePanel {
      */
     private void addRenderPipelineTiles() {
 
-        tileM.addToRenderPipeline(renderer);
+        tileM.addToRenderPipeline();
     }
 
 
@@ -362,7 +367,7 @@ public class GamePanel {
 
                 if (Math.ceil(entity.getWorldY() / NATIVE_TILE_SIZE) == row) {                                          // Calculate row this way to accommodate proper layering for tall grass landmark.
 
-                    entity.addToRenderPipeline(renderer);
+                    entity.addToRenderPipeline();
                 }
             }
 
@@ -370,7 +375,7 @@ public class GamePanel {
 
                 if (landmark.getRow() == row) {
 
-                    landmark.addToRenderPipeline(renderer);
+                    landmark.addToRenderPipeline();
                 }
             }
         }
@@ -382,7 +387,7 @@ public class GamePanel {
      */
     private void addRenderPipelineParticleEffects() {
 
-        particleEffectM.addToRenderPipeline(renderer);
+        particleEffectM.addToRenderPipeline();
     }
 
 
@@ -391,18 +396,16 @@ public class GamePanel {
      */
     private void addRenderPipelineIllustrations() {
 
-        illustrationS.addToRenderPipeline(renderer);
+        illustrationS.addToRenderPipeline();
     }
 
 
     /**
      * Adds user interface elements to the render pipeline.
-     *
-     * @param dt time since last frame (seconds)
      */
-    private void addRenderPipelineUserInterface(double dt) {
+    private void addRenderPipelineUserInterface() {
 
-        ui.addToRenderPipeline(renderer);
+        ui.addToRenderPipeline();
     }
 
 
@@ -500,9 +503,9 @@ public class GamePanel {
     private void loadMiscellaneousSpritesheet() {
 
         String filePath = "/spritesheets/miscellaneous.png";
-        int[] widths = new int[] {48, 48, 14, 6, 10, 12, 24};
-        int[] heights = new int[] {20, 10, 18, 10, 6, 8, 12};
-        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 7, widths, heights, 1));
+        int[] widths = new int[] {48, 48, 14, 6, 10, 12, 26, 24};
+        int[] heights = new int[] {20, 10, 18, 10, 6, 8, 27, 12};
+        AssetPool.addSpritesheet("miscellaneous", new Spritesheet(AssetPool.getTexture(filePath), 8, widths, heights, 1));
     }
 
 
@@ -581,7 +584,7 @@ public class GamePanel {
         Setting FrameRateLimitSetting = new Setting("Frame Rate Limit", "Sets the target frame rate that the game will run at.");
         systemSettings.add(FrameRateLimitSetting);
 
-        Setting tetherGameSpeedSetting = new Setting("Tether Game Speed", "Tethers the game speed to the frame rate limit.");
+        Setting tetherGameSpeedSetting = new Setting("Tether Game Speed", "Tethers the game speed to the frame rate limit. May reduce judder.");
         tetherGameSpeedSetting.addOption("Disabled");
         tetherGameSpeedSetting.addOption("Enabled");
         systemSettings.add(tetherGameSpeedSetting);
@@ -596,10 +599,10 @@ public class GamePanel {
         eEqualsEnterSetting.addOption("Enabled");
         systemSettings.add(eEqualsEnterSetting);
 
-        Setting userInterfaceSoundSetting = new Setting("User Interface Sound", "Plays sound effects when interacting with the user interface (e.g., progress dialogue, select menu option).");
-        userInterfaceSoundSetting.addOption("Disabled");
-        userInterfaceSoundSetting.addOption("Enabled");
-        systemSettings.add(userInterfaceSoundSetting);
+        Setting userInterfaceFeedbackSetting = new Setting("User Interface Feedback", "Plays sound effects when interacting with the user interface (e.g., progress dialogue, select menu option).");
+        userInterfaceFeedbackSetting.addOption("Disabled");
+        userInterfaceFeedbackSetting.addOption("Enabled");
+        systemSettings.add(userInterfaceFeedbackSetting);
     }
 
 
@@ -608,8 +611,16 @@ public class GamePanel {
         return camera;
     }
 
+    public Renderer getRenderer() {
+        return renderer;
+    }
+
     public SubMenuHandler getSubMenuH() {
         return subMenuH;
+    }
+
+    public TutorialHandler getTutorialH() {
+        return tutorialH;
     }
 
     public CollisionInspector getCollisionI() {
@@ -696,6 +707,10 @@ public class GamePanel {
         return fadeS;
     }
 
+    public ItemSupport getItemS() {
+        return itemS;
+    }
+
     public TransitionSupport getTransitionS() {
         return transitionS;
     }
@@ -746,6 +761,10 @@ public class GamePanel {
 
     public UiTitleSupport getUiTitleS() {
         return uiTitleS;
+    }
+
+    public UiTutorialSupport getUiTutorialS() {
+        return uiTutorialS;
     }
 
     public PrimaryGameState getPrimaryGameState() {

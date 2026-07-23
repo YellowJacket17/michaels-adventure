@@ -46,11 +46,10 @@ public class UiTitleSupport {
      * Constructs a UiTitleSupport instance.
      *
      * @param gp GamePanel instance
-     * @param renderer Renderer instance
      */
-    public UiTitleSupport(GamePanel gp, Renderer renderer) {
+    public UiTitleSupport(GamePanel gp) {
         this.gp = gp;
-        init(renderer);
+        init();
     }
 
 
@@ -109,15 +108,13 @@ public class UiTitleSupport {
 
 
     /**
-     * Adds title user interface components to the render pipeline
-     *
-     * @param renderer Renderer instance
+     * Adds title user interface components to the render pipeline.
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         // Start text.
         gp.getCamera().screenCoordsToWorldCoords(startTextScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 startText,
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -131,9 +128,8 @@ public class UiTitleSupport {
 
     /**
      * Initializes title user interface components that will not change while the game is running.
-     * @param renderer Renderer instance
      */
-    private void init(Renderer renderer) {
+    private void init() {
 
         // Temporary world coordinates and dimensions.
         Vector2f tempWorldCoords = new Vector2f(0.0f, 0.0f);
@@ -144,14 +140,14 @@ public class UiTitleSupport {
         startWindowColor = new Vector4f(20, 20, 20, 150);
         startTextColorBoundOne = new Vector3f(130, 158, 227);                                                           // One extreme of start text color as it oscillates between two colors.
         startTextColorBoundTwo = new Vector3f(255, 255, 255);                                                           // ^^^
-        startTextColor = new Vector3f(0, 0, 0);// "True" start text color that will be displayed.
+        startTextColor = new Vector3f(0, 0, 0);                                                                         // "True" start text color that will be displayed.
         startTextColorWeightChangeRate = 0.25f;                                                                         // Start text weight color change per second.
         startTextColorWeightUpdateRemaining = 0;                                                                        // Initialize to zero.
         startTextColorWeight = 1;                                                                                       // Only between zero and one (both inclusive).
 
         // Text sizing.
         startTextFontScale = 0.20f;
-        float startTextCharWorldHeight = renderer.getFont(gp.getUi().getStandardBoldFont())
+        float startTextCharWorldHeight = gp.getRenderer().getFont(gp.getUi().getStandardBoldFont())
                 .getCharacter('A').getHeight() * gp.getUi().getStandardFontScale();                                     // It doesn't matter which character is used, since all characters in a font have the same height.
         float startTextCharScreenHeight = gp.getCamera().worldHeightToScreenHeight(startTextCharWorldHeight);
 

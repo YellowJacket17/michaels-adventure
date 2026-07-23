@@ -11,5 +11,6 @@ public enum PrimaryGameState {
     SETTINGS_MENU,
     SUB_MENU,
     TITLE,
+    TUTORIAL,
     UNKNOWN
 }

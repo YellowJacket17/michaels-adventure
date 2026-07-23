@@ -63,7 +63,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 5:
                 counter += dt;
-                if (counter >= 0.5f) {
+                if (counter >= 0.5) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.LEFT, true);
                     progressCutscene();
                     counter = 0;
@@ -78,7 +78,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 7:
                 counter += dt;
-                if (counter >= 0.0f) {
+                if (counter >= 0.0) {
                     gp.getDialogueR().initiateConversation(12);
                     progressCutscene();
                     counter = 0;
@@ -93,7 +93,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 9:
                 counter += dt;
-                if (counter >= 0.5f) {
+                if (counter >= 0.5) {
                     gp.getEntityM().getEntityById(5).setDirectionCurrent(EntityDirection.DOWN);
                     progressCutscene();
                     counter = 0;
@@ -102,7 +102,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 10:
                 counter += dt;
-                if (counter >= 1.0f) {
+                if (counter >= 0.75) {
                     gp.getEntityM().getEntityById(5).setDirectionCurrent(EntityDirection.UP);
                     progressCutscene();
                     counter = 0;
@@ -111,7 +111,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 11:
                 counter += dt;
-                if (counter >= 1.0f) {
+                if (counter >= 0.75) {
                     gp.getEntityM().getEntityById(5).setDirectionCurrent(EntityDirection.LEFT);
                     progressCutscene();
                     counter = 0;
@@ -120,7 +120,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 12:
                 counter += dt;
-                if (counter >= 0.5f) {
+                if (counter >= 0.5) {
                     gp.getDialogueR().initiateConversation(13);
                     progressCutscene();
                     counter = 0;
@@ -135,7 +135,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 14:
                 counter += dt;
-                if (counter >= 0.0f) {
+                if (counter >= 0.0) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.RIGHT, false);
                     progressCutscene();
                     counter = 0;
@@ -151,7 +151,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 16:
                 counter += dt;
-                if (counter >= 0.0f) {
+                if (counter >= 0.0) {
                     gp.getDialogueR().initiateConversation(14);
                     progressCutscene();
                     counter = 0;
@@ -166,7 +166,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 18:
                 counter += dt;
-                if (counter >= 0.5f) {
+                if (counter >= 0.5) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.LEFT, true);
                     progressCutscene();
                     counter = 0;
@@ -181,7 +181,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 20:
                 counter += dt;
-                if (counter >= 0.5f) {
+                if (counter >= 0.5) {
                     gp.getDialogueR().initiateConversation(15);
                     progressCutscene();
                     counter = 0;
@@ -196,7 +196,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 22:
                 counter += dt;
-                if (counter >= 0.5f) {
+                if (counter >= 0.5) {
                     gp.getFadeS().initiateFlash(0.2, 0.2, 0.1, MoveBase.ATTRIBUTE_INCREASE_COLOR);
                     gp.getSoundS().playEffect("heal");
                     progressCutscene();
@@ -212,8 +212,8 @@ public class Cts_005 extends CutsceneBase {
 
             case 24:
                 counter += dt;
-                if (counter >= 0.5f) {
-                    gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.DOWN);
+                if (counter >= 0.5) {
+                    gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.UP);
                     progressCutscene();
                     counter = 0;
                 }
@@ -221,8 +221,8 @@ public class Cts_005 extends CutsceneBase {
 
             case 25:
                 counter += dt;
-                if (counter >= 1.0f) {
-                    gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.UP);
+                if (counter >= 1.0) {
+                    gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.DOWN);
                     progressCutscene();
                     counter = 0;
                 }
@@ -230,7 +230,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 26:
                 counter += dt;
-                if (counter >= 1.0f) {
+                if (counter >= 1.0) {
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.RIGHT, false);
                     progressCutscene();
                     counter = 0;
@@ -245,7 +245,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 28:
                 counter += dt;
-                if (counter >= 0.5f) {
+                if (counter >= 0.5) {
                     gp.getDialogueR().initiateConversation(16);
                     progressCutscene();
                     counter = 0;
@@ -260,7 +260,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 30:
                 counter += dt;
-                if (counter >= 0.5f) {
+                if (counter >= 0.5) {
                     gp.getEntityM().getEntityById(5).setDirectionCurrent(EntityDirection.RIGHT);
                     progressCutscene();
                     counter = 0;

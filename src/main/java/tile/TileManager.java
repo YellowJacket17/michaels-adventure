@@ -70,10 +70,8 @@ public class TileManager {
     // METHODS
     /**
      * Adds all tiles of the loaded map to the render pipeline.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         if (gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
@@ -103,7 +101,7 @@ public class TileManager {
 
                     if (gp.getCamera().isInCameraView(drawables[worldCol][worldRow])) {
 
-                        renderer.addDrawable(drawables[worldCol][worldRow], ZIndex.THIRD_LAYER);
+                        gp.getRenderer().addDrawable(drawables[worldCol][worldRow], ZIndex.THIRD_LAYER);
                     }
 
                 } else if (!renderErrors.contains(tileNum)) {

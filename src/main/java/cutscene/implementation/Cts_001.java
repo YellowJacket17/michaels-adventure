@@ -7,7 +7,7 @@ import event.enumeration.FadeState;
 import org.joml.Vector3f;
 
 /**
- * This class defines logic for directly entering gameplay (skipping opening cutscene).
+ * This class defines logic for entering initial gameplay (post-opening cutscene).
  */
 public class Cts_001 extends CutsceneBase {
 
@@ -37,6 +37,8 @@ public class Cts_001 extends CutsceneBase {
                 if (counter >= 1.0) {
                     gp.getSoundS().playTrack(
                             gp.getMapM().getLoadedMap().getTrack(gp.getMapM().getLoadedMap().getMapState()));           // Start playing track here to ensure it doesn't start playing too early.
+                    gp.getCameraS().setTrackedEntity(gp.getEntityM().getPlayer().getEntityId());
+                    gp.getCameraS().resetCameraSnap();
                     gp.getEntityM().getPlayer().setHidden(false);
 //                    gp.getFadeS().displayColor(new Vector3f(0, 0, 0));
                     gp.getFadeS().initiateFadeFrom(2.5);
@@ -47,11 +49,37 @@ public class Cts_001 extends CutsceneBase {
 
             case 2:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
-                    gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
+                    progressCutscene();
+                }
+                break;
+
+            case 3:
+                counter += dt;
+                if (counter >= 0.5) {
+                    generateTutorial();
+                    if (gp.getSystemSetting(5).getActiveOption() == 1) {
+                        gp.getSoundS().playEffect("progress");
+                    }
                     exitCutscene();
                     resetCutscene();
+                    counter = 0;
                 }
                 break;
         }
+    }
+
+
+    /**
+     * Generates and displays the controls tutorial (page 1).
+     */
+    private void generateTutorial() {
+
+        String title = "Controls Tutorial";
+        String subtitle = "Welcome to Mary's Adventure!";
+        String content = "This brief tutorial will teach you how to control the game."
+                + " Press the 'Enter' key to continue.";
+        int currentPageNumber = 1;
+        int totalPageNumbers = 6;
+        gp.getTutorialH().generateTutorial(2, title, subtitle, content, currentPageNumber, totalPageNumbers);
     }
 }

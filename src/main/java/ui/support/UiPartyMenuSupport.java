@@ -148,8 +148,6 @@ public class UiPartyMenuSupport {
 
     private Vector2f moveDataHeaderTextScreenCoords;
 
-    private Vector2f moveDataNameTextScreenCoords;
-
     private Vector2f moveDataCategoryLabelScreenCoords;
 
     private Vector2f moveDataPowerLabelScreenCoords;
@@ -200,11 +198,10 @@ public class UiPartyMenuSupport {
      * Constructs a UiPartyMenuSupport instance.
      *
      * @param gp GamePanel instance
-     * @param renderer Renderer instance
      */
-    public UiPartyMenuSupport(GamePanel gp, Renderer renderer) {
+    public UiPartyMenuSupport(GamePanel gp) {
         this.gp = gp;
-        init(renderer);
+        init();
     }
 
 
@@ -305,10 +302,8 @@ public class UiPartyMenuSupport {
     /**
      * Adds party menu user interface components to the render pipeline.
      * Note that the contents of the user interface components will automatically reflect their latest states.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         // Slot icons and content.
         // TODO : Consider refactoring the key array in the future (heavy on memory usage each frame).
@@ -319,44 +314,28 @@ public class UiPartyMenuSupport {
 
             if (i == 0) {
 
-                gp.getGuiIconM().addToRenderPipeline(
-                        renderer, 3, slotIconScreenCoords.get(i).x, slotIconScreenCoords.get(0).y);
+                gp.getGuiIconM().addToRenderPipeline(3, slotIconScreenCoords.get(i).x, slotIconScreenCoords.get(0).y);
 
                 if (partyMenuSlotScrollLevel == 0) {
 
-                    addSlotIconContentToRenderPipeline(
-                            renderer,
-                            i,
-                            gp.getEntityM().getPlayer()
-                    );
+                    addSlotIconContentToRenderPipeline(i, gp.getEntityM().getPlayer());
                 } else {
 
                     addSlotIconContentToRenderPipeline(
-                            renderer,
-                            i,
-                            gp.getEntityM().getParty().get(entityKeyArray[partyMenuSlotScrollLevel - 1])
-                    );
+                            i, gp.getEntityM().getParty().get(entityKeyArray[partyMenuSlotScrollLevel - 1]));
                 }
             } else if (i == 1) {
 
-                gp.getGuiIconM().addToRenderPipeline(
-                        renderer, 4, slotIconScreenCoords.get(i).x, slotIconScreenCoords.get(1).y);
+                gp.getGuiIconM().addToRenderPipeline(4, slotIconScreenCoords.get(i).x, slotIconScreenCoords.get(1).y);
 
                 addSlotIconContentToRenderPipeline(
-                        renderer,
-                        i,
-                        gp.getEntityM().getParty().get(entityKeyArray[partyMenuSlotScrollLevel])
-                );
+                        i, gp.getEntityM().getParty().get(entityKeyArray[partyMenuSlotScrollLevel]));
             } else if (i == 2) {
 
-                gp.getGuiIconM().addToRenderPipeline(
-                        renderer, 5, slotIconScreenCoords.get(i).x, slotIconScreenCoords.get(2).y);
+                gp.getGuiIconM().addToRenderPipeline(5, slotIconScreenCoords.get(i).x, slotIconScreenCoords.get(2).y);
 
                 addSlotIconContentToRenderPipeline(
-                        renderer,
-                        i,
-                        gp.getEntityM().getParty().get(entityKeyArray[partyMenuSlotScrollLevel + 1])
-                );
+                        i, gp.getEntityM().getParty().get(entityKeyArray[partyMenuSlotScrollLevel + 1]));
             } else {
 
                 break;                                                                                                  // Just in case.
@@ -372,7 +351,7 @@ public class UiPartyMenuSupport {
                         scrollIconActiveTransforms.get(i).position, tempWorldTransform.position);
                 gp.getCamera().screenDimensionsToWorldDimensions(
                         scrollIconActiveTransforms.get(i).scale, tempWorldTransform.scale);
-                renderer.addRectangle(
+                gp.getRenderer().addRectangle(
                         scrollIconActiveColor,
                         tempWorldTransform,
                         ZIndex.SECOND_LAYER);
@@ -382,7 +361,7 @@ public class UiPartyMenuSupport {
                         scrollIconInactiveTransforms.get(i).position, tempWorldTransform.position);
                 gp.getCamera().screenDimensionsToWorldDimensions(
                         scrollIconInactiveTransforms.get(i).scale, tempWorldTransform.scale);
-                renderer.addRectangle(
+                gp.getRenderer().addRectangle(
                         scrollIconInactiveColor,
                         tempWorldTransform,
                         ZIndex.SECOND_LAYER);
@@ -394,19 +373,19 @@ public class UiPartyMenuSupport {
                 leftVerticalDividerScreenTransform.position, tempWorldTransform.position);
         gp.getCamera().screenDimensionsToWorldDimensions(
                 leftVerticalDividerScreenTransform.scale, tempWorldTransform.scale);
-        renderer.addRectangle(verticalDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
+        gp.getRenderer().addRectangle(verticalDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
 
         // Right vertical divider.
         gp.getCamera().screenCoordsToWorldCoords(
                 rightVerticalDividerScreenTransform.position, tempWorldTransform.position);
         gp.getCamera().screenDimensionsToWorldDimensions(
                 rightVerticalDividerScreenTransform.scale, tempWorldTransform.scale);
-        renderer.addRectangle(verticalDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
+        gp.getRenderer().addRectangle(verticalDividerColor, tempWorldTransform, ZIndex.SECOND_LAYER);
 
         // Selected party member attribute header.
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeHeaderTextScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getName(),
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -418,7 +397,7 @@ public class UiPartyMenuSupport {
         // Selected party member attributes.
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeLifeLabelScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 attributeLifeLabelText,
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -429,7 +408,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeSkillLabelScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 attributeSkillLabelText,
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -440,7 +419,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeAttackLabelScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 attributeAttackLabelText,
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -451,7 +430,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeDefenseLabelScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 attributeDefenseLabelText,
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -462,7 +441,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeMagicLabelScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 attributeMagicLabelText,
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -473,7 +452,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeAgilityLabelScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 attributeAgilityLabelText,
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -484,7 +463,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeLifeValueScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getLife()
                         + "/" + gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getMaxLife(),
                 tempWorldTransform.position.x,
@@ -496,7 +475,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeSkillValueScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getSkill()
                         + "/" + gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getMaxSkill(),
                 tempWorldTransform.position.x,
@@ -508,7 +487,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeAttackValueScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseAttack()),
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -519,7 +498,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeDefenseValueScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseDefense()),
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -530,7 +509,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeMagicValueScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseMagic()),
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -541,7 +520,7 @@ public class UiPartyMenuSupport {
 
         gp.getCamera().screenCoordsToWorldCoords(
                 attributeAgilityValueScreenCoords, tempWorldTransform.position);
-        renderer.addString(
+        gp.getRenderer().addString(
                 Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseAgility()),
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
@@ -553,7 +532,7 @@ public class UiPartyMenuSupport {
         if (gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getMoves().size() == 0) {
 
             gp.getCamera().screenCoordsToWorldCoords(emptyTextScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     emptyText,
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
@@ -566,7 +545,7 @@ public class UiPartyMenuSupport {
             // Selected party member move data header.
             gp.getCamera().screenCoordsToWorldCoords(
                     moveDataHeaderTextScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     gp.getEntityM().getEntityById(getSelectedPartyMenuEntity())
                             .getMoves().get(partyMenuMoveScrollLevel).getName(),
                     tempWorldTransform.position.x,
@@ -579,7 +558,7 @@ public class UiPartyMenuSupport {
             // Selected party member move data.
             gp.getCamera().screenCoordsToWorldCoords(
                     moveDataCategoryLabelScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     moveDataCategoryLabelText,
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
@@ -590,7 +569,7 @@ public class UiPartyMenuSupport {
 
             gp.getCamera().screenCoordsToWorldCoords(
                     moveDataPowerLabelScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     moveDataPowerLabelText,
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
@@ -601,7 +580,7 @@ public class UiPartyMenuSupport {
 
             gp.getCamera().screenCoordsToWorldCoords(
                     moveDataAccuracyLabelScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     moveDataAccuracyLabelText,
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
@@ -612,7 +591,7 @@ public class UiPartyMenuSupport {
 
             gp.getCamera().screenCoordsToWorldCoords(
                     moveDataSkillPointsLabelScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     moveDataSkillPointsLabelText,
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
@@ -623,7 +602,7 @@ public class UiPartyMenuSupport {
 
             gp.getCamera().screenCoordsToWorldCoords(
                     moveDataCategoryValueScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     gp.getEntityM().getEntityById(getSelectedPartyMenuEntity())
                             .getMoves().get(partyMenuMoveScrollLevel).getCategory() + "",
                     tempWorldTransform.position.x,
@@ -635,7 +614,7 @@ public class UiPartyMenuSupport {
 
             gp.getCamera().screenCoordsToWorldCoords(
                     moveDataPowerValueScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity())
                             .getMoves().get(partyMenuMoveScrollLevel).getPower()),
                     tempWorldTransform.position.x,
@@ -647,7 +626,7 @@ public class UiPartyMenuSupport {
 
             gp.getCamera().screenCoordsToWorldCoords(
                     moveDataAccuracyValueScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity())
                             .getMoves().get(partyMenuMoveScrollLevel).getAccuracy()),
                     tempWorldTransform.position.x,
@@ -659,7 +638,7 @@ public class UiPartyMenuSupport {
 
             gp.getCamera().screenCoordsToWorldCoords(
                     moveDataSkillPointsValueScreenCoords, tempWorldTransform.position);
-            renderer.addString(
+            gp.getRenderer().addString(
                     Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity())
                             .getMoves().get(partyMenuMoveScrollLevel).getSkillPoints()),
                     tempWorldTransform.position.x,
@@ -684,18 +663,8 @@ public class UiPartyMenuSupport {
             );
 
             // Move data scroll arrows.
-            gp.getGuiIconM().addToRenderPipeline(
-                    renderer,
-                    9,
-                    leftScrollArrowScreenCoords.x,
-                    leftScrollArrowScreenCoords.y
-            );
-            gp.getGuiIconM().addToRenderPipeline(
-                    renderer,
-                    10,
-                    rightScrollArrowScreenCoords.x,
-                    rightScrollArrowScreenCoords.y
-            );
+            gp.getGuiIconM().addToRenderPipeline(9, leftScrollArrowScreenCoords.x, leftScrollArrowScreenCoords.y);
+            gp.getGuiIconM().addToRenderPipeline(10, rightScrollArrowScreenCoords.x, rightScrollArrowScreenCoords.y);
         }
     }
 
@@ -864,10 +833,8 @@ public class UiPartyMenuSupport {
      * Initializes party menu user interface components that will not change while the game is running.
      * These user interface elements are the "core" aspects of the party menu layout, such as the centerline positioning
      * of slot icons.
-     *
-     * @param renderer Renderer instance
      */
-    private void init(Renderer renderer) {
+    private void init() {
 
         // Selection and scroll management.
         partySlotSelected = PartyMenuSlot.SLOT_0;
@@ -885,17 +852,21 @@ public class UiPartyMenuSupport {
         scrollIconActiveColor = new Vector4f(244, 154, 45, 255); // 100, 193, 255, 255
         verticalDividerColor = new Vector4f(147, 182, 220, 255);
         attributeHeaderTextColor = new Vector3f(121, 255, 218);
-        attributeLabelTextColor = new Vector3f(121, 149, 255);
+        attributeLabelTextColor = new Vector3f(121, 185, 255);
         attributeValueTextColor = new Vector3f(255, 255, 255);
-        moveDataHeaderTextColor = new Vector3f(155, 121, 255);
-        moveDataLabelTextColor = new Vector3f(121, 149, 255);
+        moveDataHeaderTextColor = new Vector3f(158, 121, 255);
+        moveDataLabelTextColor = new Vector3f(121, 185, 255);
         moveDataValueTextColor = new Vector3f(255, 255, 255);
         emptyTextColor = new Vector3f(160, 160, 160);
 
         // Text sizing.
         slotIconContentsFontScale = 0.12f;
-        float standardNormalCharWorldHeight = renderer.getFont(gp.getUi().getStandardNormalFont())
+        float standardNormalCharWorldHeight = gp.getRenderer().getFont(gp.getUi().getStandardNormalFont())
                 .getCharacter('A').getHeight() * gp.getUi().getStandardFontScale();                                     // It doesn't matter which character is used, since all characters in a font have the same height.
+        float standardBoldCharWorldHeight = gp.getRenderer().getFont(gp.getUi().getStandardBoldFont())
+                .getCharacter('A').getHeight() * gp.getUi().getStandardFontScale();                                     // It doesn't matter which character is used, since all characters in a font have the same height.
+        float standardBoldCharScreenHeight =
+                gp.getCamera().worldHeightToScreenHeight(standardBoldCharWorldHeight);
 
         // Slot icon coordinates and dimensions.
         float slotIconWorldVerticalSpacing = 40.0f;
@@ -1013,7 +984,7 @@ public class UiPartyMenuSupport {
         float attributeWorldVerticalSpacing = standardNormalCharWorldHeight * 2.25f;
         float attributeScreenVerticalSpacing =
                 gp.getCamera().worldHeightToScreenHeight(attributeWorldVerticalSpacing);
-        float topAttributeScreenY = attributeHeaderTextScreenY + attributeScreenVerticalSpacing;
+        float topAttributeScreenY = attributeHeaderTextScreenY + standardBoldCharScreenHeight * 2.25f;
 
         attributeLifeLabelScreenCoords = new Vector2f(
                 attributeLabelScreenX,
@@ -1120,7 +1091,7 @@ public class UiPartyMenuSupport {
         float moveDataWorldVerticalSpacing = standardNormalCharWorldHeight * 2.25f;
         float moveDataScreenVerticalSpacing =
                 gp.getCamera().worldHeightToScreenHeight(moveDataWorldVerticalSpacing);
-        float topMoveDataTextScreenY = moveDataHeaderTextScreenY + moveDataScreenVerticalSpacing;
+        float topMoveDataTextScreenY = moveDataHeaderTextScreenY + standardBoldCharScreenHeight * 2.25f;
 
         moveDataCategoryLabelScreenCoords = new Vector2f(
                 moveDataScreenX,
@@ -1324,16 +1295,13 @@ public class UiPartyMenuSupport {
     /**
      * Adds slot icon content user interface components to the render pipeline.
      *
-     * @param renderer Renderer instance
      * @param partyMenuSlot party menu slot to add to render pipeline
      * @param entity entity occupying the party menu slot
      */
-    private void addSlotIconContentToRenderPipeline(Renderer renderer, int partyMenuSlot,
-                                                    EntityBase entity) {
+    private void addSlotIconContentToRenderPipeline(int partyMenuSlot, EntityBase entity) {
 
         // Entity icon.
         gp.getEntityIconM().addToRenderPipeline(
-                renderer,
                 entity.getEntityId(),
                 entityIconScreenCoords.get(partyMenuSlot).x,
                 entityIconScreenCoords.get(partyMenuSlot).y

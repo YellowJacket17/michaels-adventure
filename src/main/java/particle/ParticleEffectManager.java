@@ -1,5 +1,6 @@
 package particle;
 
+import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import render.Renderer;
@@ -14,6 +15,8 @@ import java.util.UUID;
 public class ParticleEffectManager {
 
     // FIELD
+    private final GamePanel gp;
+
     /**
      * List to store all instantiated particle effects.
      */
@@ -24,7 +27,9 @@ public class ParticleEffectManager {
     /**
      * Constructs a ParticleEffectManager instance.
      */
-    public ParticleEffectManager() {}
+    public ParticleEffectManager(GamePanel gp) {
+        this.gp = gp;
+    }
 
 
     // METHODS
@@ -52,14 +57,12 @@ public class ParticleEffectManager {
 
     /**
      * Adds each active particle effect to the render pipeline.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         for (ParticleEffect particleEffect : particleEffects) {
 
-            particleEffect.addToRenderPipeline(renderer);
+            particleEffect.addToRenderPipeline();
         }
     }
 
@@ -74,7 +77,7 @@ public class ParticleEffectManager {
      */
     public UUID addParticleEffect(Vector2f worldOriginPosition, Vector3f color, float size) {
 
-        ParticleEffect particleEffect = new ParticleEffect(worldOriginPosition, color, size);
+        ParticleEffect particleEffect = new ParticleEffect(gp, worldOriginPosition, color, size);
         particleEffects.add(particleEffect);
         return particleEffect.getUuid();
     }

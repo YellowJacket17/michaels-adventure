@@ -70,12 +70,11 @@ public class EntityIconManager {
     /**
      * Adds an entity icon to the render pipeline.
      *
-     * @param renderer Renderer instance
      * @param entityId ID of the entity for whom the entity icon will be rendered
      * @param screenX screen x-coordinate of the icon (leftmost, normalized from 0 to 1, both inclusive)
      * @param screenY screen y-coordinate of the icon (topmost, normalized from 0 to 1, both inclusive)
      */
-    public void addToRenderPipeline(Renderer renderer, int entityId, float screenX, float screenY) {
+    public void addToRenderPipeline(int entityId, float screenX, float screenY) {
 
         EntityIcon entityIcon = entityIcons.get(entityId);
 
@@ -86,7 +85,7 @@ public class EntityIconManager {
             entityIcon.transform.position.y = worldCoords.y;
             entityIcon.transform.scale.x = entityIcon.getNativeSpriteWidth();
             entityIcon.transform.scale.y = entityIcon.getNativeSpriteHeight();
-            renderer.addDrawable(entityIcon, ZIndex.SECOND_LAYER);
+            gp.getRenderer().addDrawable(entityIcon, ZIndex.SECOND_LAYER);
         } else if (!renderErrors.contains(entityId)) {
 
             UtilityTool.logError("Failed to add entity icon with entity ID '"

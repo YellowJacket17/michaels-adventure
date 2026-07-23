@@ -464,7 +464,7 @@ public class CombatManager {
     public void exitCombat() {
 
         gp.getTransitionS().initiateTransition(TransitionType.EXIT_COMBAT);
-        gp.getEventM().cleanupConversation(1);                                                                          // Cleans up from the last combat message displayed and removes dialogue window from screen.
+        gp.getEventM().cleanupConversation(2);                                                                          // Cleans up from the last combat message displayed and removes dialogue window from screen.
     }
 
 
@@ -508,14 +508,16 @@ public class CombatManager {
         }
         String message = UtilityTool.buildEntityListMessage(nonPlayerSideEntityNames, false);
 
-        // Stage a message and root combat sub-menu action.
+        // Stage a message.
         message += " would like to fight!";
         addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
-        addQueuedActionBack(new Act_ToggleCombatUi(gp, true));
-        generateRootSubMenuAction();
 
         // Execute custom logic.
         gp.getCombatLoadS().concludeEnterCombatTransition(combatId);
+
+        // Stage root combat sub-menu action.
+        addQueuedActionBack(new Act_ToggleCombatUi(gp, true));
+        generateRootSubMenuAction();
 
         // Enter the main method for progressing combat.
         progressCombat();
@@ -2521,7 +2523,7 @@ public class CombatManager {
                 categoryAbbreviation = "???";
         }
         return "Power: " + (move.getCategory() == MoveCategory.SUPPORT ? "--" : move.getPower()) + " [" + categoryAbbreviation + "]\n"
-                + "Accuracy: " + (move.getCategory() == MoveCategory.SUPPORT ? "--" :move.getAccuracy()) + "\n"
+                + "Accuracy: " + (move.getCategory() == MoveCategory.SUPPORT ? "--" : move.getAccuracy()) + "\n"
                 + "SP: " + move.getSkillPoints() + "/" + entity.getSkill();
     }
 

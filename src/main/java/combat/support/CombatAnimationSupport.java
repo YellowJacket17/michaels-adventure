@@ -71,7 +71,7 @@ public class CombatAnimationSupport {
      * Number of life points that an entity will gain/lose per second while a standard move animation is playing.
      * Increasing this value will increase the speed of the animation.
      */
-    private final double smaHealthBarSpeed = 50.0;
+    private final double smaHealthBarSpeed = 80.0;
 
     /**
      * Time to delay the start of the actual standard move animation from when the 'initiateStandardMoveAnimation()'
@@ -131,7 +131,7 @@ public class CombatAnimationSupport {
      * Number of life points that an entity will gain/lose per second while a flash move animation is playing.
      * Increasing this value will increase the speed of the animation.
      */
-    private final double fmaHealthBarSpeed = 50.0;
+    private final double fmaHealthBarSpeed = 80.0;
 
     /**
      * Time to delay the start of the actual flash move animation from when the 'initiateFlashMoveAnimation()'
@@ -273,7 +273,7 @@ public class CombatAnimationSupport {
      * Number of life points that an entity will gain/lose per second while a custom effect animation is playing.
      * Increasing this value will increase the speed of the animation.
      */
-    private final double ceaHealthBarSpeed = 50.0;
+    private final double ceaHealthBarSpeed = 80.0;
 
     /**
      * Boolean indicating whether to wait to hand off control to the next queued combat action until all other running

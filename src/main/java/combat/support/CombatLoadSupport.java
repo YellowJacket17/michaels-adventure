@@ -10,7 +10,7 @@ public class CombatLoadSupport {
 
     /*
      * Note that any logic executed here will only be done so after all standard logic in the relevant loading phase has
-     * been executed.
+     * been executed, unless otherwise specified.
      */
 
     // BASIC FIELD
@@ -57,6 +57,8 @@ public class CombatLoadSupport {
     /**
      * Executes any custom logic after the screen has faded from black when entering combat.
      * An example is adding an extra action to the list of queued combat actions.
+     * Note that this occurs after the opening combat message is staged but before the combat UI and root sub-menu
+     * are staged.
      *
      * @param combatId ID of the combat scenario
      */

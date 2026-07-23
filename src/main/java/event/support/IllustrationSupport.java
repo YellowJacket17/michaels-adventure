@@ -54,10 +54,8 @@ public class IllustrationSupport {
     // METHODS
     /**
      * Adds the displayed illustration to the render pipeline.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
         if (!displayedIllustrationName.equals(Illustration.NO_ILLUSTRATION)) {
 
@@ -75,7 +73,7 @@ public class IllustrationSupport {
             Vector2f worldCoords = gp.getCamera().screenCoordsToWorldCoords(screenCoords);
             drawable.transform.position.x = worldCoords.x;
             drawable.transform.position.y = worldCoords.y;
-            renderer.addDrawable(drawable, ZIndex.SECOND_LAYER);
+            gp.getRenderer().addDrawable(drawable, ZIndex.SECOND_LAYER);
         }
     }
 

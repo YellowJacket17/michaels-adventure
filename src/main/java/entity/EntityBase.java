@@ -584,10 +584,8 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Adds this entity to the render pipeline.
-     *
-     * @param renderer Renderer instance
      */
-    public void addToRenderPipeline(Renderer renderer) {
+    public void addToRenderPipeline() {
 
 
 
@@ -595,10 +593,10 @@ public abstract class EntityBase extends Drawable {
 
             if (playingCombatFaintAnimation || (combating && (status == EntityStatus.FAINT))) {
 
-                addToRenderPipelineFaint(renderer);
+                addToRenderPipelineFaint();
             } else {
 
-                addToRenderPipelineStandard(renderer);
+                addToRenderPipelineStandard();
             }
         }
 
@@ -1134,10 +1132,8 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * Adds this entity to the render pipeline (standard sprites).
-     *
-     * @param renderer Renderer instance
      */
-    protected void addToRenderPipelineStandard(Renderer renderer) {
+    protected void addToRenderPipelineStandard() {
 
         if (playingCombatAttackAnimation) {
 
@@ -1161,7 +1157,7 @@ public abstract class EntityBase extends Drawable {
 
             if (gp.getCamera().isInCameraView(this)) {
 
-                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+                gp.getRenderer().addDrawable(this, ZIndex.THIRD_LAYER);
             }
 
         } else if (!renderError) {
@@ -1181,10 +1177,8 @@ public abstract class EntityBase extends Drawable {
      * Adds this entity to the render pipeline (faint sprites).
      * A complete combat faint sprite spans across two sprites, which must both be added to the render pipeline, side by
      * side.
-     *
-     * @param renderer Renderer instance
      */
-    protected void addToRenderPipelineFaint(Renderer renderer) {
+    protected void addToRenderPipelineFaint() {
 
         try {
 
@@ -1206,7 +1200,7 @@ public abstract class EntityBase extends Drawable {
 
             if (gp.getCamera().isInCameraView(this)) {
 
-                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+                gp.getRenderer().addDrawable(this, ZIndex.THIRD_LAYER);
             }
 
             switch (directionCurrent) {
@@ -1223,7 +1217,7 @@ public abstract class EntityBase extends Drawable {
 
             if (gp.getCamera().isInCameraView(this)) {
 
-                renderer.addDrawable(this, ZIndex.THIRD_LAYER);
+                gp.getRenderer().addDrawable(this, ZIndex.THIRD_LAYER);
             }
 
         } catch (NullPointerException e) {
