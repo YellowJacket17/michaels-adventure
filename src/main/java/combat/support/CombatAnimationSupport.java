@@ -1,9 +1,11 @@
 package combat.support;
 
 import combat.MoveBase;
+import combat.enumeration.MoveCategory;
 import core.GamePanel;
 import entity.enumeration.EntityStatus;
 import entity.enumeration.FadeEffectType;
+import entity.enumeration.MoveWeakness;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import utility.LimitedArrayList;
@@ -71,7 +73,7 @@ public class CombatAnimationSupport {
      * Number of life points that an entity will gain/lose per second while a standard move animation is playing.
      * Increasing this value will increase the speed of the animation.
      */
-    private final double smaHealthBarSpeed = 80.0;
+    private final double smaHealthBarSpeed = 100.0;
 
     /**
      * Time to delay the start of the actual standard move animation from when the 'initiateStandardMoveAnimation()'
@@ -131,7 +133,7 @@ public class CombatAnimationSupport {
      * Number of life points that an entity will gain/lose per second while a flash move animation is playing.
      * Increasing this value will increase the speed of the animation.
      */
-    private final double fmaHealthBarSpeed = 80.0;
+    private final double fmaHealthBarSpeed = 100.0;
 
     /**
      * Time to delay the start of the actual flash move animation from when the 'initiateFlashMoveAnimation()'
@@ -273,7 +275,7 @@ public class CombatAnimationSupport {
      * Number of life points that an entity will gain/lose per second while a custom effect animation is playing.
      * Increasing this value will increase the speed of the animation.
      */
-    private final double ceaHealthBarSpeed = 80.0;
+    private final double ceaHealthBarSpeed = 100.0;
 
     /**
      * Boolean indicating whether to wait to hand off control to the next queued combat action until all other running
@@ -620,7 +622,7 @@ public class CombatAnimationSupport {
      *
      * @param entityIds IDs of entities participating in the animation
      * @param particleEffectColor particle effect color (r, g, b)
-     * @param soundEffectResourceName sound effect resource name
+     * @param soundEffectResourceName sound effect resource name (pass 'NO_EFFECT' to play no sound effect)
      * @param waitToProgressCombat whether to wait to hand off control to the next queued combat action until all other
      *                             running animations in the CombatAnimationSupport class are complete (true) or not
      *                             (false, i.e., just progress combat after this animation is complete); the former
@@ -669,7 +671,7 @@ public class CombatAnimationSupport {
      * @param affectSkillPoints whether skill points (true) or life points (false) will be modified by the
      *                          'entitiesFinalPoints' values.
      * @param particleEffectColor particle effect color (r, g, b)
-     * @param soundEffectResourceName sound effect resource name
+     * @param soundEffectResourceName sound effect resource name (pass 'NO_EFFECT' to play no sound effect)
      * @param waitToProgressCombat whether to wait to hand off control to the next queued combat action until all other
      *                             running animations in the CombatAnimationSupport class are complete (true) or not
      *                             (false, i.e., just progress combat after this animation is complete); the former
@@ -738,7 +740,7 @@ public class CombatAnimationSupport {
      * @param entitiesFinalSkillPoints calculated final skill points of each participating entity; entity ID is the key,
      *                                 skill points is the value
      * @param particleEffectColor particle effect color (r, g, b)
-     * @param soundEffectResourceName sound effect resource name
+     * @param soundEffectResourceName sound effect resource name (pass 'NO_EFFECT' to play no sound effect)
      * @param waitToProgressCombat whether to wait to hand off control to the next queued combat action until all other
      *                             running animations in the CombatAnimationSupport class are complete (true) or not
      *                             (false, i.e., just progress combat after this animation is complete); the former
@@ -819,6 +821,14 @@ public class CombatAnimationSupport {
                             : new Vector3f(255, 255, 255),
                     4.0f)
             );
+
+            if (((smaMove.getCategory() == MoveCategory.PHYSICAL)
+                        && (gp.getEntityM().getEntityById(targetEntityId).getWeakness() == MoveWeakness.PHYSICAL))
+                    || ((smaMove.getCategory() == MoveCategory.MAGIC)
+                        && (gp.getEntityM().getEntityById(targetEntityId).getWeakness() == MoveWeakness.MAGIC))) {
+
+                gp.getEntityM().getEntityById(targetEntityId).initiateFlashing(new Vector3f(255, 57, 112));
+            }
         }
     }
 
@@ -887,7 +897,10 @@ public class CombatAnimationSupport {
             gp.getEntityM().getEntityById(entityId).setSkill(ceaEntitiesFinalSkillPoints.get(entityId));
         }
 
-        gp.getSoundS().playEffect(ceaSoundEffectResourceName);
+        if (!ceaSoundEffectResourceName.equals("NO_EFFECT")) {
+
+            gp.getSoundS().playEffect(ceaSoundEffectResourceName);
+        }
 
         for (int entityId : ceaEntityIds) {
 
@@ -1142,7 +1155,11 @@ public class CombatAnimationSupport {
 
         boolean particleEffectsComplete = checkParticleEffectAnimations(ceaParticleEffectUuids);                        // Check if all particle effect animations are complete.
 
-        if (healthBarsComplete && particleEffectsComplete) {
+        boolean soundEffectComplete =
+                ceaSoundEffectResourceName != "NO_EFFECT"
+                        ? (!gp.getSoundS().isSoundPlaying(ceaSoundEffectResourceName)) : true;                          // Check if sound effect is complete.
+
+        if (healthBarsComplete && particleEffectsComplete && soundEffectComplete) {
 
             if (ceaBackDelay > 0) {
 

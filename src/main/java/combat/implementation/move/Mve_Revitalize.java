@@ -25,7 +25,7 @@ public class Mve_Revitalize extends MoveBase {
     private static final int mvePower = 0;
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 9;
-    private static final Vector3f mveEffectColor = new Vector3f(166, 255, 219);
+    private static final Vector3f mveEffectColor = MoveBase.ATTRIBUTE_INCREASE_COLOR;
     private static final String mveSoundEffect = "revitalize";
 
 
@@ -64,7 +64,7 @@ public class Mve_Revitalize extends MoveBase {
                     sourceEntityId,
                     gp.getEntityM().getEntityById(sourceEntityId).getSkill() - skillPoints);
             gp.getCombatM().addQueuedActionBack(
-                    new Act_CustomEffect(gp, entitiesFinalSkillPoints, effectColor, soundEffect, true));
+                    new Act_CustomEffect(gp, entitiesFinalSkillPoints, true, effectColor, soundEffect, true));
             gp.getCombatAnimationS().initiateStandardReviveAnimation(targetEntityIds, 0.4, 0.4);
             String message = buildEffectMessage(targetEntityIds);
             gp.getCombatM().addQueuedActionBack(
@@ -74,9 +74,9 @@ public class Mve_Revitalize extends MoveBase {
 
 
     @Override
-    public boolean verifyTarget(int entityId) {
+    public boolean verifyTarget(int targetEntityId) {
 
-        if (gp.getEntityM().getEntityById(entityId).getStatus() == EntityStatus.FAINT) {
+        if (gp.getEntityM().getEntityById(targetEntityId).getStatus() == EntityStatus.FAINT) {
 
             return true;
         }

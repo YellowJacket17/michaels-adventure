@@ -7,13 +7,13 @@
                 "text": "I wish I were anywhere else. I wish I were SOMEONE else."
             },
             "1": {
-                "text": "That was my second time setting out and I didn't find a single ray of sunlight. (Or moonlight, for that matter.)"
+                "text": "I can't believe it: my second time setting out and I didn't find a single ray of sunlight."
             },
             "2": {
-                "text": "I must have tumbled through some sort of tunnel to get here, but it's not showing up anywhere."
+                "text": "There's no sign of any tunnel I might've fallen through to get here, caved-in or otherwise."
             },
             "3": {
-                "text": "Even a glint of sunshine would give me an idea of how long I've been down here for."
+                "text": "If I could find it and see some daylight, it would give me an idea of how long I've been down here for."
             },
             "4": {
                 "text": "My phone still won't turn on, and the ceiling's just a craggy mess that I can't make out most of the time."
@@ -22,22 +22,22 @@
                 "text": "On top of that, the food in my backpack really hasn't stretched far."
             },
             "6": {
-                "text": "If I ever see Joe again, I'm going to tell him what an awful idea this trip was."
+                "text": "If I see Joe again, I'm going to scream at him about how awful this trip has turned out to be."
             },
             "7": {
-                "text": "I know that solar eclipses are rare, particularly total ones, but it wasn't worth this crisis."
+                "text": "Sure, total solar eclipses are rare, but seeing one wasn't worth this catastrophe."
             },
             "8": {
                 "text": "When Nick and I agreed to this, I really liked the idea of traveling out west and camping with our friends for a few nights."
             },
             "9": {
-                "text": "Now I don't know if I'll see any of them again."
+                "text": "Now, at this stage, I don't know if I'll see any of them again."
             },
             "10": {
-                "text": "I think I'll need to try drinking the water around here soon, although that faint glow (among other things) concerns me."
+                "text": "I'll probably need to try drinking the water in these pools around me soon, although that faint glow has me worried."
             },
             "11": {
-                "text": "I can add that to the list of things I've been having trouble explaining lately."
+                "text": "I can add that to the list of things I can't really explain."
             },
             "12": {
                 "text": "Even if I can't drink from them, the pools ARE illuminating the cavern a surprising amount."
@@ -65,7 +65,7 @@
                 "text": "In retrospect, I really don't know where we were trying to run to."
             },
             "3": {
-                "text": "We were surrounded by trees, and the trail would have only taken us deeper into the woods."
+                "text": "We were surrounded by trees and the trail would have only taken us deeper into the woods."
             },
             "4": {
                 "text": "It doesn't matter."
@@ -74,7 +74,7 @@
                 "text": "I'm completely useless on my own."
             },
             "6": {
-                "text": "I don't think I'm ever going to find my way out."
+                "text": "I don't think I'm going to find my way out."
             },
             "7": {
                 "text": "Even if anyone else ended up down here, all I've heard are dull echoes in the distance."
@@ -87,10 +87,10 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "text": "Even after all of that, I think I should get back up and head out again."
+                "text": "Maybe my next time setting out will be better."
             },
             "1": {
-                "text": "Why sit here and \"rest up\" to delay the inevitable?"
+                "text": "Even if it isn't, no one will find me if I keep hiding out in this nook."
             },
             "2": {
                 "text": "Yes, it's time to get going, Mary."
@@ -108,7 +108,7 @@
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "Wait, is that a person? People?"
+                "text": "Wait, a person? People?"
             }
         }   
     },
@@ -131,7 +131,7 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speaker": "Peculiar Shadow",
+                "speaker": "Peculiar Figure",
                 "text": "Hneaonr neo fo shteo sodsahw! I tw'on unr aayw ihst meit, emco teg oesm!"
             }
         }
@@ -218,12 +218,8 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speaker": "Mary",
-                "text": "Wait a moment."
-            },
-            "1": {
-                "speaker": "Mary",
-                "text": "JOE?!?"
+                "speaker": "???",
+                "text": "Ma . . . Mary!"
             }
         }
     },
@@ -234,8 +230,8 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speaker": "Joe",
-                "text": "Ma . . . Mary! It's you!"
+                "speaker": "Mary",
+                "text": "Nick? Is that you?"
             }
         }
     },
@@ -246,84 +242,8 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speaker": "Mary",
-                "text": "But, how did you get here? Where did you come from?"
-            },
-            "1": {
-                "speaker": "Joe",
-                "text": "I . . . don't know."
-            },
-            "2": {
-                "speaker": "Mary",
-                "text": "What?!? What do you mean you don't know?"
-            },
-            "3": {
-                "speaker": "Joe",
-                "text": "Well, ah, last thing I remember is this bizarre THING coming up from right behind me."
-            },
-            "4": {
-                "speaker": "Joe",
-                "text": "It was really dark, so I couldn't make out what it was."
-            },
-            "5": {
-                "speaker": "Joe",
-                "text": "It attacked, hurt me pretty badly, and then . . . suddenly I'm here with you, feeling just fine."
-            },
-            "6": {
-                "speaker": "Mary",
-                "text": "Hmm, that sounds like the thing I just fought off."
-            },
-            "7": {
-                "speaker": "Mary",
-                "text": "It seemed like there were two people at first, but when it approached me, it was the only person I could see."
-            },
-            "8": {
-                "speaker": "Mary",
-                "text": "Well, I guess if you would call it a person."
-            },
-            "9": {
-                "speaker": "Joe",
-                "text": "This is too strange."
-            },
-            "10": {
-                "speaker": "Joe",
-                "text": "I'm having a hard time understanding anything that's been going on here."
-            },
-            "11": {
-                "speaker": "Joe",
-                "text": "You got rid of it, though?"
-            },
-            "12": {
-                "speaker": "Mary",
-                "text": "It seems like it."
-            },
-            "13": {
-                "speaker": "Mary",
-                "text": "I can't believe it, but . . . I used my knife on it."
-            },
-            "14": {
-                "speaker": "Joe",
-                "text": "You mean that pocket knife I got you at the thrift store the other day?"
-            },
-            "15": {
-                "speaker": "Mary",
-                "text": "Yeah, along with that stupid lantern that YOU wanted to have but then made ME carry."
-            },
-            "16": {
-                "speaker": "Joe",
-                "text": "Heh, yeah, sorry again about that."
-            },
-            "17": {
-                "speaker": "Joe",
-                "text": "I didn't realize I wouldn't have the space to carry it."
-            },
-            "18": {
-                "speaker": "Joe",
-                "text": "I thought it would make our camping trip more authentic."
-            },
-            "19": {
-                "speaker": "Mary",
-                "text": "Whatever . . ."
+                "speaker": "Nick",
+                "text": "Is it gone? Did you get it?"
             }
         }
     },
@@ -335,15 +255,47 @@
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "Umm, Joe, your right hand's glowing green."
+                "text": "I . . . used my knife on it."
             },
             "1": {
-                "speaker": "Joe",
-                "text": "Gah, shoot, you're right!"
+                "speaker": "Mary",
+                "text": "I can't believe it."
             },
             "2": {
                 "speaker": "Mary",
-                "text": "Hey, don't point it at me!"
+                "text": "It fell to the ground and just . . . vanished."
+            },
+            "3": {
+                "speaker": "Nick",
+                "text": "Do you see any more?"
+            },
+            "4": {
+                "speaker": "Mary",
+                "text": "Umm, no, not right now."
+            },
+            "5": {
+                "speaker": "Nick",
+                "text": "Me neither, although whatever that thing was, it was difficult to make out."
+            },
+            "6": {
+                "speaker": "Nick",
+                "text": "Never mind any of that, though: how hurt are you?"
+            },
+            "7": {
+                "speaker": "Mary",
+                "text": "Hngh, I already wasn't doing great, but now I'm really not."
+            },
+            "8": {
+                "speaker": "Nick",
+                "text": "Well, here, it seems safe for now."
+            },
+            "9": {
+                "speaker": "Nick",
+                "text": "Let's take a moment to recover a bit."
+            },
+            "10": {
+                "speaker": "Nick",
+                "text": "I have some medicine, bandages, extra water, and a few other goodies I packed for our hike . . ."
             }
         }
     },
@@ -355,18 +307,98 @@
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "Wait, my cuts! They're gone!"
+                "text": "How long was that thing after you for?"
             },
             "1": {
-                "speaker": "Joe",
-                "text": "No way. I did that?"
+                "speaker": "Nick",
+                "text": "Not very long, although I'm not sure how long it was watching me for."
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "Not to sound too out there, but when it first approached me, it looked like it was crawling out of the shadows."
+            },
+            "3": {
+                "speaker": "Nick",
+                "text": "I tried defending myself, but I didn't really have anything that I could hurt it with."
+            },
+            "4": {
+                "speaker": "Mary",
+                "text": "Hey, speaking of \"out there,\" did it also use . . . psychic powers against you?"
+            },
+            "5": {
+                "speaker": "Nick",
+                "text": "I suppose it did, yeah."
+            },
+            "6": {
+                "speaker": "Nick",
+                "text": "My head began hurting when it approached, kind of like a brain freeze or something."
+            },
+            "7": {
+                "speaker": "Mary",
+                "text": "Hmm, this is too strange."
+            },
+            "8": {
+                "speaker": "Nick",
+                "text": "Yeah, I'm having a hard time understanding anything that's been going on here."
+            }
+        }
+    },
+
+    "17": {
+        "convName": "Area1_PostShadowEncounter6",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "I'm really happy that I found you, Nick."
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "Me too, Mary."
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "Of course, I've been worried about everyone, but you're the one I've been thinking about the most."
+            }
+        }
+    },
+
+    "18": {
+        "convName": "Area1_PostShadowEncounter7",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Nick",
+                "text": "You know, you mentioned psychic powers."
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "This is going to sound even weirder, but now that I'm talking to you, I almost feel like I could . . ."
+            }
+        }
+    },
+
+    "19": {
+        "convName": "Area1_PostShadowEncounter8",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Did you really just do that?"
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "I think so, yeah."
             },
             "2": {
                 "speaker": "Mary",
-                "text": "Your hand's not glowing anymore, so I think so?"
+                "text": "That looked exactly like what that thing was shooting at me."
             },
             "3": {
-                "speaker": "Joe",
+                "speaker": "Nick",
                 "text": "Mary, what the heck's going on here?"
             },
             "4": {
@@ -378,15 +410,15 @@
                 "text": "We could speculate, but honestly, I don't really want to waste time."
             },
             "6": {
-                "speaker": "Joe",
-                "text": "Agree. It sounds like you don't know much more than I do, anyways."
+                "speaker": "Nick",
+                "text": "Agreed. I'm getting the impression that you don't know much more than I do, anyways."
             },
             "7": {
-                "speaker": "Joe",
+                "speaker": "Nick",
                 "text": "All I've been doing is walking around to find anyone or a way out."
             },
             "8": {
-                "speaker": "Joe",
+                "speaker": "Nick",
                 "text": "You've probably already tried, but do you have your phone on you?"
             },
             "9": {
@@ -394,32 +426,64 @@
                 "text": "Yeah, but it won't turn on."
             },
             "10": {
-                "speaker": "Joe",
+                "speaker": "Nick",
                 "text": "Hmm, mine neither."
             },
             "11": {
-                "speaker": "Joe",
+                "speaker": "Nick",
                 "text": "Well, regardless, we should get going."
             },
-            "11": {
-                "speaker": "Joe",
-                "text": "I've been rationing food, but it's not like I packed for this."
+            "12": {
+                "speaker": "Nick",
+                "text": "I've been rationing supplies, but it's not like I packed for this."
             }
         }
     },
 
-    "17": {
-        "convName": "Area1_PostShadowEncounter6",
+    "20": {
+        "convName": "Area1_PostShadowEncounter9",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "speaker": "Joe",
+                "speaker": "Nick",
+                "text": "By the way, why are there matches all over the floor?"
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "Oh, I, ah, used them with my knife."
+            },
+            "2": {
+                "speaker": "Mary",
+                "text": "I thought the fire might scare that thing away."
+            },
+            "3": {
+                "speaker": "Nick",
+                "text": "Whoa, that's really resourceful, Mary!"
+            },
+            "4": {
+                "speaker": "Mary",
+                "text": "Mmm, whatever."
+            },
+            "5": {
+                "speaker": "Nick",
+                "text": "You could have thought of it."
+            }
+        }
+    },
+
+    "21": {
+        "convName": "Area1_PostShadowEncounter10",
+        "map": 1,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Nick",
                 "text": "Hey, what happened to us while we were watching the eclipse, that was . . . real, wasn't it?"
             },
             "1": {
                 "speaker": "Mary",
-                "text": ". . . I don't know, Joe."
+                "text": ". . . I don't know, Nick."
             },
             "2": {
                 "speaker": "Mary",
@@ -430,11 +494,11 @@
                 "text": "For now, I think we should just accept what's happening and move forward."
             },
             "4": {
-                "speaker": "Joe",
+                "speaker": "Nick",
                 "text": "Mmm, okay."
             },
             "5": {
-                "speaker": "Joe",
+                "speaker": "Nick",
                 "text": "Maybe someone else will have a better idea, if we even find them before getting out."
             },
             "6": {
@@ -444,8 +508,8 @@
         }
     },
 
-    "18": {
-        "convName": "Area1_PostShadowEncounter7",
+    "22": {
+        "convName": "Area1_PostShadowEncounter11",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {

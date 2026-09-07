@@ -61,12 +61,16 @@ public class Act_CustomEffect extends ActionBase {
     }
 
 
-    public Act_CustomEffect(GamePanel gp, HashMap<Integer, Integer> entitiesFinalSkillPoints,
+    public Act_CustomEffect(GamePanel gp, HashMap<Integer, Integer> entitiesFinalPoints, boolean affectSkillPoints,
                             Vector3f particleEffectColor, String soundResourceName, boolean waitToProgressCombat) {
         super(gp);
-        for (int entityId : entitiesFinalSkillPoints.keySet()) {
+        for (int entityId : entitiesFinalPoints.keySet()) {
             this.entityIds.add(entityId);
-            this.entitiesFinalSkillPoints.put(entityId, entitiesFinalSkillPoints.get(entityId));
+            if (affectSkillPoints) {
+                this.entitiesFinalSkillPoints.put(entityId, entitiesFinalPoints.get(entityId));
+            } else {
+                this.entitiesFinalLifePoints.put(entityId, entitiesFinalPoints.get(entityId));
+            }
         }
         this.particleEffectColor.x = particleEffectColor.x;
         this.particleEffectColor.y = particleEffectColor.y;

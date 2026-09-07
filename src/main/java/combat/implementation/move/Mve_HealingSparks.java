@@ -6,6 +6,7 @@ import combat.enumeration.MoveTargets;
 import combat.implementation.action.Act_CustomEffect;
 import combat.implementation.action.Act_ReadMessage;
 import core.GamePanel;
+import entity.enumeration.EntityStatus;
 import org.joml.Vector3f;
 import utility.UtilityTool;
 
@@ -24,7 +25,7 @@ public class Mve_HealingSparks extends MoveBase {
     private static final int mvePower = 0;
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 6;
-    private static final Vector3f mveEffectColor = new Vector3f(166, 255, 219);
+    private static final Vector3f mveEffectColor = MoveBase.ATTRIBUTE_INCREASE_COLOR;
     private static final String mveSoundEffect = "healingSparks";
 
 
@@ -84,9 +85,11 @@ public class Mve_HealingSparks extends MoveBase {
 
 
     @Override
-    public boolean verifyTarget(int entityId) {
+    public boolean verifyTarget(int targetEntityId) {
 
-        if (gp.getEntityM().getEntityById(entityId).getLife() < gp.getEntityM().getEntityById(entityId).getMaxLife()) {
+        if ((gp.getEntityM().getEntityById(targetEntityId).getStatus() != EntityStatus.FAINT)
+                && (gp.getEntityM().getEntityById(targetEntityId).getLife()
+                    < gp.getEntityM().getEntityById(targetEntityId).getMaxLife())) {
 
             return true;
         }

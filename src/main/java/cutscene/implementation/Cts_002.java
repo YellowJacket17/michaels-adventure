@@ -39,14 +39,22 @@ public class Cts_002 extends CutsceneBase {
             case 0:
                 initEngineLogoText();
                 initEngineLogoImage();
-                gp.getFadeS().displayColor(new Vector3f(255, 255, 255));
-                gp.getFadeS().initiateFadeFrom(1);
-                stageEngineLogoText();
-                stageEngineLogoImage();
+                gp.getFadeS().displayColor(new Vector3f(0, 0, 0));
                 progressCutscene();
                 break;
 
             case 1:
+                counter += dt;
+                if (counter >= 0.5) {
+                    gp.getFadeS().initiateFadeFrom(1);
+                    stageEngineLogoText();
+                    stageEngineLogoImage();
+                    progressCutscene();
+                    counter = 0;
+                }
+                break;
+
+            case 2:
                 stageEngineLogoText();
                 stageEngineLogoImage();
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
@@ -59,7 +67,7 @@ public class Cts_002 extends CutsceneBase {
                 }
                 break;
 
-            case 2:
+            case 3:
                 stageEngineLogoText();
                 stageEngineLogoImage();
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
@@ -67,7 +75,7 @@ public class Cts_002 extends CutsceneBase {
                 }
                 break;
 
-            case 3:
+            case 4:
                 counter += dt;
                 if (counter >= 1.0) {
                     gp.setPrimaryGameState(PrimaryGameState.TITLE);

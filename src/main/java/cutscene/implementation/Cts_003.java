@@ -34,6 +34,8 @@ public class Cts_003 extends CutsceneBase {
 
             case 0:
                 gp.getFadeS().initiateFadeTo(1, new Vector3f(0, 0, 0));
+                gp.getSoundS().stopTrack(true);
+                gp.getSoundS().playEffect("titleSelect");
                 progressCutscene();
                 break;
 
@@ -48,7 +50,7 @@ public class Cts_003 extends CutsceneBase {
             case 2:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     counter += dt;
-                    if (counter >= 0.5) {
+                    if (counter >= 2.25) {
                         List<String> options = List.of("Yes", "No");                                                    // Immutable list.
                         String prompt = "Would you like to view the opening story sequence?";
                         gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 4, true);

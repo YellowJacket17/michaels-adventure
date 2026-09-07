@@ -6,6 +6,7 @@ import combat.enumeration.MoveTargets;
 import combat.implementation.action.Act_CustomEffect;
 import combat.implementation.action.Act_ReadMessage;
 import core.GamePanel;
+import entity.enumeration.EntityStatus;
 import org.joml.Vector3f;
 import utility.UtilityTool;
 
@@ -13,23 +14,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This class defines a move (Annoying Impulse).
+ * This class defines a move (Daring Stand).
  */
-public class Mve_AnnoyingImpulse extends MoveBase {
+public class Mve_DaringStand extends MoveBase {
 
     // FIELDS
     private static final int mveId = 5;
-    private static final String mveName = "Annoying Impulse";
-    private static final String mveDescription = "Directs all attacks for the next two turns towards the user. Raises defense.";
-    private static final int mvePower = 60;
-    private static final int mveAccuracy = 95;
-    private static final int mveSkillPoints = 6;
-    private static final Vector3f mveEffectColor = new Vector3f(255, 255, 255);
+    private static final String mveName = "Daring Stand";
+    private static final String mveDescription = "Directs all attacks for the next turn towards the user. Raises defense.";
+    private static final int mvePower = 0;
+    private static final int mveAccuracy = 100;
+    private static final int mveSkillPoints = 3;
+    private static final Vector3f mveEffectColor = MoveBase.SUPPORT_MOVE_COLOR;
     private static final String mveSoundEffect = "basicAttack";
 
 
     // CONSTRUCTOR
-    public Mve_AnnoyingImpulse(GamePanel gp) {
+    public Mve_DaringStand(GamePanel gp) {
         super(gp, mveId, MoveCategory.SUPPORT, MoveTargets.SELF, false);
         name = mveName;
         description = mveDescription;
@@ -48,12 +49,12 @@ public class Mve_AnnoyingImpulse extends MoveBase {
         ArrayList<Integer> targetEntityIds = UtilityTool.extractKeySetAsArrayList(targetEntityDeltaLife);
         boolean alreadyLocked = gp.getCombatM().getTargetLockEntityId() == sourceEntityId;
         gp.getCombatM().setTargetLockEntityId(sourceEntityId);
-        gp.getCombatM().setTargetLockTurns(2);
+        gp.getCombatM().setTargetLockTurns(1);
+        gp.getCombatM().addQueuedActionBack(
+                new Act_CustomEffect(gp, targetEntityIds, effectColor, soundEffect, true));
 
         if (gp.getEntityM().getEntityById(sourceEntityId).changeDefenseStage(1)) {
 
-            gp.getCombatM().addQueuedActionBack(
-                    new Act_CustomEffect(gp, targetEntityIds, new Vector3f(255, 255, 255), "hop", true));
             gp.getCombatM().addQueuedActionBack(
                     new Act_CustomEffect(gp, targetEntityIds,
                             MoveBase.ATTRIBUTE_INCREASE_COLOR, "attributeIncrease", true));
@@ -64,6 +65,18 @@ public class Mve_AnnoyingImpulse extends MoveBase {
         String message = buildEffectMessageTargetLock(sourceEntityId, alreadyLocked);
         gp.getCombatM().addQueuedActionBack(
                 new Act_ReadMessage(gp, message, true, true));
+    }
+
+
+    @Override
+    public boolean verifyTarget(int targetEntityId) {
+
+        if ((gp.getEntityM().getEntityById(targetEntityId).getStatus() != EntityStatus.FAINT)
+                && (gp.getCombatM().getTargetLockEntityId() != targetEntityId)) {
+
+            return true;
+        }
+        return false;
     }
 
 
@@ -90,7 +103,7 @@ public class Mve_AnnoyingImpulse extends MoveBase {
 
         if (alreadyLocked) {
 
-            return (gp.getEntityM().getEntityById(entityId).getName() + " reinvigorated everyone's interest as the center of attention!");
+            return (gp.getEntityM().getEntityById(entityId).getName() + " continues to be the center of attention!");
         } else {
 
             return (gp.getEntityM().getEntityById(entityId).getName() + " became the center of attention!");

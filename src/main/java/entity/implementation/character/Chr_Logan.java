@@ -6,12 +6,12 @@ import entity.EntityBase;
 import entity.enumeration.EntityType;
 
 /**
- * This class defines a character entity (Test4).
+ * This class defines a character entity (Logan).
  */
-public class Npc_Test4 extends EntityBase {
+public class Chr_Logan extends EntityBase {
 
     // CONSTRUCTOR
-    public Npc_Test4(GamePanel gp, int entityId) {
+    public Chr_Logan(GamePanel gp, int entityId) {
         super(gp, entityId, EntityType.CHARACTER);
     }
 

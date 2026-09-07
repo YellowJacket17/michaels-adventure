@@ -157,6 +157,7 @@ Dialogue IDs MUST start at "0" in the JSON file, working down as 0, 1, 2, etc.
             *"exp": <accumulated_experience_points>,
             *"level": <level>,
             *"nextLevelExp": <experience_points_required_to_level_up>
+            *"weakness": <weakness_in_combat>
         },
         *"moves": {
             "1": <move_ID>,
@@ -216,6 +217,14 @@ As an aside, the "attributes" field may be omitted altogether, which is useful w
 
 The "exp", "level", and "nextLevelExp" attribute fields are not used in the game.
 It is recommended that they be omitted from the JSON file.
+
+The "weakness" field determines an entity's weakness in combat.
+The options are:
++ "physical"
++ "magic"
++ "none"
+
+Anything other than the above three will automatically result in "none" as a default value.
 
 Up to four moves under the "moves" field may be included.  
 If any more than four are included, they will simply be ignored when loading JSON data.

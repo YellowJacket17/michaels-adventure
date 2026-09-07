@@ -4,7 +4,6 @@ import core.GamePanel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import render.Renderer;
 import render.drawable.Transform;
 import render.enumeration.ZIndex;
 
@@ -35,7 +34,19 @@ public class UiDialogueSupport {
 
     private Vector3f dialogueTextColor;
 
-    private Vector3f speakerTextColor;
+    private Vector3f speakerTextColorActive;
+
+    private Vector3f speakerTextColorBlue;
+
+    private Vector3f speakerTextColorYellow;
+
+    private Vector3f speakerTextColorGreen;
+
+    private Vector3f speakerTextColorRed;
+
+    private Vector3f speakerTextColorPurple;
+
+    private Vector3f speakerTextColorOrange;
 
     private float dialogueWindowScreenLeftRightPadding;
     
@@ -74,7 +85,7 @@ public class UiDialogueSupport {
      */
     public void refresh() {
 
-        // Dialogue window.
+        // Speaker window dimensions and speaker text color.
         if (gp.getDialogueR().getActiveDialogueSpeaker() != null
                 && !gp.getDialogueR().getActiveDialogueSpeaker().equals("")) {
 
@@ -90,6 +101,26 @@ public class UiDialogueSupport {
             float speakerNameScreenWidth = gp.getCamera().worldWidthToScreenWidth(speakerNameWorldWidth);
             float speakerWindowScreenWidth = speakerNameScreenWidth + (2 * speakerWindowScreenLeftRightPadding);
             speakerWindowScreenTransform.scale.x = speakerWindowScreenWidth;
+
+            if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Mary")) {
+
+                speakerTextColorActive = speakerTextColorBlue;
+            } else if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Nick")) {
+
+                speakerTextColorActive = speakerTextColorYellow;
+            } else if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Logan")) {
+
+                speakerTextColorActive = speakerTextColorGreen;
+            } else if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Joe")) {
+
+                speakerTextColorActive = speakerTextColorRed;
+            } else if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Howie")) {
+
+                speakerTextColorActive = speakerTextColorPurple;
+            } else {
+
+                speakerTextColorActive = speakerTextColorOrange;
+            }
         }
 
         // Dialogue and speaker window color.
@@ -144,7 +175,7 @@ public class UiDialogueSupport {
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
                     gp.getUi().getStandardFontScale(),
-                    speakerTextColor,
+                    speakerTextColorActive,
                     gp.getUi().getStandardNormalFont(),
                     ZIndex.FIRST_LAYER
             );
@@ -188,7 +219,12 @@ public class UiDialogueSupport {
         // Colors.
         windowColor = new Vector4f(20, 20, 20, 255);
         dialogueTextColor = new Vector3f(255, 255, 255);
-        speakerTextColor = new Vector3f(121, 185, 255);
+        speakerTextColorBlue = new Vector3f(121, 185, 255);
+        speakerTextColorYellow = new Vector3f(255, 238, 121);
+        speakerTextColorGreen = new Vector3f(121, 255, 128);
+        speakerTextColorRed = new Vector3f(255, 121, 121);
+        speakerTextColorPurple = new Vector3f(158, 121, 255);
+        speakerTextColorOrange = new Vector3f(254, 168, 122);
 
         // Text sizing.
         float standardNormalCharWorldHeight = gp.getRenderer().getFont(gp.getUi().getStandardNormalFont())

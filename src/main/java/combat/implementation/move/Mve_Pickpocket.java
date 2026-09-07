@@ -21,11 +21,11 @@ public class Mve_Pickpocket extends MoveBase {
     // FIELDS
     private static final int mveId = 1;
     private static final String mveName = "Pickpocket";
-    private static final String mveDescription = "Deceives the opponent, both attacking and stealing five skill points.";
-    private static final int mvePower = 45;
-    private static final int mveAccuracy = 90;
+    private static final String mveDescription = "Deceives the target and strikes. Steals five skill points.";
+    private static final int mvePower = 30;
+    private static final int mveAccuracy = 95;
     private static final int mveSkillPoints = 2;
-    private static final Vector3f mveEffectColor = new Vector3f(166, 188, 255);
+    private static final Vector3f mveEffectColor = MoveBase.PHYSICAL_MOVE_COLOR;
     private static final String mveSoundEffect = "pickpocket";
 
 
@@ -82,7 +82,7 @@ public class Mve_Pickpocket extends MoveBase {
                     sourceEntityId,
                     gp.getEntityM().getEntityById(sourceEntityId).getSkill() + totalSkillStolen);
             gp.getCombatM().addQueuedActionBack(
-                    new Act_CustomEffect(gp, entitiesFinalSkill,
+                    new Act_CustomEffect(gp, entitiesFinalSkill, true,
                             MoveBase.SKILL_RECOVERY_COLOR, "heal", true));
             String message = gp.getEntityM().getEntityById(sourceEntityId).getName()
                     + " stole "

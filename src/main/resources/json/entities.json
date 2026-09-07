@@ -38,58 +38,90 @@
         "map": 1,
         "mapStates": [0, 1],
         "attributes": {
-            "name": "Peculiar Shadow",
+            "name": "Peculiar Figure",
             "speed": 120,
-            "maxLife": 315,
-            "life": 315,
-            "maxSkill": 60,
-            "skill": 60,
-            "baseAttack": 60,
-            "baseDefense": 75,
-            "baseMagic": 60,
-            "baseAgility": 60
+            "maxLife": 775,
+            "life": 775,
+            "maxSkill": 35,
+            "skill": 35,
+            "baseAttack": 30,
+            "baseDefense": 65,
+            "baseMagic": 75,
+            "baseAgility": 75,
+            "weakness": "physical"
         },
         "position": {
             "defaultCol": 47,
             "defaultRow": 8
         },
         "moves": {
-            "1": 7,
-            "2": 6,
-            "3": 9,
-            "4": 10
+            "1": 13,
+            "2": 11,
+            "3": 14,
+            "4": 18
         }
     },
 
     "5": {
         "type": "character",
-        "class": "Chr_Joe",
+        "class": "Chr_Nick",
         "collision": true,
         "defaultAction": "static",
         "map": 1,
         "mapStates": [0, 1],
         "defaultDirection": "down",
         "attributes": {
-            "name": "Joe",
+            "name": "Nick",
             "speed": 120,
-            "maxLife": 315,
-            "life": 315,
-            "maxSkill": 60,
-            "skill": 60,
-            "baseAttack": 60,
-            "baseDefense": 75,
-            "baseMagic": 60,
-            "baseAgility": 60
+            "maxLife": 775,
+            "life": 775,
+            "maxSkill": 35,
+            "skill": 35,
+            "baseAttack": 30,
+            "baseDefense": 65,
+            "baseMagic": 75,
+            "baseAgility": 75,
+            "weakness": "physical"
         },
         "position": {
             "defaultCol": 47,
             "defaultRow": 6
         },
         "moves": {
-            "1": 7,
-            "2": 6,
-            "3": 9,
-            "4": 10
+            "1": 13,
+            "2": 11,
+            "3": 14,
+            "4": 12
+        }
+    },
+
+    "6": {
+        "type": "object",
+        "class": "Obj_Goggles",
+        "map": 2,
+        "position": {
+            "defaultCol": 7,
+            "defaultRow": 15
+        }
+    },
+
+    "7": {
+        "type": "object",
+        "class": "Obj_Crystal",
+        "map": 2,
+        "position": {
+            "defaultCol": 34,
+            "defaultRow": 11
+        }
+    },
+
+    "8": {
+        "type": "object",
+        "class": "Obj_Ring",
+        "map": 2,
+        "position": {
+            "defaultCol": 55,
+            "defaultRow": 32
         }
     }
 }

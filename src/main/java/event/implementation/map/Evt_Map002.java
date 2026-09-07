@@ -25,6 +25,30 @@ public class Evt_Map002 extends EventMapBase {
     public boolean objInteraction(double dt, EventType type, EntityBase target) {
 
         switch (target.getEntityId()) {
+            case 6:
+                if (type == EventType.CLICK) {
+                    if (gp.getItemS().pickupItemToggleTutorial(9, true)) {
+                        gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
+                    }
+                    return true;
+                }
+                break;
+            case 7:
+                if (type == EventType.CLICK) {
+                    if (gp.getItemS().pickupItemToggleTutorial(8, false)) {
+                        gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
+                    }
+                    return true;
+                }
+                break;
+            case 8:
+                if (type == EventType.CLICK) {
+                    if (gp.getItemS().pickupItemToggleTutorial(4, false)) {
+                        gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
+                    }
+                    return true;
+                }
+                break;
         }
         return false;
     }

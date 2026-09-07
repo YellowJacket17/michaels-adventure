@@ -75,7 +75,7 @@ public abstract class MoveBase {
     protected int skillPoints;
 
     /**
-     * Effect animation color (i.e., particle effect color, flash color).
+     * Effect animation color (i.e., particle effect color, flash color) (r, g, b).
      */
     protected Vector3f effectColor;
 
@@ -95,6 +95,16 @@ public abstract class MoveBase {
     protected boolean highCriticalHit = false;
 
     /**
+     * Boolean setting whether this move will ignore the target's attribute buffs when calculating damage.
+     */
+    protected boolean ignoreAttributeBuffs = false;
+
+    /**
+     * Boolean setting whether this move will always do damage equal to its power.
+     */
+    protected boolean damageEqualPower = false;
+
+    /**
      * Color of effects for attribute increases in combat.
      */
     public static final Vector3f ATTRIBUTE_INCREASE_COLOR = new Vector3f(166, 255, 168);
@@ -108,6 +118,51 @@ public abstract class MoveBase {
      * Color of effects for skill recovery in combat.
      */
     public static final Vector3f SKILL_RECOVERY_COLOR = new Vector3f(188, 166, 255);
+
+    /**
+     * Color of effects for physical moves in combat.
+     */
+    public static final Vector3f PHYSICAL_MOVE_COLOR = new Vector3f(166, 219, 255);
+
+    /**
+     * Color of effects for magic moves in combat.
+     */
+    public static final Vector3f MAGIC_MOVE_COLOR = new Vector3f(255, 244, 166);
+
+    /**
+     * Color of effects for support moves in combat.
+     */
+    public static final Vector3f SUPPORT_MOVE_COLOR = new Vector3f(255, 255, 255);
+
+//    /**
+//     * Color for ice blue effects in combat.
+//     */
+//    public static final Vector3f ICE_BLUE_COLOR = new Vector3f(166, 253, 255);
+//
+//    /**
+//     * Color for orange effects in combat.
+//     */
+//    public static final Vector3f ORANGE_COLOR = new Vector3f(255, 200, 166);
+//
+//    /**
+//     * Color for pink effects in combat.
+//     */
+//    public static final Vector3f PINK_COLOR = new Vector3f(244, 166, 255);
+//
+//    /**
+//     * Color for silver effects in combat.
+//     */
+//    public static final Vector3f SILVER_COLOR = new Vector3f(204, 227, 242);
+//
+//    /**
+//     * Color for brown effects in combat.
+//     */
+//    public static final Vector3f BROWN_COLOR = new Vector3f(219, 202, 204);
+//
+//    /**
+//     * Color for black effects in combat.
+//     */
+//    public static final Vector3f BLACK_COLOR = new Vector3f(139, 139, 139);
 
 
     // CONSTRUCTOR
@@ -151,16 +206,32 @@ public abstract class MoveBase {
      * By default, any non-fainted entity may be targeted.
      * Each MoveBase implementation may override this default behavior with unique conditions.
      *
-     * @param entityId ID of candidate target entity
+     * @param targetEntityId ID of candidate target entity
      * @return whether the candidate entity is a valid target (true) or not (false)
      */
-    public boolean verifyTarget(int entityId) {
+    public boolean verifyTarget(int targetEntityId) {
 
-        if (gp.getEntityM().getEntityById(entityId).getStatus() != EntityStatus.FAINT) {
+        if (gp.getEntityM().getEntityById(targetEntityId).getStatus() != EntityStatus.FAINT) {
 
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * Calculates any bonus damage that should be applied when using a move (e.g., a random number is selected when
+     * each time a move to determine how powerful it will be).
+     * By default, no bonus damage will be applied.
+     * Each MoveBase implementation may override this default behavior with unique calculations.
+     *
+     * @param sourceEntityId ID of entity using the move
+     * @param targetEntityId ID of target entity
+     * @return change in life points of the targeted entity due to bonus damage
+     */
+    public int calculateBonusDamage(int sourceEntityId, int targetEntityId) {
+
+        return 0;
     }
 
 
@@ -215,5 +286,13 @@ public abstract class MoveBase {
 
     public boolean isHighCriticalHit() {
         return highCriticalHit;
+    }
+
+    public boolean isIgnoreAttributeBuffs() {
+        return ignoreAttributeBuffs;
+    }
+
+    public boolean isDamageEqualPower() {
+        return damageEqualPower;
     }
 }

@@ -244,8 +244,9 @@ public class UiInventoryMenuSupport {
      * happen.
      *
      * @param itemColSelected inventory menu column to select
+     * @return whether the column was changed (true) or not (false)
      */
-    public void setItemColSelected(int itemColSelected) {
+    public boolean setItemColSelected(int itemColSelected) {
 
         if ((itemColSelected >= 0) && (itemColSelected < maxNumItemSlotCols)) {
 
@@ -256,8 +257,11 @@ public class UiInventoryMenuSupport {
 
                 this.itemColSelected = itemColSelected;
                 inventoryIndexSelected = (maxNumItemSlotRows * itemRowSelected) + (itemColSelected);
+                return true;
             }
+            return false;
         }
+        return false;
     }
 
 
@@ -268,8 +272,9 @@ public class UiInventoryMenuSupport {
      * happen.
      *
      * @param itemRowSelected inventory menu row to select
+     * @return whether the row was changed (true) or not (false)
      */
-    public void setItemRowSelected(int itemRowSelected) {
+    public boolean setItemRowSelected(int itemRowSelected) {
 
         if ((itemRowSelected >= 0) && (itemRowSelected < maxNumItemSlotRows)) {
 
@@ -280,8 +285,11 @@ public class UiInventoryMenuSupport {
 
                 this.itemRowSelected = itemRowSelected;
                 inventoryIndexSelected = (maxNumItemSlotRows * itemRowSelected) + (itemColSelected);
+                return true;
             }
+            return false;
         }
+        return false;
     }
 
 

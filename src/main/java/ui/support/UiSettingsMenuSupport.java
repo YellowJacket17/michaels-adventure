@@ -236,8 +236,11 @@ public class UiSettingsMenuSupport {
      * Sets which system setting is active in the settings menu.
      *
      * @param systemSettingSelected index of system setting to select
+     * @return whether a new system setting was selected (true) or not (false)
      */
-    public void setSystemSettingSelected(int systemSettingSelected) {
+    public boolean setSystemSettingSelected(int systemSettingSelected) {
+
+        int legacyIndex = this.systemSettingSelected;
 
         if ((systemSettingSelected >= 0) && (systemSettingSelected < gp.getSystemSettingsSize())) {
 
@@ -245,7 +248,16 @@ public class UiSettingsMenuSupport {
             systemOptionSelected = gp.getSystemSetting(systemSettingSelected).getActiveOption();
             systemOptionSelected = gp.getSystemSetting(systemSettingSelected).getActiveOption();
             refreshScrollArrows();
+
+            if (this.systemSettingSelected != legacyIndex) {
+
+                return true;
+            } else {
+
+                return false;
+            }
         }
+        return false;
     }
 
 
@@ -254,14 +266,28 @@ public class UiSettingsMenuSupport {
      * settings menu.
      *
      * @param systemOptionSelected index of system setting option to select
+     * @return whether a new system setting option was selected (true) or not (false)
      */
-    public void setSystemOptionSelected(int systemOptionSelected) {
+    public boolean setSystemOptionSelected(int systemOptionSelected) {
+
+        int legacyIndex = this.systemOptionSelected;
+
         if ((systemOptionSelected >= 0)
                 && (systemOptionSelected < gp.getSystemSetting(systemSettingSelected).getOptionsSize())) {
+
             this.systemOptionSelected = systemOptionSelected;
             gp.getSystemSetting(systemSettingSelected).setActiveOption(systemOptionSelected);
             refreshScrollArrows();
+
+            if (this.systemOptionSelected != legacyIndex) {
+
+                return true;
+            } else {
+
+                return false;
+            }
         }
+        return false;
     }
 
 

@@ -233,17 +233,17 @@ public class GamePanel {
         cameraS.setTrackedEntity(entityM.getPlayer().getEntityId());
 
         // Initiate loading sequence.
-        cutsceneM.initiateCutscene(2);
+//        cutsceneM.initiateCutscene(2);
 
         // TEST
-//        mapM.loadMap(1, 0, true);
-//        entityM.getPlayer().setHidden(false);
-//        fadeS.displayColor(new Vector3f(255, 255, 255));
-//        fadeS.initiateFadeFrom(0.5);
-//        setPrimaryGameState(PrimaryGameState.EXPLORE);
-//
-//        entityM.getPlayer().setCol(47);
-//        entityM.getPlayer().setRow(14);
+        mapM.loadMap(1, 0, true);
+        entityM.getPlayer().setHidden(false);
+        fadeS.displayColor(new Vector3f(255, 255, 255));
+        fadeS.initiateFadeFrom(0.5);
+        setPrimaryGameState(PrimaryGameState.EXPLORE);
+
+        entityM.getPlayer().setCol(47);
+        entityM.getPlayer().setRow(14);
 //        entityM.getPlayer().setDirectionCurrent(EntityDirection.UP);
 //
 //        for (int i = 0; i < 1; i++) {
@@ -481,7 +481,7 @@ public class GamePanel {
     private void loadItemSpritesheet() {
 
         String filePath = "/spritesheets/items.png";
-        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 7, 32, 32, 1));
+        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 8, 32, 32, 1));
     }
 
 
@@ -528,17 +528,20 @@ public class GamePanel {
         AssetPool.addSound("attributeDecrease", "sound/effects/attributeDecrease.ogg");
         AssetPool.addSound("heal", "sound/effects/heal.ogg");
 
+        AssetPool.addSound("titleSelect", "sound/effects/titleSelect.ogg");
         AssetPool.addSound("progress", "sound/effects/progress.ogg");
+        AssetPool.addSound("shift", "sound/effects/shift.ogg");
         AssetPool.addSound("pencilScribble", "sound/effects/pencilScribble.ogg");
         AssetPool.addSound("primaryMenuOpen", "sound/effects/primaryMenuOpen.ogg");
         AssetPool.addSound("obtain", "sound/effects/obtain.ogg");
         AssetPool.addSound("hop", "sound/effects/hop.ogg");
         AssetPool.addSound("thud", "sound/effects/thud.ogg");
         AssetPool.addSound("footsteps", "sound/effects/footsteps.ogg");
-        AssetPool.addSound("grassRustle", "sound/effects/grassRustle.ogg");
+//        AssetPool.addSound("grassRustle", "sound/effects/grassRustle.ogg");
         AssetPool.addSound("vanish", "sound/effects/vanish.ogg");
 
         AssetPool.addSound("basicAttack", "sound/effects/basicAttack.ogg");
+        AssetPool.addSound("shadowPower", "sound/effects/shadowPower.ogg");
 
         AssetPool.addSound("pickpocket", "sound/effects/pickpocket.ogg");
         AssetPool.addSound("burningDagger", "sound/effects/burningDagger.ogg");
@@ -549,6 +552,17 @@ public class GamePanel {
         AssetPool.addSound("healingSparks", "sound/effects/healingSparks.ogg");
         AssetPool.addSound("empoweringStrike", "sound/effects/empoweringStrike.ogg");
         AssetPool.addSound("forestallingCharge", "sound/effects/forestallingCharge.ogg");
+
+        AssetPool.addSound("brainFreeze", "sound/effects/brainFreeze.ogg");
+        AssetPool.addSound("psychicSwipe", "sound/effects/psychicSwipe.ogg");
+        AssetPool.addSound("vitalityDrain", "sound/effects/vitalityDrain.ogg");
+        AssetPool.addSound("actuaryBlast", "sound/effects/actuaryBlast.ogg");
+
+        AssetPool.addSound("bulletPunch", "sound/effects/bulletPunch.ogg");
+        AssetPool.addSound("innerMachinations", "sound/effects/innerMachinations.ogg");
+
+        AssetPool.addSound("gigatonSwing", "sound/effects/gigatonSwing.ogg");
+        AssetPool.addSound("pioneerDrive", "sound/effects/pioneerDrive.ogg");
     }
 
 

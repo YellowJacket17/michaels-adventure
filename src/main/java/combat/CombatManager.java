@@ -918,10 +918,11 @@ public class CombatManager {
 
 
     /**
-     * Retrieves all ally entities (excluding self).
+     * Retrieves all non-fainted ally entities (excluding the entity passed as argument).
      * This method works for both player-side and non-player-side entities.
+     * For player-side entities, only active ally entities are retrieved (including the player entity, if applicable).
      *
-     * @param sourceEntityId ID of entity using move
+     * @param sourceEntityId ID of an ally entity.
      * @return ally entities
      */
     public ArrayList<EntityBase> retrieveAllyEntities(int sourceEntityId) {
@@ -966,6 +967,33 @@ public class CombatManager {
             }
         }
         return allyEntities;
+    }
+
+
+    /**
+     * Retrieves all active, non-fainted player-side entities (excluding the player entity).
+     *
+     * @return active player-side entities
+     */
+    public ArrayList<EntityBase> retrieveActivePlayerSideEntities() {
+
+        ArrayList<EntityBase> activeEntities = new ArrayList<>();
+        int entityIndex = 0;
+
+        for (EntityBase entity : gp.getEntityM().getParty().values()) {
+
+            if (entity.getStatus() != EntityStatus.FAINT) {
+
+                activeEntities.add(entity);
+            }
+            entityIndex++;
+
+            if (entityIndex >= gp.getEntityM().getNumActivePartyMembers()) {
+
+                break;
+            }
+        }
+        return activeEntities;
     }
 
 
@@ -2681,8 +2709,8 @@ public class CombatManager {
             magicBuff = "-";
         }
         descriptions.put(1, "Attack: " + entity.getBaseAttack() + attackBuff + "\n"
-                + "Defense: " + entity.getBaseDefense() + defenseBuff + "\n"
-                + "Magic: " + entity.getBaseMagic() + magicBuff);
+                + "Magic: " + entity.getBaseMagic() + magicBuff + "\n"
+                + "Defense: " + entity.getBaseDefense() + defenseBuff);
 
         return descriptions;
     }

@@ -35,16 +35,17 @@ public class ItemSupport {
      * The primary game state is set to dialogue.
      *
      * @param itemId ID of item to be added to the player's inventory
+     * @param plural whether the item is plural (true) or not (false)
      * @return whether the item was added to the player's inventory (true) or not (false)
      */
-    public boolean pickupItemStandard(int itemId) {
+    public boolean pickupItemStandard(int itemId, boolean plural) {
 
         boolean added = gp.getEntityM().getPlayer().addItemToInventory(itemId);
 
         if (added) {
 
             gp.getSoundS().playEffect("obtain");
-            gp.getEventM().displayMessage(buildItemAddedMessage(itemId), true);
+            gp.getEventM().displayMessage(buildItemAddedMessage(itemId, plural), true);
         } else {
 
             gp.getEventM().displayMessage(buildInventoryFullMessage(), true);
@@ -60,19 +61,20 @@ public class ItemSupport {
      * The primary game state is set to dialogue.
      *
      * @param itemId ID of item to be added to the player's inventory
+     * @param plural whether the item is plural (true) or not (false)
      * @return whether the item was added to the player's inventory (true) or not (false)
      */
-    public boolean pickupItemTutorial(int itemId) {
+    public boolean pickupItemTutorial(int itemId, boolean plural) {
 
         boolean added = gp.getEntityM().getPlayer().addItemToInventory(itemId);
 
         if (added) {
 
             gp.getSoundS().playEffect("obtain");
-            gp.getDialogueR().initiateItemTutorialMessage(buildItemAddedMessage(itemId), true, true);
+            gp.getDialogueR().initiateItemTutorialMessage(buildItemAddedMessage(itemId, plural), true, false);
         } else {
 
-            gp.getDialogueR().initiateItemTutorialMessage(buildInventoryFullMessage(), true, true);
+            gp.getDialogueR().initiateItemTutorialMessage(buildInventoryFullMessage(), true, false);
         }
         return added;
     }
@@ -84,17 +86,18 @@ public class ItemSupport {
      * The primary game state is set to dialogue.
      *
      * @param itemId ID of item to be added to the player's inventory
+     * @param plural whether the item is plural (true) or not (false)
      * @return whether the item was added to the player's inventory (true) or not (false)
      */
-    public boolean pickupItemToggleTutorial(int itemId) {
+    public boolean pickupItemToggleTutorial(int itemId, boolean plural) {
 
         if (!itemTutorialTriggered) {
 
             itemTutorialTriggered = true;
-            return pickupItemTutorial(itemId);
+            return pickupItemTutorial(itemId, plural);
         } else {
 
-            return pickupItemStandard(itemId);
+            return pickupItemStandard(itemId, plural);
         }
     }
 
@@ -119,11 +122,13 @@ public class ItemSupport {
      * Builds message for item pickup.
      *
      * @param itemId ID of item to be added to the player's inventory
+     * @param plural whether the item is plural (true) or not (false)
      * @return message
      */
-    private String buildItemAddedMessage(int itemId) {
+    private String buildItemAddedMessage(int itemId, boolean plural) {
 
-        return gp.getEntityM().getPlayer().getName() + " got a " + gp.getItemM().checkName(itemId) + "!";
+        return gp.getEntityM().getPlayer().getName()
+                + " got " + (plural ? "" : "a ") + gp.getItemM().checkName(itemId) + "!";
     }
 
 

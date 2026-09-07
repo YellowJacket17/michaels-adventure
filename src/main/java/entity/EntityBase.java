@@ -4,8 +4,8 @@ import combat.MoveBase;
 import core.GamePanel;
 import entity.enumeration.*;
 import event.enumeration.StockStepInteractionType;
-import render.Renderer;
 import asset.Sprite;
+import org.joml.Vector3f;
 import render.enumeration.ZIndex;
 import render.drawable.Drawable;
 import utility.LimitedArrayList;
@@ -290,6 +290,18 @@ public abstract class EntityBase extends Drawable {
     protected double fadeEffectAlphaPerSecond;
 
 
+    // COLOR FLASH EFFECT
+    /**
+     * Boolean indicating whether this entity is currently undergoing a color flash effect or not.
+     */
+    protected boolean flashing = false;
+
+    /**
+     * Color of color flash effect (r, g, b).
+     */
+    protected Vector3f flashingColor = new Vector3f();
+
+
     // COUNTERS/BUFFERS
     /**
      * Counts the number of world units this entity has moved thus far while in a state of motion.
@@ -332,6 +344,18 @@ public abstract class EntityBase extends Drawable {
      * In other words, increasing this value will make the combat faint animation appear to run more slowly.
      */
     protected double animationCounterCombatFaintMax = 0.6;
+
+    /**
+     * Counts time passed (seconds) while this entity is undergoing a color flash effect.
+     */
+    protected double flashingCounter;
+
+    /**
+     * Maximum number of seconds allocated to a full color flash effect.
+     * Increasing this value will extend the duration of the color flash effect.
+     * In other words, increasing this value will make the color flash effect appear to run more slowly.
+     */
+    protected double flashingCounterMax = 0.8;
 
 
     // BASIC ATTRIBUTES
@@ -431,6 +455,11 @@ public abstract class EntityBase extends Drawable {
      * Entity's status (healthy, faint, etc.).
      */
     protected EntityStatus status = EntityStatus.HEALTHY;
+
+    /**
+     * Entity's weakness in combat (i.e., the move category that this entity is weak to).
+     */
+    protected MoveWeakness weakness = MoveWeakness.NONE;
 
     /**
      * Amount of experience this entity has earned at its current level.
@@ -537,6 +566,10 @@ public abstract class EntityBase extends Drawable {
 
         if (activeFadeEffect != FadeEffectType.NONE) {
             updateFadeEffect(dt);                                                                                       // Purposefully no return statement here.
+        }
+
+        if (flashing) {
+            updateFlashing(dt);                                                                                         // Purposefully no return statement here.
         }
 
         if (playingCombatAttackAnimation) {
@@ -877,6 +910,27 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
+     * Initiates a hop.
+     * This entity will enter both a state of hopping and a state of motion.
+     * This entity will move downward (positive y-direction) two tiles during a hop.
+     * Other directions for hopping are not supported.
+     */
+    public void initiateHop() {
+
+        cancelAction();
+        hopping = true;
+        moving = true;
+        worldXStart = worldX;
+        worldYStart = worldY;
+        worldXEnd = worldX;
+        worldYEnd = worldY + (GamePanel.NATIVE_TILE_SIZE * 2);                                                          // An entity moves two tiles during a hop.
+        directionCurrent = EntityDirection.DOWN;
+        directionCandidate = EntityDirection.DOWN;
+        directionLast = EntityDirection.DOWN;
+    }
+
+
+    /**
      * Initiates a fade effect (up or down).
      * At the beginning of a fade up effect, this entity will be set to a visible state (i.e., not hidden).
      * At the end of a fade down effect, this entity will be set to a hidden state.
@@ -914,23 +968,21 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Initiates a hop.
-     * This entity will enter both a state of hopping and a state of motion.
-     * This entity will move downward (positive y-direction) two tiles during a hop.
-     * Other directions for hopping are not supported.
+     * Initiates a color flash effect.
+     * If a color flash effect is already active, then nothing will happen.
+     *
+     * @param color color flash color (r, g, b)
      */
-    public void initiateHop() {
+    public void initiateFlashing(Vector3f color) {
 
-        cancelAction();
-        hopping = true;
-        moving = true;
-        worldXStart = worldX;
-        worldYStart = worldY;
-        worldXEnd = worldX;
-        worldYEnd = worldY + (GamePanel.NATIVE_TILE_SIZE * 2);                                                          // An entity moves two tiles during a hop.
-        directionCurrent = EntityDirection.DOWN;
-        directionCandidate = EntityDirection.DOWN;
-        directionLast = EntityDirection.DOWN;
+        if (!flashing) {
+
+            flashing = true;
+            flashingCounter = 0;
+            flashingColor.x = color.x;
+            flashingColor.y = color.y;
+            flashingColor.z = color.z;
+        }
     }
 
 
@@ -1747,6 +1799,43 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
+     * Updates an active color flash effect by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    protected void updateFlashing(double dt) {
+
+        flashingCounter += dt;
+        float colorFlashWeight = 1;
+        float weightRateChange = 1 / (float) (flashingCounterMax / 2);
+
+        if (flashingCounter >= flashingCounterMax) {
+
+            flashingCounter = 0;
+            flashingColor.x = 0;
+            flashingColor.y = 0;
+            flashingColor.z = 0;
+            color.x = 255;
+            color.y = 255;
+            color.z = 255;
+            flashing = false;
+        } else {
+
+            if (flashingCounter <= flashingCounterMax / 2) {
+
+                colorFlashWeight = (float) (flashingCounter * weightRateChange);
+            } else {
+
+                colorFlashWeight = 1 - (float) ((flashingCounter - (flashingCounterMax / 2)) * weightRateChange);
+            }
+            color.x = (255 * (1 - colorFlashWeight)) + (flashingColor.x * (colorFlashWeight));
+            color.y = (255 * (1 - colorFlashWeight)) + (flashingColor.y * (colorFlashWeight));
+            color.z = (255 * (1 - colorFlashWeight)) + (flashingColor.z * (colorFlashWeight));
+        }
+    }
+
+
+    /**
      * Sets this entity's default action/behavior.
      * Override this method in implemented EntityBase classes if custom actions are desired.
      *
@@ -2304,6 +2393,10 @@ public abstract class EntityBase extends Drawable {
         return onPath;
     }
 
+    public boolean isFlashing() {
+        return flashing;
+    }
+
     public boolean isOnEntity() {
         return onEntityId != NO_ENTITY_FOLLOWED;
     }
@@ -2370,6 +2463,10 @@ public abstract class EntityBase extends Drawable {
 
     public EntityStatus getStatus() {
         return status;
+    }
+
+    public MoveWeakness getWeakness() {
+        return weakness;
     }
 
     public int getExp() {
@@ -2690,6 +2787,10 @@ public abstract class EntityBase extends Drawable {
 
     public void setStatus(EntityStatus status) {
         this.status = status;
+    }
+
+    public void setWeakness(MoveWeakness weakness) {
+        this.weakness = weakness;
     }
 
     public void setExp(int exp) {

@@ -122,6 +122,8 @@ public class UiPartyMenuSupport {
 
     private Vector2f attributeAgilityLabelScreenCoords;
 
+    private Vector2f attributeWeaknessLabelScreenCoords;
+
     private String attributeLifeLabelText;
 
     private String attributeSkillLabelText;
@@ -134,6 +136,8 @@ public class UiPartyMenuSupport {
 
     private String attributeAgilityLabelText;
 
+    private String attributeWeaknessLabelText;
+
     private Vector2f attributeLifeValueScreenCoords;
 
     private Vector2f attributeSkillValueScreenCoords;
@@ -145,6 +149,8 @@ public class UiPartyMenuSupport {
     private Vector2f attributeMagicValueScreenCoords;
 
     private Vector2f attributeAgilityValueScreenCoords;
+
+    private Vector2f attributeWeaknessValueScreenCoords;
 
     private Vector2f moveDataHeaderTextScreenCoords;
 
@@ -185,12 +191,6 @@ public class UiPartyMenuSupport {
     private Vector2f rightScrollArrowScreenCoords;
 
     private Vector2f leftScrollArrowScreenCoords;
-
-//    private Transform centerMoveDividerScreenTransform;
-//
-//    private Transform topMoveDividerScreenTransform;
-//
-//    private Transform bottomMoveDividerScreenTransform;
 
 
     // CONSTRUCTOR
@@ -429,17 +429,6 @@ public class UiPartyMenuSupport {
                 ZIndex.SECOND_LAYER);
 
         gp.getCamera().screenCoordsToWorldCoords(
-                attributeDefenseLabelScreenCoords, tempWorldTransform.position);
-        gp.getRenderer().addString(
-                attributeDefenseLabelText,
-                tempWorldTransform.position.x,
-                tempWorldTransform.position.y,
-                gp.getUi().getStandardFontScale(),
-                attributeLabelTextColor,
-                gp.getUi().getStandardNormalFont(),
-                ZIndex.SECOND_LAYER);
-
-        gp.getCamera().screenCoordsToWorldCoords(
                 attributeMagicLabelScreenCoords, tempWorldTransform.position);
         gp.getRenderer().addString(
                 attributeMagicLabelText,
@@ -451,9 +440,31 @@ public class UiPartyMenuSupport {
                 ZIndex.SECOND_LAYER);
 
         gp.getCamera().screenCoordsToWorldCoords(
+                attributeDefenseLabelScreenCoords, tempWorldTransform.position);
+        gp.getRenderer().addString(
+                attributeDefenseLabelText,
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeLabelTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
                 attributeAgilityLabelScreenCoords, tempWorldTransform.position);
         gp.getRenderer().addString(
                 attributeAgilityLabelText,
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeLabelTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeWeaknessLabelScreenCoords, tempWorldTransform.position);
+        gp.getRenderer().addString(
+                attributeWeaknessLabelText,
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
                 gp.getUi().getStandardFontScale(),
@@ -497,17 +508,6 @@ public class UiPartyMenuSupport {
                 ZIndex.SECOND_LAYER);
 
         gp.getCamera().screenCoordsToWorldCoords(
-                attributeDefenseValueScreenCoords, tempWorldTransform.position);
-        gp.getRenderer().addString(
-                Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseDefense()),
-                tempWorldTransform.position.x,
-                tempWorldTransform.position.y,
-                gp.getUi().getStandardFontScale(),
-                attributeValueTextColor,
-                gp.getUi().getStandardNormalFont(),
-                ZIndex.SECOND_LAYER);
-
-        gp.getCamera().screenCoordsToWorldCoords(
                 attributeMagicValueScreenCoords, tempWorldTransform.position);
         gp.getRenderer().addString(
                 Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseMagic()),
@@ -519,9 +519,31 @@ public class UiPartyMenuSupport {
                 ZIndex.SECOND_LAYER);
 
         gp.getCamera().screenCoordsToWorldCoords(
+                attributeDefenseValueScreenCoords, tempWorldTransform.position);
+        gp.getRenderer().addString(
+                Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseDefense()),
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeValueTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
                 attributeAgilityValueScreenCoords, tempWorldTransform.position);
         gp.getRenderer().addString(
                 Integer.toString(gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getBaseAgility()),
+                tempWorldTransform.position.x,
+                tempWorldTransform.position.y,
+                gp.getUi().getStandardFontScale(),
+                attributeValueTextColor,
+                gp.getUi().getStandardNormalFont(),
+                ZIndex.SECOND_LAYER);
+
+        gp.getCamera().screenCoordsToWorldCoords(
+                attributeWeaknessValueScreenCoords, tempWorldTransform.position);
+        gp.getRenderer().addString(
+                gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getWeakness().label,
                 tempWorldTransform.position.x,
                 tempWorldTransform.position.y,
                 gp.getUi().getStandardFontScale(),
@@ -604,7 +626,7 @@ public class UiPartyMenuSupport {
                     moveDataCategoryValueScreenCoords, tempWorldTransform.position);
             gp.getRenderer().addString(
                     gp.getEntityM().getEntityById(getSelectedPartyMenuEntity())
-                            .getMoves().get(partyMenuMoveScrollLevel).getCategory() + "",
+                            .getMoves().get(partyMenuMoveScrollLevel).getCategory().label,
                     tempWorldTransform.position.x,
                     tempWorldTransform.position.y,
                     gp.getUi().getStandardFontScale(),
@@ -705,16 +727,18 @@ public class UiPartyMenuSupport {
     /**
      * Increments the party menu slot selected by one.
      * If the party menu slot cannot increase, then nothing will happen.
+     *
+     * @return whether a new party menu slot was set (true) or not (false)
      */
-    public void incrementPartyMenuSlotSelected() {
+    public boolean incrementPartyMenuSlotSelected() {
 
         switch (partySlotSelected) {
             case SLOT_0:
-                setPartyMenuSlotSelected(PartyMenuSlot.SLOT_1);
-                break;
+                return setPartyMenuSlotSelected(PartyMenuSlot.SLOT_1);
             case SLOT_1:
-                setPartyMenuSlotSelected(PartyMenuSlot.SLOT_2);
-                break;
+                return setPartyMenuSlotSelected(PartyMenuSlot.SLOT_2);
+            default:
+                return false;
         }
     }
 
@@ -722,16 +746,18 @@ public class UiPartyMenuSupport {
     /**
      * Decrements the party menu slot selected by one.
      * If the party menu slot cannot decrease, then nothing will happen.
+     *
+     * @return whether a new party menu slot was set (true) or not (false)
      */
-    public void decrementPartyMenuSlotSelected() {
+    public boolean decrementPartyMenuSlotSelected() {
 
         switch (partySlotSelected) {
             case SLOT_2:
-                setPartyMenuSlotSelected(PartyMenuSlot.SLOT_1);
-                break;
+                return setPartyMenuSlotSelected(PartyMenuSlot.SLOT_1);
             case SLOT_1:
-                setPartyMenuSlotSelected(PartyMenuSlot.SLOT_0);
-                break;
+                return setPartyMenuSlotSelected(PartyMenuSlot.SLOT_0);
+            default:
+                return false;
         }
     }
 
@@ -741,8 +767,9 @@ public class UiPartyMenuSupport {
      * If the new party member slot is unavailable, then nothing will happen.
      *
      * @param partyMenuSlot party menu slot to select
+     * @return whether a new party member slot was set (true) or not (false)
      */
-    public void setPartyMenuSlotSelected(PartyMenuSlot partyMenuSlot) {
+    public boolean setPartyMenuSlotSelected(PartyMenuSlot partyMenuSlot) {
 
         PartyMenuSlot lastPartySlotSelected = partySlotSelected;                                                        // Temporarily store the party slot being swapped from in case it must be reverted.
         partySlotSelected = partyMenuSlot;                                                                              // Preemptively set party slot to new one to "test" whether it is a possibility.
@@ -764,9 +791,11 @@ public class UiPartyMenuSupport {
                         .setSelected(entityId == selectedPartyMenuEntityId ? true : false);
             }
             setPartyMenuMoveScrollLevel(0);                                                                             // Reset back to first move of selected entity.
+            return true;
         } else {
 
             partySlotSelected = lastPartySlotSelected;                                                                  // Revert the party slot selected.
+            return false;
         }
     }
 
@@ -775,8 +804,11 @@ public class UiPartyMenuSupport {
      * Sets the slot scroll level of the party menu.
      *
      * @param partyMenuSlotScrollLevel party menu slot scroll level to set
+     * @return whether a new slot scroll level was set (true) or not (false)
      */
-    public void setPartyMenuSlotScrollLevel(int partyMenuSlotScrollLevel) {
+    public boolean setPartyMenuSlotScrollLevel(int partyMenuSlotScrollLevel) {
+
+        int legacyLevel = this.partyMenuSlotScrollLevel;
 
         if ((partyMenuSlotScrollLevel < 0) || (gp.getEntityM().getParty().size() < 3)) {
 
@@ -789,6 +821,14 @@ public class UiPartyMenuSupport {
             this.partyMenuSlotScrollLevel = partyMenuSlotScrollLevel;
         }
         setPartyMenuSlotSelected(partySlotSelected);
+
+        if (legacyLevel != this.partyMenuSlotScrollLevel) {
+
+            return true;
+        } else {
+
+            return false;
+        }
     }
 
 
@@ -796,8 +836,11 @@ public class UiPartyMenuSupport {
      * Sets the move scroll level of the party menu.
      *
      * @param partyMenuMoveScrollLevel party menu move scroll level to set
+     * @return whether a new move scroll level was set (true) or not (false)
      */
-    public void setPartyMenuMoveScrollLevel(int partyMenuMoveScrollLevel) {
+    public boolean setPartyMenuMoveScrollLevel(int partyMenuMoveScrollLevel) {
+
+        int legacyLevel = this.partyMenuMoveScrollLevel;
 
         if ((partyMenuMoveScrollLevel < 0)
                 || (gp.getEntityM().getEntityById(getSelectedPartyMenuEntity()).getMoves().size() == 0)) {
@@ -813,6 +856,14 @@ public class UiPartyMenuSupport {
             this.partyMenuMoveScrollLevel = partyMenuMoveScrollLevel;
         }
         refreshMoveDataScrollArrows();
+
+        if (legacyLevel != this.partyMenuMoveScrollLevel) {
+
+            return true;
+        } else {
+
+            return false;
+        }
     }
 
 
@@ -974,6 +1025,7 @@ public class UiPartyMenuSupport {
         attributeDefenseLabelText = "Defense: ";
         attributeMagicLabelText = "Magic: ";
         attributeAgilityLabelText = "Agility: ";
+        attributeWeaknessLabelText = "Weak: ";
 
         // Selected party member attributes coordinates.
         float attributeWorldLeftVerticalDividerLeftAdjustment = 10.0f;
@@ -998,11 +1050,11 @@ public class UiPartyMenuSupport {
                 attributeLabelScreenX,
                 topAttributeScreenY + (attributeScreenVerticalSpacing * 2)
         );
-        attributeDefenseLabelScreenCoords = new Vector2f(
+        attributeMagicLabelScreenCoords = new Vector2f(
                 attributeLabelScreenX,
                 topAttributeScreenY + (attributeScreenVerticalSpacing * 3)
         );
-        attributeMagicLabelScreenCoords = new Vector2f(
+        attributeDefenseLabelScreenCoords = new Vector2f(
                 attributeLabelScreenX,
                 topAttributeScreenY + (attributeScreenVerticalSpacing * 4)
         );
@@ -1010,7 +1062,16 @@ public class UiPartyMenuSupport {
                 attributeLabelScreenX,
                 topAttributeScreenY + (attributeScreenVerticalSpacing * 5)
         );
+        attributeWeaknessLabelScreenCoords = new Vector2f(
+                attributeLabelScreenX,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 6)
+        );
 
+        float attributeWeaknessLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
+                attributeWeaknessLabelText,
+                gp.getUi().getStandardFontScale(),
+                gp.getUi().getStandardNormalFont()
+        );
         float attributeLifeLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
                 attributeLifeLabelText,
                 gp.getUi().getStandardFontScale(),
@@ -1026,13 +1087,13 @@ public class UiPartyMenuSupport {
                 gp.getUi().getStandardFontScale(),
                 gp.getUi().getStandardNormalFont()
         );
-        float attributeDefenseLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
-                attributeDefenseLabelText,
+        float attributeMagicLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
+                attributeMagicLabelText,
                 gp.getUi().getStandardFontScale(),
                 gp.getUi().getStandardNormalFont()
         );
-        float attributeMagicLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
-                attributeMagicLabelText,
+        float attributeDefenseLabelScreenWidth = gp.getUi().calculateStringScreenWidth(
+                attributeDefenseLabelText,
                 gp.getUi().getStandardFontScale(),
                 gp.getUi().getStandardNormalFont()
         );
@@ -1054,17 +1115,21 @@ public class UiPartyMenuSupport {
                 attributeLabelScreenX + attributeAttackLabelScreenWidth,
                 topAttributeScreenY + (attributeScreenVerticalSpacing * 2)
         );
-        attributeDefenseValueScreenCoords = new Vector2f(
-                attributeLabelScreenX + attributeDefenseLabelScreenWidth,
-                topAttributeScreenY + (attributeScreenVerticalSpacing * 3)
-        );
         attributeMagicValueScreenCoords = new Vector2f(
                 attributeLabelScreenX + attributeMagicLabelScreenWidth,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 3)
+        );
+        attributeDefenseValueScreenCoords = new Vector2f(
+                attributeLabelScreenX + attributeDefenseLabelScreenWidth,
                 topAttributeScreenY + (attributeScreenVerticalSpacing * 4)
         );
         attributeAgilityValueScreenCoords = new Vector2f(
                 attributeLabelScreenX + attributeAgilityLabelScreenWidth,
                 topAttributeScreenY + (attributeScreenVerticalSpacing * 5)
+        );
+        attributeWeaknessValueScreenCoords = new Vector2f(
+                attributeLabelScreenX + attributeWeaknessLabelScreenWidth,
+                topAttributeScreenY + (attributeScreenVerticalSpacing * 6)
         );
 
         // Selected party member move data header coordinates.
@@ -1077,7 +1142,7 @@ public class UiPartyMenuSupport {
         moveDataHeaderTextScreenCoords = new Vector2f(moveDataHeaderTextScreenX, moveDataHeaderTextScreenY);
 
         // Selected party member move data label content.
-        moveDataCategoryLabelText = "Category: ";
+        moveDataCategoryLabelText = "Type: ";
         moveDataPowerLabelText = "Power: ";
         moveDataAccuracyLabelText = "Accuracy: ";
         moveDataSkillPointsLabelText = "SP: ";
@@ -1192,7 +1257,7 @@ public class UiPartyMenuSupport {
         float rightScrollArrowScreenX = scrollArrowScreenCenterX + scrollArrowScreenCenterlineAdjustment;
         float leftScrollArrowScreenX =
                 scrollArrowScreenCenterX - scrollArrowScreenCenterlineAdjustment - scrollArrowScreenWidth;
-        float scrollArrowScreenY = verticalDividerScreenY + verticalDividerScreenHeight - scrollArrowScreenHeight;
+        float scrollArrowScreenY = verticalDividerScreenY + verticalDividerScreenHeight - (scrollArrowScreenHeight / 2);
         rightScrollArrowScreenCoords = new Vector2f(rightScrollArrowScreenX, scrollArrowScreenY);
         leftScrollArrowScreenCoords = new Vector2f(leftScrollArrowScreenX, scrollArrowScreenY);
     }

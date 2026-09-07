@@ -6,7 +6,7 @@ import core.GamePanel;
 import asset.AssetPool;
 
 /**
- * This class defines a character entity (Test2).
+ * This class defines a character entity (Joe).
  */
 public class Chr_Joe extends EntityBase {
 

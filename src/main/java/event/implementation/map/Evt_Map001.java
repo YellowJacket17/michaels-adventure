@@ -25,7 +25,7 @@ public class Evt_Map001 extends EventMapBase {
         switch (target.getEntityId()) {
             case 1:
                 if (type == EventType.CLICK) {
-                    if (gp.getItemS().pickupItemToggleTutorial(0)) {
+                    if (gp.getItemS().pickupItemToggleTutorial(0, false)) {
                         gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
                     }
                     return true;
@@ -33,7 +33,7 @@ public class Evt_Map001 extends EventMapBase {
                 break;
             case 2:
                 if (type == EventType.CLICK) {
-                    if (gp.getItemS().pickupItemToggleTutorial(1)) {
+                    if (gp.getItemS().pickupItemToggleTutorial(1, false)) {
                         gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
                     }
                     return true;
@@ -41,7 +41,7 @@ public class Evt_Map001 extends EventMapBase {
                 break;
             case 3:
                 if (type == EventType.CLICK) {
-                    if (gp.getItemS().pickupItemToggleTutorial(2)) {
+                    if (gp.getItemS().pickupItemToggleTutorial(2, false)) {
                         gp.getEntityM().removeEntity(gp.getEntityM().getObj(), target.getEntityId());
                     }
                     return true;

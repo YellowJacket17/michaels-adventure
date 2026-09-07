@@ -25,7 +25,7 @@ public class ItemManager {
     /**
      * List to store a single dummy instance of each item type that can be referenced for properties.
      */
-    private HashMap<Integer, ItemBase> referenceItems = new HashMap<>(6);
+    private HashMap<Integer, ItemBase> referenceItems = new HashMap<>(13);
 
 
     // CONSTRUCTOR
@@ -44,6 +44,10 @@ public class ItemManager {
         referenceItems.put(5, retrieveNewInstance(5));
         referenceItems.put(6, retrieveNewInstance(6));
         referenceItems.put(7, retrieveNewInstance(7));
+        referenceItems.put(8, retrieveNewInstance(8));
+        referenceItems.put(9, retrieveNewInstance(9));
+        referenceItems.put(10, retrieveNewInstance(10));
+        referenceItems.put(11, retrieveNewInstance(11));
     }
 
 
@@ -73,6 +77,14 @@ public class ItemManager {
                 return new Itm_Lantern(gp);
             case 7:
                 return new Itm_Knife(gp);
+            case 8:
+                return new Itm_Crystal(gp);
+            case 9:
+                return new Itm_Goggles(gp);
+            case 10:
+                return new Itm_Painting(gp);
+            case 11:
+                return new Itm_Cow(gp);
             default:
                 return null;
         }

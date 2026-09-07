@@ -8,8 +8,8 @@ import dialogue.Dialogue;
 import entity.EntityBase;
 import entity.enumeration.DefaultAction;
 import entity.enumeration.EntityDirection;
-import entity.implementation.character.Chr_Joe;
-import entity.implementation.character.Chr_Shadow;
+import entity.enumeration.MoveWeakness;
+import entity.implementation.character.*;
 import core.GamePanel;
 import entity.implementation.object.*;
 import org.json.simple.JSONArray;
@@ -392,8 +392,20 @@ public class JsonParser {
             case "Chr_Shadow":
                 entity = new Chr_Shadow(gp, entityId);
                 break;
+            case "Chr_Mary":
+                entity = new Chr_Mary(gp, entityId);
+                break;
+            case "Chr_Nick":
+                entity = new Chr_Nick(gp, entityId);
+                break;
             case "Chr_Joe":
                 entity = new Chr_Joe(gp, entityId);
+                break;
+            case "Chr_Logan":
+                entity = new Chr_Logan(gp, entityId);
+                break;
+            case "Chr_Howie":
+                entity = new Chr_Howie(gp, entityId);
                 break;
             case "Obj_Novel":
                 entity = new Obj_Novel(gp, entityId);
@@ -412,6 +424,18 @@ public class JsonParser {
                 break;
             case "Obj_Journal":
                 entity = new Obj_Journal(gp, entityId);
+                break;
+            case "Obj_Crystal":
+                entity = new Obj_Crystal(gp, entityId);
+                break;
+            case "Obj_Goggles":
+                entity = new Obj_Goggles(gp, entityId);
+                break;
+            case "Obj_Painting":
+                entity = new Obj_Painting(gp, entityId);
+                break;
+            case "Obj_Cow":
+                entity = new Obj_Cow(gp, entityId);
                 break;
             default:
                 UtilityTool.logWarning("Attempted to load an unregistered entity class '"
@@ -532,6 +556,20 @@ public class JsonParser {
             nextLevelExp = (int)((long)attributesJson.get("nextLevelExp"));
         } catch (NullPointerException e) {
             nextLevelExp = 0;
+        }
+
+        try {
+            String weakness = (String)attributesJson.get("weakness");
+            switch (weakness) {
+                case "physical":
+                    entity.setWeakness(MoveWeakness.PHYSICAL);
+                    break;
+                case "magic":
+                    entity.setWeakness(MoveWeakness.MAGIC);
+                    break;
+            }
+        } catch (NullPointerException e) {
+            // Nothing here.
         }
 
         if (!name.equals("")) {
@@ -762,7 +800,7 @@ public class JsonParser {
                 move = new Mve_Sneakstrike(gp);
                 break;
             case 5:
-                move = new Mve_AnnoyingImpulse(gp);
+                move = new Mve_DaringStand(gp);
                 break;
             case 6:
                 move = new Mve_ForestallingCharge(gp);
@@ -771,13 +809,46 @@ public class JsonParser {
                 move = new Mve_EmpoweringStrike(gp);
                 break;
             case 8:
-                move = new Mve_WaveSlash(gp);
+                move = new Mve_WhirlwindSprint(gp);
                 break;
             case 9:
                 move = new Mve_HealingSparks(gp);
                 break;
             case 10:
                 move = new Mve_Revitalize(gp);
+                break;
+            case 11:
+                move = new Mve_BrainFreeze(gp);
+                break;
+            case 12:
+                move = new Mve_ActuaryBlast(gp);
+                break;
+            case 13:
+                move = new Mve_PsychicSwipe(gp);
+                break;
+            case 14:
+                move = new Mve_VitalityDrain(gp);
+                break;
+            case 15:
+                move = new Mve_BulletPunch(gp);
+                break;
+            case 16:
+                move = new Mve_RambunctiousBash(gp);
+                break;
+            case 17:
+                move = new Mve_InnerMachinations(gp);
+                break;
+            case 18:
+                move = new Mve_ShadowPower(gp);
+                break;
+            case 19:
+                move = new Mve_GigatonSwing(gp);
+                break;
+            case 20:
+                move = new Mve_PioneerDrive(gp);
+                break;
+            case 21:
+                move = new Mve_TrickyShot(gp);
                 break;
         }
         return move;

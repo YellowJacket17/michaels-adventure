@@ -2,6 +2,7 @@ package entity.implementation.player;
 
 import combat.implementation.move.*;
 import core.enumeration.PrimaryGameState;
+import entity.enumeration.MoveWeakness;
 import event.enumeration.FadeState;
 import event.enumeration.StockStepInteractionType;
 import miscellaneous.KeyListener;
@@ -456,14 +457,15 @@ public class Player extends EntityBase {
         setSpeed(120);
 
         // Combat attributes.
-        setMaxLife(350);
-        setLife(350);
-        setMaxSkill(50);
-        setSkill(50);
+        setMaxLife(800);
+        setLife(800);
+        setMaxSkill(25);
+        setSkill(25);
         setBaseAttack(75);
         setBaseDefense(80);
-        setBaseMagic(20);
+        setBaseMagic(0);
         setBaseAgility(80);
+        setWeakness(MoveWeakness.MAGIC);
 
         // Combat moves.
         moves.add(new Mve_Pickpocket(gp));
@@ -960,6 +962,11 @@ public class Player extends EntityBase {
 
         gp.setPrimaryGameState(PrimaryGameState.PARTY_MENU);
         gp.getUi().setPrimaryMenuState(PrimaryMenuState.PARTY);
+
+        if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+            gp.getSoundS().playEffect("shift");
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -971,6 +978,11 @@ public class Player extends EntityBase {
 
         gp.setPrimaryGameState(PrimaryGameState.INVENTORY_MENU);
         gp.getUi().setPrimaryMenuState(PrimaryMenuState.INVENTORY);
+
+        if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+            gp.getSoundS().playEffect("shift");
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -982,6 +994,11 @@ public class Player extends EntityBase {
 
         gp.setPrimaryGameState(PrimaryGameState.SETTINGS_MENU);
         gp.getUi().setPrimaryMenuState(PrimaryMenuState.SETTINGS);
+
+        if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+            gp.getSoundS().playEffect("shift");
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1013,13 +1030,31 @@ public class Player extends EntityBase {
         if ((gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_1)
                 && (gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() > 0)) {
 
-            gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() - 1);
+            if (gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() - 1)) {
+
+                if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                    gp.getSoundS().playEffect("shift");
+                }
+            }
         } else if (gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_0) {
 
-            gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() - 1);
+            if (gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() - 1)) {
+
+                if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                    gp.getSoundS().playEffect("shift");
+                }
+            }
         } else {
 
-            gp.getUiPartyMenuS().decrementPartyMenuSlotSelected();
+            if (gp.getUiPartyMenuS().decrementPartyMenuSlotSelected()) {
+
+                if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                    gp.getSoundS().playEffect("shift");
+                }
+            }
         }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
@@ -1030,7 +1065,13 @@ public class Player extends EntityBase {
      */
     private void handlePartyMenuInputLeftKey() {
 
-        gp.getUiPartyMenuS().setPartyMenuMoveScrollLevel(gp.getUiPartyMenuS().getPartyMenuMoveScrollLevel() - 1);
+        if (gp.getUiPartyMenuS().setPartyMenuMoveScrollLevel(gp.getUiPartyMenuS().getPartyMenuMoveScrollLevel() - 1)) {
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("shift");
+            }
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1043,13 +1084,31 @@ public class Player extends EntityBase {
         if ((gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_1)
                 && (gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() < (gp.getEntityM().getParty().size() - 2))) {
 
-            gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() + 1);
+            if (gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() + 1)) {
+
+                if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                    gp.getSoundS().playEffect("shift");
+                }
+            }
         } else if (gp.getUiPartyMenuS().getPartySlotSelected() == PartyMenuSlot.SLOT_2) {
 
-            gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() + 1);
+            if (gp.getUiPartyMenuS().setPartyMenuSlotScrollLevel(gp.getUiPartyMenuS().getPartyMenuSlotScrollLevel() + 1)) {
+
+                if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                    gp.getSoundS().playEffect("shift");
+                }
+            }
         } else {
 
-            gp.getUiPartyMenuS().incrementPartyMenuSlotSelected();
+            if (gp.getUiPartyMenuS().incrementPartyMenuSlotSelected()) {
+
+                if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                    gp.getSoundS().playEffect("shift");
+                }
+            }
         }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
@@ -1060,7 +1119,13 @@ public class Player extends EntityBase {
      */
     private void handlePartyMenuInputRightKey() {
 
-        gp.getUiPartyMenuS().setPartyMenuMoveScrollLevel(gp.getUiPartyMenuS().getPartyMenuMoveScrollLevel() + 1);
+        if (gp.getUiPartyMenuS().setPartyMenuMoveScrollLevel(gp.getUiPartyMenuS().getPartyMenuMoveScrollLevel() + 1)) {
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("shift");
+            }
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1070,7 +1135,13 @@ public class Player extends EntityBase {
      */
     private void handleInventoryMenuInputUpKey() {
 
-        gp.getUiInventoryMenuS().setItemRowSelected(gp.getUiInventoryMenuS().getItemRowSelected() - 1);
+        if (gp.getUiInventoryMenuS().setItemRowSelected(gp.getUiInventoryMenuS().getItemRowSelected() - 1)) {
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("shift");
+            }
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1080,7 +1151,13 @@ public class Player extends EntityBase {
      */
     private void handleInventoryMenuInputDownKey() {
 
-        gp.getUiInventoryMenuS().setItemColSelected(gp.getUiInventoryMenuS().getItemColSelected() - 1);
+        if (gp.getUiInventoryMenuS().setItemColSelected(gp.getUiInventoryMenuS().getItemColSelected() - 1)) {
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("shift");
+            }
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1090,7 +1167,13 @@ public class Player extends EntityBase {
      */
     private void handleInventoryMenuInputLeftKey() {
 
-        gp.getUiInventoryMenuS().setItemRowSelected(gp.getUiInventoryMenuS().getItemRowSelected() + 1);
+        if (gp.getUiInventoryMenuS().setItemRowSelected(gp.getUiInventoryMenuS().getItemRowSelected() + 1)) {
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("shift");
+            }
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1100,7 +1183,13 @@ public class Player extends EntityBase {
      */
     private void handleInventoryMenuInputRightKey() {
 
-        gp.getUiInventoryMenuS().setItemColSelected(gp.getUiInventoryMenuS().getItemColSelected() + 1);
+        if (gp.getUiInventoryMenuS().setItemColSelected(gp.getUiInventoryMenuS().getItemColSelected() + 1)) {
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("shift");
+            }
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1110,7 +1199,13 @@ public class Player extends EntityBase {
      */
     private void handleSettingsMenuInputUpKey() {
 
-        gp.getUiSettingsMenuS().setSystemSettingSelected(gp.getUiSettingsMenuS().getSystemSettingSelected() - 1);
+        if (gp.getUiSettingsMenuS().setSystemSettingSelected(gp.getUiSettingsMenuS().getSystemSettingSelected() - 1)) {
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("shift");
+            }
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1120,7 +1215,13 @@ public class Player extends EntityBase {
      */
     private void handleSettingsMenuInputDownKey() {
 
-        gp.getUiSettingsMenuS().setSystemSettingSelected(gp.getUiSettingsMenuS().getSystemSettingSelected() + 1);
+        if (gp.getUiSettingsMenuS().setSystemSettingSelected(gp.getUiSettingsMenuS().getSystemSettingSelected() + 1)) {
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("shift");
+            }
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1132,7 +1233,13 @@ public class Player extends EntityBase {
 
         if (!((gp.getUiSettingsMenuS().getSystemSettingSelected() == 3) && fullScreenActioned)) {                       // Full screen mode; if selected, check to ensure it's not already being affected by input key.
 
-            gp.getUiSettingsMenuS().setSystemOptionSelected(gp.getUiSettingsMenuS().getSystemOptionSelected() - 1);
+            if (gp.getUiSettingsMenuS().setSystemOptionSelected(gp.getUiSettingsMenuS().getSystemOptionSelected() - 1)) {
+
+                if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                    gp.getSoundS().playEffect("shift");
+                }
+            }
             setInteractionCountdown(stagedStandardInteractionCountdown);
         }
     }
@@ -1145,7 +1252,13 @@ public class Player extends EntityBase {
 
         if (!((gp.getUiSettingsMenuS().getSystemSettingSelected() == 3) && fullScreenActioned)) {                       // Full screen mode; if selected, check to ensure it's not already being affected by input key.
 
-            gp.getUiSettingsMenuS().setSystemOptionSelected(gp.getUiSettingsMenuS().getSystemOptionSelected() + 1);
+            if (gp.getUiSettingsMenuS().setSystemOptionSelected(gp.getUiSettingsMenuS().getSystemOptionSelected() + 1)) {
+
+                if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                    gp.getSoundS().playEffect("shift");
+                }
+            }
             setInteractionCountdown(stagedStandardInteractionCountdown);
         }
     }
@@ -1172,8 +1285,17 @@ public class Player extends EntityBase {
      */
     private void handleSubMenuInputUpKey() {
 
-        gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() - 1);                                     // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
-        if (gp.getCombatM().isCombatActive()) {gp.getCombatM().refreshSkillSubMenuDialogue();}                          // Refresh skill combat sub-menu message, if applicable.
+        if (gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() - 1)) {                               // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("shift");
+            }
+        }
+        if (gp.getCombatM().isCombatActive()) {
+
+            gp.getCombatM().refreshSkillSubMenuDialogue();                                                              // Refresh skill combat sub-menu message, if applicable.
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1183,8 +1305,17 @@ public class Player extends EntityBase {
      */
     private void handleSubMenuInputDownKey() {
 
-        gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() + 1);                                     // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
-        if (gp.getCombatM().isCombatActive()) {gp.getCombatM().refreshSkillSubMenuDialogue();}                          // Refresh skill combat sub-menu message, if applicable.
+        if (gp.getSubMenuH().setIndexSelected(gp.getSubMenuH().getIndexSelected() + 1)) {                               // Validation for whether this is an acceptable value is done in the `setIndexSelected()` method in SubMenuHandler.
+
+            if (gp.getSystemSetting(5).getActiveOption() == 1) {
+
+                gp.getSoundS().playEffect("shift");
+            }
+        }
+        if (gp.getCombatM().isCombatActive()) {
+
+            gp.getCombatM().refreshSkillSubMenuDialogue();                                                              // Refresh skill combat sub-menu message, if applicable.
+        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 
@@ -1195,11 +1326,6 @@ public class Player extends EntityBase {
     private void handleTitleInputProgressKey() {
 
         gp.getCutsceneM().initiateCutscene(3);
-
-//        if (gp.getSystemSetting(5).getActiveOption() == 1) {
-//
-//            gp.getSoundS().playEffect("progress");
-//        }
         setInteractionCountdown(stagedStandardInteractionCountdown);
     }
 

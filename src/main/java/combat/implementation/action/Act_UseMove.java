@@ -4,6 +4,7 @@ import combat.ActionBase;
 import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import core.GamePanel;
+import entity.enumeration.MoveWeakness;
 import utility.LimitedArrayList;
 import utility.UtilityTool;
 
@@ -151,33 +152,48 @@ public class Act_UseMove extends ActionBase {
         float rawTargetDamage;
         int actTargetDamage;
 
-        if (move.getCategory() == MoveCategory.PHYSICAL) {
+        if (move.isDamageEqualPower()) {
+
+            actTargetDamage = move.getPower();
+
+        } else if (move.getCategory() == MoveCategory.PHYSICAL) {
 
             int sourceEntityAttack = gp.getEntityM().getEntityById(sourceEntityId).getBaseAttack()
                     + (int)(gp.getEntityM().getEntityById(sourceEntityId).getBaseAttack()
                     * gp.getEntityM().getEntityById(sourceEntityId).getAttackBuff());
+
             int targetEntityDefense = gp.getEntityM().getEntityById(targetEntityId).getBaseDefense()
                     + (int)(gp.getEntityM().getEntityById(targetEntityId).getBaseDefense()
-                    * ((criticalHit && (gp.getEntityM().getEntityById(targetEntityId).getDefenseBuff() > 0))
-                        ? 1 : gp.getEntityM().getEntityById(targetEntityId).getDefenseBuff()));                         // Ignore target entity defense buff (not debuff) if critical hit.
-            rawTargetDamage = move.getPower()
-                    * ((float)sourceEntityAttack / targetEntityDefense)
-                    * (criticalHit ? 1.3f : 1);
-            actTargetDamage = (int)Math.ceil(rawTargetDamage - (rawTargetDamage * rollDamageVariance()));
+                    * (((criticalHit || move.isIgnoreAttributeBuffs())
+                        && (gp.getEntityM().getEntityById(targetEntityId).getDefenseBuff() > 0))
+                        ? 1 : gp.getEntityM().getEntityById(targetEntityId).getDefenseBuff()));                         // Ignore target entity defense buff (not debuff) if critical hit or move otherwise ignores attributes buffs.
+            rawTargetDamage = (move.getPower() * (float)sourceEntityAttack / targetEntityDefense)
+                    + move.calculateBonusDamage(sourceEntityId, targetEntityId);                                        // Bonus damage applied by move (if applicable).
+            actTargetDamage = (int)Math.ceil(
+                    (rawTargetDamage)
+                            * ((gp.getEntityM().getEntityById(targetEntityId).getWeakness() == MoveWeakness.PHYSICAL)
+                                ? 1.5f : 1)                                                                             // More damage if target entity is weak to physical moves.
+                            * (criticalHit ? 1.5f : 1)                                                                  // More damage if critical hit.
+                            * rollDamageVariance());
 
         } else if (move.getCategory() == MoveCategory.MAGIC) {
 
             int sourceEntityMagic = gp.getEntityM().getEntityById(sourceEntityId).getBaseMagic()
                     + (int)(gp.getEntityM().getEntityById(sourceEntityId).getBaseMagic()
                     * gp.getEntityM().getEntityById(sourceEntityId).getMagicBuff());
-            int targetEntityMagic = gp.getEntityM().getEntityById(targetEntityId).getBaseMagic()
-                    + (int)(gp.getEntityM().getEntityById(targetEntityId).getBaseMagic()
-                    * ((criticalHit && (gp.getEntityM().getEntityById(targetEntityId).getMagicBuff() > 0))
-                        ? 1 : gp.getEntityM().getEntityById(targetEntityId).getMagicBuff()));                           // Ignore target entity magic buff (not debuff) if critical hit.
-            rawTargetDamage = move.getPower()
-                    * ((float)sourceEntityMagic / targetEntityMagic)
-                    * (criticalHit ? 1.3f : 1);
-            actTargetDamage = (int)Math.ceil(rawTargetDamage - (rawTargetDamage * rollDamageVariance()));
+            int targetEntityDefense = gp.getEntityM().getEntityById(targetEntityId).getBaseDefense()
+                    + (int)(gp.getEntityM().getEntityById(targetEntityId).getBaseDefense()
+                    * (((criticalHit || move.isIgnoreAttributeBuffs())
+                    && (gp.getEntityM().getEntityById(targetEntityId).getDefenseBuff() > 0))
+                    ? 1 : gp.getEntityM().getEntityById(targetEntityId).getDefenseBuff()));                             // Ignore target entity defense buff (not debuff) if critical hit or move otherwise ignores attributes buffs.
+            rawTargetDamage = (move.getPower() * (float)sourceEntityMagic / targetEntityDefense)
+                    + move.calculateBonusDamage(sourceEntityId, targetEntityId);                                        // Bonus damage applied by move (if applicable).
+            actTargetDamage = (int)Math.ceil(
+                    (rawTargetDamage)
+                            * ((gp.getEntityM().getEntityById(targetEntityId).getWeakness() == MoveWeakness.MAGIC)
+                                ? 1.5f : 1)                                                                             // More damage if target entity is weak to magic moves.
+                            * (criticalHit ? 1.5f : 1)                                                                  // More damage if critical hit.
+                            * rollDamageVariance());
 
         } else {
 
@@ -237,6 +253,31 @@ public class Act_UseMove extends ActionBase {
 
 
     /**
+     * Builds entity weakness hit message.
+     *
+     * @param weaknessHitTargetEntityIds IDs of entities whose weakness was hit
+     * @return message
+     */
+    private String buildWeaknessHitMessage(LimitedArrayList<Integer> weaknessHitTargetEntityIds) {
+
+        if (weaknessHitTargetEntityIds.size() > 1) {
+
+            LimitedArrayList<String> weaknessHitTargetEntityNames =
+                    new LimitedArrayList<>(weaknessHitTargetEntityIds.size());
+
+            for (int entityId : weaknessHitTargetEntityIds) {
+
+                weaknessHitTargetEntityNames.add(gp.getEntityM().getEntityById(entityId).getName());
+            }
+            return "Weakness hit on " + UtilityTool.buildEntityListMessage(weaknessHitTargetEntityNames, false) + "!";
+        } else {
+
+            return "Weakness hit!";
+        }
+    }
+
+
+    /**
      * Rolls to determine whether this move will land or not.
      *
      * @return whether this move will land (true) or not (false)
@@ -277,13 +318,14 @@ public class Act_UseMove extends ActionBase {
 
 
     /**
-     * Rools to determine random variance to calculate damage.
-     * @return percent variance to subtract from calculated damage
+     * Rolls to determine random variance to calculate damage.
+     *
+     * @return percent variance to multiply calculated damage by
      */
     private float rollDamageVariance() {
 
         Random random = new Random();
-        return random.nextInt(11) / 100.0f;                                                                             // Generate random number from 0 (inclusive) to 10 (inclusive, since 11 is exclusive), then divide by 100.
+        return 1.0f - random.nextInt(11) / 100.0f;                                                                      // Generate random number from 0 (inclusive) to 10 (inclusive, since 11 is exclusive), divide by 100 and subtract entire result from 1.
     }
 
 

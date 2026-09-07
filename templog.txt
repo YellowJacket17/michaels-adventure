@@ -1,71 +1,303 @@
-07/22/2026 22:59:34:253  INFO     Starting application.
-07/22/2026 22:59:36:519  INFO     Loading shader from file: '/shaders/font.glsl'
-07/22/2026 22:59:36:520  INFO     Compiling and linking shader: '/shaders/font.glsl'
-07/22/2026 22:59:37:018  INFO     Loading shader from file: '/shaders/default.glsl'
-07/22/2026 22:59:37:019  INFO     Compiling and linking shader: '/shaders/default.glsl'
-07/22/2026 22:59:37:020  INFO     Loading shader from file: '/shaders/rounded.glsl'
-07/22/2026 22:59:37:022  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
-07/22/2026 22:59:37:025  INFO     Loading texture from file: '/spritesheets/tiles.png'
-07/22/2026 22:59:37:035  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
-07/22/2026 22:59:37:035  INFO     Loading texture from file: '/spritesheets/characters.png'
-07/22/2026 22:59:37:049  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
-07/22/2026 22:59:37:050  INFO     Loading texture from file: '/spritesheets/landmarks.png'
-07/22/2026 22:59:37:055  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
-07/22/2026 22:59:37:056  INFO     Loading texture from file: '/spritesheets/items.png'
-07/22/2026 22:59:37:057  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
-07/22/2026 22:59:37:057  INFO     Loading texture from file: '/spritesheets/icons.png'
-07/22/2026 22:59:37:058  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
-07/22/2026 22:59:37:059  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
-07/22/2026 22:59:37:060  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
-07/22/2026 22:59:37:061  INFO     Loading sound (track) from file: 'sound/tracks/outOfTheBlue_intro.ogg' + 'sound/tracks/outOfTheBlue_loop.ogg'
-07/22/2026 22:59:37:478  INFO     Loading sound (track) from file: 'sound/tracks/desolate_intro.ogg' + 'sound/tracks/desolate_loop.ogg'
-07/22/2026 22:59:37:721  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
-07/22/2026 22:59:37:846  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
-07/22/2026 22:59:38:011  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
-07/22/2026 22:59:38:164  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
-07/22/2026 22:59:38:343  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
-07/22/2026 22:59:38:602  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
-07/22/2026 22:59:38:887  INFO     Loading sound (effect) from file: 'sound/tracks/tabulaRasa.ogg'
-07/22/2026 22:59:39:310  INFO     Loading sound (effect) from file: 'sound/effects/attributeIncrease.ogg'
-07/22/2026 22:59:39:318  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
-07/22/2026 22:59:39:326  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
-07/22/2026 22:59:39:328  INFO     Loading sound (effect) from file: 'sound/effects/progress.ogg'
-07/22/2026 22:59:39:330  INFO     Loading sound (effect) from file: 'sound/effects/pencilScribble.ogg'
-07/22/2026 22:59:39:333  INFO     Loading sound (effect) from file: 'sound/effects/primaryMenuOpen.ogg'
-07/22/2026 22:59:39:336  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
-07/22/2026 22:59:39:338  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
-07/22/2026 22:59:39:340  INFO     Loading sound (effect) from file: 'sound/effects/thud.ogg'
-07/22/2026 22:59:39:344  INFO     Loading sound (effect) from file: 'sound/effects/footsteps.ogg'
-07/22/2026 22:59:39:348  INFO     Loading sound (effect) from file: 'sound/effects/grassRustle.ogg'
-07/22/2026 22:59:39:349  INFO     Loading sound (effect) from file: 'sound/effects/vanish.ogg'
-07/22/2026 22:59:39:362  INFO     Loading sound (effect) from file: 'sound/effects/basicAttack.ogg'
-07/22/2026 22:59:39:363  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
-07/22/2026 22:59:39:367  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
-07/22/2026 22:59:39:377  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
-07/22/2026 22:59:39:378  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
-07/22/2026 22:59:39:381  INFO     Loading sound (effect) from file: 'sound/effects/revitalize.ogg'
-07/22/2026 22:59:39:392  INFO     Loading sound (effect) from file: 'sound/effects/healingSparks.ogg'
-07/22/2026 22:59:39:400  INFO     Loading sound (effect) from file: 'sound/effects/empoweringStrike.ogg'
-07/22/2026 22:59:39:404  INFO     Loading sound (effect) from file: 'sound/effects/forestallingCharge.ogg'
-07/22/2026 22:59:39:410  INFO     Loading texture from file: '/illustrations/illustration0.png'
-07/22/2026 22:59:39:797  INFO     Loading illustration from texture: '/illustrations/illustration0.png'
-07/22/2026 22:59:39:797  INFO     Loading texture from file: '/illustrations/illustration1.png'
-07/22/2026 22:59:40:176  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
-07/22/2026 22:59:40:176  INFO     Loading texture from file: '/illustrations/illustration2.png'
-07/22/2026 22:59:40:503  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
-07/22/2026 22:59:40:503  INFO     Loading texture from file: '/illustrations/illustration3.png'
-07/22/2026 22:59:40:869  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
-07/22/2026 22:59:40:870  INFO     Loading texture from file: '/illustrations/illustration5.png'
-07/22/2026 22:59:41:229  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
-07/22/2026 22:59:41:265  INFO     Entering cutscene state with cutscene number '2'.
-07/22/2026 22:59:41:277  INFO     Starting game loop.
-07/22/2026 22:59:41:292  INFO     Setting fade state to 'ACTIVE'.
-07/22/2026 22:59:41:292  INFO     Setting fade state to 'FADE_FROM'.
-07/22/2026 22:59:41:293  INFO     Progressing cutscene to phase '0'.
-07/22/2026 22:59:42:343  INFO     Setting fade state to 'INACTIVE'.
-07/22/2026 22:59:45:342  INFO     Setting fade state to 'FADE_TO'.
-07/22/2026 22:59:45:343  INFO     Progressing cutscene to phase '1'.
-07/22/2026 22:59:46:343  INFO     Setting fade state to 'ACTIVE'.
-07/22/2026 22:59:46:343  INFO     Progressing cutscene to phase '2'.
-07/22/2026 22:59:47:343  INFO     Setting fade state to 'FADE_FROM'.
-07/22/2026 22:59:47:343  INFO     Exiting cutscene state.
+09/06/2026 21:15:12:778  INFO     Starting application.
+09/06/2026 21:15:13:748  INFO     Loading shader from file: '/shaders/font.glsl'
+09/06/2026 21:15:13:748  INFO     Compiling and linking shader: '/shaders/font.glsl'
+09/06/2026 21:15:14:298  INFO     Loading shader from file: '/shaders/default.glsl'
+09/06/2026 21:15:14:298  INFO     Compiling and linking shader: '/shaders/default.glsl'
+09/06/2026 21:15:14:298  INFO     Loading shader from file: '/shaders/rounded.glsl'
+09/06/2026 21:15:14:298  INFO     Compiling and linking shader: '/shaders/rounded.glsl'
+09/06/2026 21:15:14:305  INFO     Loading texture from file: '/spritesheets/tiles.png'
+09/06/2026 21:15:14:313  INFO     Loading uniform spritesheet from texture: '/spritesheets/tiles.png'
+09/06/2026 21:15:14:314  INFO     Loading texture from file: '/spritesheets/characters.png'
+09/06/2026 21:15:14:318  INFO     Loading uniform spritesheet from texture: '/spritesheets/characters.png'
+09/06/2026 21:15:14:318  INFO     Loading texture from file: '/spritesheets/landmarks.png'
+09/06/2026 21:15:14:328  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/landmarks.png'
+09/06/2026 21:15:14:328  INFO     Loading texture from file: '/spritesheets/items.png'
+09/06/2026 21:15:14:328  INFO     Loading uniform spritesheet from texture: '/spritesheets/items.png'
+09/06/2026 21:15:14:328  INFO     Loading texture from file: '/spritesheets/icons.png'
+09/06/2026 21:15:14:328  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/icons.png'
+09/06/2026 21:15:14:328  INFO     Loading texture from file: '/spritesheets/miscellaneous.png'
+09/06/2026 21:15:14:328  INFO     Loading non-uniform spritesheet from texture: '/spritesheets/miscellaneous.png'
+09/06/2026 21:15:14:328  INFO     Loading sound (track) from file: 'sound/tracks/outOfTheBlue_intro.ogg' + 'sound/tracks/outOfTheBlue_loop.ogg'
+09/06/2026 21:15:14:758  INFO     Loading sound (track) from file: 'sound/tracks/desolate_intro.ogg' + 'sound/tracks/desolate_loop.ogg'
+09/06/2026 21:15:15:000  INFO     Loading sound (track) from file: 'sound/tracks/dissipate_intro.ogg' + 'sound/tracks/dissipate_loop.ogg'
+09/06/2026 21:15:15:122  INFO     Loading sound (track) from file: 'sound/tracks/carvingCanyons_intro.ogg' + 'sound/tracks/carvingCanyons_loop.ogg'
+09/06/2026 21:15:15:288  INFO     Loading sound (track) from file: 'sound/tracks/sunkenSecrets_intro.ogg' + 'sound/tracks/sunkenSecrets_loop.ogg'
+09/06/2026 21:15:15:444  INFO     Loading sound (track) from file: 'sound/tracks/runningLate_intro.ogg' + 'sound/tracks/runningLate_loop.ogg'
+09/06/2026 21:15:15:623  INFO     Loading sound (track) from file: 'sound/tracks/riftInTime_intro.ogg' + 'sound/tracks/riftInTime_loop.ogg'
+09/06/2026 21:15:15:880  INFO     Loading sound (track) from file: 'sound/tracks/yesteryear_intro.ogg' + 'sound/tracks/yesteryear_loop.ogg'
+09/06/2026 21:15:16:136  INFO     Loading sound (effect) from file: 'sound/tracks/tabulaRasa.ogg'
+09/06/2026 21:15:16:533  INFO     Loading sound (effect) from file: 'sound/effects/attributeIncrease.ogg'
+09/06/2026 21:15:16:539  INFO     Loading sound (effect) from file: 'sound/effects/attributeDecrease.ogg'
+09/06/2026 21:15:16:546  INFO     Loading sound (effect) from file: 'sound/effects/heal.ogg'
+09/06/2026 21:15:16:548  INFO     Loading sound (effect) from file: 'sound/effects/titleSelect.ogg'
+09/06/2026 21:15:16:559  INFO     Loading sound (effect) from file: 'sound/effects/progress.ogg'
+09/06/2026 21:15:16:559  INFO     Loading sound (effect) from file: 'sound/effects/shift.ogg'
+09/06/2026 21:15:16:559  INFO     Loading sound (effect) from file: 'sound/effects/pencilScribble.ogg'
+09/06/2026 21:15:16:564  INFO     Loading sound (effect) from file: 'sound/effects/primaryMenuOpen.ogg'
+09/06/2026 21:15:16:569  INFO     Loading sound (effect) from file: 'sound/effects/obtain.ogg'
+09/06/2026 21:15:16:569  INFO     Loading sound (effect) from file: 'sound/effects/hop.ogg'
+09/06/2026 21:15:16:569  INFO     Loading sound (effect) from file: 'sound/effects/thud.ogg'
+09/06/2026 21:15:16:576  INFO     Loading sound (effect) from file: 'sound/effects/footsteps.ogg'
+09/06/2026 21:15:16:578  INFO     Loading sound (effect) from file: 'sound/effects/vanish.ogg'
+09/06/2026 21:15:16:588  INFO     Loading sound (effect) from file: 'sound/effects/basicAttack.ogg'
+09/06/2026 21:15:16:588  INFO     Loading sound (effect) from file: 'sound/effects/shadowPower.ogg'
+09/06/2026 21:15:16:617  INFO     Loading sound (effect) from file: 'sound/effects/pickpocket.ogg'
+09/06/2026 21:15:16:618  INFO     Loading sound (effect) from file: 'sound/effects/burningDagger.ogg'
+09/06/2026 21:15:16:628  INFO     Loading sound (effect) from file: 'sound/effects/butterflyBlade.ogg'
+09/06/2026 21:15:16:628  INFO     Loading sound (effect) from file: 'sound/effects/sneakstrike.ogg'
+09/06/2026 21:15:16:628  INFO     Loading sound (effect) from file: 'sound/effects/revitalize.ogg'
+09/06/2026 21:15:16:639  INFO     Loading sound (effect) from file: 'sound/effects/healingSparks.ogg'
+09/06/2026 21:15:16:646  INFO     Loading sound (effect) from file: 'sound/effects/empoweringStrike.ogg'
+09/06/2026 21:15:16:649  INFO     Loading sound (effect) from file: 'sound/effects/forestallingCharge.ogg'
+09/06/2026 21:15:16:656  INFO     Loading sound (effect) from file: 'sound/effects/brainFreeze.ogg'
+09/06/2026 21:15:16:659  INFO     Loading sound (effect) from file: 'sound/effects/psychicSwipe.ogg'
+09/06/2026 21:15:16:669  INFO     Loading sound (effect) from file: 'sound/effects/vitalityDrain.ogg'
+09/06/2026 21:15:16:676  INFO     Loading sound (effect) from file: 'sound/effects/actuaryBlast.ogg'
+09/06/2026 21:15:16:678  INFO     Loading sound (effect) from file: 'sound/effects/bulletPunch.ogg'
+09/06/2026 21:15:16:678  INFO     Loading sound (effect) from file: 'sound/effects/innerMachinations.ogg'
+09/06/2026 21:15:16:689  INFO     Loading sound (effect) from file: 'sound/effects/gigatonSwing.ogg'
+09/06/2026 21:15:16:699  INFO     Loading sound (effect) from file: 'sound/effects/pioneerDrive.ogg'
+09/06/2026 21:15:16:699  INFO     Loading texture from file: '/illustrations/illustration0.png'
+09/06/2026 21:15:17:088  INFO     Loading illustration from texture: '/illustrations/illustration0.png'
+09/06/2026 21:15:17:088  INFO     Loading texture from file: '/illustrations/illustration1.png'
+09/06/2026 21:15:17:439  INFO     Loading illustration from texture: '/illustrations/illustration1.png'
+09/06/2026 21:15:17:439  INFO     Loading texture from file: '/illustrations/illustration2.png'
+09/06/2026 21:15:17:709  INFO     Loading illustration from texture: '/illustrations/illustration2.png'
+09/06/2026 21:15:17:709  INFO     Loading texture from file: '/illustrations/illustration3.png'
+09/06/2026 21:15:18:111  INFO     Loading illustration from texture: '/illustrations/illustration3.png'
+09/06/2026 21:15:18:113  INFO     Loading texture from file: '/illustrations/illustration5.png'
+09/06/2026 21:15:18:488  INFO     Loading illustration from texture: '/illustrations/illustration5.png'
+09/06/2026 21:15:18:538  INFO     Loading map with ID '1' from file: '/json/maps.json'
+09/06/2026 21:15:18:548  INFO     Parsing map with ID '1' from JSON data.
+09/06/2026 21:15:18:558  INFO     Loading entities for map with ID '1' in state '0' from file: '/json/entities.json'
+09/06/2026 21:15:18:558  INFO     Parsing entity with ID '1' from JSON data.
+09/06/2026 21:15:18:558  INFO     Parsing entity with ID '2' from JSON data.
+09/06/2026 21:15:18:558  INFO     Parsing entity with ID '3' from JSON data.
+09/06/2026 21:15:18:558  INFO     Parsing entity with ID '4' from JSON data.
+09/06/2026 21:15:18:558  INFO     Parsing entity with ID '5' from JSON data.
+09/06/2026 21:15:18:558  INFO     Loading conversations for map with ID '1' from file: '/json/dialogue.json'
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '3' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '4' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '5' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '6' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '7' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '8' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '9' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '10' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '11' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '12' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '13' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '14' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '15' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '16' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '17' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '18' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '19' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '20' from JSON data.
+09/06/2026 21:15:18:568  INFO     Parsing conversation with ID '21' from JSON data.
+09/06/2026 21:15:18:578  INFO     Parsing conversation with ID '22' from JSON data.
+09/06/2026 21:15:18:578  INFO     Setting fade state to 'ACTIVE'.
+09/06/2026 21:15:18:578  INFO     Setting fade state to 'FADE_FROM'.
+09/06/2026 21:15:18:588  INFO     Starting game loop.
+09/06/2026 21:15:19:142  INFO     Entering cutscene state with cutscene number '4'.
+09/06/2026 21:15:19:149  INFO     Progressing cutscene to phase '0'.
+09/06/2026 21:15:19:192  INFO     Setting fade state to 'INACTIVE'.
+09/06/2026 21:15:19:660  INFO     Progressing cutscene to phase '1'.
+09/06/2026 21:15:19:678  INFO     Progressing cutscene to phase '2'.
+09/06/2026 21:15:20:242  INFO     Progressing cutscene to phase '3'.
+09/06/2026 21:15:22:858  INFO     Progressing cutscene to phase '4'.
+09/06/2026 21:15:23:126  INFO     Progressing cutscene to phase '5'.
+09/06/2026 21:15:23:393  INFO     Progressing cutscene to phase '6'.
+09/06/2026 21:15:23:660  INFO     Progressing cutscene to phase '7'.
+09/06/2026 21:15:24:209  INFO     Progressing cutscene to phase '8'.
+09/06/2026 21:15:24:478  INFO     Progressing cutscene to phase '9'.
+09/06/2026 21:15:25:475  INFO     Progressing cutscene to phase '10'.
+09/06/2026 21:15:26:276  INFO     Progressing cutscene to phase '11'.
+09/06/2026 21:15:27:075  INFO     Locking player control.
+09/06/2026 21:15:27:075  INFO     Progressing cutscene to phase '12'.
+09/06/2026 21:15:28:433  INFO     Unlocking player control.
+09/06/2026 21:15:28:435  INFO     Progressing cutscene to phase '13'.
+09/06/2026 21:15:28:445  INFO     Progressing cutscene to phase '14'.
+09/06/2026 21:15:30:694  INFO     Progressing cutscene to phase '15'.
+09/06/2026 21:15:30:960  INFO     Progressing cutscene to phase '16'.
+09/06/2026 21:15:31:871  INFO     Progressing cutscene to phase '17'.
+09/06/2026 21:15:32:139  INFO     Progressing cutscene to phase '18'.
+09/06/2026 21:15:33:109  INFO     Progressing cutscene to phase '19'.
+09/06/2026 21:15:33:375  INFO     Progressing cutscene to phase '20'.
+09/06/2026 21:15:34:559  INFO     Progressing cutscene to phase '21'.
+09/06/2026 21:15:34:823  INFO     Progressing cutscene to phase '22'.
+09/06/2026 21:15:35:121  INFO     Progressing cutscene to phase '23'.
+09/06/2026 21:15:35:395  INFO     Progressing cutscene to phase '24'.
+09/06/2026 21:15:36:109  INFO     Progressing cutscene to phase '25'.
+09/06/2026 21:15:36:373  INFO     Progressing cutscene to phase '26'.
+09/06/2026 21:15:36:827  INFO     Entering combat state with combat ID '1'.
+09/06/2026 21:15:36:829  INFO     Entering transition state of type 'ENTER_COMBAT'.
+09/06/2026 21:15:36:829  INFO     Locking player control.
+09/06/2026 21:15:36:829  INFO     Setting fade state to 'FADE_TO'.
+09/06/2026 21:15:36:829  INFO     Exiting cutscene state.
+09/06/2026 21:15:37:343  INFO     Setting fade state to 'ACTIVE'.
+09/06/2026 21:15:37:593  INFO     Setting fade state to 'FADE_FROM'.
+09/06/2026 21:15:38:089  INFO     Setting fade state to 'INACTIVE'.
+09/06/2026 21:15:38:094  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:38:094  INFO     Exiting transition state of type 'ENTER_COMBAT'.
+09/06/2026 21:15:38:094  INFO     Unlocking player control.
+09/06/2026 21:15:38:843  INFO     Running combat action: Act_GenerateTutorial
+09/06/2026 21:15:38:845  INFO     Generating tutorial with ID '1'.
+09/06/2026 21:15:40:174  INFO     Running combat action: Act_GenerateTutorial
+09/06/2026 21:15:40:174  INFO     Generating tutorial with ID '1'.
+09/06/2026 21:15:40:388  INFO     Running combat action: Act_GenerateTutorial
+09/06/2026 21:15:40:393  INFO     Generating tutorial with ID '1'.
+09/06/2026 21:15:40:621  INFO     Running combat action: Act_GenerateTutorial
+09/06/2026 21:15:40:621  INFO     Generating tutorial with ID '1'.
+09/06/2026 21:15:40:792  INFO     Running combat action: Act_GenerateTutorial
+09/06/2026 21:15:40:794  INFO     Generating tutorial with ID '1'.
+09/06/2026 21:15:41:026  INFO     Running combat action: Act_GenerateTutorial
+09/06/2026 21:15:41:026  INFO     Generating tutorial with ID '1'.
+09/06/2026 21:15:41:373  INFO     Running combat action: Act_GenerateTutorial
+09/06/2026 21:15:41:373  INFO     Generating tutorial with ID '1'.
+09/06/2026 21:15:41:743  INFO     Running combat action: Act_GenerateTutorial
+09/06/2026 21:15:41:743  INFO     Generating tutorial with ID '1'.
+09/06/2026 21:15:42:122  INFO     Running combat action: Act_GenerateTutorial
+09/06/2026 21:15:42:122  INFO     Generating tutorial with ID '1'.
+09/06/2026 21:15:42:490  INFO     Running combat action: Act_ToggleCombatUi
+09/06/2026 21:15:42:490  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:42:775  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:15:43:667  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:43:668  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:15:44:860  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:44:860  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:15:45:025  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:45:442  INFO     Running combat action: Act_UseMove
+09/06/2026 21:15:45:444  INFO     Running combat move 'Butterfly Blade' with ID '2'.
+09/06/2026 21:15:46:838  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:47:559  INFO     Starting combat turn of entity 'Peculiar Figure' with ID '4'.
+09/06/2026 21:15:47:559  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:48:088  INFO     Running combat action: Act_UseMove
+09/06/2026 21:15:48:088  INFO     Running combat move 'Shadow Power' with ID '18'.
+09/06/2026 21:15:48:093  INFO     Running combat action: Act_CustomEffect
+09/06/2026 21:15:52:621  INFO     Running combat action: Act_CustomEffect
+09/06/2026 21:15:55:241  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:55:888  INFO     Starting combat turn of entity 'Mary' with ID '0'.
+09/06/2026 21:15:55:888  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:56:171  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:15:56:925  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:56:925  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:15:57:574  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:57:574  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:15:57:739  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:15:58:151  INFO     Running combat action: Act_UseMove
+09/06/2026 21:15:58:158  INFO     Running combat move 'Butterfly Blade' with ID '2'.
+09/06/2026 21:16:00:518  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:01:149  INFO     Running combat action: Act_CustomEffect
+09/06/2026 21:16:03:990  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:04:605  INFO     Starting combat turn of entity 'Peculiar Figure' with ID '4'.
+09/06/2026 21:16:04:605  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:05:139  INFO     Running combat action: Act_UseMove
+09/06/2026 21:16:05:139  INFO     Running combat move 'Shadow Power' with ID '18'.
+09/06/2026 21:16:05:139  INFO     Running combat action: Act_CustomEffect
+09/06/2026 21:16:09:653  INFO     Running combat action: Act_CustomEffect
+09/06/2026 21:16:12:269  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:13:189  INFO     Starting combat turn of entity 'Peculiar Figure' with ID '4'.
+09/06/2026 21:16:13:189  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:13:718  INFO     Running combat action: Act_UseMove
+09/06/2026 21:16:13:718  INFO     Running combat move 'Brain Freeze' with ID '11'.
+09/06/2026 21:16:16:269  INFO     Starting combat turn of entity 'Mary' with ID '0'.
+09/06/2026 21:16:16:269  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:16:572  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:16:17:388  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:17:390  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:16:18:038  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:18:038  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:16:18:523  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:18:938  INFO     Running combat action: Act_UseMove
+09/06/2026 21:16:18:938  INFO     Running combat move 'Butterfly Blade' with ID '2'.
+09/06/2026 21:16:21:105  INFO     Running combat action: Act_CustomEffect
+09/06/2026 21:16:23:935  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:24:618  INFO     Starting combat turn of entity 'Peculiar Figure' with ID '4'.
+09/06/2026 21:16:24:618  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:25:148  INFO     Running combat action: Act_UseMove
+09/06/2026 21:16:25:148  INFO     Running combat move 'Brain Freeze' with ID '11'.
+09/06/2026 21:16:27:718  INFO     Starting combat turn of entity 'Mary' with ID '0'.
+09/06/2026 21:16:27:718  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:28:020  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:16:28:704  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:28:704  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:16:29:853  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:29:853  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:16:30:018  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:16:30:418  INFO     Running combat action: Act_UseMove
+09/06/2026 21:16:30:418  INFO     Running combat move 'Burning Dagger' with ID '3'.
+09/06/2026 21:16:33:671  INFO     Running combat action: Act_CustomEffect
+09/06/2026 21:16:36:534  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:17:45:209  INFO     Starting combat turn of entity 'Peculiar Figure' with ID '4'.
+09/06/2026 21:17:45:209  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:17:45:742  INFO     Running combat action: Act_UseMove
+09/06/2026 21:17:45:742  INFO     Running combat move 'Brain Freeze' with ID '11'.
+09/06/2026 21:17:48:294  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:17:48:963  INFO     Starting combat turn of entity 'Mary' with ID '0'.
+09/06/2026 21:17:48:963  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:17:49:245  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:17:49:960  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:17:49:960  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:17:50:844  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:17:50:846  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:17:51:558  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:17:51:558  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:17:52:079  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:17:52:079  INFO     Running combat action: Act_GenerateSubMenu
+09/06/2026 21:17:52:244  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:17:52:640  INFO     Running combat action: Act_UseMove
+09/06/2026 21:17:52:640  INFO     Running combat move 'Burning Dagger' with ID '3'.
+09/06/2026 21:17:55:794  INFO     Running combat action: Act_CustomEffect
+09/06/2026 21:17:58:641  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:17:59:328  INFO     Staging entity 'Peculiar Figure' with ID '4' to faint in combat.
+09/06/2026 21:17:59:329  INFO     Running combat action: Act_FaintEntity
+09/06/2026 21:18:00:027  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:18:00:968  INFO     Running combat action: Act_ReadMessage
+09/06/2026 21:18:01:424  INFO     Running combat action: Act_ToggleCombatUi
+09/06/2026 21:18:01:424  INFO     Running combat action: Act_ExitCombat
+09/06/2026 21:18:01:429  INFO     Entering transition state of type 'EXIT_COMBAT'.
+09/06/2026 21:18:01:429  INFO     Locking player control.
+09/06/2026 21:18:01:429  INFO     Setting fade state to 'FADE_TO'.
+09/06/2026 21:18:01:926  INFO     Setting fade state to 'ACTIVE'.
+09/06/2026 21:18:01:929  INFO     Loading entity with ID '5' from file: '/json/entities.json'
+09/06/2026 21:18:02:169  INFO     Setting fade state to 'FADE_FROM'.
+09/06/2026 21:18:02:674  INFO     Setting fade state to 'INACTIVE'.
+09/06/2026 21:18:02:674  INFO     Exiting combat state.
+09/06/2026 21:18:02:678  INFO     Entering cutscene state with cutscene number '5'.
+09/06/2026 21:18:02:678  INFO     Exiting transition state of type 'EXIT_COMBAT'.
+09/06/2026 21:18:02:678  INFO     Unlocking player control.
+09/06/2026 21:18:02:678  INFO     Progressing cutscene to phase '0'.
+09/06/2026 21:18:03:672  INFO     Progressing cutscene to phase '1'.
+09/06/2026 21:18:03:693  INFO     Setting fade state to 'FADE_TO'.
+09/06/2026 21:18:03:693  INFO     Progressing cutscene to phase '2'.
+09/06/2026 21:18:03:908  INFO     Setting fade state to 'ACTIVE'.
+09/06/2026 21:18:03:908  INFO     Progressing cutscene to phase '3'.
+09/06/2026 21:18:04:009  INFO     Setting fade state to 'FADE_FROM'.
+09/06/2026 21:18:04:209  INFO     Setting fade state to 'INACTIVE'.
+09/06/2026 21:18:04:209  INFO     Progressing cutscene to phase '4'.
+09/06/2026 21:18:05:726  INFO     Progressing cutscene to phase '5'.
+09/06/2026 21:18:06:721  INFO     Progressing cutscene to phase '6'.
+09/06/2026 21:18:14:691  INFO     Progressing cutscene to phase '7'.
+09/06/2026 21:18:14:958  INFO     Progressing cutscene to phase '8'.
+09/06/2026 21:18:15:474  INFO     Progressing cutscene to phase '9'.
+09/06/2026 21:18:16:324  INFO     Progressing cutscene to phase '10'.
+09/06/2026 21:18:16:591  INFO     Progressing cutscene to phase '11'.
+09/06/2026 21:18:17:402  INFO     Progressing cutscene to phase '12'.
+09/06/2026 21:18:17:673  INFO     Progressing cutscene to phase '13'.
+09/06/2026 21:18:18:189  INFO     Progressing cutscene to phase '14'.
+09/06/2026 21:18:18:703  INFO     Progressing cutscene to phase '15'.
+09/06/2026 21:18:21:471  INFO     Progressing cutscene to phase '16'.
+09/06/2026 21:18:21:990  INFO     Progressing cutscene to phase '17'.
+09/06/2026 21:18:23:503  INFO     Progressing cutscene to phase '18'.
+09/06/2026 21:18:24:023  INFO     Progressing cutscene to phase '19'.
+09/06/2026 21:18:42:619  INFO     Setting fade state to 'FADE_TO'.
+09/06/2026 21:18:42:619  INFO     Progressing cutscene to phase '20'.
+09/06/2026 21:18:43:139  INFO     Setting fade state to 'ACTIVE'.
+09/06/2026 21:18:43:140  INFO     Progressing cutscene to phase '21'.
+09/06/2026 21:18:43:653  INFO     Progressing cutscene to phase '22'.
+09/06/2026 21:18:44:650  INFO     Setting fade state to 'FADE_FROM'.
+09/06/2026 21:18:44:650  INFO     Progressing cutscene to phase '23'.
+09/06/2026 21:18:45:171  INFO     Setting fade state to 'INACTIVE'.
+09/06/2026 21:18:45:171  INFO     Progressing cutscene to phase '24'.
+09/06/2026 21:18:46:170  INFO     Progressing cutscene to phase '25'.

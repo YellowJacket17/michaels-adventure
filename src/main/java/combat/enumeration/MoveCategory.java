@@ -10,18 +10,25 @@ public enum MoveCategory {
      * apply direct damage.
      * A secondary effect may also be applied.
      */
-    PHYSICAL,
+    PHYSICAL("Physical"),
 
     /**
      * This move uses the source entity's magic attribute and the target entity's magic attribute to calculate and
      * apply direct damage.
      * A secondary effect may also be applied.
      */
-    MAGIC,
+    MAGIC("Magic"),
 
     /**
      * This move applies an effect to a target entity (revive, modify attributes, etc.).
      * Direct damage is not applied to the target entity.
      */
-    SUPPORT
+    SUPPORT("Support");
+
+    public final String label;
+
+    private MoveCategory(String label) {
+
+        this.label = label;
+    }
 }

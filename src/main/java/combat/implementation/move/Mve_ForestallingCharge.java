@@ -25,7 +25,7 @@ public class Mve_ForestallingCharge extends MoveBase {
     private static final int mvePower = 40;
     private static final int mveAccuracy = 95;
     private static final int mveSkillPoints = 3;
-    private static final Vector3f mveEffectColor = new Vector3f(228, 215, 192);
+    private static final Vector3f mveEffectColor = MoveBase.PHYSICAL_MOVE_COLOR;
     private static final String mveSoundEffect = "forestallingCharge";
 
 

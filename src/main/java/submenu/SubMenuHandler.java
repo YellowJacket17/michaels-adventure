@@ -332,9 +332,15 @@ public class SubMenuHandler {
 
 
     // SETTER
-    public void setIndexSelected(int indexSelected) {
+    public boolean setIndexSelected(int indexSelected) {
+        int legacyIndex = this.indexSelected;
         if ((indexSelected >= 0) && (indexSelected < options.size())) {
             this.indexSelected = indexSelected;
+        }
+        if (this.indexSelected != legacyIndex) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
