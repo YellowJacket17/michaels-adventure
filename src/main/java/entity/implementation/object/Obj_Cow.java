@@ -11,7 +11,7 @@ import asset.AssetPool;
 public class Obj_Cow extends EntityBase {
 
     // FIELD
-    private static final String objName = "Highland Cow Plushie";
+    private static final String objName = "Plushie";
 
 
     // CONSTRUCTOR

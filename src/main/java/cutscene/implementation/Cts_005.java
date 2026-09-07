@@ -41,7 +41,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 1:
                 counter += dt;
-                if (counter >= 1.0) {
+                if (counter >= 1.25) {
                     progressCutscene();
                     counter = 0;
                 }
@@ -78,7 +78,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 6:
                 counter += dt;
-                if (counter >= 1.0) {
+                if (counter >= 1.5) {
                     gp.getDialogueR().initiateConversation(12);
                     progressCutscene();
                     counter = 0;
@@ -258,6 +258,7 @@ public class Cts_005 extends CutsceneBase {
                     progressCutscene();
                     counter = 0;
                 }
+                break;
 
             case 29:
                 if (gp.getDialogueR().getActiveConv() == null) {
@@ -279,6 +280,7 @@ public class Cts_005 extends CutsceneBase {
                     progressCutscene();
                     counter = 0;
                 }
+                break;
 
             case 32:
                 if (gp.getDialogueR().getActiveConv() == null) {

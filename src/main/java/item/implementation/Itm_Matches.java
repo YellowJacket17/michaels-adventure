@@ -6,18 +6,18 @@ import entity.EntityBase;
 import item.ItemBase;
 
 /**
- * This class defines an item (Cow).
+ * This class defines an item (Matches).
  */
-public class Itm_Cow extends ItemBase {
+public class Itm_Matches extends ItemBase {
 
     // FIELDS
-    private static final int itmId = 11;
-    private static final String itmName = "Plushie";
-    private static final String itmDescription = "A plushie of the gentle highland cow. Hugging it seems to make all of the world's troubles melt away.";
+    private static final int itmId = 12;
+    private static final String itmName = "Matches";
+    private static final String itmDescription = "A box of standard wooden matches. Packed for the camping trip in case of emergency.";
 
 
     // CONSTRUCTOR
-    public Itm_Cow(GamePanel gp) {
+    public Itm_Matches(GamePanel gp) {
         super(gp, itmId, false);
         name = itmName;
         description = itmDescription;

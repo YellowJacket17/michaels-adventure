@@ -231,7 +231,7 @@
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "Nick? Is that you?"
+                "text": "Nick?!? Is that you?"
             }
         }
     },
@@ -267,7 +267,7 @@
             },
             "3": {
                 "speaker": "Nick",
-                "text": "Do you see any more?"
+                "text": "Do you see any more of them?"
             },
             "4": {
                 "speaker": "Mary",
@@ -275,15 +275,15 @@
             },
             "5": {
                 "speaker": "Nick",
-                "text": "Me neither, although whatever that thing was, it was difficult to make out."
+                "text": "Me neither, although whatever that thing was, it was difficult to see."
             },
             "6": {
                 "speaker": "Nick",
-                "text": "Never mind any of that, though: how hurt are you?"
+                "text": "Never mind any of that, though: how are you doing?"
             },
             "7": {
                 "speaker": "Mary",
-                "text": "Hngh, I already wasn't doing great, but now I'm really not."
+                "text": "Hngh, I already wasn't feeling great, but now I'm really dizzy."
             },
             "8": {
                 "speaker": "Nick",
@@ -295,7 +295,7 @@
             },
             "10": {
                 "speaker": "Nick",
-                "text": "I have some medicine, bandages, extra water, and a few other goodies I packed for our hike . . ."
+                "text": "I have some medicine, bandages, extra water, and a few other supplies I packed for our hike . . ."
             }
         }
     },
@@ -315,11 +315,11 @@
             },
             "2": {
                 "speaker": "Nick",
-                "text": "Not to sound too out there, but when it first approached me, it looked like it was crawling out of the shadows."
+                "text": "Not to sound too out there, but it almost looked like it came crawling out of the shadows."
             },
             "3": {
                 "speaker": "Nick",
-                "text": "I tried defending myself, but I didn't really have anything that I could hurt it with."
+                "text": "I tried to defend myself, but I didn't really have anything I could hurt it with."
             },
             "4": {
                 "speaker": "Mary",
@@ -331,11 +331,11 @@
             },
             "6": {
                 "speaker": "Nick",
-                "text": "My head began hurting when it approached, kind of like a brain freeze or something."
+                "text": "My head began to throb as it approached, like that feeling from a brain freeze or something."
             },
             "7": {
                 "speaker": "Mary",
-                "text": "Hmm, this is too strange."
+                "text": "Hmm . . ."
             },
             "8": {
                 "speaker": "Nick",
@@ -351,7 +351,7 @@
         "dialogue": {
             "0": {
                 "speaker": "Mary",
-                "text": "I'm really happy that I found you, Nick."
+                "text": "I'm really happy I found you, Nick."
             },
             "1": {
                 "speaker": "Nick",
@@ -359,7 +359,7 @@
             },
             "2": {
                 "speaker": "Nick",
-                "text": "Of course, I've been worried about everyone, but you're the one I've been thinking about the most."
+                "text": "Of course, I've been worried about everyone, but especially you."
             }
         }
     },
@@ -375,7 +375,7 @@
             },
             "1": {
                 "speaker": "Nick",
-                "text": "This is going to sound even weirder, but now that I'm talking to you, I almost feel like I could . . ."
+                "text": "This is going to sound even stranger, but now that I'm talking to you, I almost feel like I could . . ."
             }
         }
     },
@@ -407,11 +407,11 @@
             },
             "5": {
                 "speaker": "Mary",
-                "text": "We could speculate, but honestly, I don't really want to waste time."
+                "text": "We could speculate, but I don't really want to waste any more time down here."
             },
             "6": {
                 "speaker": "Nick",
-                "text": "Agreed. I'm getting the impression that you don't know much more than I do, anyways."
+                "text": "Agreed. Anyways, I'm getting the impression that you don't know much more than I do."
             },
             "7": {
                 "speaker": "Nick",
@@ -466,7 +466,7 @@
                 "text": "Mmm, whatever."
             },
             "5": {
-                "speaker": "Nick",
+                "speaker": "Mary",
                 "text": "You could have thought of it."
             }
         }
@@ -479,7 +479,7 @@
         "dialogue": {
             "0": {
                 "speaker": "Nick",
-                "text": "Hey, what happened to us while we were watching the eclipse, that was . . . real, wasn't it?"
+                "text": "Hey, what happened to us during the eclipse, that was . . . real, wasn't it?"
             },
             "1": {
                 "speaker": "Mary",
@@ -487,7 +487,7 @@
             },
             "2": {
                 "speaker": "Mary",
-                "text": "None of this seems logical."
+                "text": "None of this makes sense."
             },
             "3": {
                 "speaker": "Mary",

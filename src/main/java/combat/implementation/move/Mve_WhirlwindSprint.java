@@ -22,7 +22,7 @@ public class Mve_WhirlwindSprint extends MoveBase {
     private static final int mveId = 8;
     private static final String mveName = "Whirlwind Sprint";
     private static final String mveDescription = "Running blindingly fast in circles, generates a whirlwind that hits all active opponents.";
-    private static final int mvePower = 50;
+    private static final int mvePower = 55;
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 6;
     private static final Vector3f mveEffectColor = MoveBase.PHYSICAL_MOVE_COLOR;
@@ -31,7 +31,7 @@ public class Mve_WhirlwindSprint extends MoveBase {
 
     // CONSTRUCTOR
     public Mve_WhirlwindSprint(GamePanel gp) {
-        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT, true);
+        super(gp, mveId, MoveCategory.MAGIC, MoveTargets.OPPONENT, true);
         name = mveName;
         description = mveDescription;
         power = mvePower;

@@ -285,7 +285,7 @@ public class Act_UseMove extends ActionBase {
     private boolean rollAccuracy() {
 
         Random random = new Random();
-        int i = random.nextInt(101);                                                                                    // Generate random number from 0 (inclusive) to 100 (inclusive, since 101 is exclusive).
+        int i = random.nextInt(100) + 1;                                                                                // Generate random number from 0 (exclusive) to 100 (inclusive).
 
         if (i <= move.getAccuracy()) {
 

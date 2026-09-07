@@ -24,7 +24,7 @@ public class Mve_VitalityDrain extends MoveBase {
     private static final String mveDescription = "Steals HP from the target. Evenly restores half of damage dealt among active allies (including self).";
     private static final int mvePower = 60;
     private static final int mveAccuracy = 100;
-    private static final int mveSkillPoints = 6;
+    private static final int mveSkillPoints = 5;
     private static final Vector3f mveEffectColor = MoveBase.MAGIC_MOVE_COLOR;
     private static final String mveSoundEffect = "vitalityDrain";
 

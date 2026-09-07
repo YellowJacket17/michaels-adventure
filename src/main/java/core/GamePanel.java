@@ -233,17 +233,17 @@ public class GamePanel {
         cameraS.setTrackedEntity(entityM.getPlayer().getEntityId());
 
         // Initiate loading sequence.
-//        cutsceneM.initiateCutscene(2);
+        cutsceneM.initiateCutscene(2);
 
         // TEST
-        mapM.loadMap(1, 0, true);
-        entityM.getPlayer().setHidden(false);
-        fadeS.displayColor(new Vector3f(255, 255, 255));
-        fadeS.initiateFadeFrom(0.5);
-        setPrimaryGameState(PrimaryGameState.EXPLORE);
-
-        entityM.getPlayer().setCol(47);
-        entityM.getPlayer().setRow(14);
+//        mapM.loadMap(1, 0, true);
+//        entityM.getPlayer().setHidden(false);
+//        fadeS.displayColor(new Vector3f(255, 255, 255));
+//        fadeS.initiateFadeFrom(0.5);
+//        setPrimaryGameState(PrimaryGameState.EXPLORE);
+//
+//        entityM.getPlayer().setCol(47);
+//        entityM.getPlayer().setRow(14);
 //        entityM.getPlayer().setDirectionCurrent(EntityDirection.UP);
 //
 //        for (int i = 0; i < 1; i++) {

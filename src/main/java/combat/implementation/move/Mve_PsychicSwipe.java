@@ -17,7 +17,7 @@ public class Mve_PsychicSwipe extends MoveBase {
     private static final int mveId = 13;
     private static final String mveName = "Psychic Swipe";
     private static final String mveDescription = "With a flick of the hand, hits the target with a stream of psychic energy.";
-    private static final int mvePower = 70;
+    private static final int mvePower = 75;
     private static final int mveAccuracy = 95;
     private static final int mveSkillPoints = 4;
     private static final Vector3f mveEffectColor = MoveBase.MAGIC_MOVE_COLOR;

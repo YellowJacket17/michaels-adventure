@@ -480,6 +480,9 @@ public class Player extends EntityBase {
         for (int i = 0; i < 1; i++) {
             addItemToInventory(7);
         }
+        for (int i = 0; i < 1; i++) {
+            addItemToInventory(12);
+        }
     }
 
 

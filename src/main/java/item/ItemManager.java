@@ -48,6 +48,7 @@ public class ItemManager {
         referenceItems.put(9, retrieveNewInstance(9));
         referenceItems.put(10, retrieveNewInstance(10));
         referenceItems.put(11, retrieveNewInstance(11));
+        referenceItems.put(12, retrieveNewInstance(12));
     }
 
 
@@ -85,6 +86,8 @@ public class ItemManager {
                 return new Itm_Painting(gp);
             case 11:
                 return new Itm_Cow(gp);
+            case 12:
+                return new Itm_Matches(gp);
             default:
                 return null;
         }

@@ -106,7 +106,7 @@ public class Cts_004 extends CutsceneBase {
 
             case 10:
                 counter += dt;
-                if (counter >= 1.0) {
+                if (counter >= 1.5) {
                     gp.getCameraS().setOverrideEntityTracking(false);
                     gp.getCameraS().setTrackedEntity(4);
                     gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.LEFT);
@@ -117,7 +117,7 @@ public class Cts_004 extends CutsceneBase {
 
             case 11:
                 counter += dt;
-                if (counter >= 0.8) {
+                if (counter >= 1.0) {
                     gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.DOWN);
                     progressCutscene();
                     counter = 0;
@@ -126,7 +126,7 @@ public class Cts_004 extends CutsceneBase {
 
             case 12:
                 counter += dt;
-                if (counter >= 0.8) {
+                if (counter >= 1.0) {
                     gp.getEntityM().getEntityById(4).startFollowingPath(47, 12);
                     gp.getEntityM().getPlayer().autoStep(EntityDirection.DOWN, true);
                     gp.setLockPlayerControl(true);

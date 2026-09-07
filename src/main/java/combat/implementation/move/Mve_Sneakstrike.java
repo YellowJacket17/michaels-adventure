@@ -3,10 +3,7 @@ package combat.implementation.move;
 import combat.MoveBase;
 import combat.enumeration.MoveCategory;
 import combat.enumeration.MoveTargets;
-import combat.implementation.action.Act_CustomEffect;
-import combat.implementation.action.Act_ReadMessage;
 import core.GamePanel;
-import entity.EntityBase;
 import org.joml.Vector3f;
 import utility.UtilityTool;
 
@@ -23,7 +20,7 @@ public class Mve_Sneakstrike extends MoveBase {
     private static final int mveId = 4;
     private static final String mveName = "Sneakstrike";
     private static final String mveDescription = "Sneaks up on the target and strikes. Ignores the target's attribute buffs.";
-    private static final int mvePower = 35;
+    private static final int mvePower = 40;
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 2;
     private static final Vector3f mveEffectColor = MoveBase.PHYSICAL_MOVE_COLOR;

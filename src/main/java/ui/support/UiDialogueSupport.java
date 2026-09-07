@@ -42,11 +42,11 @@ public class UiDialogueSupport {
 
     private Vector3f speakerTextColorGreen;
 
-    private Vector3f speakerTextColorRed;
+    private Vector3f speakerTextColorOrange;
 
     private Vector3f speakerTextColorPurple;
 
-    private Vector3f speakerTextColorOrange;
+    private Vector3f speakerTextColorRed;
 
     private float dialogueWindowScreenLeftRightPadding;
     
@@ -105,7 +105,9 @@ public class UiDialogueSupport {
             if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Mary")) {
 
                 speakerTextColorActive = speakerTextColorBlue;
-            } else if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Nick")) {
+            } else if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Nick")
+                    || (gp.getDialogueR().getActiveDialogueSpeaker().equals("???")
+                        && gp.getDialogueR().getActiveConv().getConvId() == 12)) {
 
                 speakerTextColorActive = speakerTextColorYellow;
             } else if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Logan")) {
@@ -113,13 +115,13 @@ public class UiDialogueSupport {
                 speakerTextColorActive = speakerTextColorGreen;
             } else if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Joe")) {
 
-                speakerTextColorActive = speakerTextColorRed;
+                speakerTextColorActive = speakerTextColorOrange;
             } else if (gp.getDialogueR().getActiveDialogueSpeaker().equals("Howie")) {
 
                 speakerTextColorActive = speakerTextColorPurple;
             } else {
 
-                speakerTextColorActive = speakerTextColorOrange;
+                speakerTextColorActive = speakerTextColorRed;
             }
         }
 
@@ -222,9 +224,9 @@ public class UiDialogueSupport {
         speakerTextColorBlue = new Vector3f(121, 185, 255);
         speakerTextColorYellow = new Vector3f(255, 238, 121);
         speakerTextColorGreen = new Vector3f(121, 255, 128);
-        speakerTextColorRed = new Vector3f(255, 121, 121);
-        speakerTextColorPurple = new Vector3f(158, 121, 255);
         speakerTextColorOrange = new Vector3f(254, 168, 122);
+        speakerTextColorPurple = new Vector3f(158, 121, 255);
+        speakerTextColorRed = new Vector3f(255, 121, 121);
 
         // Text sizing.
         float standardNormalCharWorldHeight = gp.getRenderer().getFont(gp.getUi().getStandardNormalFont())
