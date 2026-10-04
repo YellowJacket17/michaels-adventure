@@ -457,12 +457,12 @@ public class Player extends EntityBase {
         setSpeed(120);
 
         // Combat attributes.
-        setMaxLife(800);
-        setLife(800);
+        setMaxLife(750);
+        setLife(750);
         setMaxSkill(25);
         setSkill(25);
         setBaseAttack(75);
-        setBaseDefense(80);
+        setBaseDefense(70);
         setBaseMagic(0);
         setBaseAgility(80);
         setWeakness(MoveWeakness.MAGIC);

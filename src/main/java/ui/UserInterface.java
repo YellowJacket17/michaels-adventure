@@ -403,7 +403,8 @@ public class UserInterface {
         Vector2f worldCoordsExterior = gp.getCamera().screenCoordsToWorldCoords(screenCoordsExterior);
         float worldWidthExterior = gp.getCamera().screenWidthToWorldWidth(screenWidth);
         float worldHeightExterior = 6.0f;
-        Vector4f colorExterior = new Vector4f(230, 250, 255, 255);
+//        Vector4f colorExterior = new Vector4f(230, 250, 255, 255);
+        Vector4f colorExterior = new Vector4f(25, 5, 0, 255);
 
         // Calculate interior (i.e., fill) dimensions and color (both primary and secondary).
         // Primary is bar that changes with life.
@@ -421,7 +422,7 @@ public class UserInterface {
 
             colorInteriorPrimary = new Vector4f(46, 255, 139, 220);
         }
-        Vector4f colorInteriorSecondary = new Vector4f(53, 64, 68, 255);
+        Vector4f colorInteriorSecondary = new Vector4f(73, 84, 88, 255);
 
         // Add exterior and interior (primary and secondary) to render pipeline.
         gp.getRenderer().addRectangle(                                                                                  // Render life bar top/bottom border (exterior).
@@ -476,7 +477,8 @@ public class UserInterface {
         Vector2f worldCoordsExterior = gp.getCamera().screenCoordsToWorldCoords(screenCoordsExterior);
         float worldWidthExterior = gp.getCamera().screenWidthToWorldWidth(screenWidth);
         float worldHeightExterior = 6.0f;
-        Vector4f colorExterior = new Vector4f(230, 250, 255, 255);
+//        Vector4f colorExterior = new Vector4f(230, 250, 255, 255);
+        Vector4f colorExterior = new Vector4f(25, 5, 0, 255);
 
         // Calculate interior (i.e., fill) dimensions and color (both primary and secondary).
         // Primary is bar that changes with skill.
@@ -485,7 +487,7 @@ public class UserInterface {
         float worldWidthInterior = worldWidthExterior - 2.0f;
         float worldHeightInterior = 4.0f;
         Vector4f colorInteriorPrimary = new Vector4f(192, 47, 255, 255);
-        Vector4f colorInteriorSecondary = new Vector4f(53, 64, 68, 255);
+        Vector4f colorInteriorSecondary = new Vector4f(73, 84, 88, 255);
 
         // Add exterior and interior (primary and secondary) to render pipeline.
         gp.getRenderer().addRectangle(                                                                                  // Render life bar top/bottom border (exterior).
@@ -866,10 +868,12 @@ public class UserInterface {
                 lifeBarScreenCoords.x,
                 lifeBarScreenCoords.y);
 
-        Vector2f lifeLabelWorldCoords = new Vector2f(bannerWorldX + 1.5f, bannerWorldY);
+        Vector2f lifeLabelWorldCoords = new Vector2f(bannerWorldX + 2.5f, bannerWorldY);
         Vector2f lifeLabelScreenCoords = gp.getCamera().worldCoordsToScreenCoords(lifeLabelWorldCoords);
+//        addStringToRenderPipeline("HP", lifeLabelScreenCoords.x, lifeLabelScreenCoords.y, 0.1f,
+//                new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
         addStringToRenderPipeline("HP", lifeLabelScreenCoords.x, lifeLabelScreenCoords.y, 0.1f,
-                new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
+                new Vector3f(0, 0, 0), standardBoldFont, ZIndex.SECOND_LAYER);
         // NOTE: If "HP" label is increased to scale 0.12f, then world coords needs to be adjusted by -1.0f.
 
         if (includeSkill) {
@@ -884,10 +888,12 @@ public class UserInterface {
                     skillBarScreenCoords.x,
                     skillBarScreenCoords.y);
 
-            Vector2f skillLabelWorldCoords = new Vector2f(bannerWorldX + 1.5f, bannerWorldY + 10.0f);
+            Vector2f skillLabelWorldCoords = new Vector2f(bannerWorldX + 2.5f, bannerWorldY + 10.0f);
             Vector2f skillLabelScreenCoords = gp.getCamera().worldCoordsToScreenCoords(skillLabelWorldCoords);
+//            addStringToRenderPipeline("SP", skillLabelScreenCoords.x, skillLabelScreenCoords.y, 0.1f,
+//                    new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
             addStringToRenderPipeline("SP", skillLabelScreenCoords.x, skillLabelScreenCoords.y, 0.1f,
-                    new Vector3f(255, 255, 255), standardBoldFont, ZIndex.SECOND_LAYER);
+                    new Vector3f(0, 0, 0), standardBoldFont, ZIndex.SECOND_LAYER);
         }
 
         if (gp.getCombatM().getGuardingEntities().contains(entityId)) {

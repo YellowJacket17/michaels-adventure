@@ -16,14 +16,14 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
- * This class defines a move (Shadow Power).
+ * This class defines a move (Shadow Boost).
  */
-public class Mve_ShadowPower extends MoveBase {
+public class Mve_ShadowBoost extends MoveBase {
 
     // FIELDS
-    private static final int mveId = 18;
-    private static final String mveName = "Shadow Power";
-    private static final String mveDescription = "Draws power from the shadows. Raises attack, defense, magic, or agility.";
+    private static final int mveId = 22;
+    private static final String mveName = "Shadow Boost";
+    private static final String mveDescription = "Draws power from the shadows. Raises attack, defense, magic, or agility of an ally.";
     private static final int mvePower = 0;
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 1;
@@ -32,8 +32,8 @@ public class Mve_ShadowPower extends MoveBase {
 
 
     // CONSTRUCTOR
-    public Mve_ShadowPower(GamePanel gp) {
-        super(gp, mveId, MoveCategory.SUPPORT, MoveTargets.SELF, false);
+    public Mve_ShadowBoost(GamePanel gp) {
+        super(gp, mveId, MoveCategory.SUPPORT, MoveTargets.ALLY, false);
         name = mveName;
         description = mveDescription;
         power = mvePower;

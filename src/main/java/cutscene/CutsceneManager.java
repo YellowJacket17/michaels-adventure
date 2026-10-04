@@ -36,6 +36,8 @@ public class CutsceneManager {
     private final Cts_003 cts_003;
     private final Cts_004 cts_004;
     private final Cts_005 cts_005;
+    private final Cts_006 cts_006;
+    private final Cts_007 cts_007;
 
 
     // CONSTRUCTOR
@@ -53,6 +55,8 @@ public class CutsceneManager {
         cts_003 = new Cts_003(gp);
         cts_004 = new Cts_004(gp);
         cts_005 = new Cts_005(gp);
+        cts_006 = new Cts_006(gp);
+        cts_007 = new Cts_007(gp);
     }
 
 
@@ -96,6 +100,16 @@ public class CutsceneManager {
                 case 5:
                     if (cts_005.isTriggerable()) {
                         cts_005.run(dt);
+                    }
+                    break;
+                case 6:
+                    if (cts_006.isTriggerable()) {
+                        cts_006.run(dt);
+                    }
+                    break;
+                case 7:
+                    if (cts_007.isTriggerable()) {
+                        cts_007.run(dt);
                     }
                     break;
             }

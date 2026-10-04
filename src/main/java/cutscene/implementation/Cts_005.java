@@ -193,7 +193,7 @@ public class Cts_005 extends CutsceneBase {
             case 20:
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getEntityM().getEntityById(5).autoStep(EntityDirection.LEFT, false);
-                    gp.getFadeS().initiateFadeTo(0.5, new Vector3f(0, 0, 0));
+                    gp.getFadeS().initiateFadeTo(1.0, new Vector3f(0, 0, 0));
                     progressCutscene();
                 }
                 break;
@@ -216,8 +216,8 @@ public class Cts_005 extends CutsceneBase {
 
             case 23:
                 counter += dt;
-                if (counter >= 1.0) {
-                    gp.getFadeS().initiateFadeFrom(0.5);
+                if (counter >= 2.5) {
+                    gp.getFadeS().initiateFadeFrom(2.0);
                     progressCutscene();
                     counter = 0;
                 }
@@ -231,7 +231,7 @@ public class Cts_005 extends CutsceneBase {
 
             case 25:
                 counter += dt;
-                if (counter >= 1.0) {
+                if (counter >= 0.5) {
                     gp.getDialogueR().initiateConversation(16);
                     progressCutscene();
                     counter = 0;
@@ -456,7 +456,6 @@ public class Cts_005 extends CutsceneBase {
                 if (gp.getDialogueR().getActiveConv() == null) {
                     gp.getPartyS().addEntityToParty(5, true);
                     gp.getPartyS().showActivePartyMembers(true);                                                        // Just in case there are additional party members for whatever reason.
-                    gp.getCameraS().setOverrideEntityTracking(false);
                     gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
                     exitCutscene();
                     resetCutscene();

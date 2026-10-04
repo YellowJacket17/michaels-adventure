@@ -803,7 +803,7 @@ public class JsonParser {
                 move = new Mve_DaringStand(gp);
                 break;
             case 6:
-                move = new Mve_ForestallingCharge(gp);
+                move = new Mve_ForestallingQuake(gp);
                 break;
             case 7:
                 move = new Mve_EmpoweringStrike(gp);
@@ -833,7 +833,7 @@ public class JsonParser {
                 move = new Mve_BulletPunch(gp);
                 break;
             case 16:
-                move = new Mve_RambunctiousBash(gp);
+                move = new Mve_SwiftBash(gp);
                 break;
             case 17:
                 move = new Mve_InnerMachinations(gp);
@@ -849,6 +849,12 @@ public class JsonParser {
                 break;
             case 21:
                 move = new Mve_TrickyShot(gp);
+                break;
+            case 22:
+                move = new Mve_ShadowBoost(gp);
+                break;
+            case 23:
+                move = new Mve_ShadowStrike(gp);
                 break;
         }
         return move;

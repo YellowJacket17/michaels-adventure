@@ -45,7 +45,7 @@ public class Cts_002 extends CutsceneBase {
 
             case 1:
                 counter += dt;
-                if (counter >= 0.5) {
+                if (counter >= 2.0) {
                     gp.getFadeS().initiateFadeFrom(1);
                     stageEngineLogoText();
                     stageEngineLogoImage();

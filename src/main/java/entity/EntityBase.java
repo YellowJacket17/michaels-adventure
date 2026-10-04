@@ -269,6 +269,8 @@ public abstract class EntityBase extends Drawable {
 
     /**
      * ID of the entity that this entity is following.
+     * Note that this works by having the follower entity constantly search for a path to the the followed entity's last
+     * position.
      */
     protected int onEntityId = NO_ENTITY_FOLLOWED;
 
@@ -355,7 +357,7 @@ public abstract class EntityBase extends Drawable {
      * Increasing this value will extend the duration of the color flash effect.
      * In other words, increasing this value will make the color flash effect appear to run more slowly.
      */
-    protected double flashingCounterMax = 0.8;
+    protected double flashingCounterMax = 1.5;
 
 
     // BASIC ATTRIBUTES
@@ -562,8 +564,6 @@ public abstract class EntityBase extends Drawable {
     public void update(double dt) {
 
         // These are core actions that take precedent over all others.
-        if (hidden) {return;}
-
         if (activeFadeEffect != FadeEffectType.NONE) {
             updateFadeEffect(dt);                                                                                       // Purposefully no return statement here.
         }
@@ -620,8 +620,6 @@ public abstract class EntityBase extends Drawable {
      */
     public void addToRenderPipeline() {
 
-
-
         if (!isHiddenInGrass() && !hidden && gp.isRenderWorld() && !gp.getIllustrationS().isIllustrationActive()) {
 
             if (playingCombatFaintAnimation || (combating && (status == EntityStatus.FAINT))) {
@@ -659,7 +657,7 @@ public abstract class EntityBase extends Drawable {
         worldCounter = 0;
         directionCurrent = directionLast;
         walkSpriteNumCurrent = 1;
-        rest = 0;
+        stopFollowingPath();
     }
 
 
@@ -2612,13 +2610,15 @@ public abstract class EntityBase extends Drawable {
         setRest(0);
     }
 
-    public void startFollowingEntity(int entityId) {
+    public void startFollowingEntity(int entityId, boolean freezeFollower) {
         if (this.entityId != entityId) {                                                                                // Ensure that we're not trying to make the entity follow itself.
             EntityBase target = gp.getEntityM().getEntityById(entityId);
             EntityBase followed = gp.getEntityM().getEntityById(gp.getEventM().checkEntityChainDown(target));           // If a chain of followers is following the target entity, then this entity will be placed at the back of the chain (i.e., this entity will actually follow the entity at the end of the chain).
             onEntityId = followed.getEntityId();
-            followed.setColLast(this.getCol());                                                                         // The follower will always find a path to the followed's last position; setting it this way prevents the follower from instantly moving once following begins.
-            followed.setRowLast(this.getRow());                                                                         // ^^^
+            if (freezeFollower) {
+                followed.setColLast(this.getCol());                                                                     // The follower will always find a path to the followed's last position; setting it this way prevents the follower from instantly moving once following begins.
+                followed.setRowLast(this.getRow());                                                                     // ^^^
+            }
         }
     }
 

@@ -25,7 +25,7 @@
                 "text": "If I see Joe again, I'm going to scream at him about how awful this trip has turned out to be."
             },
             "7": {
-                "text": "Sure, total solar eclipses are rare, but seeing one wasn't worth this catastrophe."
+                "text": "Sure, total solar eclipses are rare, but seeing one wasn't worth this mess."
             },
             "8": {
                 "text": "When Nick and I agreed to this, I really liked the idea of traveling out west and camping with our friends for a few nights."
@@ -56,7 +56,7 @@
         "playerInputToEnd": true,
         "dialogue": {
             "0": {
-                "text": "Those other shadows were contorted. Writhing. Like thousands of hands reaching out towards us."
+                "text": "During the eclipse, those other shadows were contorted. Writhing. Like thousands of hands reaching out towards us."
             },
             "1": {
                 "text": "They felt so cold as they closed in on our feet."
@@ -68,18 +68,21 @@
                 "text": "We were surrounded by trees and the trail would have only taken us deeper into the woods."
             },
             "4": {
-                "text": "It doesn't matter."
+                "text": "How I ended up here, I have no idea."
             },
             "5": {
-                "text": "I'm completely useless on my own."
+                "text": "It doesn't matter."
             },
             "6": {
-                "text": "I don't think I'm going to find my way out."
+                "text": "I'm completely useless on my own."
             },
             "7": {
+                "text": "I don't think I'm going to find my way out."
+            },
+            "8": {
                 "text": "Even if anyone else ended up down here, all I've heard are dull echoes in the distance."
             }
-        }   
+        }
     },
 
     "2": {
@@ -98,11 +101,11 @@
             "3": {
                 "text": "Don't give up. Yet."
             }
-        }   
+        }
     },
 
     "3": {
-          "convName": "Area1_PreShadowEncounter1",
+        "convName": "Area1_PreShadowEncounter1",
         "map": 1,
         "playerInputToEnd": true,
         "dialogue": {
@@ -110,7 +113,7 @@
                 "speaker": "Mary",
                 "text": "Wait, a person? People?"
             }
-        }   
+        }
     },
 
     "4": {
@@ -146,11 +149,10 @@
                 "speaker": "Mary",
                 "text": "Ungh, feeling dizzy, it's getting closer."
             }
-
         }
     },
 
-     "7": {
+    "7": {
         "convName": "Area1_PreShadowEncounter5",
         "map": 1,
         "playerInputToEnd": true,
@@ -159,7 +161,6 @@
                 "speaker": "Mary",
                 "text": "Probably wasn't going to make it out of here anyways."
             }
-
         }
     },
 
@@ -172,7 +173,6 @@
                 "speaker": "Mary",
                 "text": "Umm . . . maybe . . . if it's going to get me no matter what . . ."
             }
-
         }
     },
 
@@ -295,7 +295,7 @@
             },
             "10": {
                 "speaker": "Nick",
-                "text": "I have some medicine, bandages, extra water, and a few other supplies I packed for our hike . . ."
+                "text": "I have some medicine, bandages, extra water, and a few other supplies I packed for our camping trip . . ."
             }
         }
     },
@@ -407,7 +407,7 @@
             },
             "5": {
                 "speaker": "Mary",
-                "text": "We could speculate, but I don't really want to waste any more time down here."
+                "text": "We could speculate, but honestly, I don't want to waste any more time down here."
             },
             "6": {
                 "speaker": "Nick",
@@ -516,6 +516,882 @@
             "0": {
                 "speaker": "Mary",
                 "text": "Let's get going."
+            }
+        }
+    },
+
+    "23": {
+        "convName": "Area2_PreShadowEncounter1",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Umm, Nick, do you see this?"
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "Yeah, these things are just . . . staring at us."
+            }
+        }
+    },
+
+    "24": {
+        "convName": "Area2_PreShadowEncounter2",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Nick",
+                "text": "I think we need to fight them."
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "I'm sure they're going to attack us anyway, so there isn't much point in running away."
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "Plus, I don't see any other way forward except for across this bridge, and I'm NOT swimming in the lake."
+            },
+            "3": {
+                "speaker": "Mary",
+                "text": "Mmm, I guess so."
+            },
+            "4": {
+                "speaker": "Mary",
+                "text": "Well, in that case, how should we start this?"
+            }
+        }
+    },
+
+    "25": {
+        "convName": "Area2_PreShadowEncounter3",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Nick",
+                "text": "I don't see a way to sneak up on them, so I think we should just charge in."
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "You were able to take on that other one by yourself, and now there's two of us."
+            },
+            "2": {
+                "speaker": "Mary",
+                "text": "Umm, you seem to be ignoring that there's two of them now, too."
+            },
+            "3": {
+                "speaker": "Nick",
+                "text": "Well, you asked for my opinion."
+            },
+            "4": {
+                "speaker": "Nick",
+                "text": "Plus, I've got these weird powers now."
+            },
+            "5": {
+                "speaker": "Mary",
+                "text": "Sorry, I'm just really nervous."
+            },
+            "6": {
+                "speaker": "Mary",
+                "text": "I think you're right, though."
+            },
+            "7": {
+                "speaker": "Mary",
+                "text": "Hnge, deep breath . . ."
+            },
+            "8": {
+                "speaker": "Nick",
+                "text": "Ready?"
+            },
+            "9": {
+                "speaker": "Mary",
+                "text": "Ready."
+            }
+        }
+    },
+
+    "26": {
+        "convName": "Area2_PostShadowEncounter1",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Wow."
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "I think we did it."
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "It sure looks like it."
+            }
+        }
+    },
+
+    "27": {
+        "convName": "Area2_PostShadowEncounter2",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Well, umm, the path looks clear."
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "If you're not too hurt, can we please get off this bridge before something else happens?"
+            }
+        }
+    },
+
+    "28": {
+        "convName": "Area2_PostShadowEncounter3",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Nick",
+                "text": "Yes, please."
+            }
+        }
+    },
+
+    "29": {
+        "convName": "Area2_PostShadowEncounter4",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Wait a minute, that looks like . . ."
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": ". . . . . . . . . . . . . . ."
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "LOGAN!"
+            }
+        }
+    },
+
+    "30": {
+        "convName": "Area2_PostShadowEncounter5",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Logan",
+                "text": "Hey, Joe, it IS Nick and Mary!"
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "You're here!"
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "You're really here!"
+            }
+        }
+    },
+
+    "31": {
+        "convName": "Area2_PostShadowEncounter6",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": ". . . . . . . . . . . . . . ."
+            },
+            "1": {
+                "speaker": "Joe",
+                "text": "Umm, Nick, I'm here, too."
+            }
+        }
+    },
+
+    "32": {
+        "convName": "Area2_PostShadowEncounter7",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Nick",
+                "text": "Ah, erm, right, sorry."
+            }
+        }
+    },
+
+    "33": {
+        "convName": "Area2_PostShadowEncounter8",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "Anywho, I'm really happy to see you guys, too!"
+            },
+            "0": {
+                "speaker": "Joe",
+                "text": "But, were you guys fighting those shadowy creatures on the bridge?"
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "Yeah, we were."
+            },
+            "2": {
+                "speaker": "Joe",
+                "text": "And . . . you got rid of them?"
+            },
+            "3": {
+                "speaker": "Mary",
+                "text": "They fell down and vanished, so I think so."
+            },
+            "4": {
+                "speaker": "Logan",
+                "text": "Whoa."
+            },
+            "5": {
+                "speaker": "Logan",
+                "text": "Joe and I just ran when we saw those things."
+            },
+            "6": {
+                "speaker": "Logan",
+                "text": "We've been hiding from them for a while."
+            },
+            "7": {
+                "speaker": "Joe",
+                "text": "Yeah, but then we thought we heard you guys start yelling a while back."
+            },
+            "8": {
+                "speaker": "Joe",
+                "text": "I finally convinced Logan to come and check it out with me."
+            }
+        }
+    },
+
+    "34": {
+        "convName": "Area2_PostShadowEncounter9",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Logan",
+                "text": "Hey, it was your idea to hide in the first place!"
+            }
+        }
+    },
+
+    "35": {
+        "convName": "Area2_PostShadowEncounter10",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Umm, Logan, I don't mean to alarm you, but I just noticed that you're kind of . . . vibrating."
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "Like, a lot."
+            }
+        }
+    },
+
+    "36": {
+        "convName": "Area2_PostShadowEncounter11",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Logan",
+                "text": "Ah, no, you're right!"
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "Whoa, you're moving really fast."
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "Umm, do you feel okay?"
+            },
+            "3": {
+                "speaker": "Logan",
+                "text": "I don't know, I can't make it stop!"
+            },
+            "4": {
+                "speaker": "Logan",
+                "text": "Somebody help meeeee!"
+            }
+        }
+    },
+
+    "37": {
+        "convName": "Area2_PostShadowEncounter12",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Nick",
+                "text": "Get a grip!"
+            },
+            "1": {
+                "speaker": "Logan",
+                "text": ". . . . . . . . . . . . . . ."
+            },
+            "2": {
+                "speaker": "Logan",
+                "text": "Gee, you were so happy to see me a minute ago."
+            },
+            "3": {
+                "speaker": "Mary",
+                "text": "Sorry, I shouldn't have said anything."
+            },
+            "4": {
+                "speaker": "Nick",
+                "text": "Joe?"
+            },
+            "5": {
+                "speaker": "Nick",
+                "text": "Any chance you feel different?"
+            }
+        }
+    },
+
+    "38": {
+        "convName": "Area2_PostShadowEncounter13",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "Hmm, now that you mention it, my fingers feel kinda tingly."
+            }
+        }
+    },
+
+    "39": {
+        "convName": "Area2_PostShadowEncounter14",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Hey, don't come near me after saying something like that!"
+            }
+        }
+    },
+
+    "40": {
+        "convName": "Area2_PostShadowEncounter15",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "My cuts and bruises . . . they're healing!"
+            },
+            "1": {
+                "speaker": "Joe",
+                "text": "No. Way."
+            },
+            "2": {
+                "speaker": "Logan",
+                "text": "I, uh, think you can tell that this is a new development for us."
+            },
+            "3": {
+                "speaker": "Joe",
+                "text": "Now I'm REALLY freaking out."
+            },
+            "4": {
+                "speaker": "Mary",
+                "text": "Hey, guys?"
+            },
+            "5": {
+                "speaker": "Mary",
+                "text": "I think we should take a moment to sit down, catch up, and make a plan."
+            },
+            "6": {
+                "speaker": "Mary",
+                "text": "I don't think we're going to get anywhere if we don't calm down."
+            },
+            "7": {
+                "speaker": "Nick",
+                "text": "Mary's right."
+            },
+            "8": {
+                "speaker": "Nick",
+                "text": "I need to bandage myself up after that fight, anyways."
+            }
+        }
+    },
+
+    "41": {
+        "convName": "Area2_PostShadowEncounter16",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "Alright, glad it wasn't just me and Logan who saw those shadows come out near the full eclipse."
+            },
+            "1": {
+                "speaker": "Joe",
+                "text": "I think we've been trying too hard to rationalize all of it."
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "You guys are lucky that you ended up together right away."
+            },
+            "3": {
+                "speaker": "Joe",
+                "text": "Yeah, for real."
+            },
+            "4": {
+                "speaker": "Joe",
+                "text": "I'm so sorry that you and Mary had to wander around by yourselves for a bit there."
+            },
+            "5": {
+                "speaker": "Logan",
+                "text": "Speaking of which, has anyone seen Howie?"
+            },
+            "6": {
+                "speaker": "Joe",
+                "text": "Ah, right, we haven't seen him at all since ending up down here."
+            },
+            "7": {
+                "speaker": "Nick",
+                "text": "Us, neither."
+            },
+            "8": {
+                "speaker": "Nick",
+                "text": "Well, we'll have a better chance of finding him if we keep looking for a way out, if he even IS here."
+            },
+            "9": {
+                "speaker": "Joe",
+                "text": "Mmm, I guess you're right."
+            }
+        }
+    },
+
+    "42": {
+        "convName": "Area2_PostShadowEncounter17",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Nick",
+                "text": "Alright, Mary, lead the way."
+            }
+        }
+    },
+
+    "43": {
+        "convName": "Area2_PostShadowEncounter18",
+        "map": 2,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Wait, me?!? Why me?"
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "I'm the only one here without any crazy powers!"
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "Personally, I think it's better to follow one person as a group, and honestly, you did a pretty good job getting me over here."
+            },
+            "3": {
+                "speaker": "Nick",
+                "text": "I don't think it matters that you're the only one without powers for whatever reason."
+            },
+            "4": {
+                "speaker": "Nick",
+                "text": "I'm sure that Joe and Logan would agree."
+            },
+            "5": {
+                "speaker": "Logan",
+                "text": "From what Nick said, no complaints here."
+            },
+            "6": {
+                "speaker": "Joe",
+                "text": "Yep, go ahead."
+            },
+            "7": {
+                "speaker": "Joe",
+                "text": "Plus, you're the one carrying the lantern."
+            },
+            "8": {
+                "speaker": "Mary",
+                "text": "Yeah, this stupid lantern that YOU wanted to buy at the thrift store but made ME carry up the mountain."
+            },
+            "9": {
+                "speaker": "Joe",
+                "text": "Hehe, yeah, sorry again about that."
+            },
+            "10": {
+                "speaker": "Joe",
+                "text": "I didn't realize I wouldn't have the space to carry it while lugging our other camping stuff up to the site."
+            },
+            "11": {
+                "speaker": "Joe",
+                "text": "Speaking of which, I wonder what happened to all of that after we ran away."
+            },
+            "12": {
+                "speaker": "Mary",
+                "text": "Whatever, let's just get going."
+            }
+        }
+    },
+
+    "44": {
+        "convName": "Area3_Entrance1",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Logan",
+                "text": "Whoa, that river's moving so fast!"
+            }
+        }
+    },
+
+    "45": {
+        "convName": "Area3_Entrance2",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Nick",
+                "text": "Wait, Logan, come back!"
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "You've got to stop doing this!"
+            }
+        }
+    },
+
+    "46": {
+        "convName": "Area3_Entrance3",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "They sure are something, aren't they?"
+            },
+            "1": {
+                "speaker": "Joe",
+                "text": "Yep."
+            }
+        }
+    },
+
+    "47": {
+        "convName": "Area3_Entrance4",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "I hope the tall grass means we're getting closer to an entrance or something."
+            },
+            "1": {
+                "speaker": "Joe",
+                "text": "I do wonder how it's growing like this without any sunlight, though."
+            }
+        }
+    },
+
+    "48": {
+        "convName": "Area3_Entrance5",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "Heh, if we look in it long enough, think we'll find a shiny?"
+            }
+        }
+    },
+
+    "49": {
+        "convName": "Area3_Entrance6",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Hngh, I'm surrounded by foolish fools doing the most foolishly foolish things."
+            }
+        }
+    },
+
+    "50": {
+        "convName": "Area3_Entrance7",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "I'm sorry, what was that?"
+            }
+        }
+    },
+
+    "51": {
+        "convName": "Area3_Entrance8",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Oh, nothing . . ."
+            }
+        }
+    },
+
+    "52": {
+        "convName": "Area3_PreShadowEncounter1",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Nick",
+                "text": "Wow, look at how choppy that water is."
+            }
+        }
+    },
+
+    "53": {
+        "convName": "Area3_PreShadowEncounter2",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "It's a pretty small pool."
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "Why do you think it's so rough?"
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "Mmm, I can't see the bottom."
+            },
+            "3": {
+                "speaker": "Nick",
+                "text": "Maybe deep underneath it connects to some underwater caverns, and there's some type of huge ungodly creature thrashing around that's stirring up the surface."
+            },
+            "4": {
+                "speaker": "Mary",
+                "text": ". . . . . . . . . . . . . . ."
+            },
+            "5": {
+                "speaker": "Nick",
+                "text": "Or, I dunno, it could be magic."
+            },
+            "6": {
+                "speaker": "Nick",
+                "text": "This place is really weird."
+            }
+        }
+    },
+
+    "54": {
+        "convName": "Area3_PreShadowEncounter3",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Logan",
+                "text": "Hey, wait, stop talking."
+            },
+            "1": {
+                "speaker": "Logan",
+                "text": "Did you guys hear that?"
+            }
+        }
+    },
+
+    "55": {
+        "convName": "Area3_PreShadowEncounter4",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Logan",
+                "text": "I think something's over there."
+            }
+        }
+    },
+
+    "56": {
+        "convName": "Area3_PreShadowEncounter5",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "Umm, do you think it's been stalking us?"
+            }
+        }
+    },
+
+    "57": {
+        "convName": "Area3_PreShadowEncounter6",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Brooding Shadow",
+                "text": "EGT UTO FO YM WSMPA!"
+            }
+        }
+    },
+
+    "58": {
+        "convName": "Area3_PreShadowEncounter7",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Joe",
+                "text": "Ahg, it sounds horrible and looks REALLY agitated."
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "Nngh, this one looks really strong."
+            },
+            "2": {
+                "speaker": "Mary",
+                "text": "It doesn't matter, it's coming for us."
+            },
+            "2": {
+                "speaker": "Mary",
+                "text": "Get ready!"
+            }
+        }
+    },
+
+    "59": {
+        "convName": "Area3_PostShadowEncounter1",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "*gasp* *pant* That's it. It's gone."
+            },
+            "1": {
+                "speaker": "Nick",
+                "text": "Nngh, that thing was awful, whatever it was supposed to be."
+            }
+        }
+    },
+
+    "60": {
+        "convName": "Area3_PostShadowEncounter2",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Mary",
+                "text": "Hngh, no, I don't think I can take any more."
+            }
+        }
+    },
+
+    "61": {
+        "convName": "Area3_PostShadowEncounter3",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "???",
+                "text": "Hey guys."
+            },
+            "1": {
+                "speaker": "Mary",
+                "text": "Howie!"
+            },
+            "2": {
+                "speaker": "Nick",
+                "text": "Howie!"
+            },
+            "3": {
+                "speaker": "Logan",
+                "text": "Howie!"
+            },
+            "4": {
+                "speaker": "Joe",
+                "text": "Hoooowwwwiiiieeeeeeee!"
+            }
+        }
+    },
+
+    "62": {
+        "convName": "Area3_PostShadowEncounter4",
+        "map": 3,
+        "playerInputToEnd": true,
+        "dialogue": {
+            "0": {
+                "speaker": "Howie",
+                "text": "Hah, wow, you're all here!"
+            },
+            "1": {
+                "speaker": "Joe",
+                "text": "Umm, Howie, are you crying?"
+            },
+            "2": {
+                "speaker": "Logan",
+                "text": "I mean, can you blame him?"
+            },
+            "3": {
+                "speaker": "Nick",
+                "text": "Hey, were you watching us that whole time we were fighting?"
+            },
+            "4": {
+                "speaker": "Howie",
+                "text": "Oh, well, I saw a bit of it, but I mostly heard you guys fighting."
+            },
+            "5": {
+                "speaker": "Howie",
+                "text": "I've been laying in the grass for a while."
+            },
+            "6": {
+                "speaker": "Howie",
+                "text": "I don't know how, but I woke up by that river after we started running from the eclipse."
+            },
+            "7": {
+                "speaker": "Nick",
+                "text": "Well, why didn't you come out and say something?"
+            },
+            "8": {
+                "speaker": "Howie",
+                "text": "That shadowy . . . thing had been walking around here for a while."
+            },
+            "9": {
+                "speaker": "Howie",
+                "text": "It saw me a few times and started chasing me."
+            },
+            "10": {
+                "speaker": "Howie",
+                "text": "It looked and sounded really scary, so I've been hiding in the grass."
+            },
+            "11": {
+                "speaker": "Howie",
+                "text": "I thought I heard you guys, but I didn't want to risk it finding me again."
             }
         }
     }

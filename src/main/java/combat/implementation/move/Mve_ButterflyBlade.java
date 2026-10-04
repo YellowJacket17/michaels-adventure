@@ -23,7 +23,7 @@ public class Mve_ButterflyBlade extends MoveBase {
     private static final String mveName = "Butterfly Blade";
     private static final String mveDescription = "Slashes at the target with a knife. Lowers the target's defense.";
     private static final int mvePower = 60;
-    private static final int mveAccuracy = 95;
+    private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 3;
     private static final Vector3f mveEffectColor = MoveBase.PHYSICAL_MOVE_COLOR;
     private static final String mveSoundEffect = "butterflyBlade";

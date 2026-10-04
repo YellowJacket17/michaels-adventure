@@ -42,9 +42,9 @@ public class LifeSkillBannerBackground extends Drawable {
         this.sprite = AssetPool.getSpritesheet("miscellaneous").getSprite(0);
         this.transform.scale.x = this.sprite.getNativeWidth();
         this.transform.scale.y = this.sprite.getNativeHeight();
-        this.color.x = 20; // 46
-        this.color.y = 20; // 74
-        this.color.z = 20; // 123
+        this.color.x = 235; // 20
+        this.color.y = 235; // 20
+        this.color.z = 235; // 20
         this.color.w = 220;
     }
 
@@ -65,19 +65,19 @@ public class LifeSkillBannerBackground extends Drawable {
 
                 switch (bannerColor) {
                     case STANDARD:
-                        this.color.x = 20;
-                        this.color.y = 20;
-                        this.color.z = 20;
+                        this.color.x = 235;
+                        this.color.y = 235;
+                        this.color.z = 235;
                         break;
                     case TARGET:
-                        this.color.x = 255;
-                        this.color.y = 170;
-                        this.color.z = 100;
+                        this.color.x = 255; //255
+                        this.color.y = 191; //170
+                        this.color.z = 138; //100
                         break;
                     case TURN:
-                        this.color.x = 100;
-                        this.color.y = 193;
-                        this.color.z = 255;
+                        this.color.x = 138; //100
+                        this.color.y = 208; //193
+                        this.color.z = 255; //255
                         break;
                 }
                 lastBannerColor = bannerColor;

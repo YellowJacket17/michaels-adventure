@@ -63,7 +63,7 @@ public class Chr_Nick extends EntityBase {
         combatFaintRight2_1 = AssetPool.getSpritesheet("characters").getSprite(74);
         combatFaintRight3_1 = AssetPool.getSpritesheet("characters").getSprite(76);
         combatFaintRight4_1 = AssetPool.getSpritesheet("characters").getSprite(78);
-        combatFaintRight5_1 = AssetPool.getSpritesheet("characters").getSprite(88);
+        combatFaintRight5_1 = AssetPool.getSpritesheet("characters").getSprite(80);
         combatFaintRight6_1 = AssetPool.getSpritesheet("characters").getSprite(82);
 
         combatFaintRight1_2 = AssetPool.getSpritesheet("characters").getSprite(73);

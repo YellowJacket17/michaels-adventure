@@ -5,7 +5,6 @@ import entity.EntityBase;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import render.Renderer;
 import render.drawable.Transform;
 import render.enumeration.ZIndex;
 import ui.enumeration.PartyMenuSlot;
@@ -44,7 +43,9 @@ public class UiPartyMenuSupport {
 
     private Transform tempWorldTransform;
 
-    private Vector3f textColor;
+    private Vector3f standardTextColor;
+
+    private Vector3f scrollIconTextColor;
 
     private Vector4f scrollIconInactiveColor;
 
@@ -898,7 +899,8 @@ public class UiPartyMenuSupport {
         tempWorldTransform = new Transform(tempWorldCoords, tempWorldDimensions);
 
         // Colors.
-        textColor = new Vector3f(255, 255, 255);
+        standardTextColor = new Vector3f(255, 255, 255);
+        scrollIconTextColor = new Vector3f(255, 255, 255);
         scrollIconInactiveColor = new Vector4f(226, 226, 226, 255); // 174, 231, 255, 255
         scrollIconActiveColor = new Vector4f(244, 154, 45, 255); // 100, 193, 255, 255
         verticalDividerColor = new Vector4f(147, 182, 220, 255);
@@ -1291,7 +1293,7 @@ public class UiPartyMenuSupport {
         entityNameTextScreenCoords.add(new Vector2f(workingScreenCoords.x, workingScreenCoords.y));
 
         // Life bar coordinates.
-        workingWorldCoords.x = baseWorldCoords.x + 64.0f;
+        workingWorldCoords.x = baseWorldCoords.x + 63.0f;
         workingWorldCoords.y = baseWorldCoords.y + 26.0f;
         gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords, workingScreenCoords);
         entityLifeBarScreenCoords.add(new Vector2f(workingScreenCoords.x, workingScreenCoords.y));
@@ -1309,7 +1311,7 @@ public class UiPartyMenuSupport {
         entityLifeNumberTextScreenCoords.add(new Vector2f(workingScreenCoords.x, workingScreenCoords.y));
 
         // Skill bar coordinates.
-        workingWorldCoords.x = baseWorldCoords.x + 64.0f;
+        workingWorldCoords.x = baseWorldCoords.x + 63.0f;
         workingWorldCoords.y = baseWorldCoords.y + 42.0f;
         gp.getCamera().worldCoordsToScreenCoords(workingWorldCoords, workingScreenCoords);
         entitySkillBarScreenCoords.add(new Vector2f(workingScreenCoords.x, workingScreenCoords.y));
@@ -1378,7 +1380,7 @@ public class UiPartyMenuSupport {
                 entityNameTextScreenCoords.get(partyMenuSlot).x,
                 entityNameTextScreenCoords.get(partyMenuSlot).y,
                 slotIconContentsFontScale,
-                textColor,
+                scrollIconTextColor,
                 gp.getUi().getStandardBoldFont(),
                 ZIndex.SECOND_LAYER
         );
@@ -1398,7 +1400,7 @@ public class UiPartyMenuSupport {
                 entityLifeLabelTextScreenCoords.get(partyMenuSlot).x,
                 entityLifeLabelTextScreenCoords.get(partyMenuSlot).y,
                 slotIconContentsFontScale,
-                textColor,
+                scrollIconTextColor,
                 gp.getUi().getStandardBoldFont(),
                 ZIndex.SECOND_LAYER
         );
@@ -1409,7 +1411,7 @@ public class UiPartyMenuSupport {
                 entityLifeNumberTextScreenCoords.get(partyMenuSlot).x,
                 entityLifeNumberTextScreenCoords.get(partyMenuSlot).y,
                 slotIconContentsFontScale,
-                textColor,
+                scrollIconTextColor,
                 gp.getUi().getStandardBoldFont(),
                 ZIndex.SECOND_LAYER
         );
@@ -1429,7 +1431,7 @@ public class UiPartyMenuSupport {
                 entitySkillLabelTextScreenCoords.get(partyMenuSlot).x,
                 entitySkillLabelTextScreenCoords.get(partyMenuSlot).y,
                 slotIconContentsFontScale,
-                textColor,
+                scrollIconTextColor,
                 gp.getUi().getStandardBoldFont(),
                 ZIndex.SECOND_LAYER
         );
@@ -1440,7 +1442,7 @@ public class UiPartyMenuSupport {
                 entitySkillNumberTextScreenCoords.get(partyMenuSlot).x,
                 entitySkillNumberTextScreenCoords.get(partyMenuSlot).y,
                 slotIconContentsFontScale,
-                textColor,
+                scrollIconTextColor,
                 gp.getUi().getStandardBoldFont(),
                 ZIndex.SECOND_LAYER
         );

@@ -12,6 +12,7 @@ import cutscene.CutsceneManager;
 import dialogue.DialogueArrow;
 import dialogue.DialogueReader;
 import entity.EntityManager;
+import entity.enumeration.EntityDirection;
 import miscellaneous.TutorialHandler;
 import event.support.*;
 import item.ItemManager;
@@ -236,14 +237,66 @@ public class GamePanel {
         cutsceneM.initiateCutscene(2);
 
         // TEST
-//        mapM.loadMap(1, 0, true);
+//        mapM.loadMap(2, 0, true);
 //        entityM.getPlayer().setHidden(false);
 //        fadeS.displayColor(new Vector3f(255, 255, 255));
 //        fadeS.initiateFadeFrom(0.5);
+
+//        entityM.getPlayer().setCol(37);
+//        entityM.getPlayer().setRow(49);
+//        entityM.getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
+//
+//        JsonParser.loadEntityJson(this, 5);
+//        partyS.addEntityToParty(5, false);
+//        entityM.getEntityById(5).stopFollowingEntity();
+//
+//        entityM.getEntityById(5).setCol(37);
+//        entityM.getEntityById(5).setRow(51);
+//        entityM.getEntityById(5).setDirectionCurrent(EntityDirection.RIGHT);
+//
+//        JsonParser.loadEntityJson(this, 9);
+//        JsonParser.loadEntityJson(this, 10);
+//
+//        entityM.getEntityById(9).setCol(41);
+//        entityM.getEntityById(9).setRow(49);
+//        entityM.getEntityById(9).setDirectionCurrent(EntityDirection.LEFT);
+//
+//        entityM.getEntityById(10).setCol(41);
+//        entityM.getEntityById(10).setRow(51);
+//        entityM.getEntityById(10).setDirectionCurrent(EntityDirection.LEFT);
+//
+//        JsonParser.loadEntityJson(this, 11);
+//        JsonParser.loadEntityJson(this, 12);
+//
+//        entityM.getEntityById(11).setCol(57);
+//        entityM.getEntityById(11).setRow(49);
+//        entityM.getEntityById(11).setDirectionCurrent(EntityDirection.LEFT);
+//
+//        entityM.getEntityById(12).setCol(57);
+//        entityM.getEntityById(12).setRow(51);
+//        entityM.getEntityById(12).setDirectionCurrent(EntityDirection.LEFT);
+//
+//        entityM.getEntityById(11).setHidden(false);
+//        entityM.getEntityById(12).setHidden(false);
+//
+//        partyS.addEntityToParty(11, true);
+//        partyS.addEntityToParty(12, true);
+//        setPrimaryGameState(PrimaryGameState.EXPLORE);
+
+//        cameraS.setCameraSnap(1200, 1600);
+//
+//        cutsceneM.initiateCutscene(7);
+
+
 //        setPrimaryGameState(PrimaryGameState.EXPLORE);
 //
-//        entityM.getPlayer().setCol(47);
-//        entityM.getPlayer().setRow(14);
+//        entityM.getPlayer().setCol(38);
+//        entityM.getPlayer().setRow(50);
+//        entityM.loadEntity(5);
+//        entityM.getEntityById(5).setCol(37);
+//        entityM.getEntityById(5).setRow(50);
+//        partyS.addEntityToParty(5, false);
+//        entityM.getEntityById(5).setHidden(false);
 //        entityM.getPlayer().setDirectionCurrent(EntityDirection.UP);
 //
 //        for (int i = 0; i < 1; i++) {
@@ -481,7 +534,7 @@ public class GamePanel {
     private void loadItemSpritesheet() {
 
         String filePath = "/spritesheets/items.png";
-        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 8, 32, 32, 1));
+        AssetPool.addSpritesheet("items", new Spritesheet(AssetPool.getTexture(filePath), 10, 32, 32, 1));
     }
 
 
@@ -535,6 +588,7 @@ public class GamePanel {
         AssetPool.addSound("primaryMenuOpen", "sound/effects/primaryMenuOpen.ogg");
         AssetPool.addSound("obtain", "sound/effects/obtain.ogg");
         AssetPool.addSound("hop", "sound/effects/hop.ogg");
+        AssetPool.addSound("warp", "sound/effects/warp.ogg");
         AssetPool.addSound("thud", "sound/effects/thud.ogg");
         AssetPool.addSound("footsteps", "sound/effects/footsteps.ogg");
 //        AssetPool.addSound("grassRustle", "sound/effects/grassRustle.ogg");
@@ -542,16 +596,17 @@ public class GamePanel {
 
         AssetPool.addSound("basicAttack", "sound/effects/basicAttack.ogg");
         AssetPool.addSound("shadowPower", "sound/effects/shadowPower.ogg");
+        AssetPool.addSound("shadowStrike", "sound/effects/shadowStrike.ogg");
 
         AssetPool.addSound("pickpocket", "sound/effects/pickpocket.ogg");
         AssetPool.addSound("burningDagger", "sound/effects/burningDagger.ogg");
         AssetPool.addSound("butterflyBlade", "sound/effects/butterflyBlade.ogg");
         AssetPool.addSound("sneakstrike", "sound/effects/sneakstrike.ogg");
 
-        AssetPool.addSound("revitalize", "sound/effects/revitalize.ogg");
-        AssetPool.addSound("healingSparks", "sound/effects/healingSparks.ogg");
         AssetPool.addSound("empoweringStrike", "sound/effects/empoweringStrike.ogg");
-        AssetPool.addSound("forestallingCharge", "sound/effects/forestallingCharge.ogg");
+        AssetPool.addSound("forestallingQuake", "sound/effects/forestallingQuake.ogg");
+        AssetPool.addSound("healingSparks", "sound/effects/healingSparks.ogg");
+        AssetPool.addSound("revitalize", "sound/effects/revitalize.ogg");
 
         AssetPool.addSound("brainFreeze", "sound/effects/brainFreeze.ogg");
         AssetPool.addSound("psychicSwipe", "sound/effects/psychicSwipe.ogg");
@@ -559,6 +614,8 @@ public class GamePanel {
         AssetPool.addSound("actuaryBlast", "sound/effects/actuaryBlast.ogg");
 
         AssetPool.addSound("bulletPunch", "sound/effects/bulletPunch.ogg");
+        AssetPool.addSound("swiftBash", "sound/effects/swiftBash.ogg");
+        AssetPool.addSound("whirlwindSprint", "sound/effects/whirlwindSprint.ogg");
         AssetPool.addSound("innerMachinations", "sound/effects/innerMachinations.ogg");
 
         AssetPool.addSound("gigatonSwing", "sound/effects/gigatonSwing.ogg");

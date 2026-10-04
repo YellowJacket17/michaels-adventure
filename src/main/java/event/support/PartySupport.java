@@ -167,7 +167,8 @@ public class PartySupport {
 
             if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
-                gp.getEventM().setEntityFollowTarget(entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId());  // Set active party members as following player entity.
+                gp.getEventM().setEntityFollowTarget(
+                        entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId(), true);                         // Set active party members as following player entity.
             } else if (entity.getEntityId() == entityId) {
 
                 if (!entity.isHidden()) {                                                                               // New entity is in reserve party, so hide.
@@ -193,7 +194,7 @@ public class PartySupport {
 
         for (int nonPartyId : nonPartyFollowers) {                                                                      // Set non-party followers to follow player entity again.
 
-            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
+            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId(), true);
         }
 
         if (gp.getUi().getPrimaryMenuState() == PrimaryMenuState.PARTY) {
@@ -248,7 +249,8 @@ public class PartySupport {
 
             if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
 
-                gp.getEventM().setEntityFollowTarget(entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId());  // Set active party members as following player entity.
+                gp.getEventM().setEntityFollowTarget(
+                        entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId(), false);                        // Set active party members as following player entity.
 
                 if (showActiveParty && entity.isHidden()) {                                                             // Show active party members, if applicable.
 
@@ -272,7 +274,7 @@ public class PartySupport {
 
         for (int nonPartyId : nonPartyFollowers) {                                                                      // Set non-party followers to follow player entity again.
 
-            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
+            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId(), true);
         }
 
         if (gp.getUi().getPrimaryMenuState() == PrimaryMenuState.PARTY) {
@@ -369,10 +371,17 @@ public class PartySupport {
 
             for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
-                if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {
+                if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {                                         // Set active party members as following player entity.
 
-                    gp.getEventM().setEntityFollowTarget(
-                            entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId());                           // Set active party members as following player entity.
+                    if ((entity.getEntityId() == primaryEntityId) || (entity.getEntityId() == secondaryEntityId)) {
+
+                        gp.getEventM().setEntityFollowTarget(
+                                entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId(), false);                // Don't freeze to prevent swapped entity from attempting to walk back to its prior position (pathfinder will set the followed entity's last positon as this entity's pre-swap position).
+                    } else {
+
+                        gp.getEventM().setEntityFollowTarget(
+                                entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId(), true);
+                    }
                 }
 
                 if (entity.getEntityId() == primaryEntityId) {
@@ -429,7 +438,7 @@ public class PartySupport {
 
             for (int nonPartyId : nonPartyFollowers) {                                                                  // Set non-party followers to follow player entity again.
 
-                gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
+                gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId(), true);
             }
         }
     }
@@ -485,7 +494,7 @@ public class PartySupport {
 
         for (int nonPartyId : nonPartyFollowers) {                                                                      // Set non-party followers to follow player entity again.
 
-            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId());
+            gp.getEventM().setEntityFollowTarget(nonPartyId, gp.getEntityM().getPlayer().getEntityId(), true);
         }
 
         if (gp.getUi().getPrimaryMenuState() == PrimaryMenuState.PARTY) {

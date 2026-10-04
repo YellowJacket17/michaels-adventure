@@ -13,7 +13,7 @@ public class Itm_Goggles extends ItemBase {
     // FIELDS
     private static final int itmId = 9;
     private static final String itmName = "Swim Goggles";
-    private static final String itmDescription = "Damp swim goggles that were cast to the ground. Hope no one tried to jump into the water . . .";
+    private static final String itmDescription = "Damp swim goggles that were cast to the ground. Hope no one tried to jump into the glowing water . . .";
 
 
     // CONSTRUCTOR
@@ -42,7 +42,7 @@ public class Itm_Goggles extends ItemBase {
     @Override
     protected void setSprite() {
 
-        sprite = AssetPool.getSpritesheet("items").getSprite(6);
+        sprite = AssetPool.getSpritesheet("items").getSprite(9);
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
     }

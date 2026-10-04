@@ -34,7 +34,7 @@ public class Evt_Tutorial003 extends EventTutorialBase {
                 + "'S' key - Shift selection downward.\n"
                 + "'Enter' key - Confirm selection.";
         int currentPageNumber = 3;
-        int totalPageNumbers = 6;
+        int totalPageNumbers = 7;
         gp.getTutorialH().generateTutorial(4, title, subtitle, content, currentPageNumber, totalPageNumbers);
     }
 }

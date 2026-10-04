@@ -29,16 +29,12 @@ public class Evt_Tutorial004 extends EventTutorialBase {
     private void generateTutorial() {
 
         String title = "Controls Tutorial";
-        String subtitle = "Main Menu - Party";
-        String content = "'W' key - Shift character selection upward.\n"
-                + "'S' key - Shift character selection downward.\n"
-                + "'A' key - Shift skill selection leftward.\n"
-                + "'D' key - Shift skill selection rightward.\n"
-                + "'Q' key - Shift to settings menu.\n"
-                + "'E' key - Shift to inventory menu.\n"
+        String subtitle = "Main Menu - General";
+        String content = "'Q' key - Shift active menu section left (Party, Inventory, Settings).\n"
+                + "'E' key - Shift active menu section right (Party, Inventory, Settings).\n"
                 + "'Space' key - Close main menu.";
         int currentPageNumber = 4;
-        int totalPageNumbers = 6;
+        int totalPageNumbers = 7;
         gp.getTutorialH().generateTutorial(5, title, subtitle, content, currentPageNumber, totalPageNumbers);
     }
 }

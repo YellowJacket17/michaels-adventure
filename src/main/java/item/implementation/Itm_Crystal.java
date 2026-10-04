@@ -13,7 +13,7 @@ public class Itm_Crystal extends ItemBase {
     // FIELDS
     private static final int itmId = 8;
     private static final String itmName = "Crystal";
-    private static final String itmDescription = "A beautiful blue crystal strung as a necklace. It emanates the refined power of the Earth.";
+    private static final String itmDescription = "A beautiful blue crystal with strange emblem and a necklace latch. It emanates the refined power of the earth.";
 
 
     // CONSTRUCTOR
@@ -42,7 +42,7 @@ public class Itm_Crystal extends ItemBase {
     @Override
     protected void setSprite() {
 
-        sprite = AssetPool.getSpritesheet("items").getSprite(6);
+        sprite = AssetPool.getSpritesheet("items").getSprite(8);
         transform.scale.x = sprite.getNativeWidth();
         transform.scale.y = sprite.getNativeHeight();
     }

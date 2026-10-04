@@ -204,9 +204,6 @@ public class Window {
             glfwSwapInterval(0);
         }
 
-        // Make window visible.
-        glfwShowWindow(glfwWindow);
-
         // Initialize audio device.
         String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
         audioDevice = alcOpenDevice(defaultDeviceName);
@@ -271,6 +268,9 @@ public class Window {
 
         // Indicate that the main game loop is starting.
         running = true;
+
+        // Make window visible.
+        glfwShowWindow(glfwWindow);
 
         // Main game loop.
         while (!glfwWindowShouldClose(glfwWindow) && running) {

@@ -111,10 +111,10 @@ public class ItemSupport {
         String subtitle = "You found an item!";
         String content = "As you explore, you'll find various items scattered throughout the world."
                 + " There are three items in each area, excluding the final area."
-                + " While the items will not help you on your adventure, be sure to search for them!";
+                + " While items will not help you on your adventure, be sure to search for them!";
         int currentPageNumber = 1;
         int totalPageNumbers = 1;
-        gp.getTutorialH().generateTutorial(8, title, subtitle, content, currentPageNumber, totalPageNumbers);
+        gp.getTutorialH().generateTutorial(9, title, subtitle, content, currentPageNumber, totalPageNumbers);
     }
 
 

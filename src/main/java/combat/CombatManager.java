@@ -7,6 +7,7 @@ import combat.implementation.action.*;
 import combat.implementation.move.Mve_BasicAttack;
 import core.GamePanel;
 import entity.enumeration.EntityStatus;
+import entity.enumeration.MoveWeakness;
 import event.enumeration.TransitionType;
 import entity.EntityBase;
 import entity.enumeration.EntityDirection;
@@ -199,6 +200,13 @@ public class CombatManager {
     private boolean combatUiVisible = false;
 
     /**
+     * Boolean indicating whether the first turn of a new combat scenario has been taken (true) or not (false).
+     * This is used to control whether 'endEntityTurn()' logic should be run upon first starting combat or not.
+     * This prevents the first entity in the turn order from inadvertently skipping their turn upon combat start.
+     */
+    private boolean firstTurnActioned = false;
+
+    /**
      * Boolean indicating whether the root combat sub-menu has been displayed yet during an entity's turn.
      * This is used to control the character-by-character printing of the accompanying dialogue when the root combat
      * sub-menu is first displayed.
@@ -245,7 +253,13 @@ public class CombatManager {
             runNextQueuedAction();
         } else {                                                                                                        // No queued actions signal the end of an entity's turn; begin the turn of the next entity in line in turn order queue.
 
-            endEntityTurn();
+            if (firstTurnActioned) {
+
+                endEntityTurn();
+            } else {
+
+                firstTurnActioned = true;
+            }
 
             if (UtilityTool.VERBOSE_LOGGING) {
 
@@ -508,7 +522,7 @@ public class CombatManager {
         }
         String message = UtilityTool.buildEntityListMessage(nonPlayerSideEntityNames, false);
 
-        // Stage a message.
+        // Stage introductory message.
         message += " would like to fight!";
         addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
 
@@ -517,7 +531,13 @@ public class CombatManager {
 
         // Stage root combat sub-menu action.
         addQueuedActionBack(new Act_ToggleCombatUi(gp, true));
-        generateRootSubMenuAction();
+
+        // Stage opponent attacking first message, if applicable.
+        if (nonPlayerSideEntities.contains(queuedEntityTurnOrder.peekFirst())) {
+
+            message = "The opponent is about to make the first move!";
+            addQueuedActionBack(new Act_ReadMessage(gp, message, true, true));
+        }
 
         // Enter the main method for progressing combat.
         progressCombat();
@@ -568,7 +588,7 @@ public class CombatManager {
         // Warp party members to player entity.
         // Must run before restoring pre-combat party ordering, or active party may automatically walk away from player
         // entity towards combat location after transition is complete.
-        // This is because, when the follower chain is rebuilt in `swapEntityInParty()`, the last tile position of the
+        // This is because, when the follower chain is rebuilt in 'swapEntityInParty()', the last tile position of the
         // followed is set to the follower's combat position since the warp to player hasn't happened yet, causing this
         // issue.
         gp.getWarpS().warpActivePartyMembersToPlayer();
@@ -1755,12 +1775,7 @@ public class CombatManager {
         EntityBase sourceEntity = gp.getEntityM().getEntityById(queuedEntityTurnOrder.peekFirst());
 
         // Generate possible moves for source entity to use
-        ArrayList<MoveBase> possibleMoves = new ArrayList<>();
-        for (MoveBase move : sourceEntity.getMoves()) {
-            if (move.skillPoints <= sourceEntity.getSkill()) {
-                possibleMoves.add(move);
-            }
-        }
+        LimitedArrayList<MoveBase> smartMoveOptions = smartMoveSelect(sourceEntity.getEntityId());
 
         // Select random move for source entity to use and target(s).
         MoveBase move = null;
@@ -1768,14 +1783,14 @@ public class CombatManager {
         ArrayList<Integer> targetEntityIds = new ArrayList<>();
         boolean validMove = false;                                                                                      // Boolean to control whether a move with more than zero possible targets was selected.
         int i;
-        while (!validMove && possibleMoves.size() > 0) {
-            i = random.nextInt(possibleMoves.size());                                                                   // Generate random number from 0 to number of possible moves minus one (both inclusive).
-            move = possibleMoves.get(i);
+        while (!validMove && smartMoveOptions.size() > 0) {
+            i = random.nextInt(smartMoveOptions.size());                                                                // Generate random number from 0 to number of possible moves minus one (both inclusive).
+            move = smartMoveOptions.get(i);
             generateNonPlayerSideTargetOptions(move);
             if (lastGeneratedTargetOptions.size() > 0) {
                 validMove = true;
             } else {
-                possibleMoves.remove(i);
+                smartMoveOptions.remove(i);
             }
         }
         if (!validMove) {
@@ -1787,8 +1802,10 @@ public class CombatManager {
                 targetEntityIds.add(entityId);
             }
         } else {                                                                                                        // Move only hits one possible target.
-            i = random.nextInt(lastGeneratedTargetOptions.size());                                                      // Generate random number from 0 to number of selectable target entities (both inclusive)
-            targetEntityIds.add(lastGeneratedTargetOptions.get(i));
+
+            LimitedArrayList<Integer> smartTargetOptions = smartTargetSelect(move, lastGeneratedTargetOptions);
+            i = random.nextInt(smartTargetOptions.size());                                                              // Generate random number from 0 to number of selectable target entities (both inclusive)
+            targetEntityIds.add(smartTargetOptions.get(i));
         }
 
         // Add move action.
@@ -1796,6 +1813,156 @@ public class CombatManager {
         addQueuedActionBack(new Act_ReadMessage(gp, message, false, true));
         addQueuedActionBack(new Act_UseMove(gp, move, sourceEntity.getEntityId(), targetEntityIds));
         runNextQueuedAction();
+    }
+
+
+    /**
+     * Smartly generates a list of the most effective moves based on the entity using the move.
+     * This may depend on the entity's attributes, for example.
+     *
+     * @param sourceEntityId ID of entity using a move
+     * @return list of most effective moves
+     */
+    private LimitedArrayList<MoveBase> smartMoveSelect(int sourceEntityId) {
+
+        EntityBase sourceEntity = gp.getEntityM().getEntityById(sourceEntityId);
+        ArrayList<MoveBase> possibleMoves = new ArrayList<>();
+        boolean healingSparksAvailable = false;
+        MoveBase healingSparksMove = defaultMove;                                                                       // Placeholder.
+
+        for (MoveBase move : sourceEntity.getMoves()) {
+
+            if (move.skillPoints <= sourceEntity.getSkill()) {
+
+                possibleMoves.add(move);
+
+                if (move.getMoveId() == 9) {
+
+                    healingSparksAvailable = true;
+                    healingSparksMove = move;
+                }
+            }
+        }
+        LimitedArrayList<MoveBase> smartMoveOptions = new LimitedArrayList<>(possibleMoves.size());
+
+        if ((sourceEntity.getSkill() <= (sourceEntity.getMaxSkill() / 4))                                               // If entity is low on skill points, conserve it.
+                || (sourceEntity.getSkill() <= (sourceEntity.getMaxSkill() / 2))
+                    && (sourceEntity.getBaseAttack() >= 60)) {
+
+            Random random = new Random();
+            int i = random.nextInt(2);
+
+            if (i == 0) {
+
+                smartMoveOptions.add(defaultMove);
+                return smartMoveOptions;
+            }
+        }
+
+        if (healingSparksAvailable) {                                                                                   // If Healing Sparks move is available to use on an ally with low health points.
+
+            ArrayList<EntityBase> allyEntities = retrieveAllyEntities(sourceEntityId);
+            allyEntities.add(sourceEntity);
+            boolean lowHealth = false;
+
+            for (EntityBase allyEntity : allyEntities) {
+
+                if (allyEntity.getLife() <= (allyEntity.getMaxLife() / 3)) {
+
+                    lowHealth = true;
+                    break;
+                }
+            }
+
+            if (lowHealth) {
+
+                Random random = new Random();
+                int i = random.nextInt(3);
+
+                if (i == 0) {
+
+                    smartMoveOptions.add(healingSparksMove);
+                    return smartMoveOptions;
+                }
+            }
+        }
+
+        if (smartMoveOptions.isEmpty()) {
+
+            for (MoveBase moveOption : possibleMoves) {
+
+                if (moveOption.getMoveId() != 9) {                                                                      // Per logic above, only add Healing Sparks move if allies have low health points.
+
+                    smartMoveOptions.add(moveOption);
+                }
+            }
+        }
+        return smartMoveOptions;
+    }
+
+
+    /**
+     * Smartly generates a list of the most effective targets based on the move being used and the available targets.
+     * This may be all the targets that are weak to a move, for example.
+     *
+     * @param move move for which most effective targets are being generated
+     * @param targetOptions entity IDs of all available targets
+     * @return entity IDs of most effective targets
+     */
+    private LimitedArrayList<Integer> smartTargetSelect(MoveBase move, ArrayList<Integer> targetOptions) {
+
+        LimitedArrayList<Integer> smartTargetOptions = new LimitedArrayList<>(targetOptions.size());
+
+        if (move.getCategory() == MoveCategory.PHYSICAL) {                                                              // Physical weakness.
+
+            for (int targetOption : targetOptions) {
+
+                if (gp.getEntityM().getEntityById(targetOption).getWeakness() == MoveWeakness.PHYSICAL) {
+
+                    smartTargetOptions.add(targetOption);
+                }
+            }
+        } else if (move.getCategory() == MoveCategory.MAGIC) {                                                          // Magic weakness.
+
+            for (int targetOption : targetOptions) {
+
+                if (gp.getEntityM().getEntityById(targetOption).getWeakness() == MoveWeakness.MAGIC) {
+
+                    smartTargetOptions.add(targetOption);
+                }
+            }
+        } else if (move.getMoveId() == 9) {                                                                             // Healing Sparks move.
+
+            int candidateTargetOption = -1;
+            float candidateTargetOptionLifePercentage = 1;
+
+            for (int targetOption : targetOptions) {                                                                    // Find target option with the least health points percentage-wise.
+
+                EntityBase entity = gp.getEntityM().getEntityById(targetOption);
+
+                if ((entity.getLife() < entity.getMaxLife())
+                        && (((float)entity.getLife() / entity.getMaxLife())
+                            < candidateTargetOptionLifePercentage)) {
+
+                    candidateTargetOption = targetOption;
+                    candidateTargetOptionLifePercentage = (float)entity.getLife() / entity.getMaxLife();
+                }
+            }
+
+            if (candidateTargetOption != -1) {
+
+                smartTargetOptions.add(candidateTargetOption);
+            }
+        }
+
+        if (smartTargetOptions.isEmpty()) {
+
+            for (int targetOption : targetOptions) {
+
+                smartTargetOptions.add(targetOption);
+            }
+        }
+        return smartTargetOptions;
     }
 
 
@@ -2803,6 +2970,7 @@ public class CombatManager {
         resetTargetLockEntity();
         lastActionSubmenu = false;
         combatUiVisible = false;
+        firstTurnActioned = false;
         newTurnRootSubMenuDisplayed = false;
     }
 

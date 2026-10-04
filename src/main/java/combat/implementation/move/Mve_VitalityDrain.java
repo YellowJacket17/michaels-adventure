@@ -21,9 +21,9 @@ public class Mve_VitalityDrain extends MoveBase {
     // FIELDS
     private static final int mveId = 14;
     private static final String mveName = "Vitality Drain";
-    private static final String mveDescription = "Steals HP from the target. Evenly restores half of damage dealt among active allies (including self).";
+    private static final String mveDescription = "Drains HP from the target. Evenly restores 75% of damage dealt among active allies and self.";
     private static final int mvePower = 60;
-    private static final int mveAccuracy = 100;
+    private static final int mveAccuracy = 95;
     private static final int mveSkillPoints = 5;
     private static final Vector3f mveEffectColor = MoveBase.MAGIC_MOVE_COLOR;
     private static final String mveSoundEffect = "vitalityDrain";
@@ -54,7 +54,7 @@ public class Mve_VitalityDrain extends MoveBase {
 
             totalTargetEntityDeltaLife += deltaLife;
         }
-        int lifeGainPerAlly = ((int)Math.floor(((float)totalTargetEntityDeltaLife / 2) / (allyEntities.size() + 1)));   // Added one to include the source entity.
+        int lifeGainPerAlly = ((int)Math.floor(((float)totalTargetEntityDeltaLife * 0.75) / (allyEntities.size() + 1)));// Added one to include the source entity.
 
         if (lifeGainPerAlly <= 0) {
 

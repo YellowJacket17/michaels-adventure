@@ -63,6 +63,10 @@ public class EventManager {
     private final Evt_Tutorial006 evt_tutorial006;
     private final Evt_Tutorial007 evt_tutorial007;
     private final Evt_Tutorial008 evt_tutorial008;
+    private final Evt_Tutorial009 evt_tutorial009;
+    private final Evt_Tutorial010 evt_tutorial010;
+    private final Evt_Tutorial011 evt_tutorial011;
+    private final Evt_Tutorial012 evt_tutorial012;
 
 
     // CONSTRUCTOR
@@ -94,6 +98,10 @@ public class EventManager {
         evt_tutorial006 = new Evt_Tutorial006(gp);
         evt_tutorial007 = new Evt_Tutorial007(gp);
         evt_tutorial008 = new Evt_Tutorial008(gp);
+        evt_tutorial009 = new Evt_Tutorial009(gp);
+        evt_tutorial010 = new Evt_Tutorial010(gp);
+        evt_tutorial011 = new Evt_Tutorial011(gp);
+        evt_tutorial012 = new Evt_Tutorial012(gp);
     }
 
 
@@ -400,6 +408,18 @@ public class EventManager {
             case 8:
                 evt_tutorial008.run();
                 break;
+            case 9:
+                evt_tutorial009.run();
+                break;
+            case 10:
+                evt_tutorial010.run();
+                break;
+            case 11:
+                evt_tutorial011.run();
+                break;
+            case 12:
+                evt_tutorial012.run();
+                break;
             default:
                 UtilityTool.logWarning("No post-tutorial logic specified for tutorial with ID '"
                         + tutorialId
@@ -582,15 +602,18 @@ public class EventManager {
      *
      * @param followerId ID of the follower entity
      * @param followedId ID of the entity to be followed
+     * @param freezeFollower whether to have the follower remain in their existing position until the followed entity
+     *                       moves next (true) or have the follower immediately begin following the followed entity
+     *                       (false)
      */
-    public void setEntityFollowTarget(int followerId, int followedId) {
+    public void setEntityFollowTarget(int followerId, int followedId, boolean freezeFollower) {
 
         EntityBase follower = gp.getEntityM().getEntityById(followerId);
         EntityBase target = gp.getEntityM().getEntityById(followedId);
 
         if ((follower != null) && (target != null) && (followerId != followedId)) {
 
-            follower.startFollowingEntity(followedId);
+            follower.startFollowingEntity(followedId, freezeFollower);
         } else if (follower == null) {
 
             throw new IllegalArgumentException("Attempted to have an entity with ID '"

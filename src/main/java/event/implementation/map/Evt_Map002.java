@@ -92,14 +92,14 @@ public class Evt_Map002 extends EventMapBase {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 46, 4,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
         if ((col == 43) && (row == 5)) {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 45, 15,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
 
@@ -108,21 +108,21 @@ public class Evt_Map002 extends EventMapBase {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 46, 4,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
         if ((col == 32) && (row == 30)) {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 46, 4,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
         if ((col == 38) && (row == 25)) {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 17, 4,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
 
@@ -131,21 +131,21 @@ public class Evt_Map002 extends EventMapBase {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 46, 4,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
         if ((col == 39) && (row == 5)) {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 46, 4,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
         if ((col == 10) && (row == 20)) {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 30, 24,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.UP);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
 
@@ -154,21 +154,21 @@ public class Evt_Map002 extends EventMapBase {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 46, 4,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
         if ((col == 18) && (row == 30)) {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 46, 4,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
         if ((col == 15) && (row == 18)) {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 6, 30,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
 
@@ -177,22 +177,34 @@ public class Evt_Map002 extends EventMapBase {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 34, 12,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.UP);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
         if ((col == 34) && (row == 12)) {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 3, 57,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.LEFT);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
         }
         if ((col == 55) && (row == 48)) {
             gp.getWarpS().initiateWarp(
                     dt, 2, gp.getMapM().getLoadedMap().getMapState(), 46, 4,
                     WarpTransitionType.STEP_PORTAL, EntityDirection.DOWN);
-            gp.getSoundS().playEffect("obtain");
+            gp.getSoundS().playEffect("warp");
             return true;
+        }
+
+        // Shadow encounter.
+        if ((col == 39) && ((row == 48) || (row == 49) || (row == 50) || (row == 51) || (row == 52))
+                && (direction == EntityDirection.RIGHT)) {
+            if (gp.getMapM().getLoadedMap().getMapState() == 0) {
+                gp.getCutsceneM().initiateCutscene(6);
+                return true;
+            } else if (gp.getMapM().getLoadedMap().getMapState() == 1) {
+                gp.getCombatM().initiateCombat(2, 39, 50, "runningLate", 9, 10);
+                return true;
+            }
         }
 
         // Map 3 warp.

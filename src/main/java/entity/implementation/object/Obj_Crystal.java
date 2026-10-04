@@ -25,7 +25,7 @@ public class Obj_Crystal extends EntityBase {
     @Override
     protected void setSprites() {
 
-        idleDown = AssetPool.getSpritesheet("items").getSprite(6);
+        idleDown = AssetPool.getSpritesheet("items").getSprite(8);
 
         sprite = idleDown;
         transform.scale.x = sprite.getNativeWidth();

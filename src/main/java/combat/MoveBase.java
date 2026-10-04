@@ -108,26 +108,31 @@ public abstract class MoveBase {
      * Color of effects for attribute increases in combat.
      */
     public static final Vector3f ATTRIBUTE_INCREASE_COLOR = new Vector3f(166, 255, 168);
+            //new Vector3f(121, 255, 128)
 
     /**
      * Color of effects for attribute decreases in combat.
      */
     public static final Vector3f ATTRIBUTE_DECREASE_COLOR = new Vector3f(255, 166, 190);
+            //new Vector3f(255, 121, 121);
 
     /**
      * Color of effects for skill recovery in combat.
      */
     public static final Vector3f SKILL_RECOVERY_COLOR = new Vector3f(188, 166, 255);
+            //new Vector3f(158, 121, 255);
 
     /**
      * Color of effects for physical moves in combat.
      */
     public static final Vector3f PHYSICAL_MOVE_COLOR = new Vector3f(166, 219, 255);
+            //new Vector3f(121, 185, 255);
 
     /**
      * Color of effects for magic moves in combat.
      */
     public static final Vector3f MAGIC_MOVE_COLOR = new Vector3f(255, 244, 166);
+            //new Vector3f(255, 238, 121);
 
     /**
      * Color of effects for support moves in combat.

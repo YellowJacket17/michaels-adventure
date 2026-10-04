@@ -9,23 +9,23 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 
 /**
- * This class defines a move (Rambunctious Bash).
+ * This class defines a move (Swift Bash).
  */
-public class Mve_RambunctiousBash extends MoveBase {
+public class Mve_SwiftBash extends MoveBase {
 
     // FIELDS
     private static final int mveId = 16;
-    private static final String mveName = "Rambunctious Bash";
-    private static final String mveDescription = "Charges swiftly and slams the target. Higher user agility buff, higher damage.";
-    private static final int mvePower = 30;
+    private static final String mveName = "Swift Bash";
+    private static final String mveDescription = "Charges swiftly and slams the target. Higher user agility, higher damage.";
+    private static final int mvePower = 40;
     private static final int mveAccuracy = 95;
     private static final int mveSkillPoints = 3;
     private static final Vector3f mveEffectColor = MoveBase.PHYSICAL_MOVE_COLOR;
-    private static final String mveSoundEffect = "basicAttack";
+    private static final String mveSoundEffect = "swiftBash";
 
 
     // CONSTRUCTOR
-    public Mve_RambunctiousBash(GamePanel gp) {
+    public Mve_SwiftBash(GamePanel gp) {
         super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT, false);
         name = mveName;
         description = mveDescription;
@@ -47,15 +47,14 @@ public class Mve_RambunctiousBash extends MoveBase {
 
         if (gp.getEntityM().getEntityById(sourceEntityId).getAgilityBuff() > 0) {
 
-            int baseBonusPower = 40;
-            int sourceEntityAttack = gp.getEntityM().getEntityById(sourceEntityId).getBaseAttack()
-                    + (int)(gp.getEntityM().getEntityById(sourceEntityId).getBaseAttack()
-                    * gp.getEntityM().getEntityById(sourceEntityId).getAttackBuff());
+            int baseBonusPower = 15;
+            int sourceEntityAgility = gp.getEntityM().getEntityById(sourceEntityId).getBaseAgility()
+                    + (int)(gp.getEntityM().getEntityById(sourceEntityId).getBaseAgility()
+                    * gp.getEntityM().getEntityById(sourceEntityId).getAgilityBuff());
             int targetEntityDefense = gp.getEntityM().getEntityById(targetEntityId).getBaseDefense()
                     + (int)(gp.getEntityM().getEntityById(targetEntityId).getBaseDefense()
                     * gp.getEntityM().getEntityById(targetEntityId).getDefenseBuff());
-            return (int)Math.ceil(baseBonusPower * ((float)sourceEntityAttack / targetEntityDefense)
-                    * gp.getEntityM().getEntityById(sourceEntityId).getAgilityBuff());
+            return (int)Math.ceil(baseBonusPower * ((float)sourceEntityAgility / targetEntityDefense));
         } else {
 
             return 0;

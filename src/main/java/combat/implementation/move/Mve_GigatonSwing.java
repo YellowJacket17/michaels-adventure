@@ -19,9 +19,9 @@ public class Mve_GigatonSwing extends MoveBase {
     private static final int mveId = 19;
     private static final String mveName = "Gigaton Swing";
     private static final String mveDescription = "Winds up and takes a killing shot at the target. The user must recharge on their next turn.";
-    private static final int mvePower = 85;
-    private static final int mveAccuracy = 80;
-    private static final int mveSkillPoints = 5;
+    private static final int mvePower = 100;
+    private static final int mveAccuracy = 70;
+    private static final int mveSkillPoints = 6;
     private static final Vector3f mveEffectColor = MoveBase.PHYSICAL_MOVE_COLOR;
     private static final String mveSoundEffect = "gigatonSwing";
 

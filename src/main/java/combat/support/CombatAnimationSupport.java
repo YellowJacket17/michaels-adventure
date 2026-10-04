@@ -827,7 +827,7 @@ public class CombatAnimationSupport {
                     || ((smaMove.getCategory() == MoveCategory.MAGIC)
                         && (gp.getEntityM().getEntityById(targetEntityId).getWeakness() == MoveWeakness.MAGIC))) {
 
-                gp.getEntityM().getEntityById(targetEntityId).initiateFlashing(new Vector3f(255, 57, 112));
+                gp.getEntityM().getEntityById(targetEntityId).initiateFlashing(new Vector3f(255, 83, 83));
             }
         }
     }

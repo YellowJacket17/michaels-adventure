@@ -14,24 +14,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This class defines a move (Empowering Strike).
+ * This class defines a move (Forestalling Quake).
  */
-public class Mve_EmpoweringStrike extends MoveBase {
+public class Mve_ForestallingQuake extends MoveBase {
 
     // FIELDS
-    private static final int mveId = 7;
-    private static final String mveName = "Empowering Strike";
-    private static final String mveDescription = "Courageously charges the target while cheering on the team. Raises all allies' attack.";
-    private static final int mvePower = 50;
+    private static final int mveId = 6;
+    private static final String mveName = "Forestalling Quake";
+    private static final String mveDescription = "Shakes large rocks loose, hitting all opponents and shielding allies. Raises all allies' defense.";
+    private static final int mvePower = 45;
     private static final int mveAccuracy = 95;
-    private static final int mveSkillPoints = 3;
-    private static final Vector3f mveEffectColor = MoveBase.PHYSICAL_MOVE_COLOR;
-    private static final String mveSoundEffect = "empoweringStrike";
+    private static final int mveSkillPoints = 4;
+    private static final Vector3f mveEffectColor = MoveBase.MAGIC_MOVE_COLOR;
+    private static final String mveSoundEffect = "forestallingQuake";
 
 
     // CONSTRUCTOR
-    public Mve_EmpoweringStrike(GamePanel gp) {
-        super(gp, mveId, MoveCategory.PHYSICAL, MoveTargets.OPPONENT, false);
+    public Mve_ForestallingQuake(GamePanel gp) {
+        super(gp, mveId, MoveCategory.MAGIC, MoveTargets.OPPONENT, true);
         name = mveName;
         description = mveDescription;
         power = mvePower;
@@ -64,7 +64,7 @@ public class Mve_EmpoweringStrike extends MoveBase {
 
             for (EntityBase allyEntity : allyEntities) {
 
-                if (allyEntity.changeAttackStage(1)) {
+                if (allyEntity.changeDefenseStage(1)) {
 
                     affectedAllyEntityIds.add(allyEntity.getEntityId());
                 }
@@ -74,7 +74,7 @@ public class Mve_EmpoweringStrike extends MoveBase {
 
                 gp.getCombatM().addQueuedActionBack(
                         new Act_CustomEffect(gp, affectedAllyEntityIds,
-                                ATTRIBUTE_INCREASE_COLOR, "attributeIncrease", true));
+                                MoveBase.ATTRIBUTE_INCREASE_COLOR, "attributeIncrease", true));
                 String message = buildEffectMessage(affectedAllyEntityIds);
                 gp.getCombatM().addQueuedActionBack(
                         new Act_ReadMessage(gp, message, true, true));
@@ -98,7 +98,7 @@ public class Mve_EmpoweringStrike extends MoveBase {
             targetEntityNames.add(gp.getEntityM().getEntityById(entityId).getName());
         }
         String message = UtilityTool.buildEntityListMessage(targetEntityNames, true);
-        message += " attack rose!";
+        message += " defense rose!";
         return message;
     }
 }

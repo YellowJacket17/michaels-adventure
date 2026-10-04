@@ -30,14 +30,14 @@ public class Evt_Tutorial002 extends EventTutorialBase {
 
         String title = "Controls Tutorial";
         String subtitle = "Exploration";
-        String content = "'W' key - Move Mary upward.\n"
-                + "'S' key - Move Mary downward.\n"
-                + "'A' key - Move Mary leftward.\n"
-                + "'D' key - Move Mary rightward.\n"
+        String content = "'W' key - Move " + gp.getEntityM().getPlayer().getName() + " upward.\n"
+                + "'S' key - Move " + gp.getEntityM().getPlayer().getName() + " downward.\n"
+                + "'A' key - Move " + gp.getEntityM().getPlayer().getName() + " leftward.\n"
+                + "'D' key - Move " + gp.getEntityM().getPlayer().getName() + " rightward.\n"
                 + "'Enter' key - Interact with world.\n"
                 + "'Space' key - Open main menu.";
         int currentPageNumber = 2;
-        int totalPageNumbers = 6;
+        int totalPageNumbers = 7;
         gp.getTutorialH().generateTutorial(3, title, subtitle, content, currentPageNumber, totalPageNumbers);
     }
 }

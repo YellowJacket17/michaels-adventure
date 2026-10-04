@@ -50,7 +50,7 @@ public class Cts_003 extends CutsceneBase {
             case 2:
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     counter += dt;
-                    if (counter >= 2.25) {
+                    if (counter >= 2.0) {
                         List<String> options = List.of("Yes", "No");                                                    // Immutable list.
                         String prompt = "Would you like to view the opening story sequence?";
                         gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 4, true);

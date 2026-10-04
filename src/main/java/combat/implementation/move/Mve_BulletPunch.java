@@ -22,7 +22,7 @@ public class Mve_BulletPunch extends MoveBase {
     private static final int mveId = 15;
     private static final String mveName = "Bullet Punch";
     private static final String mveDescription = "Hits the target with a rapid punch. May raise the user's agility.";
-    private static final int mvePower = 40;
+    private static final int mvePower = 55;
     private static final int mveAccuracy = 100;
     private static final int mveSkillPoints = 2;
     private static final Vector3f mveEffectColor = MoveBase.PHYSICAL_MOVE_COLOR;
@@ -72,7 +72,7 @@ public class Mve_BulletPunch extends MoveBase {
         Random random = new Random();
         int i = random.nextInt(100);                                                                                    // Generate random number from 0 (inclusive) to 100 (exclusive).
 
-        if (i < 20) {
+        if (i < 30) {
 
             return true;
         } else {

@@ -40,12 +40,12 @@
         "attributes": {
             "name": "Peculiar Figure",
             "speed": 120,
-            "maxLife": 775,
-            "life": 775,
-            "maxSkill": 35,
-            "skill": 35,
-            "baseAttack": 30,
-            "baseDefense": 65,
+            "maxLife": 720,
+            "life": 720,
+            "maxSkill": 70,
+            "skill": 70,
+            "baseAttack": 35,
+            "baseDefense": 60,
             "baseMagic": 75,
             "baseAgility": 75,
             "weakness": "physical"
@@ -73,12 +73,12 @@
         "attributes": {
             "name": "Nick",
             "speed": 120,
-            "maxLife": 775,
-            "life": 775,
-            "maxSkill": 35,
-            "skill": 35,
-            "baseAttack": 30,
-            "baseDefense": 65,
+            "maxLife": 725,
+            "life": 725,
+            "maxSkill": 30,
+            "skill": 30,
+            "baseAttack": 35,
+            "baseDefense": 60,
             "baseMagic": 75,
             "baseAgility": 75,
             "weakness": "physical"
@@ -122,6 +122,134 @@
         "position": {
             "defaultCol": 55,
             "defaultRow": 32
+        }
+    },
+
+    "9": {
+        "type": "character",
+        "class": "Chr_Shadow",
+        "collision": true,
+        "defaultAction": "static",
+        "defaultDirection": "left",
+        "map": 2,
+        "mapStates": [0, 1],
+        "attributes": {
+            "name": "Rambunctious Figure",
+            "speed": 120,
+            "maxLife": 690,
+            "life": 690,
+            "maxSkill": 50,
+            "skill": 50,
+            "baseAttack": 80,
+            "baseDefense": 50,
+            "baseMagic": 65,
+            "baseAgility": 90,
+            "weakness": "magic"
+        },
+        "position": {
+            "defaultCol": 49,
+            "defaultRow": 49
+        },
+        "moves": {
+            "1": 15,
+            "2": 16,
+            "3": 8,
+            "4": 23
+        }
+    },
+
+    "10": {
+        "type": "character",
+        "class": "Chr_Shadow",
+        "collision": true,
+        "defaultAction": "static",
+        "defaultDirection": "left",
+        "map": 2,
+        "mapStates": [0, 1],
+        "attributes": {
+            "name": "Righteous Figure",
+            "speed": 120,
+            "maxLife": 745,
+            "life": 745,
+            "maxSkill": 70,
+            "skill": 70,
+            "baseAttack": 30,
+            "baseDefense": 75,
+            "baseMagic": 60,
+            "baseAgility": 55,
+            "weakness": "physical"
+        },
+        "position": {
+            "defaultCol": 49,
+            "defaultRow": 51
+        },
+        "moves": {
+            "1": 7,
+            "2": 6,
+            "3": 9,
+            "4": 22
+        }
+    },
+
+    "11": {
+        "type": "character",
+        "class": "Chr_Logan",
+        "collision": true,
+        "defaultAction": "static",
+        "defaultDirection": "left",
+        "attributes": {
+            "name": "Logan",
+            "speed": 120,
+            "maxLife": 690,
+            "life": 690,
+            "maxSkill": 25,
+            "skill": 25,
+            "baseAttack": 80,
+            "baseDefense": 50,
+            "baseMagic": 65,
+            "baseAgility": 90,
+            "weakness": "magic"
+        },
+        "position": {
+            "defaultCol": 57,
+            "defaultRow": 49
+        },
+        "moves": {
+            "1": 15,
+            "2": 16,
+            "3": 8,
+            "4": 17
+        }
+    },
+
+    "12": {
+        "type": "character",
+        "class": "Chr_Joe",
+        "collision": true,
+        "defaultAction": "static",
+        "defaultDirection": "left",
+        "attributes": {
+            "name": "Joe",
+            "speed": 120,
+            "maxLife": 745,
+            "life": 745,
+            "maxSkill": 35,
+            "skill": 35,
+            "baseAttack": 30,
+            "baseDefense": 75,
+            "baseMagic": 60,
+            "baseAgility": 55,
+            "weakness": "physical"
+        },
+        "position": {
+            "defaultCol": 57,
+            "defaultRow": 51
+        },
+        "moves": {
+            "1": 7,
+            "2": 6,
+            "3": 9,
+            "4": 10
         }
     }
 }

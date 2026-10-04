@@ -21,12 +21,12 @@ public class Mve_WhirlwindSprint extends MoveBase {
     // FIELDS
     private static final int mveId = 8;
     private static final String mveName = "Whirlwind Sprint";
-    private static final String mveDescription = "Running blindingly fast in circles, generates a whirlwind that hits all active opponents.";
-    private static final int mvePower = 55;
+    private static final String mveDescription = "Running blindingly-fast in circles, generates a whirlwind that hits all opponents.";
+    private static final int mvePower = 60;
     private static final int mveAccuracy = 100;
-    private static final int mveSkillPoints = 6;
-    private static final Vector3f mveEffectColor = MoveBase.PHYSICAL_MOVE_COLOR;
-    private static final String mveSoundEffect = "basicAttack";
+    private static final int mveSkillPoints = 5;
+    private static final Vector3f mveEffectColor = MoveBase.MAGIC_MOVE_COLOR;
+    private static final String mveSoundEffect = "whirlwindSprint";
 
 
     // CONSTRUCTOR

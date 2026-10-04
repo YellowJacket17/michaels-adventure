@@ -1,7 +1,9 @@
 package combat.support;
 
 import combat.implementation.load.Cbl_Scenario001;
+import combat.implementation.load.Cbl_Scenario002;
 import core.GamePanel;
+import core.enumeration.PrimaryGameState;
 
 /**
  * This class contains methods to facilitate executing custom logic for loading combat (both entering and exiting).
@@ -19,6 +21,7 @@ public class CombatLoadSupport {
 
     // COMBAT LOAD FIELDS
     private final Cbl_Scenario001 cbl_scenario001;
+    private final Cbl_Scenario002 cbl_scenario002;
 
 
     // CONSTRUCTOR
@@ -31,6 +34,7 @@ public class CombatLoadSupport {
         this.gp = gp;
 
         cbl_scenario001 = new Cbl_Scenario001(gp);
+        cbl_scenario002 = new Cbl_Scenario002(gp);
     }
 
 
@@ -49,6 +53,9 @@ public class CombatLoadSupport {
                 break;
             case 1:
                 cbl_scenario001.handleEnterCombatTransitionLoading();
+                break;
+            case 2:
+                cbl_scenario002.handleEnterCombatTransitionLoading();
                 break;
         }
     }
@@ -71,6 +78,9 @@ public class CombatLoadSupport {
             case 1:
                 cbl_scenario001.concludeEnterCombatTransition();
                 break;
+            case 2:
+                cbl_scenario002.concludeEnterCombatTransition();
+                break;
         }
     }
 
@@ -91,6 +101,9 @@ public class CombatLoadSupport {
             case 1:
                 cbl_scenario001.handleExitCombatTransitionLoading(combatLost);
                 break;
+            case 2:
+                cbl_scenario002.handleExitCombatTransitionLoading(combatLost);
+                break;
         }
     }
 
@@ -106,10 +119,14 @@ public class CombatLoadSupport {
 
         switch (combatId) {
             case 0:
-                // Reserved value - do nothing.
+                // Reserved value.
+                gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
                 break;
             case 1:
                 cbl_scenario001.concludeExitCombatTransition(combatLost);
+                break;
+            case 2:
+                cbl_scenario002.concludeExitCombatTransition(combatLost);
                 break;
         }
     }

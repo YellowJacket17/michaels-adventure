@@ -21,9 +21,9 @@ public class Mve_BrainFreeze extends MoveBase {
     private static final int mveId = 11;
     private static final String mveName = "Brain Freeze";
     private static final String mveDescription = "Concentrates psychic energy around the target's head. May immobilize the target on their next turn.";
-    private static final int mvePower = 45;
+    private static final int mvePower = 40;
     private static final int mveAccuracy = 100;
-    private static final int mveSkillPoints = 2;
+    private static final int mveSkillPoints = 3;
     private static final Vector3f mveEffectColor = MoveBase.MAGIC_MOVE_COLOR;
     private static final String mveSoundEffect = "brainFreeze";
 
@@ -77,7 +77,7 @@ public class Mve_BrainFreeze extends MoveBase {
         Random random = new Random();
         int i = random.nextInt(100);                                                                                    // Generate random number from 0 (inclusive) to 100 (exclusive).
 
-        if (i < 20) {
+        if (i < 30) {
 
             return true;
         } else {

@@ -16,7 +16,7 @@ public class Cbl_Scenario001 extends CombatLoadBase {
     }
 
 
-    // FIELDS
+    // METHODS
     @Override
     public void handleEnterCombatTransitionLoading() {
 
@@ -58,13 +58,16 @@ public class Cbl_Scenario001 extends CombatLoadBase {
             gp.getEntityM().getEntityById(4).setRow(9);
             gp.getEntityM().getEntityById(4).setDirectionCurrent(EntityDirection.LEFT);
 
+            JsonParser.loadEntityJson(gp, 5);                                                                           // Load Nick for the post-combat cutscene (in case not already loaded for whatever reason).
+
             gp.getEntityM().getEntityById(5).setCol(49);
             gp.getEntityM().getEntityById(5).setRow(9);
             gp.getEntityM().getEntityById(5).setDirectionCurrent(EntityDirection.LEFT);
 
-            JsonParser.loadEntityJson(gp, 5);                                                                           // Load Nick for the post-combat cutscene.
-            gp.getMapM().getLoadedMap().setMapState(2, false);                                                          // Set map to its post-combat (win) state.
+            gp.getEntityM().getEntityById(5).setHidden(true);                                                           // Hide Nick in cae not already hidden.
             gp.getPartyS().hideAllPartyMembers(false);                                                                  // Just in case there are party members for whatever reason.
+
+            gp.getMapM().getLoadedMap().setMapState(2, false);                                                          // Set map to its post-combat (win) state.
 
             gp.getCameraS().setOverrideEntityTracking(true);
             gp.getCameraS().setCameraSnap(1424, 288);
@@ -83,7 +86,7 @@ public class Cbl_Scenario001 extends CombatLoadBase {
             gp.getEntityM().getEntityById(5).setRow(6);
             gp.getEntityM().getEntityById(5).setDirectionCurrent(EntityDirection.DOWN);
 
-            if (gp.getEntityM().getEntityById(5).isHidden() && !gp.getEntityM().getParty().containsKey(5)) {            // Ensure that Joe is not hidden if not in party.
+            if (gp.getEntityM().getEntityById(5).isHidden() && !gp.getEntityM().getParty().containsKey(5)) {            // Ensure that Nick is not hidden if not in party.
 
                 gp.getEntityM().getEntityById(5).setHidden(false);
             }
@@ -139,7 +142,7 @@ public class Cbl_Scenario001 extends CombatLoadBase {
                 + " When a combatant's HP reaches zero, they faint and can no longer participate in combat."
                 + " Combat is won if all enemy combatants faint."
                 + " Combat is lost if all ally combatants faint."
-                + " If Mary faints, combat will be lost even if allies remain.";
+                + " If " + gp.getEntityM().getPlayer().getName() + " faints, combat will be lost even if allies remain.";
         int currentPageNumber = 2;
         int totalPageNumbers = 9;
         gp.getCombatM().addQueuedActionBack(
@@ -175,7 +178,7 @@ public class Cbl_Scenario001 extends CombatLoadBase {
         String subtitle = "Weaknesses";
         String content = "Each combatant has a weakness to either physical or magic attacks."
                 + " (In rare cases, a combatant may have no weakness.)"
-                + " A combatant will flash red and receive 50% more damage if their weakness is hit.";
+                + " A combatant will glow red and receive 50% more damage if their weakness is hit.";
         int currentPageNumber = 4;
         int totalPageNumbers = 9;
         gp.getCombatM().addQueuedActionBack(
