@@ -18,7 +18,7 @@
 
 **D:** Rightward character movement and menu control.
 
-**Enter:** Interaction with the world (talk to NPC, etc.) and menu selection.
+**Enter:** Interaction with the world (e.g., pickup an item), dialogue progression, and menu selection.
 
 **Space:** Open/close the main menu.
 
@@ -39,6 +39,8 @@
 **Left arrow:** Leftward camera movement if debug mode is enabled.
 
 **Right arrow:** Rightward camera movement if debug mode is enabled.
+
+**SPECIAL NOTE:** Pressing Ctrl + Enter on the title screen will allow a specific area of the game to be selected and loaded.
 
 ## Audio
 All `.ogg` files are omitted from the remote repository due to file size.

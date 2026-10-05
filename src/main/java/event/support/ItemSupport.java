@@ -91,7 +91,7 @@ public class ItemSupport {
      */
     public boolean pickupItemToggleTutorial(int itemId, boolean plural) {
 
-        if (!itemTutorialTriggered) {
+        if (gp.isTutorialsEnabled() && !itemTutorialTriggered) {
 
             itemTutorialTriggered = true;
             return pickupItemTutorial(itemId, plural);

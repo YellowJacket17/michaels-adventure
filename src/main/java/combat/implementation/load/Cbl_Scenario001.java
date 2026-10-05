@@ -30,7 +30,7 @@ public class Cbl_Scenario001 extends CombatLoadBase {
     @Override
     public void concludeEnterCombatTransition() {
 
-        if (gp.getMapM().getLoadedMap().getMapState() == 0) {
+        if (gp.isTutorialsEnabled() && (gp.getMapM().getLoadedMap().getMapState() == 0)) {
 
             generateTutorialPage1();
             generateTutorialPage2();

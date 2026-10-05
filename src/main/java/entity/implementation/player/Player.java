@@ -445,18 +445,14 @@ public class Player extends EntityBase {
      */
     private void setDefaultValues() {
 
-        // World position.
+        // Position.
         setCol(8);
         setRow(43);
-
-        // Direction.
         setDirectionCurrent(EntityDirection.DOWN);
 
-        // Basic attributes.
+        // Attributes.
         setName("Mary");
         setSpeed(120);
-
-        // Combat attributes.
         setMaxLife(750);
         setLife(750);
         setMaxSkill(25);
@@ -474,15 +470,9 @@ public class Player extends EntityBase {
         moves.add(new Mve_Sneakstrike(gp));
 
         // Items.
-        for (int i = 0; i < 1; i++) {
-            addItemToInventory(6);
-        }
-        for (int i = 0; i < 1; i++) {
-            addItemToInventory(7);
-        }
-        for (int i = 0; i < 1; i++) {
-            addItemToInventory(12);
-        }
+        addItemToInventory(6);
+        addItemToInventory(7);
+        addItemToInventory(12);
     }
 
 
@@ -726,9 +716,13 @@ public class Player extends EntityBase {
 
         if ((interactionCountdown <= 0) && (gp.getFadeS().getState() == FadeState.INACTIVE)) {                          // Ensure title screen cannot be interacted with while fading in/out.
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
+            if ((KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) || KeyListener.isKeyPressed(GLFW_KEY_RIGHT_CONTROL))
+                    && KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
 
-                handleTitleInputProgressKey();
+                handleTitleInputSpecialProgressKey();
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_ENTER)) {
+
+                handleTitleInputNormalProgressKey();
             }
         }
     }
@@ -1324,9 +1318,19 @@ public class Player extends EntityBase {
 
 
     /**
-     * Handles input logic for title progress key.
+     * Handles input logic for title special progress key.
      */
-    private void handleTitleInputProgressKey() {
+    private void handleTitleInputSpecialProgressKey() {
+
+        gp.getCutsceneM().initiateCutscene(8);
+        setInteractionCountdown(stagedStandardInteractionCountdown);
+    }
+
+
+    /**
+     * Handles input logic for title normal progress key.
+     */
+    private void handleTitleInputNormalProgressKey() {
 
         gp.getCutsceneM().initiateCutscene(3);
         setInteractionCountdown(stagedStandardInteractionCountdown);

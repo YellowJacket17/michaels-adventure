@@ -142,6 +142,11 @@ public class GamePanel {
      */
     private boolean debugActive = false;
 
+    /**
+     * Boolean to set whether tutorials will activate (true) or not (false).
+     */
+    private boolean tutorialsEnabled = true;
+
 
     // IN-GAME SETTINGS
     /**
@@ -854,6 +859,10 @@ public class GamePanel {
         return debugActive;
     }
 
+    public boolean isTutorialsEnabled() {
+        return tutorialsEnabled;
+    }
+
     public int getSystemSettingsSize() {
         return systemSettings.size();
     }
@@ -903,10 +912,35 @@ public class GamePanel {
     }
 
     public void setRenderWorld(boolean renderWorld) {
+        if (UtilityTool.VERBOSE_LOGGING) {
+            if (renderWorld) {
+                UtilityTool.logInfo("Enabling world rendering.");
+            } else {
+                UtilityTool.logInfo("Disabling world rendering.");
+            }
+        }
         this.renderWorld = renderWorld;
     }
 
     public void setDebugActive(boolean debugActive) {
+        if (UtilityTool.VERBOSE_LOGGING) {
+            if (debugActive) {
+                UtilityTool.logInfo("Enabling debug mode.");
+            } else {
+                UtilityTool.logInfo("Disabling debug mode.");
+            }
+        }
         this.debugActive = debugActive;
+    }
+
+    public void setTutorialsEnabled(boolean tutorialsEnabled) {
+        if (UtilityTool.VERBOSE_LOGGING) {
+            if (tutorialsEnabled) {
+                UtilityTool.logInfo("Enabling tutorials.");
+            } else {
+                UtilityTool.logInfo("Disabling tutorials.");
+            }
+        }
+        this.tutorialsEnabled = tutorialsEnabled;
     }
 }

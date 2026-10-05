@@ -5,8 +5,7 @@ import event.enumeration.StockStepInteractionType;
 import event.implementation.map.Evt_Map002;
 import event.implementation.map.Evt_Map003;
 import event.implementation.map.Evt_Map004;
-import event.implementation.submenu.Evt_SubMenu003;
-import event.implementation.submenu.Evt_SubMenu004;
+import event.implementation.submenu.*;
 import event.implementation.tutorial.*;
 import miscellaneous.CollisionInspector;
 import core.enumeration.PrimaryGameState;
@@ -14,8 +13,6 @@ import entity.EntityBase;
 import core.GamePanel;
 import entity.enumeration.EntityDirection;
 import event.implementation.map.Evt_Map001;
-import event.implementation.submenu.Evt_SubMenu002;
-import event.implementation.submenu.Evt_SubMenu001;
 import utility.UtilityTool;
 
 import java.util.ArrayList;
@@ -52,6 +49,7 @@ public class EventManager {
     private final Evt_SubMenu002 evt_subMenu002;
     private final Evt_SubMenu003 evt_subMenu003;
     private final Evt_SubMenu004 evt_subMenu004;
+    private final Evt_SubMenu005 evt_subMenu005;
 
 
     // TUTORIAL EVENT FIELDS
@@ -89,6 +87,7 @@ public class EventManager {
         evt_subMenu002 = new Evt_SubMenu002(gp);
         evt_subMenu003 = new Evt_SubMenu003(gp);
         evt_subMenu004 = new Evt_SubMenu004(gp);
+        evt_subMenu005 = new Evt_SubMenu005(gp);
 
         evt_tutorial001 = new Evt_Tutorial001(gp);
         evt_tutorial002 = new Evt_Tutorial002(gp);
@@ -355,6 +354,9 @@ public class EventManager {
                     break;
                 case 4:
                     evt_subMenu004.run(selectedIndex);
+                    break;
+                case 5:
+                    evt_subMenu005.run(selectedIndex);
                     break;
                 default:
                     UtilityTool.logWarning("No selection logic specified for sub-menu with ID '"

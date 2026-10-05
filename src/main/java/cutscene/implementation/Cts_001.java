@@ -49,7 +49,13 @@ public class Cts_001 extends CutsceneBase {
 
             case 2:
                 if (gp.getFadeS().getState() == FadeState.INACTIVE) {
-                    progressCutscene();
+                    if (gp.isTutorialsEnabled()) {
+                        progressCutscene();
+                    } else {
+                        gp.setPrimaryGameState(PrimaryGameState.EXPLORE);
+                        exitCutscene();
+                        resetCutscene();
+                    }
                 }
                 break;
 

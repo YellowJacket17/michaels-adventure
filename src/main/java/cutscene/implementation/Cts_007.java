@@ -742,9 +742,11 @@ public class Cts_007 extends CutsceneBase {
                 if (!gp.getEntityM().getEntityById(5).isMoving()
                         && !gp.getEntityM().getEntityById(11).isMoving()
                         && !gp.getEntityM().getEntityById(12).isMoving()) {
-                    generateTutorial();
-                    if (gp.getSystemSetting(5).getActiveOption() == 1) {
-                        gp.getSoundS().playEffect("progress");
+                    if (gp.isTutorialsEnabled()) {
+                        generateTutorial();
+                        if (gp.getSystemSetting(5).getActiveOption() == 1) {
+                            gp.getSoundS().playEffect("progress");
+                        }
                     }
                     exitCutscene();
                     resetCutscene();

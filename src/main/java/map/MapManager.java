@@ -41,6 +41,7 @@ public class MapManager {
     // METHODS
     /**
      * Loads a new map into memory and sets it as the current map to render.
+     * The state of the prior loaded map will be saved before purging.
      * The following will be purged before loading the new map: prior loaded map, prior NPCs in 'npc' (hash)map, prior
      * objects in 'obj' (hash)map, and prior conversations in 'conv' (hash)map.
      * New NPCs, objects, and conversations will be loaded with the new map.
@@ -131,7 +132,7 @@ public class MapManager {
 
 
     // SETTER
-    public void setLoadedMap(Map loadedMap) {
-        this.loadedMap = loadedMap;
+    public void setSavedMapState(int mapId, int mapState) {
+        savedMapStates.put(mapId, mapState);
     }
 }

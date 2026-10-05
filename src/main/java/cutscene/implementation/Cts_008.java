@@ -3,25 +3,22 @@ package cutscene.implementation;
 import core.GamePanel;
 import cutscene.CutsceneBase;
 import event.enumeration.FadeState;
-import miscellaneous.KeyListener;
 import org.joml.Vector3f;
 
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER;
-
 /**
- * This class defines logic for progressing past the title screen normally.
+ * This class defines logic for progressing past the title screen specially (i.e., selecting a specific state to load
+ * the game in).
  */
-public class Cts_003 extends CutsceneBase {
+public class Cts_008 extends CutsceneBase {
 
     // FIELD
     private double counter = 0;
 
 
     // CONSTRUCTOR
-    public Cts_003(GamePanel gp) {
+    public Cts_008(GamePanel gp) {
         super(gp);
     }
 
@@ -51,9 +48,10 @@ public class Cts_003 extends CutsceneBase {
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     counter += dt;
                     if (counter >= 2.0) {
-                        List<String> options = List.of("Yes", "No");                                                    // Immutable list.
-                        String prompt = "Would you like to view the opening story sequence?";
-                        gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 4, true);
+                        List<String> options = List.of("Area 1 (Waterfalls)", "Area 2 (Lake)", "Area 3 (River)");                                                    // Immutable list.
+                        String prompt = "Please select an area of the game to load."
+                                + " (All relevant story progress will be included.)";
+                        gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 5, true);
                         exitCutscene();
                         resetCutscene();
                         counter = 0;
