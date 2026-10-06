@@ -178,7 +178,7 @@ public class Cbl_Scenario001 extends CombatLoadBase {
         String subtitle = "Weaknesses";
         String content = "Each combatant has a weakness to either physical or magic attacks."
                 + " (In rare cases, a combatant may have no weakness.)"
-                + " A combatant will glow red and receive 50% more damage if their weakness is hit.";
+                + " A combatant will glow red, blink more times, and receive 50% more damage if their weakness is hit.";
         int currentPageNumber = 4;
         int totalPageNumbers = 9;
         gp.getCombatM().addQueuedActionBack(

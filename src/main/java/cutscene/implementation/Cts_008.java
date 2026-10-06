@@ -48,9 +48,9 @@ public class Cts_008 extends CutsceneBase {
                 if (gp.getFadeS().getState() == FadeState.ACTIVE) {
                     counter += dt;
                     if (counter >= 2.0) {
-                        List<String> options = List.of("Area 1 (Waterfalls)", "Area 2 (Lake)", "Area 3 (River)");                                                    // Immutable list.
-                        String prompt = "Please select an area of the game to load."
-                                + " (All relevant story progress will be included.)";
+                        List<String> options = List.of("Area 1 (Waterfall)", "Area 2 (Lake)", "Area 3 (River)");                                                    // Immutable list.
+                        String prompt = "Select an area of the game to load."
+                                + " (All applicable story progress will be included.)";
                         gp.getSubMenuS().displaySubMenuPrompt(prompt, options, 5, true);
                         exitCutscene();
                         resetCutscene();

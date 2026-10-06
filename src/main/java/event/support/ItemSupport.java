@@ -97,6 +97,10 @@ public class ItemSupport {
             return pickupItemTutorial(itemId, plural);
         } else {
 
+            if (!gp.isTutorialsEnabled() && !itemTutorialTriggered) {
+
+                itemTutorialTriggered = true;                                                                           // So that tutorial won't trigger if tutorials are re-enabled but an item has already been picked up.
+            }
             return pickupItemStandard(itemId, plural);
         }
     }

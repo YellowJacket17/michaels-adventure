@@ -432,7 +432,7 @@ public class CombatAnimationSupport {
                 smaTargetEntitiesDamageRemainder.put(targetEntityId, 0.0);
 
                 if (smaTargetEntitiesFinalLife.get(targetEntityId)
-                        > gp.getEntityM().getEntityById(targetEntityId).getLife()) {
+                        >= gp.getEntityM().getEntityById(targetEntityId).getLife()) {
 
                     smaTargetEntitiesLifeIncrease.put(targetEntityId, true);
                 } else {
@@ -490,7 +490,7 @@ public class CombatAnimationSupport {
                 fmaTargetEntitiesDamageRemainder.put(targetEntityId, 0.0);
 
                 if (fmaTargetEntitiesFinalLife.get(targetEntityId)
-                        > gp.getEntityM().getEntityById(targetEntityId).getLife()) {
+                        >= gp.getEntityM().getEntityById(targetEntityId).getLife()) {
 
                     fmaTargetEntitiesLifeIncrease.put(targetEntityId, true);
                 } else {
@@ -702,10 +702,11 @@ public class CombatAnimationSupport {
                     ceaEntitiesDamageRemainder.put(entityId, 0.0);
 
                     if (entitiesFinalPoints.get(entityId)
-                            > gp.getEntityM().getEntityById(entityId).getLife()) {
+                            >= gp.getEntityM().getEntityById(entityId).getLife()) {
 
                         ceaEntitiesLifeIncrease.put(entityId, true);
                     } else {
+
                         ceaEntitiesLifeIncrease.put(entityId, false);
                     }
                 }
@@ -765,10 +766,11 @@ public class CombatAnimationSupport {
                 ceaEntitiesDamageRemainder.put(entityId, 0.0);
 
                 if (entitiesFinalLife.get(entityId)
-                        > gp.getEntityM().getEntityById(entityId).getLife()) {
+                        >= gp.getEntityM().getEntityById(entityId).getLife()) {
 
                     ceaEntitiesLifeIncrease.put(entityId, true);
                 } else {
+
                     ceaEntitiesLifeIncrease.put(entityId, false);
                 }
             }
@@ -827,7 +829,11 @@ public class CombatAnimationSupport {
                     || ((smaMove.getCategory() == MoveCategory.MAGIC)
                         && (gp.getEntityM().getEntityById(targetEntityId).getWeakness() == MoveWeakness.MAGIC))) {
 
-                gp.getEntityM().getEntityById(targetEntityId).initiateFlashing(new Vector3f(255, 83, 83));
+                gp.getEntityM().getEntityById(targetEntityId).initiateGlowing(new Vector3f(255, 83, 83));
+                gp.getEntityM().getEntityById(targetEntityId).initiateBlinking(4);
+            } else {
+
+                gp.getEntityM().getEntityById(targetEntityId).initiateBlinking(2);
             }
         }
     }
@@ -912,6 +918,11 @@ public class CombatAnimationSupport {
                             ceaParticleEffectColor,
                             4.0f)
             );
+
+            if (ceaEntitiesLifeIncrease.containsKey(entityId) && !ceaEntitiesLifeIncrease.get(entityId)) {
+
+                gp.getEntityM().getEntityById(entityId).initiateBlinking(2);
+            }
         }
     }
 

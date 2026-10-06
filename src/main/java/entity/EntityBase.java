@@ -292,16 +292,29 @@ public abstract class EntityBase extends Drawable {
     protected double fadeEffectAlphaPerSecond;
 
 
-    // COLOR FLASH EFFECT
+    // COLOR GLOW EFFECT
     /**
-     * Boolean indicating whether this entity is currently undergoing a color flash effect or not.
+     * Boolean indicating whether this entity is currently undergoing a color glow effect or not.
      */
-    protected boolean flashing = false;
+    protected boolean glowing = false;
 
     /**
-     * Color of color flash effect (r, g, b).
+     * Color of color glow effect (r, g, b).
      */
-    protected Vector3f flashingColor = new Vector3f();
+    protected Vector3f glowingColor = new Vector3f();
+
+
+    // BLINK EFFECT
+    /**
+     * Boolean indicating whether this entity is currently undergoing a blink effect or not.
+     */
+    protected boolean blinking = false;
+
+    /**
+     * Stores whether this entity started a blink effect from a hidden state (true) or not (false).
+     * Use to restore the entity to their pre-blink hidden state once the blink effect is complete.
+     */
+    protected boolean blinkingStartedHidden = false;
 
 
     // COUNTERS/BUFFERS
@@ -348,16 +361,31 @@ public abstract class EntityBase extends Drawable {
     protected double animationCounterCombatFaintMax = 0.6;
 
     /**
-     * Counts time passed (seconds) while this entity is undergoing a color flash effect.
+     * Counts time passed (seconds) while this entity is undergoing a color glow effect.
      */
-    protected double flashingCounter;
+    protected double glowingCounter;
 
     /**
-     * Maximum number of seconds allocated to a full color flash effect.
-     * Increasing this value will extend the duration of the color flash effect.
-     * In other words, increasing this value will make the color flash effect appear to run more slowly.
+     * Maximum number of seconds allocated to a full color glow effect.
+     * Increasing this value will extend the duration of the color glow effect.
+     * In other words, increasing this value will make the color glow effect appear to run more slowly.
      */
-    protected double flashingCounterMax = 1.5;
+    protected double glowingCounterMax = 1.0;
+
+    /**
+     * Counts time passed (seconds) while this entity is undergoing a blink effect.
+     */
+    protected double blinkingCounter;
+
+    /**
+     * Amount of time (seconds) per blink cycle (disappear and reappear).
+     */
+    protected double blinkCycleDuration = 0.28;
+
+    /**
+     * Maximum number of cycles in a blink effect.
+     */
+    protected double numBlinkCyclesMax;
 
 
     // BASIC ATTRIBUTES
@@ -568,8 +596,12 @@ public abstract class EntityBase extends Drawable {
             updateFadeEffect(dt);                                                                                       // Purposefully no return statement here.
         }
 
-        if (flashing) {
-            updateFlashing(dt);                                                                                         // Purposefully no return statement here.
+        if (glowing) {
+            updateGlowing(dt);                                                                                         // Purposefully no return statement here.
+        }
+
+        if (blinking) {
+            updateBlinking(dt);
         }
 
         if (playingCombatAttackAnimation) {
@@ -932,7 +964,7 @@ public abstract class EntityBase extends Drawable {
      * Initiates a fade effect (up or down).
      * At the beginning of a fade up effect, this entity will be set to a visible state (i.e., not hidden).
      * At the end of a fade down effect, this entity will be set to a hidden state.
-     * If a fade effect is already active, then nothing will happen.
+     * If a fade effect is already active or a blink effect is active, then nothing will happen.
      *
      * @param type type of fade effect (up or down)
      * @param duration fade effect duration (seconds)
@@ -941,7 +973,7 @@ public abstract class EntityBase extends Drawable {
      */
     public void initiateFadeEffect(FadeEffectType type, double duration, boolean preventAction) {
 
-        if (activeFadeEffect == FadeEffectType.NONE) {
+        if ((activeFadeEffect == FadeEffectType.NONE) && !blinking) {
 
             switch (type) {
                 case FADE_UP:
@@ -966,20 +998,38 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Initiates a color flash effect.
-     * If a color flash effect is already active, then nothing will happen.
+     * Initiates a color glow effect.
+     * If a color glow effect is already active, then nothing will happen.
      *
-     * @param color color flash color (r, g, b)
+     * @param color color glow color (r, g, b)
      */
-    public void initiateFlashing(Vector3f color) {
+    public void initiateGlowing(Vector3f color) {
 
-        if (!flashing) {
+        if (!glowing) {
 
-            flashing = true;
-            flashingCounter = 0;
-            flashingColor.x = color.x;
-            flashingColor.y = color.y;
-            flashingColor.z = color.z;
+            glowing = true;
+            glowingCounter = 0;
+            glowingColor.x = color.x;
+            glowingColor.y = color.y;
+            glowingColor.z = color.z;
+        }
+    }
+
+
+    /**
+     * Initiates a blink effect.
+     * If a blink effect is already active or a fade effect is active, then nothing will happen.
+     *
+     * @param numCycles number of blink cycles (disappear and reappear)
+     */
+    public void initiateBlinking(int numCycles) {
+
+        if (!blinking && (activeFadeEffect == FadeEffectType.NONE)) {
+
+            blinking = true;
+            blinkingStartedHidden = hidden;
+            blinkingCounter = 0;
+            numBlinkCyclesMax = numCycles;
         }
     }
 
@@ -1797,39 +1847,74 @@ public abstract class EntityBase extends Drawable {
 
 
     /**
-     * Updates an active color flash effect by one frame.
+     * Updates an active color glow effect by one frame.
      *
      * @param dt time since last frame (seconds)
      */
-    protected void updateFlashing(double dt) {
+    protected void updateGlowing(double dt) {
 
-        flashingCounter += dt;
-        float colorFlashWeight = 1;
-        float weightRateChange = 1 / (float) (flashingCounterMax / 2);
+        glowingCounter += dt;
+        float colorGlowWeight = 1;
+        float weightRateChange = 1 / (float) (glowingCounterMax / 2);
 
-        if (flashingCounter >= flashingCounterMax) {
+        if (glowingCounter >= glowingCounterMax) {
 
-            flashingCounter = 0;
-            flashingColor.x = 0;
-            flashingColor.y = 0;
-            flashingColor.z = 0;
+            glowingCounter = 0;
+            glowingColor.x = 0;
+            glowingColor.y = 0;
+            glowingColor.z = 0;
             color.x = 255;
             color.y = 255;
             color.z = 255;
-            flashing = false;
+            glowing = false;
         } else {
 
-            if (flashingCounter <= flashingCounterMax / 2) {
+            if (glowingCounter <= glowingCounterMax / 2) {
 
-                colorFlashWeight = (float) (flashingCounter * weightRateChange);
+                colorGlowWeight = (float) (glowingCounter * weightRateChange);
             } else {
 
-                colorFlashWeight = 1 - (float) ((flashingCounter - (flashingCounterMax / 2)) * weightRateChange);
+                colorGlowWeight = 1 - (float) ((glowingCounter - (glowingCounterMax / 2)) * weightRateChange);
             }
-            color.x = (255 * (1 - colorFlashWeight)) + (flashingColor.x * (colorFlashWeight));
-            color.y = (255 * (1 - colorFlashWeight)) + (flashingColor.y * (colorFlashWeight));
-            color.z = (255 * (1 - colorFlashWeight)) + (flashingColor.z * (colorFlashWeight));
+            color.x = (255 * (1 - colorGlowWeight)) + (glowingColor.x * (colorGlowWeight));
+            color.y = (255 * (1 - colorGlowWeight)) + (glowingColor.y * (colorGlowWeight));
+            color.z = (255 * (1 - colorGlowWeight)) + (glowingColor.z * (colorGlowWeight));
         }
+    }
+
+
+    /**
+     * Updates an active blink effect by one frame.
+     *
+     * @param dt time since last frame (seconds)
+     */
+    protected void updateBlinking(double dt) {
+
+        blinkingCounter += dt;
+
+        if (blinkingCounter >= (blinkCycleDuration * numBlinkCyclesMax)) {
+
+            blinkingCounter = 0;
+            numBlinkCyclesMax = 0;
+            hidden = blinkingStartedHidden;
+            blinkingStartedHidden = false;
+            blinking = false;
+        } else {
+
+            double currentCyclePercentage =
+                    (blinkingCounter / blinkCycleDuration) - Math.floor(blinkingCounter / blinkCycleDuration);
+
+            if (currentCyclePercentage < 0.5) {
+
+                hidden = !blinkingStartedHidden;
+            } else {
+
+                hidden = blinkingStartedHidden;
+            }
+        }
+
+
+
     }
 
 
@@ -2391,8 +2476,12 @@ public abstract class EntityBase extends Drawable {
         return onPath;
     }
 
-    public boolean isFlashing() {
-        return flashing;
+    public boolean isGlowing() {
+        return glowing;
+    }
+
+    public boolean isBlinking() {
+        return blinking;
     }
 
     public boolean isOnEntity() {
@@ -2584,7 +2673,9 @@ public abstract class EntityBase extends Drawable {
     }
 
     public void setHidden(boolean hidden) {
-        this.hidden = hidden;
+        if (!blinking) {
+            this.hidden = hidden;
+        }
     }
 
     public void setDefaultAction(DefaultAction defaultAction) {

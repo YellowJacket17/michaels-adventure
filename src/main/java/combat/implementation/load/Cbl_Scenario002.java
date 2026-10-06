@@ -32,6 +32,7 @@ public class Cbl_Scenario002 extends CombatLoadBase {
             gp.getEntityM().getPlayer().setRow(49);
             gp.getEntityM().getPlayer().setDirectionCurrent(EntityDirection.RIGHT);
 
+            gp.getEntityM().getEntityById(5).stopFollowingEntity();
             gp.getEntityM().getEntityById(5).setCol(37);
             gp.getEntityM().getEntityById(5).setRow(51);
             gp.getEntityM().getEntityById(5).setDirectionCurrent(EntityDirection.RIGHT);
@@ -47,10 +48,12 @@ public class Cbl_Scenario002 extends CombatLoadBase {
             JsonParser.loadEntityJson(gp, 11);                                                                          // Load Logan for the post-combat cutscene.
             JsonParser.loadEntityJson(gp, 12);                                                                          // Load Joe for the post-combat cutscene.
 
+            gp.getEntityM().getEntityById(11).stopFollowingEntity();                                                    // Just in case.
             gp.getEntityM().getEntityById(11).setCol(57);
             gp.getEntityM().getEntityById(11).setRow(49);
             gp.getEntityM().getEntityById(11).setDirectionCurrent(EntityDirection.LEFT);
 
+            gp.getEntityM().getEntityById(12).stopFollowingEntity();                                                    // Just in case.
             gp.getEntityM().getEntityById(12).setCol(57);
             gp.getEntityM().getEntityById(12).setRow(51);
             gp.getEntityM().getEntityById(12).setDirectionCurrent(EntityDirection.LEFT);

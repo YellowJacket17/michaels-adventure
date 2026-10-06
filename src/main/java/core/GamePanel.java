@@ -242,7 +242,7 @@ public class GamePanel {
         cutsceneM.initiateCutscene(2);
 
         // TEST
-//        mapM.loadMap(2, 0, true);
+//        mapM.loadMap(2, 1, true);
 //        entityM.getPlayer().setHidden(false);
 //        fadeS.displayColor(new Vector3f(255, 255, 255));
 //        fadeS.initiateFadeFrom(0.5);
