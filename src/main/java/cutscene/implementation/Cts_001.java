@@ -40,7 +40,6 @@ public class Cts_001 extends CutsceneBase {
                     gp.getCameraS().setTrackedEntity(gp.getEntityM().getPlayer().getEntityId());
                     gp.getCameraS().resetCameraSnap();
                     gp.getEntityM().getPlayer().setHidden(false);
-//                    gp.getFadeS().displayColor(new Vector3f(0, 0, 0));
                     gp.getFadeS().initiateFadeFrom(2.5);
                     progressCutscene();
                     counter = 0;

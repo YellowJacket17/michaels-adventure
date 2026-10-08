@@ -39,7 +39,7 @@ public class TransitionSupport {
     /**
      * Duration of load for transition (seconds).
      */
-    private final double transitionLoadDuration = 0.25;
+    private final double transitionLoadDuration = 0.75;
 
     /**
      * Duration of fade from for transition (seconds).

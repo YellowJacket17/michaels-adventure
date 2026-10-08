@@ -54,15 +54,15 @@ public class PartySupport {
     private final LimitedLinkedHashMap<Integer, EntityDirection> tempEntityDirections;
 
     /**
-     * Map to store staged entity fade up effects.
-     * Target entity ID is the key, triggering entity ID the value.
+     * Map to store data for staged entity fade up effects.
+     * Target entity ID is the key, data (e.g., new position, triggering entity) is the value.
      * In practice, this is used to store fade up effects that can only execute after a preceding fade down effect of
      * another entity has completed.
      * The entity that will fade up is the target entity, while the entity whose fade down effect must complete before
      * the target entity can fade up is the triggering entity.
      * This is useful when swapping party member ordering around with fade effects.
      */
-    private final LimitedLinkedHashMap<Integer, Integer> stagedEntityFadeUpEffects;
+    private final LimitedLinkedHashMap<Integer, StagedFadeUpEntityData> stagedEntityFadeUpEffects;
 
     /**
      * Countdown until all active party support actions have completed (seconds).
@@ -127,14 +127,17 @@ public class PartySupport {
             EntityBase targetEntity;
             for (int targetEntityId : stagedEntityFadeUpEffects.keySet()) {
                 targetEntity = gp.getEntityM().getEntityById(targetEntityId);
-                if (gp.getEntityM().getEntityById(stagedEntityFadeUpEffects.get(targetEntityId)).getActiveFadeEffect()
-                        != FadeEffectType.FADE_DOWN) {
+                if (gp.getEntityM().getEntityById(stagedEntityFadeUpEffects.get(targetEntityId).getTriggeringEntityId())
+                        .getActiveFadeEffect() != FadeEffectType.FADE_DOWN) {
                     targetEntity.initiateFadeEffect(FadeEffectType.FADE_UP, standardFadeEffectDuration, true);
-                    setActionCountdown(standardFadeEffectDuration);
-                    if (targetEntity.isOnEntity()) {
-                        gp.getEntityM().getEntityById(targetEntity.getOnEntityId()).setColLast(targetEntity.getCol());  // Ensures that entity does not instantly swap back to previous position if following another entity.
-                        gp.getEntityM().getEntityById(targetEntity.getOnEntityId()).setRowLast(targetEntity.getRow());  // ^^^
+                    targetEntity.setCol(stagedEntityFadeUpEffects.get(targetEntityId).getCol());
+                    targetEntity.setRow(stagedEntityFadeUpEffects.get(targetEntityId).getRow());
+                    targetEntity.setDirectionCurrent(stagedEntityFadeUpEffects.get(targetEntityId).getDirection());
+                    if (stagedEntityFadeUpEffects.get(targetEntityId).isFollowPlayer()) {
+                        gp.getEventM().setEntityFollowTarget(
+                                targetEntity.getEntityId(), gp.getEntityM().getPlayer().getEntityId(), true);
                     }
+                    setActionCountdown(standardFadeEffectDuration);
                     entityIdsToRemove.add(targetEntityId);
                 }
             }
@@ -371,36 +374,31 @@ public class PartySupport {
 
             for (EntityBase entity : gp.getEntityM().getParty().values()) {
 
-                if (entityIndex < gp.getEntityM().getNumActivePartyMembers()) {                                         // Set active party members as following player entity.
-
-                    if ((entity.getEntityId() == primaryEntityId) || (entity.getEntityId() == secondaryEntityId)) {
-
-                        gp.getEventM().setEntityFollowTarget(
-                                entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId(), false);                // Don't freeze to prevent swapped entity from attempting to walk back to its prior position (pathfinder will set the followed entity's last positon as this entity's pre-swap position).
-                    } else {
-
-                        gp.getEventM().setEntityFollowTarget(
-                                entity.getEntityId(), gp.getEntityM().getPlayer().getEntityId(), true);
-                    }
-                }
-
                 if (entity.getEntityId() == primaryEntityId) {
 
                     if (secondaryEntityHidden && !primaryEntityHidden && fade) {
 
                         stageFadeDownEntity(entity,
-                                partyEntityTiles.get(entityIndex).x, partyEntityTiles.get(entityIndex).y,
-                                partyEntityDirections.get(entityIndex));
+                                partyEntityTiles.get(entityIndex).x,
+                                partyEntityTiles.get(entityIndex).y,
+                                partyEntityDirections.get(entityIndex)
+                        );
                     } else if (!secondaryEntityHidden && primaryEntityHidden && fade) {
 
                         stageFadeUpEntity(entity, secondaryEntityId,
-                                partyEntityTiles.get(entityIndex).x, partyEntityTiles.get(entityIndex).y,
-                                partyEntityDirections.get(entityIndex));
+                                partyEntityTiles.get(entityIndex).x,
+                                partyEntityTiles.get(entityIndex).y,
+                                partyEntityDirections.get(entityIndex),
+                                entityIndex < gp.getEntityM().getNumActivePartyMembers()
+                        );
                     } else if (!secondaryEntityHidden && !primaryEntityHidden && fade) {
 
                         stageFadeDownFadeUpEntity(entity,
-                                partyEntityTiles.get(entityIndex).x, partyEntityTiles.get(entityIndex).y,
-                                partyEntityDirections.get(entityIndex));
+                                partyEntityTiles.get(entityIndex).x,
+                                partyEntityTiles.get(entityIndex).y,
+                                partyEntityDirections.get(entityIndex),
+                                entityIndex < gp.getEntityM().getNumActivePartyMembers()
+                        );
                     } else {
 
                         entity.setCol(partyEntityTiles.get(entityIndex).x);                                             // Set entity to the same tile as entity previously in its position/index.
@@ -413,18 +411,26 @@ public class PartySupport {
                     if (primaryEntityHidden && !secondaryEntityHidden && fade) {
 
                         stageFadeDownEntity(entity,
-                                partyEntityTiles.get(entityIndex).x, partyEntityTiles.get(entityIndex).y,
-                                partyEntityDirections.get(entityIndex));
+                                partyEntityTiles.get(entityIndex).x,
+                                partyEntityTiles.get(entityIndex).y,
+                                partyEntityDirections.get(entityIndex)
+                        );
                     } else if (!primaryEntityHidden && secondaryEntityHidden && fade) {
 
                         stageFadeUpEntity(entity, primaryEntityId,
-                                partyEntityTiles.get(entityIndex).x, partyEntityTiles.get(entityIndex).y,
-                                partyEntityDirections.get(entityIndex));
+                                partyEntityTiles.get(entityIndex).x,
+                                partyEntityTiles.get(entityIndex).y,
+                                partyEntityDirections.get(entityIndex),
+                                entityIndex < gp.getEntityM().getNumActivePartyMembers()
+                        );
                     } else if (!primaryEntityHidden && !secondaryEntityHidden && fade) {
 
                         stageFadeDownFadeUpEntity(entity,
-                                partyEntityTiles.get(entityIndex).x, partyEntityTiles.get(entityIndex).y,
-                                partyEntityDirections.get(entityIndex));
+                                partyEntityTiles.get(entityIndex).x,
+                                partyEntityTiles.get(entityIndex).y,
+                                partyEntityDirections.get(entityIndex),
+                                entityIndex < gp.getEntityM().getNumActivePartyMembers()
+                        );
                     } else {
 
                         entity.setCol(partyEntityTiles.get(entityIndex).x);                                             // Set entity to the same tile as entity previously in its position/index.
@@ -660,43 +666,59 @@ public class PartySupport {
 
     /**
      * Stages an entity to perform a fade up effect.
-     * Before fading up, the entity will snap to the position and direction passed as argument.
+     * Once triggered to start fading up, the entity will be set to the passed position, direction, and follow state.
      *
      * @param targetEntity target entity that will fade up
      * @param triggeringEntityId triggering entity whose fade down must complete before target entity can fade up
-     * @param newCol new position of entity (column)
-     * @param newRow new position of entity (row)
-     * @param newDirection new direction of entity
+     * @param fadeUpCol new position of entity upon fade up (column)
+     * @param fadeUpRow new position of entity upon fade up (row)
+     * @param fadeUpDirection new direction of entity upon fade up
+     * @param followPlayer whether the target entity will be set to follow the player entity (true) or not (false) upon
+     *                     fade up.
      */
     private void stageFadeUpEntity(EntityBase targetEntity,
                                    int triggeringEntityId,
-                                   int newCol, int newRow,
-                                   EntityDirection newDirection) {
+                                   int fadeUpCol, int fadeUpRow,
+                                   EntityDirection fadeUpDirection,
+                                   boolean followPlayer) {
 
-        targetEntity.setCol(newCol);                                                                                    // Set entity to the same tile as entity previously in its position/index.
-        targetEntity.setRow(newRow);                                                                                    // ^^^
-        targetEntity.setDirectionCurrent(newDirection);                                                                 // Set entity to face the same direction as entity previously in its position/index.
-        stagedEntityFadeUpEffects.put(targetEntity.getEntityId(), triggeringEntityId);
+        StagedFadeUpEntityData data = new StagedFadeUpEntityData(
+                fadeUpCol,
+                fadeUpRow,
+                fadeUpDirection,
+                triggeringEntityId,
+                followPlayer
+        );
+        stagedEntityFadeUpEffects.put(targetEntity.getEntityId(), data);
+
     }
 
 
     /**
      * Stages an entity to perform a fade down effect followed immediately by a fade up effect
      * The entity will retain its current position and direction until the fade down effect is complete.
-     * After the fade down effect is complete, it will snap to the position and direction passed as argument.
-     * The entity will fade up in this new position and direction.
+     * After the fade down effect is complete, it will start fading up and be set to the passed position, direction, and
+     * follow state.
      *
      * @param targetEntity target entity that will fade down then up
-     * @param postFadeDownCol post-fade down position of entity (column)
-     * @param postFadeDownRow post-fade down position of entity (row)
-     * @param postFadeDownDirection post-fade down direction of entity
+     * @param fadeUpCol post-fade down position of entity (column)
+     * @param fadeUpRow post-fade down position of entity (row)
+     * @param fadeUpDirection post-fade down direction of entity
      */
     private void stageFadeDownFadeUpEntity(EntityBase targetEntity,
-                                           int postFadeDownCol, int postFadeDownRow,
-                                           EntityDirection postFadeDownDirection) {
+                                           int fadeUpCol, int fadeUpRow,
+                                           EntityDirection fadeUpDirection,
+                                           boolean followPlayer) {
 
-        stageFadeDownEntity(targetEntity, postFadeDownCol, postFadeDownRow, postFadeDownDirection);
-        stagedEntityFadeUpEffects.put(targetEntity.getEntityId(), targetEntity.getEntityId());
+        StagedFadeUpEntityData data = new StagedFadeUpEntityData(
+                fadeUpCol,
+                fadeUpRow,
+                fadeUpDirection,
+                targetEntity.getEntityId(),
+                followPlayer
+        );
+        stageFadeDownEntity(targetEntity, fadeUpCol, fadeUpRow, fadeUpDirection);
+        stagedEntityFadeUpEffects.put(targetEntity.getEntityId(), data);
     }
 
 
